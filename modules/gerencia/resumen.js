@@ -31,7 +31,7 @@ async function loadKPIs(container) {
     // Produccion del dia
     const { data: prodData } = await supabase
       .from('registro_produccion')
-      .select('consumo_kg, pt_aprox_kg, personal')
+      .select('consumo_kg, pt_aprox_kg')
       .eq('fecha', hoy);
 
     if (prodData && prodData.length > 0) {

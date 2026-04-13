@@ -30,7 +30,7 @@ async function loadData(container) {
     since.setDate(since.getDate() - 30);
     const { data } = await supabase
       .from('registro_produccion')
-      .select('fecha, fruta, consumo_mp, lote, calidad, brix, proveedor, jabas')
+      .select('fecha, fruta, consumo_kg, lote, calidad, brix, proveedor, jabas')
       .gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' }))
       .order('fecha', { ascending: false });
     allData = data || [];
@@ -51,7 +51,7 @@ async function loadData(container) {
 /* ── KPIs ──────────────────────────────────────────────── */
 function updateKPIs(container, todayRecs, allRecs) {
   // TN recepcionadas hoy
-  const totalMP = todayRecs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+  const totalMP = todayRecs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
   const tnHoy = totalMP / 1000;
   setVal(container, 'recKpiTN', tnHoy.toFixed(1) + ' TN');
 
@@ -83,7 +83,7 @@ function updateKPIs(container, todayRecs, allRecs) {
   setVal(container, 'recKpiProveedores', provUnicos.toString());
 
   // TN campana (ultimos 30 dias)
-  const tnCampana = allRecs.reduce((s, r) => s + (r.consumo_mp || 0), 0) / 1000;
+  const tnCampana = allRecs.reduce((s, r) => s + (r.consumo_kg || 0), 0) / 1000;
   setVal(container, 'recKpiCampana', fmt(tnCampana, 1) + ' TN');
 }
 
@@ -104,9 +104,9 @@ function buildTable(container, recs) {
   recs.forEach(r => {
     const key = (r.lote || '') + '_' + (r.fecha || '') + '_' + (r.fruta || '');
     if (!loteMap[key]) {
-      loteMap[key] = { ...r, consumo_mp: 0, count: 0 };
+      loteMap[key] = { ...r, consumo_kg: 0, count: 0 };
     }
-    loteMap[key].consumo_mp += r.consumo_mp || 0;
+    loteMap[key].consumo_kg += r.consumo_kg || 0;
     loteMap[key].count++;
   });
   const lotes = Object.values(loteMap).sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
@@ -114,7 +114,7 @@ function buildTable(container, recs) {
   tbody.innerHTML = lotes.slice(0, 40).map(r => {
     const fc = FRUTA_COLORS[(r.fruta || '').toUpperCase()] || { emoji: '\uD83C\uDF47', color: '#64748b' };
     const calidadClass = (r.calidad === 'A' || r.calidad === 'A+') ? 'verde' : (r.calidad === 'B' ? 'naranja' : 'gris');
-    const pesoNeto = r.consumo_mp || 0;
+    const pesoNeto = r.consumo_kg || 0;
     return `<tr>
       <td style="font-size:12px">${r.fecha || '--'}</td>
       <td style="font-weight:700;font-family:monospace">${r.lote || '--'}</td>
@@ -128,7 +128,7 @@ function buildTable(container, recs) {
   }).join('');
 
   if (tfoot) {
-    const totalKg = lotes.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+    const totalKg = lotes.reduce((s, r) => s + (r.consumo_kg || 0), 0);
     const totalLotes = lotes.length;
     tfoot.innerHTML = `<tr style="font-weight:800;background:var(--naranja-bg);border-top:2px solid var(--naranja)">
       <td style="color:var(--naranja)">TOTAL (${totalLotes} lotes)</td>
@@ -150,7 +150,7 @@ function updateCharts(container) {
     const d = new Date(); d.setDate(d.getDate() - i);
     last7dates.push(d.toLocaleDateString('en-CA', { timeZone: 'America/Lima' }));
   }
-  const kgPorDia = last7dates.map(f => allData.filter(r => r.fecha === f).reduce((s, r) => s + (r.consumo_mp || 0), 0));
+  const kgPorDia = last7dates.map(f => allData.filter(r => r.fecha === f).reduce((s, r) => s + (r.consumo_kg || 0), 0));
   const labels = last7dates.map(f => {
     const d = new Date(f + 'T00:00:00');
     return d.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric' });
@@ -187,7 +187,7 @@ function updateCharts(container) {
   const byFruta = {};
   last7.forEach(r => {
     const f = (r.fruta || 'OTROS').toUpperCase();
-    byFruta[f] = (byFruta[f] || 0) + (r.consumo_mp || 0);
+    byFruta[f] = (byFruta[f] || 0) + (r.consumo_kg || 0);
   });
 
   const frutas = Object.keys(byFruta).sort((a, b) => byFruta[b] - byFruta[a]);

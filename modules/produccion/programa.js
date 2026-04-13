@@ -17,14 +17,14 @@ async function loadData(container) {
     const endWeek = fmtISO(sunday);
 
     const { data } = await supabase.from('registro_produccion')
-      .select('fecha, fruta, consumo_mp, producto_terminado, turno')
+      .select('fecha, fruta, consumo_kg, pt_aprox_kg, turno')
       .gte('fecha', startWeek)
       .lte('fecha', endWeek)
       .order('fecha');
 
     const recs = data || [];
-    const totalPT = recs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
-    const totalMP = recs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+    const totalPT = recs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
+    const totalMP = recs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
     const programado = totalMP > 0 ? totalMP * 1.2 : 0;
     const cumplimiento = programado > 0 ? (totalPT / programado * 100) : 0;
 
@@ -43,13 +43,13 @@ async function loadData(container) {
         return;
       }
       tbody.innerHTML = recs.map(r => {
-        const rend = r.consumo_mp > 0 ? (r.producto_terminado / r.consumo_mp * 100).toFixed(1) : '-';
-        const estado = r.producto_terminado > 0 ? 'Ejecutado' : 'Pendiente';
+        const rend = r.consumo_kg > 0 ? (r.pt_aprox_kg / r.consumo_kg * 100).toFixed(1) : '-';
+        const estado = r.pt_aprox_kg > 0 ? 'Ejecutado' : 'Pendiente';
         return `<tr>
           <td>${r.fecha}</td>
           <td>${r.fruta || '—'}</td>
-          <td style="font-family:monospace">${fmt(r.consumo_mp)}</td>
-          <td style="font-family:monospace;font-weight:700">${fmt(r.producto_terminado)}</td>
+          <td style="font-family:monospace">${fmt(r.consumo_kg)}</td>
+          <td style="font-family:monospace;font-weight:700">${fmt(r.pt_aprox_kg)}</td>
           <td style="color:var(--verde);font-weight:600">${rend}%</td>
           <td><span class="badge badge-${r.turno === 'DIA' ? 'amber' : 'azul'}">${r.turno || '—'}</span></td>
           <td><span class="badge badge-${estado === 'Ejecutado' ? 'green' : 'amber'}">${estado}</span></td>

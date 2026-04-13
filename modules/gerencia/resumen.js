@@ -2,7 +2,7 @@
    RESUMEN EJECUTIVO - Panel principal de gerencia
    ════════════════════════════════════════════════════════ */
 
-import { supabase } from '../../assets/js/config/supabase.js';
+import { supabase, supabaseCalidad } from '../../assets/js/config/supabase.js';
 import { FRUTAS, TIMEZONE } from '../../assets/js/config/constants.js';
 import { fmt, fmtPct, today, currentTurno } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
@@ -31,12 +31,12 @@ async function loadKPIs(container) {
     // Produccion del dia
     const { data: prodData } = await supabase
       .from('registro_produccion')
-      .select('consumo_mp, producto_terminado, personal')
+      .select('consumo_kg, pt_aprox_kg, personal')
       .eq('fecha', hoy);
 
     if (prodData && prodData.length > 0) {
-      const totalPT = prodData.reduce((s, r) => s + (r.producto_terminado || 0), 0);
-      const totalMP = prodData.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+      const totalPT = prodData.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
+      const totalMP = prodData.reduce((s, r) => s + (r.consumo_kg || 0), 0);
       const totalPers = prodData.reduce((s, r) => s + (r.personal || 0), 0);
       const rend = totalMP > 0 ? (totalPT / totalMP * 100) : 0;
 
@@ -55,8 +55,8 @@ async function loadKPIs(container) {
       setKPI(container, 'kpi-personal-areas', 'Sin datos');
     }
 
-    // Temperaturas
-    const { data: tempData } = await supabase
+    // Temperaturas (proyecto calidad)
+    const { data: tempData } = await supabaseCalidad
       .from('registros_temperatura')
       .select('temperatura, zona')
       .order('created_at', { ascending: false })
@@ -131,7 +131,7 @@ async function loadCharts(container) {
     const hoy = today();
     const { data } = await supabase
       .from('registro_produccion')
-      .select('fruta, producto_terminado, consumo_mp, fecha')
+      .select('fruta, pt_aprox_kg, consumo_kg, fecha')
       .gte('fecha', getWeekAgo());
 
     if (data && data.length > 0) {
@@ -139,7 +139,7 @@ async function loadCharts(container) {
       const frutaKeys = Object.keys(FRUTAS);
       const frutaTotals = frutaKeys.map(key =>
         data.filter(r => (r.fruta || '').toLowerCase() === key)
-          .reduce((s, r) => s + (r.producto_terminado || 0), 0)
+          .reduce((s, r) => s + (r.pt_aprox_kg || 0), 0)
       );
 
       if (frutaChart) {
@@ -151,8 +151,8 @@ async function loadCharts(container) {
       const dias = getLast7Days();
       const rendData = dias.map(dia => {
         const dayRecords = data.filter(r => r.fecha === dia);
-        const mp = dayRecords.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-        const pt = dayRecords.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+        const mp = dayRecords.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+        const pt = dayRecords.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
         return mp > 0 ? (pt / mp * 100) : 0;
       });
 

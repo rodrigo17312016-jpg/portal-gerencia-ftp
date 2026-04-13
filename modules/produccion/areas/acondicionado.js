@@ -65,8 +65,8 @@ function renderFiltered(container) {
 }
 
 function updateKPIs(container, recs) {
-  const totalMP = recs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-  const totalPT = recs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const totalMP = recs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+  const totalPT = recs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   const rend = totalMP > 0 ? (totalPT / totalMP * 100) : 0;
   const kgHr = recs.length > 0 ? totalMP / recs.length : 0;
   const lastPers = recs.length > 0 ? recs[recs.length - 1]?.personal || 0 : 0;
@@ -89,8 +89,8 @@ function updateKPIs(container, recs) {
     if (bar) bar.style.width = Math.min(100, pct) + '%';
   }
 
-  buildKpiFrutas(container, 'acoKpiConsumoFrutas', recs, 'consumo_mp');
-  buildKpiFrutas(container, 'acoKpiPTFrutas', recs, 'producto_terminado');
+  buildKpiFrutas(container, 'acoKpiConsumoFrutas', recs, 'consumo_kg');
+  buildKpiFrutas(container, 'acoKpiPTFrutas', recs, 'pt_aprox_kg');
   buildKpiRendFrutas(container, 'acoKpiRendFrutas', recs);
 }
 
@@ -108,7 +108,7 @@ function buildKpiFrutas(container, elId, recs, field) {
 function buildKpiRendFrutas(container, elId, recs) {
   const el = container.querySelector('#' + elId); if (!el) return;
   const byF = {};
-  recs.forEach(r => { const f = (r.fruta || 'MANGO').toUpperCase(); if (!byF[f]) byF[f] = { mp: 0, pt: 0 }; byF[f].mp += r.consumo_mp || 0; byF[f].pt += r.producto_terminado || 0; });
+  recs.forEach(r => { const f = (r.fruta || 'MANGO').toUpperCase(); if (!byF[f]) byF[f] = { mp: 0, pt: 0 }; byF[f].mp += r.consumo_kg || 0; byF[f].pt += r.pt_aprox_kg || 0; });
   if (!Object.keys(byF).length) { el.innerHTML = ''; return; }
   el.innerHTML = Object.entries(byF).map(([f, v]) => {
     const fc = FRUTA_COLORS[f] || { color: '#64748b', emoji: '🍇' };
@@ -120,7 +120,7 @@ function buildKpiRendFrutas(container, elId, recs) {
 function buildAvanceFrutas(container, recs) {
   const el = container.querySelector('#acoAvanceFrutasContainer'); if (!el) return;
   const byF = {};
-  recs.forEach(r => { const f = (r.fruta || 'MANGO').toUpperCase(); if (!byF[f]) byF[f] = { mp: 0, pt: 0, proy: r.proyectado_tn || 0 }; byF[f].mp += r.consumo_mp || 0; byF[f].pt += r.producto_terminado || 0; if (r.proyectado_tn) byF[f].proy = r.proyectado_tn; });
+  recs.forEach(r => { const f = (r.fruta || 'MANGO').toUpperCase(); if (!byF[f]) byF[f] = { mp: 0, pt: 0, proy: r.proyectado_tn || 0 }; byF[f].mp += r.consumo_kg || 0; byF[f].pt += r.pt_aprox_kg || 0; if (r.proyectado_tn) byF[f].proy = r.proyectado_tn; });
   if (!Object.keys(byF).length) { el.innerHTML = ''; return; }
   el.innerHTML = Object.entries(byF).map(([f, v]) => {
     const fc = FRUTA_COLORS[f] || { color: '#64748b', emoji: '🍇' };
@@ -140,23 +140,23 @@ function buildTable(container, recs) {
   const noche = recs.filter(r => !(r.turno || '').toUpperCase().includes('DIA'));
   let rows = '';
   dia.forEach(r => { rows += buildRow(r); });
-  if (dia.length) { const mp = dia.reduce((s, r) => s + (r.consumo_mp || 0), 0); const pt = dia.reduce((s, r) => s + (r.producto_terminado || 0), 0); rows += `<tr style="background:rgba(251,191,36,0.08);font-weight:700"><td colspan="4" style="color:var(--amber)">☀️ SUBTOTAL DIA (${dia.length} hrs)</td><td style="font-family:monospace">${fmt(mp)}</td><td style="font-family:monospace">${fmt(pt)}</td><td style="color:var(--verde)">${mp > 0 ? (pt / mp * 100).toFixed(1) : 0}%</td><td colspan="2"></td></tr>`; }
+  if (dia.length) { const mp = dia.reduce((s, r) => s + (r.consumo_kg || 0), 0); const pt = dia.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0); rows += `<tr style="background:rgba(251,191,36,0.08);font-weight:700"><td colspan="4" style="color:var(--amber)">☀️ SUBTOTAL DIA (${dia.length} hrs)</td><td style="font-family:monospace">${fmt(mp)}</td><td style="font-family:monospace">${fmt(pt)}</td><td style="color:var(--verde)">${mp > 0 ? (pt / mp * 100).toFixed(1) : 0}%</td><td colspan="2"></td></tr>`; }
   noche.forEach(r => { rows += buildRow(r); });
-  if (noche.length) { const mp = noche.reduce((s, r) => s + (r.consumo_mp || 0), 0); const pt = noche.reduce((s, r) => s + (r.producto_terminado || 0), 0); rows += `<tr style="background:rgba(59,130,246,0.08);font-weight:700"><td colspan="4" style="color:var(--azul)">🌙 SUBTOTAL NOCHE (${noche.length} hrs)</td><td style="font-family:monospace">${fmt(mp)}</td><td style="font-family:monospace">${fmt(pt)}</td><td style="color:var(--verde)">${mp > 0 ? (pt / mp * 100).toFixed(1) : 0}%</td><td colspan="2"></td></tr>`; }
+  if (noche.length) { const mp = noche.reduce((s, r) => s + (r.consumo_kg || 0), 0); const pt = noche.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0); rows += `<tr style="background:rgba(59,130,246,0.08);font-weight:700"><td colspan="4" style="color:var(--azul)">🌙 SUBTOTAL NOCHE (${noche.length} hrs)</td><td style="font-family:monospace">${fmt(mp)}</td><td style="font-family:monospace">${fmt(pt)}</td><td style="color:var(--verde)">${mp > 0 ? (pt / mp * 100).toFixed(1) : 0}%</td><td colspan="2"></td></tr>`; }
   tbody.innerHTML = rows;
 
   if (tfoot) {
-    const totalMP = recs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const totalPT = recs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const totalMP = recs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const totalPT = recs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     tfoot.innerHTML = `<tr style="font-weight:800;background:var(--verde-bg);border-top:2px solid var(--verde)"><td colspan="4" style="color:var(--verde)">🏭 TOTAL GENERAL (${recs.length} hrs)</td><td style="font-family:monospace;color:var(--verde)">${fmt(totalMP)}</td><td style="font-family:monospace;color:var(--verde)">${fmt(totalPT)}</td><td style="color:var(--verde)">${totalMP > 0 ? (totalPT / totalMP * 100).toFixed(1) : 0}%</td><td>${recs.reduce((s, r) => s + (r.personal || 0), 0)}</td><td></td></tr>`;
   }
 }
 
 function buildRow(r) {
-  const rend = r.consumo_mp > 0 ? (r.producto_terminado / r.consumo_mp * 100).toFixed(1) : '—';
+  const rend = r.consumo_kg > 0 ? (r.pt_aprox_kg / r.consumo_kg * 100).toFixed(1) : '—';
   const fc = FRUTA_COLORS[(r.fruta || '').toUpperCase()] || { emoji: '' };
   const isDia = (r.turno || '').toUpperCase().includes('DIA');
-  return `<tr><td style="font-family:monospace;font-size:12px">${r.hora?.slice(0, 5) || '—'}</td><td><span style="color:${isDia ? 'var(--amber)' : 'var(--azul)'};font-weight:700;font-size:11px">${isDia ? 'DIA' : 'NOCHE'}</span></td><td style="font-size:12px">${fc.emoji} ${r.fruta || '—'}</td><td style="font-size:12px">${r.linea || 'L1'}</td><td style="font-family:monospace;font-weight:600">${fmt(r.consumo_mp)}</td><td style="font-family:monospace;font-weight:700">${fmt(r.producto_terminado)}</td><td style="font-weight:700;color:${parseFloat(rend) >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend}%</td><td>${r.personal || '—'}</td><td style="font-size:11px">${r.supervisor || '—'}</td></tr>`;
+  return `<tr><td style="font-family:monospace;font-size:12px">${r.hora?.slice(0, 5) || '—'}</td><td><span style="color:${isDia ? 'var(--amber)' : 'var(--azul)'};font-weight:700;font-size:11px">${isDia ? 'DIA' : 'NOCHE'}</span></td><td style="font-size:12px">${fc.emoji} ${r.fruta || '—'}</td><td style="font-size:12px">${r.linea || 'L1'}</td><td style="font-family:monospace;font-weight:600">${fmt(r.consumo_kg)}</td><td style="font-family:monospace;font-weight:700">${fmt(r.pt_aprox_kg)}</td><td style="font-weight:700;color:${parseFloat(rend) >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend}%</td><td>${r.personal || '—'}</td><td style="font-size:11px">${r.supervisor || '—'}</td></tr>`;
 }
 
 function updateCharts(container) {
@@ -169,8 +169,8 @@ function updateCharts(container) {
   if (!filtered.length) return;
 
   const horas = [...new Set(filtered.map(r => r.hora?.slice(0, 5)))].sort();
-  const mpH = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.consumo_mp || 0), 0));
-  const ptH = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.producto_terminado || 0), 0));
+  const mpH = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.consumo_kg || 0), 0));
+  const ptH = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.pt_aprox_kg || 0), 0));
   const rendH = horas.map((_, i) => mpH[i] > 0 ? (ptH[i] / mpH[i] * 100) : 0);
 
   createChart('chartAcoHora', { type: 'bar', data: { labels: horas, datasets: [{ label: 'Consumo MP (kg)', data: mpH, backgroundColor: 'rgba(234,88,12,0.6)', borderColor: '#ea580c', borderWidth: 2, borderRadius: 6 }, { label: 'Chunks IQF (kg)', data: ptH, backgroundColor: 'rgba(22,163,74,0.6)', borderColor: '#16a34a', borderWidth: 2, borderRadius: 6 }] }, options: { ...getDefaultOptions('bar'), plugins: { legend: { display: true, labels: { color: '#64748b', font: { size: 11 } } } } } });
@@ -187,11 +187,11 @@ function updateCharts(container) {
 async function buildTurnosChart() {
   try {
     const since = new Date(); since.setDate(since.getDate() - 7);
-    const { data } = await supabase.from('registro_produccion').select('fecha, consumo_mp, turno').gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' })).order('fecha');
+    const { data } = await supabase.from('registro_produccion').select('fecha, consumo_kg, turno').gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' })).order('fecha');
     if (!data?.length) return;
     const fechas = [...new Set(data.map(r => r.fecha))].sort();
-    const diaD = fechas.map(f => data.filter(r => r.fecha === f && (r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_mp || 0), 0));
-    const nocheD = fechas.map(f => data.filter(r => r.fecha === f && !(r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_mp || 0), 0));
+    const diaD = fechas.map(f => data.filter(r => r.fecha === f && (r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_kg || 0), 0));
+    const nocheD = fechas.map(f => data.filter(r => r.fecha === f && !(r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_kg || 0), 0));
     const labels = fechas.map(f => { const d = new Date(f + 'T00:00:00'); return d.toLocaleDateString('es-PE', { weekday: 'short', day: 'numeric', month: 'numeric' }); });
     createChart('chartAcoTurnos', { type: 'bar', data: { labels, datasets: [{ label: 'Turno Dia', data: diaD, backgroundColor: 'rgba(22,163,74,0.6)', borderColor: '#16a34a', borderWidth: 2, borderRadius: 6 }, { label: 'Turno Noche', data: nocheD, backgroundColor: 'rgba(37,99,235,0.6)', borderColor: '#2563eb', borderWidth: 2, borderRadius: 6 }] }, options: { ...getDefaultOptions('bar'), plugins: { legend: { display: true, labels: { color: '#64748b', font: { size: 11 } } } } } });
   } catch {}

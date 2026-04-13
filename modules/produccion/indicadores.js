@@ -43,7 +43,7 @@ async function loadData(container) {
 
     const { data, error } = await supabase
       .from('registro_produccion')
-      .select('fecha, fruta, consumo_mp, producto_terminado, personal, turno')
+      .select('fecha, fruta, consumo_kg, pt_aprox_kg, personal, turno')
       .gte('fecha', sinceStr)
       .order('fecha', { ascending: false });
 
@@ -103,8 +103,8 @@ function renderAll(container) {
 
 function updateKPIs(container, data) {
   const weekData = getWeekData(data);
-  const totalMP = weekData.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-  const totalPT = weekData.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const totalMP = weekData.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+  const totalPT = weekData.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   const rend = totalMP > 0 ? (totalPT / totalMP * 100) : 0;
 
   // Compare with previous week
@@ -115,8 +115,8 @@ function updateKPIs(container, data) {
   oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
   const oneWeekStr = oneWeekAgo.toLocaleDateString('en-CA', { timeZone: 'America/Lima' });
   const prevWeekData = data.filter(r => r.fecha >= prevWeekStr && r.fecha < oneWeekStr);
-  const prevPT = prevWeekData.reduce((s, r) => s + (r.producto_terminado || 0), 0);
-  const prevMP = prevWeekData.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+  const prevPT = prevWeekData.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
+  const prevMP = prevWeekData.reduce((s, r) => s + (r.consumo_kg || 0), 0);
   const prevRend = prevMP > 0 ? (prevPT / prevMP * 100) : 0;
 
   // TN Procesadas (semana)
@@ -125,7 +125,7 @@ function updateKPIs(container, data) {
   setChangeIndicator(container, 'ind-tn-change', tnChange, fmt(totalMP / 1000, 1) + ' TN MP consumida');
 
   // TN Campana
-  const allPT = data.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const allPT = data.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   setVal(container, 'ind-tn-campana', fmt(allPT / 1000, 1) + ' TN');
   const metaPct = Math.round(allPT / 1000 / 2000 * 100);
   setVal(container, 'ind-tn-meta', `Meta: 2,000 TN · ${metaPct}% cumplido`);
@@ -170,8 +170,8 @@ function buildCharts(container, data) {
     const week = getWeekNumber(d);
     const key = `S${week}`;
     if (!weeks[key]) weeks[key] = { mp: 0, pt: 0, count: 0 };
-    weeks[key].mp += r.consumo_mp || 0;
-    weeks[key].pt += r.producto_terminado || 0;
+    weeks[key].mp += r.consumo_kg || 0;
+    weeks[key].pt += r.pt_aprox_kg || 0;
     weeks[key].count++;
   });
 
@@ -266,11 +266,11 @@ function buildTable(container, data) {
     if (!grouped[key]) grouped[key] = { fecha: r.fecha, fruta, t1mp: 0, t1pt: 0, t2mp: 0, t2pt: 0 };
     const isDia = r.turno === 'DIA' || r.turno === 'TURNO DIA';
     if (isDia) {
-      grouped[key].t1mp += r.consumo_mp || 0;
-      grouped[key].t1pt += r.producto_terminado || 0;
+      grouped[key].t1mp += r.consumo_kg || 0;
+      grouped[key].t1pt += r.pt_aprox_kg || 0;
     } else {
-      grouped[key].t2mp += r.consumo_mp || 0;
-      grouped[key].t2pt += r.producto_terminado || 0;
+      grouped[key].t2mp += r.consumo_kg || 0;
+      grouped[key].t2pt += r.pt_aprox_kg || 0;
     }
   });
 

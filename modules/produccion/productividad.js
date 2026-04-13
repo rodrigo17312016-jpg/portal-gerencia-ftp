@@ -27,7 +27,7 @@ async function loadData(container) {
 
     const { data, error } = await supabase
       .from('registro_produccion')
-      .select('fecha, hora, producto_terminado, personal, turno, consumo_mp')
+      .select('fecha, hora, pt_aprox_kg, personal, turno, consumo_kg')
       .gte('fecha', sinceStr)
       .order('fecha')
       .order('hora');
@@ -46,9 +46,9 @@ async function loadData(container) {
 }
 
 function updateKPIs(container, todayRecs, histRecs) {
-  const totalPT = todayRecs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const totalPT = todayRecs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   const totalPers = todayRecs.reduce((s, r) => s + (r.personal || 0), 0);
-  const totalMP = todayRecs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+  const totalMP = todayRecs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
   const horasActivas = todayRecs.length;
 
   // KG/HR Real
@@ -59,7 +59,7 @@ function updateKPIs(container, todayRecs, histRecs) {
   const changeEl = container.querySelector('#prodKgHrChange');
   if (changeEl) {
     if (histRecs.length > 0) {
-      const histMP = histRecs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+      const histMP = histRecs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
       const histHoras = histRecs.length;
       const histKgHr = histHoras > 0 ? histMP / histHoras : 0;
       const diff = histKgHr > 0 ? ((kgHr - histKgHr) / histKgHr * 100) : 0;
@@ -117,11 +117,11 @@ function buildCharts(container, todayRecs, allRecs) {
     const horas = [...new Set(todayRecs.map(r => r.hora?.slice(0, 5)))].filter(Boolean).sort();
     const realData = horas.map(h => {
       const recs = todayRecs.filter(r => r.hora?.startsWith(h));
-      return recs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
+      return recs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
     });
 
     // Projected = average * multiplier
-    const avgKgHr = todayRecs.reduce((s, r) => s + (r.consumo_mp || 0), 0) / todayRecs.length;
+    const avgKgHr = todayRecs.reduce((s, r) => s + (r.consumo_kg || 0), 0) / todayRecs.length;
     const projectedLine = horas.map(() => Math.round(avgKgHr * PROJECTED_MULTIPLIER));
 
     const c1 = createChart('chartKgHr', {
@@ -171,7 +171,7 @@ function buildCharts(container, todayRecs, allRecs) {
     const horas = [...new Set(todayRecs.map(r => r.hora?.slice(0, 5)))].filter(Boolean).sort();
     const kgPerOperario = horas.map(h => {
       const recs = todayRecs.filter(r => r.hora?.startsWith(h));
-      const pt = recs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+      const pt = recs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
       const pers = recs.reduce((s, r) => s + (r.personal || 0), 0);
       return pers > 0 ? +(pt / pers).toFixed(1) : 0;
     });
@@ -270,8 +270,8 @@ function buildCharts(container, todayRecs, allRecs) {
 
 function estimateStageEfficiency(todayRecs) {
   // Derive stage efficiencies from production data
-  const totalMP = todayRecs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-  const totalPT = todayRecs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const totalMP = todayRecs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+  const totalPT = todayRecs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   const overallEff = totalMP > 0 ? (totalPT / totalMP * 100) : 0;
   const horasActivas = todayRecs.length;
   const utilizacion = Math.min(100, (horasActivas / 16) * 100);

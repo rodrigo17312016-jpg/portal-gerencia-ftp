@@ -51,7 +51,7 @@ async function loadData(container) {
 
     const [{ data: prodData, error: e1 }, { data: costData, error: e2 }] = await Promise.all([
       supabase.from('registro_produccion')
-        .select('fecha, hora, producto_terminado, personal, consumo_mp')
+        .select('fecha, hora, pt_aprox_kg, personal, consumo_kg')
         .gte('fecha', sinceStr)
         .order('fecha')
         .order('hora'),
@@ -77,7 +77,7 @@ async function loadData(container) {
 
 function updateKPIs(container, prod, costs) {
   const todayRecs = prod.filter(r => r.fecha === selectedDate);
-  const totalPT = todayRecs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const totalPT = todayRecs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   const totalPers = todayRecs.reduce((s, r) => s + (r.personal || 0), 0);
   const avgPers = todayRecs.length > 0 ? Math.round(totalPers / todayRecs.length) : 0;
   const todayCost = costs.find(c => c.fecha === selectedDate);
@@ -230,7 +230,7 @@ function buildCharts(container, prod, costs) {
   let acum = 0;
   const acumData = fechas.map(f => {
     const dayRecs = prod.filter(r => r.fecha === f);
-    const pt = dayRecs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const pt = dayRecs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     const c = costs.find(cc => cc.fecha === f);
     const costoDay = (c?.costo_kg_congelado || 0) * pt;
     acum += currency === 'PEN' ? costoDay * TC : costoDay;
@@ -281,7 +281,7 @@ function buildTable(container, prod, costs) {
     const hora = r.hora?.slice(0, 5) || '—';
     if (!byHora[hora]) byHora[hora] = { personal: 0, pt: 0, count: 0 };
     byHora[hora].personal += r.personal || 0;
-    byHora[hora].pt += r.producto_terminado || 0;
+    byHora[hora].pt += r.pt_aprox_kg || 0;
     byHora[hora].count++;
   });
 

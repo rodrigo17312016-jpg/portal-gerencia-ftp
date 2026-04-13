@@ -9,7 +9,7 @@ async function loadData(container) {
   try {
     const since = new Date(); since.setDate(since.getDate() - 30);
     const { data } = await supabase.from('registro_produccion')
-      .select('fecha, producto_terminado')
+      .select('fecha, pt_aprox_kg')
       .gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' }))
       .order('fecha');
 
@@ -20,7 +20,7 @@ async function loadData(container) {
     const byFecha = {};
     recs.forEach(r => {
       if (!byFecha[r.fecha]) byFecha[r.fecha] = 0;
-      byFecha[r.fecha] += r.producto_terminado || 0;
+      byFecha[r.fecha] += r.pt_aprox_kg || 0;
     });
     const fechas = Object.keys(byFecha).sort();
     const valores = fechas.map(f => byFecha[f]);

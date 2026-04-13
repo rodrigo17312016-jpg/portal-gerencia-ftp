@@ -4,6 +4,16 @@
 
 import { hasAccess, getCurrentRole } from './auth.js';
 
+// Detectar base path (funciona en localhost Y GitHub Pages)
+function getBasePath() {
+  const path = window.location.pathname;
+  // Si estamos en /portal-gerencia-ftp/portal.html -> base es /portal-gerencia-ftp/
+  const lastSlash = path.lastIndexOf('/');
+  return path.substring(0, lastSlash + 1);
+}
+
+export const BASE = getBasePath();
+
 const loadedPanels = new Map();  // Cache de paneles cargados
 let currentPanel = null;
 let contentContainer = null;
@@ -63,7 +73,7 @@ export async function showPanel(panelId, modulePath) {
     `;
 
     // Cargar HTML template
-    const htmlPath = `modules/${modulePath}.html?v=${Date.now()}`;
+    const htmlPath = `${BASE}modules/${modulePath}.html?v=${Date.now()}`;
     const htmlRes = await fetch(htmlPath);
 
     if (!htmlRes.ok) {
@@ -77,7 +87,7 @@ export async function showPanel(panelId, modulePath) {
 
     // Cargar JS module
     try {
-      const jsPath = `/modules/${modulePath}.js?v=${Date.now()}`;
+      const jsPath = `${BASE}modules/${modulePath}.js?v=${Date.now()}`;
       const module = await import(jsPath);
 
       if (module.init) {

@@ -2,9 +2,9 @@
    INSPECCIONES - Reporte de inspecciones de temperatura
    ════════════════════════════════════════════════════════ */
 
-import { fetchSupabase } from '/assets/js/config/supabase.js';
-import { today } from '/assets/js/utils/formatters.js';
-import { createChart, getDefaultOptions } from '/assets/js/utils/chart-helpers.js';
+import { fetchSupabase } from '../../assets/js/config/supabase.js';
+import { today } from '../../assets/js/utils/formatters.js';
+import { createChart, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 
 let tempData = [];
 

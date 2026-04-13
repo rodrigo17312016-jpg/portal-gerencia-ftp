@@ -1,6 +1,6 @@
 /* Contenedores */
-import { supabase } from '/assets/js/config/supabase.js';
-import { fmt } from '/assets/js/utils/formatters.js';
+import { supabase } from '../../assets/js/config/supabase.js';
+import { fmt } from '../../assets/js/utils/formatters.js';
 
 export async function init(container) { await loadData(container); }
 

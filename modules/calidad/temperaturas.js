@@ -2,8 +2,8 @@
    TEMPERATURAS - Monitoreo en tiempo real
    ════════════════════════════════════════════════════════ */
 
-import { fetchSupabase } from '/assets/js/config/supabase.js';
-import { today } from '/assets/js/utils/formatters.js';
+import { fetchSupabase } from '../../assets/js/config/supabase.js';
+import { today } from '../../assets/js/utils/formatters.js';
 
 const AREAS = [
   'CAMARA DE MATERIA PRIMA','ACONDICIONADO','EMBANDEJADO','LAVADO DE BANDEJAS',

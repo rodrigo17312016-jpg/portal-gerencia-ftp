@@ -1,5 +1,5 @@
 /* Stock General */
-import { createChart, getColors, getDefaultOptions } from '/assets/js/utils/chart-helpers.js';
+import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 
 export async function init(container) {
   const colors = getColors();

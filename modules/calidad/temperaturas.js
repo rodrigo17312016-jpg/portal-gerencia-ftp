@@ -4,6 +4,7 @@
 
 import { fetchSupabase } from '../../assets/js/config/supabase.js';
 import { today } from '../../assets/js/utils/formatters.js';
+import { createChart } from '../../assets/js/utils/chart-helpers.js';
 
 const AREAS = [
   'CAMARA DE MATERIA PRIMA','ACONDICIONADO','EMBANDEJADO','LAVADO DE BANDEJAS',
@@ -38,6 +39,7 @@ async function loadTemperaturas(container) {
     tempData = [];
   }
   renderCards(container);
+  renderChart(container);
   renderTable(container);
 }
 
@@ -67,6 +69,96 @@ function renderCards(container) {
       ${r ? `<div style="margin-top:6px"><span class="badge badge-${estadoColor(r.estado)}">${estadoLabel(r.estado)}</span></div>` : ''}
     </div>`;
   }).join('');
+}
+
+function renderChart(container) {
+  if (tempData.length === 0) return;
+
+  // Colores por area (similar a la imagen del portal original)
+  const AREA_COLORS = {
+    'CAMARA DE MATERIA PRIMA': '#06b6d4',
+    'ACONDICIONADO': '#6366f1',
+    'EMBANDEJADO': '#f97316',
+    'LAVADO DE BANDEJAS': '#a855f7',
+    'PRE ENFRIADO': '#ef4444',
+    'EMPAQUE': '#22c55e',
+    'TEMPERATURA PRODUCTO': '#3b82f6',
+    'CAMARA DE PRODUCTO TERMINADO': '#ec4899',
+    'DESPACHO': '#eab308'
+  };
+
+  // Horas del dia (00:00 a 23:00)
+  const allHours = [];
+  for (let h = 0; h <= 23; h++) allHours.push(String(h).padStart(2, '0') + ':00');
+
+  // Agrupar datos por area y hora
+  const datasets = AREAS.map(area => {
+    const areaData = tempData.filter(r => r.area === area);
+    const dataByHour = allHours.map(hour => {
+      const h = hour.slice(0, 2);
+      const record = areaData.find(r => r.hora && r.hora.slice(0, 2) === h);
+      return record ? record.temperatura : null;
+    });
+
+    return {
+      label: area,
+      data: dataByHour,
+      borderColor: AREA_COLORS[area] || '#64748b',
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: 2,
+      pointHoverRadius: 5,
+      tension: 0.3,
+      spanGaps: true
+    };
+  }).filter(ds => ds.data.some(v => v !== null));
+
+  createChart('chartTempHora', {
+    type: 'line',
+    data: { labels: allHours, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          labels: {
+            color: '#64748b',
+            font: { size: 10, family: 'Plus Jakarta Sans' },
+            boxWidth: 12,
+            padding: 8,
+            usePointStyle: true
+          }
+        },
+        tooltip: {
+          backgroundColor: 'rgba(15,23,42,0.9)',
+          titleFont: { size: 12 },
+          bodyFont: { size: 11 },
+          padding: 10,
+          cornerRadius: 8,
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}°C`
+          }
+        }
+      },
+      scales: {
+        x: {
+          ticks: { color: '#64748b', font: { size: 10 }, maxRotation: 0 },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        },
+        y: {
+          ticks: {
+            color: '#64748b',
+            font: { size: 10 },
+            callback: (v) => v + '°C'
+          },
+          grid: { color: 'rgba(0,0,0,0.05)' }
+        }
+      }
+    }
+  });
 }
 
 function renderTable(container) {

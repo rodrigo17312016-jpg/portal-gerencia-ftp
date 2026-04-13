@@ -4,35 +4,100 @@
     <h2 style="font-size:22px;font-weight:900;color:var(--texto)">💰 Costos de <span style="color:var(--amber)">Produccion</span></h2>
     <p style="font-size:13px;color:var(--muted);margin-top:4px">Analisis de costos MOD, materiales y eficiencia</p>
   </div>
-  <div style="display:flex;gap:8px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <a href="apps/registro-costos/index.html" target="_blank" class="btn btn-sm btn-secondary" style="font-size:11px">📝 Registrar Costos</a>
     <a href="dashboards/costos.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Costo Total/Kg</div><div class="kpi-value" id="costoTotalKg">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Costo MOD/Kg</div><div class="kpi-value" id="costoMODKg">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Personal Actual</div><div class="kpi-value" id="costoPersonal">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">PT Acumulado</div><div class="kpi-value" id="costoPTAcum">—</div></div>
+<!-- Filter bar: date picker + currency toggle -->
+<div class="card" style="padding:10px 14px;margin-bottom:14px">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:800;color:var(--muted)">FECHA:</span>
+    <input type="date" id="costoFechaPicker" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--texto);font-size:12px;font-weight:600;cursor:pointer">
+    <span style="width:1px;height:18px;background:var(--border);margin:0 4px"></span>
+    <span style="font-size:11px;font-weight:800;color:var(--muted)">MONEDA:</span>
+    <button class="filter-chip active" data-moneda="USD">$ USD</button>
+    <button class="filter-chip" data-moneda="PEN">S/ PEN</button>
+  </div>
 </div>
 
-<div class="charts-grid charts-grid-2" style="margin-top:20px">
+<!-- 4 KPI Cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--amber)">
+    <div class="kpi-label" style="font-size:9px">COSTO TOTAL/KG</div>
+    <div class="kpi-value" style="font-size:22px" id="costoTotalKg">—</div>
+    <div class="kpi-change" id="costoTotalKgChange" style="font-size:11px;margin-top:4px">Cargando...</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div class="kpi-label" style="font-size:9px">COSTO MOD/KG</div>
+    <div class="kpi-value" style="font-size:22px" id="costoMODKg">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="costoMODMeta">Mano de obra directa</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
+    <div class="kpi-label" style="font-size:9px">PERSONAL ACTUAL</div>
+    <div class="kpi-value" style="font-size:22px" id="costoPersonal">— <span style="font-size:12px;font-weight:500">op.</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="costoPersonalMeta">Operarios registrados</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div class="kpi-label" style="font-size:9px">PT ACUMULADO</div>
+    <div class="kpi-value" style="font-size:22px" id="costoPTAcum">— <span style="font-size:12px;font-weight:500">kg</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="costoPTMeta">Producto terminado del dia</div>
+  </div>
+</div>
+
+<!-- 4 Charts in 2x2 grid -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:16px">
   <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">💵 Costo/Kg por Dia</div></div>
+    <div class="chart-header">
+      <div class="chart-title">👥 Costo MOD por Hora</div>
+    </div>
+    <div class="chart-wrapper"><canvas id="chartCostoMOD"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">🍩 Composicion del Costo</div>
+    </div>
+    <div class="chart-wrapper" style="position:relative">
+      <canvas id="chartCostoComp"></canvas>
+      <div id="costoDonutCenter" style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none">
+        <div style="font-size:10px;color:var(--muted)">Total</div>
+        <div style="font-size:18px;font-weight:900;color:var(--texto)" id="costoDonutValue">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="charts-grid charts-grid-2" style="margin-bottom:16px">
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">💵 Costo/Kg por Hora</div>
+    </div>
     <div class="chart-wrapper"><canvas id="chartCostoKg"></canvas></div>
   </div>
   <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">👥 Costo MOD por Hora</div></div>
-    <div class="chart-wrapper"><canvas id="chartCostoMOD"></canvas></div>
+    <div class="chart-header">
+      <div class="chart-title">📈 Costo Acumulado</div>
+    </div>
+    <div class="chart-wrapper"><canvas id="chartCostoAcum"></canvas></div>
   </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Detalle de Costos por Dia</div></div>
+<!-- Table: Detalle Costos por Hora con footer totals -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Detalle Costos por Hora</div>
+    <div class="badge badge-amber" id="costoRowCount">0 registros</div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Personal</th><th>PT (kg)</th><th>Costo HH</th><th>$/Kg</th></tr></thead>
-      <tbody id="costoTabla"></tbody>
+      <thead><tr>
+        <th>Hora</th><th>Personal</th><th>PT (kg)</th>
+        <th>Costo HH</th><th>Costo MOD</th><th>$/Kg Total</th>
+      </tr></thead>
+      <tbody id="costoTabla">
+        <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando datos...</td></tr>
+      </tbody>
+      <tfoot id="costoTfoot"></tfoot>
     </table>
   </div>
 </div>

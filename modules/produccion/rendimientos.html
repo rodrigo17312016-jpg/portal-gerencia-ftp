@@ -7,30 +7,61 @@
   <a href="dashboards/rendimientos.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">🥭 Rend. Mango</div><div class="kpi-value" id="rendMango">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">🫐 Rend. Arandano</div><div class="kpi-value" id="rendArandano">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">🍎 Rend. Granada</div><div class="kpi-value" id="rendGranada">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">🏭 Promedio Planta</div><div class="kpi-value" id="rendPromedio">—</div></div>
+<!-- 4 KPI Cards con colores por fruta -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div class="kpi-label" style="font-size:9px">🥭 REND. MANGO</div>
+    <div class="kpi-value" style="font-size:22px" id="rendMango">—<span style="font-size:12px;font-weight:500">%</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="rendMangoObj">Obj: 50%</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
+    <div class="kpi-label" style="font-size:9px">🫐 REND. ARANDANO</div>
+    <div class="kpi-value" style="font-size:22px" id="rendArandano">—<span style="font-size:12px;font-weight:500">%</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="rendArandanoObj">Obj: 85%</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--rose)">
+    <div class="kpi-label" style="font-size:9px">🍎 REND. GRANADA</div>
+    <div class="kpi-value" style="font-size:22px" id="rendGranada">—<span style="font-size:12px;font-weight:500">%</span></div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="rendGranadaObj">Obj: 45%</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div class="kpi-label" style="font-size:9px">🏭 PROMEDIO PLANTA</div>
+    <div class="kpi-value" style="font-size:22px" id="rendPromedio">—<span style="font-size:12px;font-weight:500">%</span></div>
+    <div class="kpi-change" id="rendPromedioTrend" style="font-size:11px;margin-top:4px">Cargando...</div>
+  </div>
 </div>
 
-<div class="charts-grid charts-grid-2" style="margin-top:20px">
+<!-- 2 Charts: Historico por Fruta + Dia vs Noche -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:16px">
   <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">📊 Rendimiento Historico</div></div>
+    <div class="chart-header">
+      <div class="chart-title">📊 Rendimiento Historico por Fruta</div>
+    </div>
     <div class="chart-wrapper"><canvas id="chartRendHistorico"></canvas></div>
   </div>
   <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">🔄 Rendimiento Dia vs Noche</div></div>
+    <div class="chart-header">
+      <div class="chart-title">🔄 Rendimiento Dia vs Noche</div>
+    </div>
     <div class="chart-wrapper"><canvas id="chartRendTurno"></canvas></div>
   </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Rendimiento por Fecha</div></div>
+<!-- Table: Rendimiento por Lote -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Rendimiento por Lote</div>
+    <div class="badge badge-verde" id="rendRowCount">0 lotes</div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Fruta</th><th>Consumo MP</th><th>P. Terminado</th><th>Rendimiento</th><th>Turno</th></tr></thead>
-      <tbody id="rendTabla"></tbody>
+      <thead><tr>
+        <th>Lote</th><th>Proveedor</th><th>Variedad</th>
+        <th>Kg MP</th><th>Kg Chunks</th><th>Rend %</th><th>Estado</th>
+      </tr></thead>
+      <tbody id="rendTabla">
+        <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando datos...</td></tr>
+      </tbody>
     </table>
   </div>
 </div>

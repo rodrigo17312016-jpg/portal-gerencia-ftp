@@ -2,17 +2,55 @@
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
   <div>
     <h2 style="font-size:22px;font-weight:900;color:var(--texto)">⚡ <span style="color:var(--azul)">Productividad</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Eficiencia laboral y throughput por operario</p>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Eficiencia laboral, throughput por operario y OEE</p>
   </div>
   <a href="dashboards/productividad.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
 </div>
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Kg/Hora Real</div><div class="kpi-value" id="prodKgHr">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Proyectado</div><div class="kpi-value" id="prodProy">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">HH / TN</div><div class="kpi-value" id="prodHHTN">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">OEE Planta</div><div class="kpi-value" id="prodOEE">—</div></div>
+
+<!-- 4 KPI Cards -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div class="kpi-label" style="font-size:9px">KG/HORA REAL</div>
+    <div class="kpi-value" style="font-size:22px" id="prodKgHr">— <span style="font-size:12px;font-weight:500">kg/hr</span></div>
+    <div class="kpi-change" id="prodKgHrChange" style="font-size:11px;margin-top:4px">Cargando...</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
+    <div class="kpi-label" style="font-size:9px">KG/HORA PROYECTADO</div>
+    <div class="kpi-value" style="font-size:22px" id="prodProy">— <span style="font-size:12px;font-weight:500">kg/hr</span></div>
+    <div style="font-size:11px;margin-top:4px" id="prodProyDev">Desviacion: —</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div class="kpi-label" style="font-size:9px">HORAS HOMBRE / TN</div>
+    <div class="kpi-value" style="font-size:22px" id="prodHHTN">— <span style="font-size:12px;font-weight:500">HH/TN</span></div>
+    <div style="font-size:11px;margin-top:4px" id="prodHHBench">Benchmark: 45 HH/TN</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--cyan)">
+    <div class="kpi-label" style="font-size:9px">OEE PLANTA</div>
+    <div class="kpi-value" style="font-size:22px" id="prodOEE">—<span style="font-size:12px;font-weight:500">%</span></div>
+    <div class="kpi-change" id="prodOEETrend" style="font-size:11px;margin-top:4px">Eficiencia global</div>
+  </div>
 </div>
-<div class="charts-grid charts-grid-2" style="margin-top:20px">
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">📊 KG/HR Real vs Proyectado</div></div><div class="chart-wrapper"><canvas id="chartKgHr"></canvas></div></div>
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">👥 Productividad por Turno</div></div><div class="chart-wrapper"><canvas id="chartProdTurno"></canvas></div></div>
+
+<!-- 3 Charts -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:16px">
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">📊 KG/HR Real vs Proyectado</div>
+    </div>
+    <div class="chart-wrapper"><canvas id="chartKgHr"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">👥 Productividad por Operario</div>
+    </div>
+    <div class="chart-wrapper"><canvas id="chartProdOperario"></canvas></div>
+  </div>
+</div>
+<div class="charts-grid charts-grid-1">
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">📊 Balance de Linea — Eficiencia por Etapa</div>
+    </div>
+    <div class="chart-wrapper"><canvas id="chartBalanceLinea"></canvas></div>
+  </div>
 </div>

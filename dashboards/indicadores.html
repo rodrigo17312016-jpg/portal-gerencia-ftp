@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indicadores de Produccion — Frutos Tropicales Peru Export S.A.C.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+  --verde: #16a34a;
+  --naranja: #ea580c;
+  --azul: #2563eb;
+  --purple: #7c3aed;
+  --cyan: #0891b2;
+  --amber: #d97706;
+  --rose: #e11d48;
+  --bg-primary: #f0f2f5;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255,255,255,0.85);
+  --bg-card-solid: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border-color: rgba(0,0,0,0.08);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.1);
+  --glass-bg: rgba(255,255,255,0.7);
+  --glass-border: rgba(255,255,255,0.3);
+  --topbar-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --chip-active-bg: var(--verde);
+  --chip-active-text: #fff;
+  --chip-bg: rgba(0,0,0,0.05);
+  --chip-text: var(--text-secondary);
+  --table-header-bg: #f8fafc;
+  --table-stripe: #f8fafc;
+  --kpi-icon-bg: rgba(22,163,74,0.1);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0b1120;
+  --bg-secondary: #111827;
+  --bg-card: rgba(30,41,59,0.85);
+  --bg-card-solid: #1e293b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #94a3b8;
+  --border-color: rgba(148,163,184,0.15);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.4);
+  --glass-bg: rgba(30,41,59,0.7);
+  --glass-border: rgba(255,255,255,0.08);
+  --topbar-bg: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+  --chip-bg: rgba(255,255,255,0.08);
+  --chip-text: #94a3b8;
+  --table-header-bg: #1e293b;
+  --table-stripe: rgba(255,255,255,0.02);
+  --kpi-icon-bg: rgba(22,163,74,0.15);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family:'Plus Jakarta Sans','Inter',sans-serif;
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  min-height:100vh;
+  transition:background .3s,color .3s;
+}
+
+/* TOPBAR */
+.topbar {
+  background:var(--topbar-bg);padding:14px 28px;
+  display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:100;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+  backdrop-filter:blur(12px);
+}
+.topbar-left { display:flex;align-items:center;gap:14px; }
+.topbar-left .icon-prod { font-size:1.6rem; }
+.topbar-left h1 { color:#fff;font-size:1.15rem;font-weight:700;letter-spacing:-.3px; }
+.topbar-left .subtitle { color:#64748b;font-size:.75rem;margin-top:1px; }
+.portal-back-link{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:#16a34a;text-decoration:none;font-size:13px;font-weight:600;transition:all 0.3s}
+.portal-back-link:hover{background:rgba(22,163,74,0.2);transform:translateX(-2px)}
+.portal-back-icon{font-size:16px;font-weight:800}
+.portal-back-text{letter-spacing:0.5px}
+.topbar-logo-wrap{display:flex;align-items:center;gap:10px}
+.topbar-logo-icon{width:38px;height:38px;background:linear-gradient(135deg,#16a34a,#22c55e);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 2px 8px rgba(22,163,74,0.3)}
+.topbar-logo-brand{font-size:14px;font-weight:800;letter-spacing:1px;color:#fff}
+.topbar-logo-sub{font-size:11px;color:var(--text-muted);font-weight:500}
+.topbar-right { display:flex;align-items:center;gap:16px; }
+.topbar-right .clock { color:#94a3b8;font-size:.8rem;font-family:'Inter',monospace; }
+.topbar-right .back-link {
+  color:#94a3b8;text-decoration:none;font-size:.8rem;padding:6px 14px;
+  border-radius:8px;border:1px solid rgba(255,255,255,0.1);transition:all .2s;
+}
+.topbar-right .back-link:hover { color:#fff;border-color:rgba(255,255,255,0.3); }
+.theme-toggle {
+  width:44px;height:24px;border-radius:12px;border:none;cursor:pointer;
+  background:rgba(255,255,255,0.15);position:relative;transition:background .3s;
+}
+.theme-toggle::after {
+  content:'';position:absolute;width:18px;height:18px;border-radius:50%;
+  background:#fff;top:3px;left:3px;transition:transform .3s;
+}
+[data-theme="dark"] .theme-toggle::after { transform:translateX(20px); }
+
+/* FILTER BAR */
+.filter-bar {
+  padding:16px 28px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  background:var(--bg-secondary);border-bottom:1px solid var(--border-color);
+  position:sticky;top:53px;z-index:90;
+  backdrop-filter:blur(8px);
+}
+.filter-bar label { font-size:.78rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px; }
+.chip {
+  padding:7px 18px;border-radius:20px;font-size:.82rem;font-weight:600;cursor:pointer;
+  border:1px solid transparent;background:var(--chip-bg);color:var(--chip-text);
+  transition:all .2s;user-select:none;
+}
+.chip:hover { background:rgba(22,163,74,0.1);color:var(--verde); }
+.chip.active { background:var(--chip-active-bg);color:var(--chip-active-text);border-color:var(--chip-active-bg); }
+.date-chips { display:flex;gap:6px;margin-left:auto; }
+.date-chip {
+  padding:6px 14px;border-radius:16px;font-size:.78rem;font-weight:500;cursor:pointer;
+  background:var(--chip-bg);color:var(--chip-text);border:1px solid transparent;transition:all .2s;
+}
+.date-chip:hover { background:rgba(37,99,235,0.1);color:var(--azul); }
+.date-chip.active { background:var(--azul);color:#fff;border-color:var(--azul); }
+
+/* MAIN */
+.main { padding:24px 28px;max-width:1600px;margin:0 auto; }
+
+/* KPI CARDS */
+.kpi-grid {
+  display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:28px;
+}
+@media(max-width:1200px){ .kpi-grid { grid-template-columns:repeat(3,1fr); } }
+@media(max-width:768px){ .kpi-grid { grid-template-columns:repeat(2,1fr); } }
+.kpi-card {
+  background:var(--bg-card);backdrop-filter:blur(12px);
+  border:1px solid var(--border-color);border-radius:16px;
+  padding:20px;position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;
+}
+.kpi-card:hover { transform:translateY(-3px);box-shadow:var(--shadow-lg); }
+.kpi-card .kpi-icon {
+  width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;
+  font-size:1.2rem;margin-bottom:12px;
+}
+.kpi-card .kpi-label { font-size:.72rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px; }
+.kpi-card .kpi-value { font-size:1.65rem;font-weight:800;color:var(--text-primary);line-height:1; }
+.kpi-card .kpi-sub { font-size:.72rem;color:var(--text-muted);margin-top:6px;display:flex;align-items:center;gap:4px; }
+.kpi-card .kpi-sub .up { color:var(--verde); }
+.kpi-card .kpi-sub .down { color:var(--rose); }
+.kpi-card::before {
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  border-radius:16px 16px 0 0;
+}
+.kpi-card.verde::before { background:var(--verde); }
+.kpi-card.naranja::before { background:var(--naranja); }
+.kpi-card.azul::before { background:var(--azul); }
+.kpi-card.purple::before { background:var(--purple); }
+.kpi-card.cyan::before { background:var(--cyan); }
+.kpi-card.amber::before { background:var(--amber); }
+.kpi-card.rose::before { background:var(--rose); }
+
+/* CHART GRID */
+.grid-2 { display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin-bottom:20px; }
+.grid-3 { display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:20px; }
+@media(max-width:1100px){ .grid-3 { grid-template-columns:repeat(2,1fr); } }
+@media(max-width:768px){ .grid-2,.grid-3 { grid-template-columns:1fr; } }
+
+.chart-card {
+  background:var(--bg-card);backdrop-filter:blur(12px);
+  border:1px solid var(--border-color);border-radius:16px;
+  padding:22px;transition:transform .2s,box-shadow .2s;
+}
+.chart-card:hover { transform:translateY(-2px);box-shadow:var(--shadow-lg); }
+.chart-card h3 {
+  font-size:.88rem;font-weight:700;color:var(--text-primary);margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.chart-card h3 .dot { width:8px;height:8px;border-radius:50%; }
+.chart-wrap { position:relative;height:300px; }
+.chart-wrap.tall { height:350px; }
+.chart-wrap.short { height:260px; }
+
+/* TABLES */
+.table-card {
+  background:var(--bg-card);backdrop-filter:blur(12px);
+  border:1px solid var(--border-color);border-radius:16px;
+  padding:22px;margin-bottom:20px;overflow-x:auto;
+}
+.table-card h3 { font-size:.88rem;font-weight:700;margin-bottom:16px; }
+.table-card table { width:100%;border-collapse:collapse;font-size:.82rem; }
+.table-card th {
+  background:var(--table-header-bg);padding:10px 14px;text-align:left;
+  font-weight:600;color:var(--text-secondary);border-bottom:2px solid var(--border-color);
+  font-size:.74rem;text-transform:uppercase;letter-spacing:.5px;
+}
+.table-card td {
+  padding:10px 14px;border-bottom:1px solid var(--border-color);
+  color:var(--text-primary);
+}
+.table-card tbody tr:nth-child(even) { background:var(--table-stripe); }
+.table-card tbody tr:hover { background:rgba(22,163,74,0.04); }
+.badge {
+  display:inline-block;padding:3px 10px;border-radius:10px;font-size:.72rem;font-weight:600;
+}
+.badge-green { background:rgba(22,163,74,0.1);color:var(--verde); }
+.badge-orange { background:rgba(234,88,12,0.1);color:var(--naranja); }
+.badge-blue { background:rgba(37,99,235,0.1);color:var(--azul); }
+
+/* SUMMARY CARDS */
+.summary-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px; }
+@media(max-width:768px){ .summary-grid { grid-template-columns:1fr; } }
+.summary-card {
+  background:var(--bg-card);backdrop-filter:blur(12px);
+  border:1px solid var(--border-color);border-radius:16px;
+  padding:22px;text-align:center;
+}
+.summary-card .sum-icon { font-size:2rem;margin-bottom:10px; }
+.summary-card .sum-label { font-size:.74rem;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px; }
+.summary-card .sum-value { font-size:1.2rem;font-weight:800;color:var(--text-primary); }
+.summary-card .sum-detail { font-size:.78rem;color:var(--text-secondary);margin-top:4px; }
+
+/* LOGO */
+.dash-logo{height:48px;width:auto;filter:drop-shadow(0 4px 16px rgba(22,163,74,0.4)) drop-shadow(0 2px 8px rgba(0,0,0,0.3));animation:logoFloat 4s ease-in-out infinite,logoGlow 3s ease-in-out infinite}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 4px 16px rgba(22,163,74,0.3)) drop-shadow(0 2px 8px rgba(0,0,0,0.3))}50%{filter:drop-shadow(0 6px 24px rgba(22,163,74,0.6)) drop-shadow(0 2px 12px rgba(212,175,55,0.2))}}
+.dash-brand-text{font-size:10px;text-transform:uppercase;letter-spacing:4px;font-weight:800;background:linear-gradient(135deg,#d4af37,#fff8dc,#d4af37);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmerGold 3s ease infinite}
+@keyframes shimmerGold{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+/* PREMIUM SIGNATURE */
+.topbar-dev-signature{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 22px;border-radius:20px;background:linear-gradient(145deg,rgba(10,18,32,0.85),rgba(20,30,48,0.9),rgba(15,25,40,0.85));border:1px solid rgba(212,175,55,0.3);position:relative;overflow:hidden;backdrop-filter:blur(16px);animation:firmaBorderGlow 4s ease infinite;box-shadow:0 0 20px rgba(212,175,55,0.08),inset 0 1px 0 rgba(255,255,255,0.06)}
+.topbar-dev-signature::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),rgba(255,255,255,0.05),transparent);animation:firmaShine 5s ease-in-out infinite;pointer-events:none}
+.topbar-dev-signature::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(212,175,55,0.03) 0%,transparent 40%,rgba(192,192,192,0.03) 60%,transparent 100%);pointer-events:none}
+.topbar-dev-signature>*{position:relative;z-index:1}
+.topbar-sig-label{font-size:7px;color:rgba(212,175,55,0.7);text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.topbar-dev-signature .signature-name{font-size:14px;font-weight:900;letter-spacing:0.3px;background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:signatureShimmer 4s ease infinite;line-height:1.3}
+.topbar-dev-signature .signature-role{font-size:9px;font-weight:700;color:#22c55e;letter-spacing:0.5px}
+@keyframes firmaBorderGlow{0%,100%{border-color:rgba(212,175,55,0.2);box-shadow:0 2px 12px rgba(0,0,0,0.15)}50%{border-color:rgba(212,175,55,0.45);box-shadow:0 2px 24px rgba(212,175,55,0.15),0 4px 16px rgba(0,0,0,0.2)}}
+@keyframes firmaShine{0%{left:-100%}50%,100%{left:200%}}
+@keyframes signatureShimmer{0%{background-position:100% 0}50%{background-position:0% 0}100%{background-position:-100% 0}}
+
+/* ANIMATIONS */
+@keyframes fadeInUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+.animate-in { animation:fadeInUp .5s ease forwards;opacity:0; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--text-muted);border-radius:3px; }
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  body { padding:0; }
+  .topbar, [class*="topbar"] { flex-wrap:wrap; padding:10px 14px; gap:6px; }
+  .topbar-dev-signature, [class*="dev-signature"] { padding:5px 10px; }
+  .topbar-dev-signature .signature-name, [class*="signature-name"] { font-size:10px; }
+  .topbar-dev-signature .signature-role, [class*="signature-role"] { font-size:7px; }
+  .dash-logo { width:32px; height:32px; }
+  .dash-brand-text { font-size:14px; }
+  .portal-back-link { font-size:11px; padding:4px 8px; }
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:repeat(2, 1fr) !important; gap:8px; }
+  .kpi-value, [class*="kpi-value"] { font-size:22px; }
+  .grid-2, .grid-23, .charts-grid, [class*="grid-2"] { grid-template-columns:1fr !important; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:200px; }
+  .card, [class*="card"] { padding:12px; border-radius:12px; }
+  .data-table, table { font-size:11px; }
+  .data-table th, .data-table td, table th, table td { padding:6px 8px; white-space:nowrap; }
+  .filter-bar, [class*="filter"] { flex-wrap:wrap; gap:6px; }
+  .filter-chip, [class*="chip"] { font-size:11px; padding:4px 10px; }
+  h1, .section-title { font-size:18px; }
+  h2 { font-size:16px; }
+  .insights-grid, .analysis-grid { grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:1fr !important; }
+  .topbar-dev-signature, [class*="dev-signature"] { display:none; }
+  .kpi-value, [class*="kpi-value"] { font-size:20px; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:170px; }
+  h1, .section-title { font-size:16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar" id="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="portal-back-link" title="Volver al Portal">
+      <span class="portal-back-icon">←</span>
+      <span class="portal-back-text">Portal</span>
+    </a>
+    <img src="LOGO.png" alt="Frutos Tropicales" class="dash-logo">
+    <div class="dash-brand-text">Indicadores de Produccion</div>
+  </div>
+  <div class="topbar-right">
+    <span class="clock" id="clock"></span>
+    <div class="topbar-dev-signature">
+      <div class="topbar-sig-label">Desarrollado por:</div>
+      <div class="signature-name">Rodrigo Garcia</div>
+      <div class="signature-role">Systems Analyst & Developer-QA</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Modo oscuro/claro"></button>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar" id="filterBar">
+  <label>Fruta:</label>
+  <span class="chip active" data-fruit="all" onclick="setFruit(this)">Todas</span>
+  <span class="chip" data-fruit="mango" onclick="setFruit(this)">🥭 Mango</span>
+  <span class="chip" data-fruit="arandano" onclick="setFruit(this)">🫐 Arandano</span>
+  <span class="chip" data-fruit="granada" onclick="setFruit(this)">🍎 Granada</span>
+  <div class="date-chips">
+    <label style="margin-right:4px">Periodo:</label>
+    <span class="date-chip active" data-period="hoy" onclick="setPeriod(this)">Hoy</span>
+    <span class="date-chip" data-period="semana" onclick="setPeriod(this)">Semana 13</span>
+    <span class="date-chip" data-period="mensual" onclick="setPeriod(this)">Mensual</span>
+    <span class="date-chip" data-period="campana" onclick="setPeriod(this)">Campana</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="mainContent">
+
+  <!-- KPI CARDS -->
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <!-- CHART ROW 1: TN Semanal + TN Diaria -->
+  <div class="grid-2">
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--verde)"></span>TN Procesadas por Semana</h3>
+      <div class="chart-wrap"><canvas id="chartTnSemanal"></canvas></div>
+    </div>
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--azul)"></span>TN Procesadas por Dia</h3>
+      <div class="chart-wrap"><canvas id="chartTnDiario"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHART ROW 2: Rendimiento Semanal + Rendimiento por Fruta -->
+  <div class="grid-2">
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--naranja)"></span>Rendimiento % Semanal</h3>
+      <div class="chart-wrap"><canvas id="chartRendSemanal"></canvas></div>
+    </div>
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--purple)"></span>Rendimiento por Fruta</h3>
+      <div class="chart-wrap"><canvas id="chartRendFruta"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHART ROW 3: Acumulado + Distribucion + Eficiencia -->
+  <div class="grid-3">
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--cyan)"></span>Produccion Acumulada Campana</h3>
+      <div class="chart-wrap"><canvas id="chartAcumulado"></canvas></div>
+    </div>
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--amber)"></span>Distribucion por Fruta</h3>
+      <div class="chart-wrap"><canvas id="chartDistribucion"></canvas></div>
+    </div>
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--rose)"></span>Eficiencia por Area</h3>
+      <div class="chart-wrap"><canvas id="chartRadar"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHART ROW 4: Meta Diaria + Costos + Turnos -->
+  <div class="grid-3">
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--verde)"></span>Cumplimiento de Meta Diaria</h3>
+      <div class="chart-wrap"><canvas id="chartMeta"></canvas></div>
+    </div>
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--azul)"></span>Tendencia de Costos por Kg</h3>
+      <div class="chart-wrap"><canvas id="chartCostos"></canvas></div>
+    </div>
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--naranja)"></span>Comparativo Turnos Dia vs Noche</h3>
+      <div class="chart-wrap"><canvas id="chartTurnos"></canvas></div>
+    </div>
+  </div>
+
+  <!-- CHART ROW 5: Top 5 + Horas -->
+  <div class="grid-2">
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--purple)"></span>Top 5 Dias de Mayor Produccion</h3>
+      <div class="chart-wrap short"><canvas id="chartTop5"></canvas></div>
+    </div>
+    <div class="chart-card animate-in">
+      <h3><span class="dot" style="background:var(--cyan)"></span>Horas Efectivas vs Totales</h3>
+      <div class="chart-wrap short"><canvas id="chartHoras"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TABLES -->
+  <div class="grid-2">
+    <div class="table-card animate-in">
+      <h3>📋 Resumen Semanal por Fruta</h3>
+      <table>
+        <thead><tr><th>Fruta</th><th>TN Procesadas</th><th>TN Chunks</th><th>Rend %</th><th>Cajas</th><th>Costo/Kg</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge badge-green">Mango</span></td><td>72.4</td><td>33.1</td><td>45.7%</td><td>442</td><td>$0.35</td></tr>
+          <tr><td><span class="badge badge-blue">Arandano</span></td><td>18.5</td><td>11.8</td><td>64.0%</td><td>118</td><td>$0.52</td></tr>
+          <tr><td><span class="badge badge-orange">Granada</span></td><td>13.3</td><td>7.6</td><td>57.0%</td><td>84</td><td>$0.41</td></tr>
+          <tr style="font-weight:700"><td>Total</td><td>104.2</td><td>52.5</td><td>50.4%</td><td>644</td><td>$0.38</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="table-card animate-in">
+      <h3>📈 Indicadores por Semana</h3>
+      <table>
+        <thead><tr><th>Semana</th><th>TN Proc.</th><th>Rend %</th><th>Costo/Kg</th><th>Eficiencia</th></tr></thead>
+        <tbody>
+          <tr><td>S8</td><td>88.5</td><td>44.2%</td><td>$0.42</td><td>82%</td></tr>
+          <tr><td>S9</td><td>92.3</td><td>45.0%</td><td>$0.41</td><td>83%</td></tr>
+          <tr><td>S10</td><td>96.8</td><td>46.1%</td><td>$0.40</td><td>84%</td></tr>
+          <tr><td>S11</td><td>98.2</td><td>46.8%</td><td>$0.39</td><td>85%</td></tr>
+          <tr><td>S12</td><td>101.5</td><td>47.5%</td><td>$0.38</td><td>86%</td></tr>
+          <tr><td>S13</td><td>104.2</td><td>48.2%</td><td>$0.38</td><td>87%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-grid">
+    <div class="summary-card animate-in">
+      <div class="sum-icon">🏆</div>
+      <div class="sum-label">Mejor Dia de Campana</div>
+      <div class="sum-value">18.7 TN</div>
+      <div class="sum-detail">Martes 18 Mar — Mango + Arandano</div>
+    </div>
+    <div class="summary-card animate-in">
+      <div class="sum-icon">📉</div>
+      <div class="sum-label">Dia con Menor Produccion</div>
+      <div class="sum-value">8.2 TN</div>
+      <div class="sum-detail">Lunes 03 Mar — Solo Granada</div>
+    </div>
+    <div class="summary-card animate-in">
+      <div class="sum-icon">📊</div>
+      <div class="sum-label">Tendencia de Mejora</div>
+      <div class="sum-value">+17.8%</div>
+      <div class="sum-detail">Crecimiento S8 → S13 en TN procesadas</div>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+// ========== INIT ON LOAD ==========
+document.addEventListener('DOMContentLoaded', function() {
+  initCharts();
+});
+
+// ========== THEME ==========
+function toggleTheme(){
+  const t = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme', t==='dark'?'dark':'');
+  if(t==='light') document.documentElement.removeAttribute('data-theme');
+  updateChartsTheme();
+}
+
+// ========== CLOCK ==========
+function updateClock(){
+  const n=new Date();
+  const opts={weekday:'long',day:'numeric',month:'long',year:'numeric'};
+  const d=n.toLocaleDateString('es-PE',opts);
+  const t=n.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  document.getElementById('clock').textContent=d+' — '+t;
+}
+setInterval(updateClock,1000);
+
+// ========== DATA ==========
+const DATA = {
+  // Weekly TN by fruit S8-S13
+  weeks: ['S8','S9','S10','S11','S12','S13'],
+  tnMango:   [62.5, 65.2, 68.0, 69.8, 70.5, 72.4],
+  tnArandano:[14.5, 15.0, 16.2, 16.0, 17.8, 18.5],
+  tnGranada: [11.5, 12.1, 12.6, 12.4, 13.2, 13.3],
+
+  // Daily TN last 10 days
+  days: ['14-Mar','15-Mar','17-Mar','18-Mar','19-Mar','20-Mar','21-Mar','22-Mar','24-Mar','25-Mar'],
+  tnDayMango:    [10.2, 11.0, 10.5, 12.5, 10.8, 11.2, 10.0, 9.8,  10.5, 10.1],
+  tnDayArandano: [2.5,  2.8,  3.0,  3.5,  2.9,  3.1,  2.6,  2.4,  2.7,  2.6],
+  tnDayGranada:  [1.8,  2.0,  1.9,  2.7,  2.1,  2.0,  1.7,  1.6,  1.9,  1.8],
+
+  // Rendimiento semanal
+  rendSemanal: [44.2, 45.0, 46.1, 46.8, 47.5, 48.2],
+
+  // Rendimiento por fruta
+  rendFruta: { Mango:45.7, Arandano:64.0, Granada:57.0 },
+  rendObj:   { Mango:50.0, Arandano:65.0, Granada:60.0 },
+
+  // Produccion acumulada campana S1-S13
+  semAcum: ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12','S13'],
+  acumTN: [78,165,260,370,490,620,755,888,1020,1160,1290,1400,1507],
+
+  // Distribucion por fruta total campana
+  distFruta: { Mango:1050, Arandano:262, Granada:195 },
+
+  // Eficiencia por area
+  efAreas: { Recepcion:90, Acondicionado:85, Tuneles:82, Empaque:88 },
+
+  // Meta diaria
+  metaDias: ['Lun','Mar','Mie','Jue','Vie','Sab'],
+  metaReal: [13.2, 18.7, 15.1, 14.8, 16.2, 14.5],
+  metaObj:  15.0,
+
+  // Costos
+  costoSem: [0.42, 0.41, 0.40, 0.39, 0.38, 0.38],
+
+  // Turnos
+  turnoDia:   [8.5, 11.2, 9.2, 9.0, 9.8, 8.8],
+  turnoNoche: [4.7, 7.5, 5.9, 5.8, 6.4, 5.7],
+
+  // Top 5 dias
+  top5Dias: ['18-Mar','19-Mar','20-Mar','22-Mar','15-Mar'],
+  top5TN:   [18.7, 15.8, 16.3, 13.8, 15.8],
+
+  // Horas
+  horasEfectivas: [7.0,7.5,7.2,7.0,7.3,6.8],
+  horasParada:    [1.0,0.5,0.8,1.0,0.7,1.2],
+};
+
+// ========== FRUIT INDICES ==========
+const FRUIT_IDX = { mango:0, arandano:1, granada:2 };
+const FRUIT_COLORS = ['#16a34a','#2563eb','#ea580c'];
+const FRUIT_COLORS_BG = ['rgba(22,163,74,0.7)','rgba(37,99,235,0.7)','rgba(234,88,12,0.7)'];
+const FRUIT_NAMES = ['Mango','Arandano','Granada'];
+let activeFruit = 'all';
+let activePeriod = 'hoy';
+
+// ========== CHARTS REGISTRY ==========
+let charts = {};
+
+function getTextColor(){ return getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim()||'#0f172a'; }
+function getMutedColor(){ return getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim()||'#94a3b8'; }
+function getGridColor(){ return getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim()||'rgba(0,0,0,0.08)'; }
+
+function baseScales(stacked){
+  return {
+    x:{ stacked:!!stacked, ticks:{color:getMutedColor(),font:{size:11,family:'Inter'}}, grid:{color:getGridColor()} },
+    y:{ stacked:!!stacked, beginAtZero:true, ticks:{color:getMutedColor(),font:{size:11,family:'Inter'}}, grid:{color:getGridColor()} }
+  };
+}
+
+function visibleDatasets(datasets){
+  if(activeFruit==='all') return datasets;
+  const idx = FRUIT_IDX[activeFruit];
+  if(idx!==undefined && datasets.length>=3){
+    return datasets.map((ds,i)=>({...ds, hidden:i!==idx}));
+  }
+  return datasets;
+}
+
+// ========== BUILD KPI ==========
+function buildKPIs(){
+  const kpis = [
+    { label:'TN Procesadas Hoy', value:'14.09', sub:'<span class="up">▲ +1.2 vs ayer</span>', color:'verde', icon:'⚖️' },
+    { label:'TN Semana 13', value:'104.2', sub:'<span class="up">▲ +2.7 vs S12</span>', color:'azul', icon:'📦' },
+    { label:'TN Campana 2026', value:'1,507', sub:'Meta: 2,000 TN (75.4%)', color:'purple', icon:'🏭' },
+    { label:'Rendimiento Global', value:'45.7%', sub:'Objetivo: 50%', color:'naranja', icon:'📊' },
+    { label:'Cajas Producidas', value:'644', sub:'Semana 13', color:'cyan', icon:'📋' },
+    { label:'Costo / Kg', value:'$0.38', sub:'<span class="up">▼ -$0.04 vs S8</span>', color:'verde', icon:'💲' },
+    { label:'Eficiencia Planta', value:'87%', sub:'<span class="up">▲ +5% vs S8</span>', color:'azul', icon:'⚡' },
+    { label:'Hrs Efectivas', value:'7 hr', sub:'de 8 hr programadas', color:'amber', icon:'🕐' },
+    { label:'Personal Total', value:'127 op', sub:'Dia: 82 / Noche: 45', color:'rose', icon:'👷' },
+    { label:'OEE', value:'78%', sub:'Disponib. x Rendim. x Calidad', color:'purple', icon:'🎯' },
+  ];
+  const g = document.getElementById('kpiGrid');
+  g.innerHTML = kpis.map((k,i)=>`
+    <div class="kpi-card ${k.color} animate-in" style="animation-delay:${i*60}ms">
+      <div class="kpi-icon" style="background:var(--kpi-icon-bg)">${k.icon}</div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>
+  `).join('');
+}
+
+// ========== CHART BUILDERS ==========
+function buildChartTnSemanal(){
+  const ctx = document.getElementById('chartTnSemanal').getContext('2d');
+  if(charts.tnSemanal) charts.tnSemanal.destroy();
+  const ds = visibleDatasets([
+    { label:'Mango', data:DATA.tnMango, backgroundColor:FRUIT_COLORS_BG[0], borderRadius:6 },
+    { label:'Arandano', data:DATA.tnArandano, backgroundColor:FRUIT_COLORS_BG[1], borderRadius:6 },
+    { label:'Granada', data:DATA.tnGranada, backgroundColor:FRUIT_COLORS_BG[2], borderRadius:6 },
+  ]);
+  charts.tnSemanal = new Chart(ctx,{
+    type:'bar',
+    data:{ labels:DATA.weeks, datasets:ds },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor(),font:{family:'Inter',size:11}}}, datalabels:{display:false} },
+      scales:baseScales(true)
+    }
+  });
+}
+
+function buildChartTnDiario(){
+  const ctx = document.getElementById('chartTnDiario').getContext('2d');
+  if(charts.tnDiario) charts.tnDiario.destroy();
+  let ds;
+  if(activeFruit==='all'){
+    ds = [
+      { label:'Mango', data:DATA.tnDayMango, backgroundColor:FRUIT_COLORS_BG[0], borderRadius:4 },
+      { label:'Arandano', data:DATA.tnDayArandano, backgroundColor:FRUIT_COLORS_BG[1], borderRadius:4 },
+      { label:'Granada', data:DATA.tnDayGranada, backgroundColor:FRUIT_COLORS_BG[2], borderRadius:4 },
+    ];
+  } else {
+    const key = 'tnDay' + activeFruit.charAt(0).toUpperCase()+activeFruit.slice(1);
+    const idx = FRUIT_IDX[activeFruit];
+    ds = [{ label:FRUIT_NAMES[idx], data:DATA[key], backgroundColor:FRUIT_COLORS_BG[idx], borderRadius:4 }];
+  }
+  charts.tnDiario = new Chart(ctx,{
+    type:'bar',
+    data:{ labels:DATA.days, datasets:ds },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor(),font:{family:'Inter',size:11}}}, datalabels:{display:false} },
+      scales:baseScales(true)
+    }
+  });
+}
+
+function buildChartRendSemanal(){
+  const ctx = document.getElementById('chartRendSemanal').getContext('2d');
+  if(charts.rendSemanal) charts.rendSemanal.destroy();
+  charts.rendSemanal = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:DATA.weeks,
+      datasets:[
+        { label:'Rendimiento %', data:DATA.rendSemanal, borderColor:'#ea580c', backgroundColor:'rgba(234,88,12,0.1)', fill:true, tension:0.4, pointRadius:5, pointBackgroundColor:'#ea580c' },
+        { label:'Objetivo 50%', data:[50,50,50,50,50,50], borderColor:'#e11d48', borderDash:[6,4], pointRadius:0, fill:false },
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor(),font:{family:'Inter',size:11}}}, datalabels:{display:false} },
+      scales:{ x:{ticks:{color:getMutedColor()},grid:{color:getGridColor()}}, y:{min:40,max:55,ticks:{color:getMutedColor(),callback:v=>v+'%'},grid:{color:getGridColor()}} }
+    }
+  });
+}
+
+function buildChartRendFruta(){
+  const ctx = document.getElementById('chartRendFruta').getContext('2d');
+  if(charts.rendFruta) charts.rendFruta.destroy();
+  const labels = Object.keys(DATA.rendFruta);
+  const real = Object.values(DATA.rendFruta);
+  const obj = Object.values(DATA.rendObj);
+  charts.rendFruta = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:labels,
+      datasets:[
+        { label:'Real', data:real, backgroundColor:['rgba(22,163,74,0.7)','rgba(37,99,235,0.7)','rgba(234,88,12,0.7)'], borderRadius:6 },
+        { label:'Objetivo', data:obj, backgroundColor:['rgba(22,163,74,0.25)','rgba(37,99,235,0.25)','rgba(234,88,12,0.25)'], borderRadius:6 },
+      ]
+    },
+    options:{
+      indexAxis:'y', responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:getMutedColor(),font:{family:'Inter',size:11}}},
+        datalabels:{ anchor:'end',align:'end',color:getMutedColor(),font:{size:11,weight:'bold'},formatter:v=>v+'%' }
+      },
+      scales:{ x:{max:80,ticks:{color:getMutedColor(),callback:v=>v+'%'},grid:{color:getGridColor()}}, y:{ticks:{color:getMutedColor()},grid:{display:false}} }
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function buildChartAcumulado(){
+  const ctx = document.getElementById('chartAcumulado').getContext('2d');
+  if(charts.acumulado) charts.acumulado.destroy();
+  charts.acumulado = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:DATA.semAcum,
+      datasets:[{
+        label:'TN Acumuladas', data:DATA.acumTN,
+        borderColor:'#0891b2', backgroundColor:'rgba(8,145,178,0.15)',
+        fill:true, tension:0.3, pointRadius:4, pointBackgroundColor:'#0891b2'
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor()}}, datalabels:{display:false} },
+      scales:{ x:{ticks:{color:getMutedColor()},grid:{color:getGridColor()}}, y:{beginAtZero:true,ticks:{color:getMutedColor()},grid:{color:getGridColor()}} }
+    }
+  });
+}
+
+function buildChartDistribucion(){
+  const ctx = document.getElementById('chartDistribucion').getContext('2d');
+  if(charts.distribucion) charts.distribucion.destroy();
+  const vals = Object.values(DATA.distFruta);
+  const total = vals.reduce((a,b)=>a+b,0);
+  charts.distribucion = new Chart(ctx,{
+    type:'doughnut',
+    data:{
+      labels:['Mango','Arandano','Granada'],
+      datasets:[{ data:vals, backgroundColor:FRUIT_COLORS, borderWidth:0, hoverOffset:10 }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{
+        legend:{position:'bottom',labels:{color:getMutedColor(),font:{family:'Inter',size:11},padding:16}},
+        datalabels:{ color:'#fff',font:{weight:'bold',size:12},formatter:(v)=> (v/total*100).toFixed(1)+'%' }
+      }
+    },
+    plugins:[ChartDataLabels,{
+      id:'centerText',
+      beforeDraw(chart){
+        const {width,height,ctx:c} = chart;
+        c.save();
+        c.font='800 1.6rem Plus Jakarta Sans';
+        c.fillStyle=getTextColor();
+        c.textAlign='center';c.textBaseline='middle';
+        c.fillText(total+' TN',width/2,height/2-8);
+        c.font='500 0.7rem Inter';
+        c.fillStyle=getMutedColor();
+        c.fillText('Total Campana',width/2,height/2+16);
+        c.restore();
+      }
+    }]
+  });
+}
+
+function buildChartRadar(){
+  const ctx = document.getElementById('chartRadar').getContext('2d');
+  if(charts.radar) charts.radar.destroy();
+  charts.radar = new Chart(ctx,{
+    type:'radar',
+    data:{
+      labels:Object.keys(DATA.efAreas),
+      datasets:[{
+        label:'Eficiencia %', data:Object.values(DATA.efAreas),
+        borderColor:'#e11d48', backgroundColor:'rgba(225,29,72,0.15)',
+        pointBackgroundColor:'#e11d48', pointRadius:5
+      },{
+        label:'Objetivo', data:[95,90,88,92],
+        borderColor:'#94a3b8', backgroundColor:'rgba(148,163,184,0.05)',
+        borderDash:[5,3], pointRadius:0
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor()}}, datalabels:{display:false} },
+      scales:{r:{min:70,max:100,ticks:{color:getMutedColor(),backdropColor:'transparent'},grid:{color:getGridColor()},pointLabels:{color:getMutedColor(),font:{size:11}}}}
+    }
+  });
+}
+
+function buildChartMeta(){
+  const ctx = document.getElementById('chartMeta').getContext('2d');
+  if(charts.meta) charts.meta.destroy();
+  const colors = DATA.metaReal.map(v=>v>=DATA.metaObj?'rgba(22,163,74,0.7)':'rgba(225,29,72,0.7)');
+  charts.meta = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:DATA.metaDias,
+      datasets:[
+        { label:'Real TN', data:DATA.metaReal, backgroundColor:colors, borderRadius:6 },
+        { label:'Meta 15 TN', data:DATA.metaDias.map(()=>DATA.metaObj), type:'line', borderColor:'#d97706', borderDash:[6,4], pointRadius:0, fill:false }
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor()}}, datalabels:{display:false} },
+      scales:baseScales(false)
+    }
+  });
+}
+
+function buildChartCostos(){
+  const ctx = document.getElementById('chartCostos').getContext('2d');
+  if(charts.costos) charts.costos.destroy();
+  charts.costos = new Chart(ctx,{
+    type:'line',
+    data:{
+      labels:DATA.weeks,
+      datasets:[{
+        label:'Costo $/Kg', data:DATA.costoSem,
+        borderColor:'#2563eb', backgroundColor:'rgba(37,99,235,0.1)',
+        fill:true, tension:0.4, pointRadius:5, pointBackgroundColor:'#2563eb'
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{labels:{color:getMutedColor()}},
+        datalabels:{ anchor:'end',align:'top',color:'#2563eb',font:{size:11,weight:'bold'},formatter:v=>'$'+v.toFixed(2) }
+      },
+      scales:{ x:{ticks:{color:getMutedColor()},grid:{color:getGridColor()}}, y:{min:0.34,max:0.46,ticks:{color:getMutedColor(),callback:v=>'$'+v.toFixed(2)},grid:{color:getGridColor()}} }
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function buildChartTurnos(){
+  const ctx = document.getElementById('chartTurnos').getContext('2d');
+  if(charts.turnos) charts.turnos.destroy();
+  charts.turnos = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:DATA.metaDias,
+      datasets:[
+        { label:'Turno Dia', data:DATA.turnoDia, backgroundColor:'rgba(22,163,74,0.7)', borderRadius:6 },
+        { label:'Turno Noche', data:DATA.turnoNoche, backgroundColor:'rgba(124,58,237,0.7)', borderRadius:6 },
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor()}}, datalabels:{display:false} },
+      scales:baseScales(false)
+    }
+  });
+}
+
+function buildChartTop5(){
+  const ctx = document.getElementById('chartTop5').getContext('2d');
+  if(charts.top5) charts.top5.destroy();
+  charts.top5 = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:DATA.top5Dias,
+      datasets:[{ label:'TN', data:DATA.top5TN, backgroundColor:['#16a34a','#2563eb','#ea580c','#7c3aed','#0891b2'], borderRadius:6 }]
+    },
+    options:{
+      indexAxis:'y', responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        datalabels:{ anchor:'end',align:'end',color:getMutedColor(),font:{size:11,weight:'bold'},formatter:v=>v+' TN' }
+      },
+      scales:{ x:{beginAtZero:true,ticks:{color:getMutedColor()},grid:{color:getGridColor()}}, y:{ticks:{color:getMutedColor()},grid:{display:false}} }
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function buildChartHoras(){
+  const ctx = document.getElementById('chartHoras').getContext('2d');
+  if(charts.horas) charts.horas.destroy();
+  charts.horas = new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:DATA.metaDias,
+      datasets:[
+        { label:'Hrs Efectivas', data:DATA.horasEfectivas, backgroundColor:'rgba(8,145,178,0.7)', borderRadius:6 },
+        { label:'Hrs Parada', data:DATA.horasParada, backgroundColor:'rgba(217,119,6,0.5)', borderRadius:6 },
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{ legend:{labels:{color:getMutedColor()}}, datalabels:{display:false} },
+      scales:baseScales(true)
+    }
+  });
+}
+
+// ========== BUILD ALL ==========
+function buildAllCharts(){
+  buildChartTnSemanal();
+  buildChartTnDiario();
+  buildChartRendSemanal();
+  buildChartRendFruta();
+  buildChartAcumulado();
+  buildChartDistribucion();
+  buildChartRadar();
+  buildChartMeta();
+  buildChartCostos();
+  buildChartTurnos();
+  buildChartTop5();
+  buildChartHoras();
+}
+
+function updateChartsTheme(){
+  setTimeout(buildAllCharts, 50);
+}
+
+// ========== FILTERS ==========
+function setFruit(el){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activeFruit = el.dataset.fruit;
+  buildChartTnSemanal();
+  buildChartTnDiario();
+}
+
+function setPeriod(el){
+  document.querySelectorAll('.date-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  activePeriod = el.dataset.period;
+}
+
+// ========== INIT ==========
+function initCharts(){
+  updateClock();
+  buildKPIs();
+  buildAllCharts();
+  // Stagger animations
+  document.querySelectorAll('.animate-in').forEach((el,i)=>{
+    el.style.animationDelay = (i*60)+'ms';
+  });
+}
+</script>
+</body>
+</html>

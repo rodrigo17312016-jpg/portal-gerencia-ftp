@@ -1,0 +1,38 @@
+{
+  "admin": {
+    "modules": ["gerencia", "produccion", "calidad", "almacen", "rrhh"],
+    "panels": "*",
+    "apps": "*",
+    "dashboards": "*"
+  },
+  "produccion": {
+    "modules": ["produccion", "almacen"],
+    "panels": [
+      "indicadores", "produccion-dia", "rendimientos", "costos", "productividad",
+      "contenedores", "stock", "proceso", "comparativo", "programa",
+      "proyecciones", "almuerzos", "materiales-prod",
+      "recepcion", "acondicionado", "tuneles", "empaque",
+      "materiales", "stock-general"
+    ],
+    "apps": [
+      "registro-produccion", "registro-personal", "registro-costos",
+      "registro-tuneles", "empaque-congelado"
+    ],
+    "dashboards": [
+      "consumos", "consumo-diario", "analisis"
+    ]
+  },
+  "calidad": {
+    "modules": ["calidad", "almacen"],
+    "panels": [
+      "temperaturas", "inspecciones", "consumos", "laboratorio",
+      "costos-analisis", "reclamos",
+      "materiales", "stock-general"
+    ],
+    "apps": [],
+    "dashboards": [
+      "temperaturas", "laboratorio", "reporte-frio",
+      "consumos", "consumo-diario"
+    ]
+  }
+}

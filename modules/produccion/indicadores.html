@@ -1,0 +1,68 @@
+<!-- Panel: Indicadores de Produccion -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">📈 Indicadores de <span style="color:var(--naranja)">Produccion</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Metricas clave diarias y semanales · Actualizado en tiempo real</p>
+  </div>
+  <a href="dashboards/indicadores.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-chip active" data-fruta="all">Todas</div>
+  <div class="filter-chip" data-fruta="mango">🥭 Mango</div>
+  <div class="filter-chip" data-fruta="arandano">🫐 Arandano</div>
+  <div class="filter-chip" data-fruta="granada">🍎 Granada</div>
+</div>
+
+<div class="kpi-grid" id="ind-kpis">
+  <div class="kpi-card">
+    <div class="kpi-label">TN Procesadas (Semana)</div>
+    <div class="kpi-value" id="ind-tn-semana">—</div>
+    <div class="kpi-change positive" id="ind-tn-change">Cargando...</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">TN Ejecutadas (Campana)</div>
+    <div class="kpi-value" id="ind-tn-campana">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="ind-tn-meta">Meta: 2,000 TN</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Rendimiento Promedio</div>
+    <div class="kpi-value" id="ind-rendimiento">—</div>
+    <div class="kpi-change" id="ind-rend-change">Cargando...</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Cajas Producidas</div>
+    <div class="kpi-value" id="ind-cajas">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px" id="ind-cajas-meta">Campana actual</div>
+  </div>
+</div>
+
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">📊 TN Procesadas por Semana</div>
+    </div>
+    <div class="chart-wrapper"><canvas id="chartTNSemana"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">🎯 Rendimiento Semanal</div>
+    </div>
+    <div class="chart-wrapper"><canvas id="chartRendSemana"></canvas></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div class="card-title">📋 Indicadores Diarios — Detalle</div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr>
+        <th>Fecha</th><th>Cultivo</th><th>T1 Consumo</th><th>T1 Chunks</th><th>T1 Rend</th>
+        <th>T2 Consumo</th><th>T2 Chunks</th><th>T2 Rend</th><th>Total Consumo</th><th>Total Rend</th>
+      </tr></thead>
+      <tbody id="ind-tabla"></tbody>
+    </table>
+  </div>
+</div>

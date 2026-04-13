@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login — Portal Gerencia | Frutos Tropicales Peru Export S.A.C.</title>
+<link rel="icon" href="assets/images/logo.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/variables.css">
+<link rel="stylesheet" href="assets/css/reset.css">
+<link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+
+<div class="login-screen">
+  <!-- Particulas decorativas -->
+  <div class="login-particles">
+    <div class="login-particle"></div><div class="login-particle"></div>
+    <div class="login-particle"></div><div class="login-particle"></div>
+    <div class="login-particle"></div><div class="login-particle"></div>
+    <div class="login-particle"></div><div class="login-particle"></div>
+  </div>
+
+  <!-- Card de Login -->
+  <div class="login-card">
+    <img class="login-logo" src="assets/images/logo.png" alt="Frutos Tropicales Peru Export S.A.C.">
+    <div class="login-title">Portal de Gestion Integral</div>
+
+    <div class="login-field">
+      <label>Usuario</label>
+      <input type="text" id="loginUser" placeholder="Ingrese su usuario" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Contrasena</label>
+      <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="login-btn" id="loginBtn">Ingresar al Portal</button>
+    <div class="login-error" id="loginError"></div>
+    <div class="login-hint">Frutos Tropicales Peru Export S.A.C. — Portal Corporativo</div>
+  </div>
+</div>
+
+<script type="module">
+import { doLogin, getSession } from './assets/js/core/auth.js';
+
+// Si ya hay sesion activa, ir directo al portal
+const session = getSession();
+if (session) {
+  window.location.href = 'portal.html';
+}
+
+// Login handler
+const loginBtn = document.getElementById('loginBtn');
+const userInput = document.getElementById('loginUser');
+const passInput = document.getElementById('loginPass');
+const errorEl = document.getElementById('loginError');
+
+function handleLogin() {
+  errorEl.textContent = '';
+  const result = doLogin(userInput.value, passInput.value);
+
+  if (result.success) {
+    // Animacion de salida
+    document.querySelector('.login-card').style.cssText = 'opacity:0; transform:translateY(-30px) scale(0.95); transition:all 0.4s ease';
+    setTimeout(() => {
+      window.location.href = 'portal.html';
+    }, 300);
+  } else {
+    errorEl.textContent = result.error;
+    passInput.value = '';
+    passInput.focus();
+    // Shake animation
+    const card = document.querySelector('.login-card');
+    card.style.animation = 'none';
+    card.offsetHeight; // trigger reflow
+    card.style.animation = 'loginSlideUp 0.3s ease';
+  }
+}
+
+loginBtn.addEventListener('click', handleLogin);
+passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
+
+// Focus inicial
+userInput.focus();
+</script>
+
+</body>
+</html>

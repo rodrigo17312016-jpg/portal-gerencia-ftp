@@ -1,0 +1,33 @@
+<!-- Panel: Materiales -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🗃️ <span style="color:var(--azul)">Materiales</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Catalogo de materiales y suministros de planta</p>
+  </div>
+  <a href="dashboards/materiales.html" target="_blank" class="btn btn-sm btn-primary">📊 Dashboard Completo</a>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Total Items</div><div class="kpi-value" id="matTotal">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Stock Critico</div><div class="kpi-value" style="color:var(--danger)" id="matCritico">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Stock Bajo</div><div class="kpi-value" style="color:var(--warn)" id="matBajo">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Stock OK</div><div class="kpi-value" style="color:var(--verde)" id="matOk">—</div></div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div class="card-title">📋 Inventario de Materiales</div>
+    <div class="filter-bar" style="margin:0">
+      <div class="filter-chip active" data-filter="all">Todos</div>
+      <div class="filter-chip" data-filter="critico">Critico</div>
+      <div class="filter-chip" data-filter="bajo">Bajo</div>
+      <div class="filter-chip" data-filter="ok">OK</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>#</th><th>Material</th><th>Unidad</th><th>Stock</th><th>Consumo Mensual</th><th>Dias Restantes</th><th>Estado</th></tr></thead>
+      <tbody id="matTabla"></tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Stock Laboratorio | Frutos Tropicales</title>
+<link rel="icon" href="LOGO.png" type="image/png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+/* ═══ VARIABLES ═══ */
+:root{
+  --bg:#06081A;--card:rgba(255,255,255,.043);--cb:rgba(255,255,255,.09);
+  --t:#E2E8F0;--tm:#94A3B8;--ts:#4B5563;--tshadow:rgba(6,8,26,.96);
+  --und:#00D4FF;--kg:#C084FC;--lt:#FB923C;
+  --ok:#22C55E;--mod:#F59E0B;--low:#FBBC04;--crit:#EF4444;
+  --card-shadow:none;
+}
+[data-theme="light"]{
+  --bg:#EEF2F7;--card:rgba(255,255,255,.88);--cb:rgba(0,0,0,.1);
+  --t:#1E293B;--tm:#475569;--ts:#94A3B8;--tshadow:rgba(248,250,252,.98);
+  --card-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+
+/* ═══ RESET ═══ */
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Segoe UI',system-ui,sans-serif;
+  background:var(--bg);color:var(--t);
+  overflow-x:hidden;min-height:100vh;
+  transition:background .3s,color .3s;
+}
+body::before{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 5% 20%,  rgba(0,212,255,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 45% 50% at 95% 75%, rgba(192,132,252,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 35% 35% at 50% 5%,  rgba(251,146,60,.05) 0%,transparent 45%);
+  transition:opacity .3s;
+}
+[data-theme="light"] body::before{
+  background:
+    radial-gradient(ellipse 60% 40% at 5% 20%,  rgba(59,130,246,.05) 0%,transparent 55%),
+    radial-gradient(ellipse 45% 50% at 95% 75%, rgba(139,92,246,.04) 0%,transparent 55%),
+    radial-gradient(ellipse 35% 35% at 50% 5%,  rgba(249,115,22,.03) 0%,transparent 45%);
+}
+.wrap{max-width:1500px;margin:0 auto;padding:20px;position:relative;z-index:1}
+
+/* ═══ HEADER ═══ */
+header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--cb);
+  gap:12px;flex-wrap:wrap;
+}
+.hlogo{display:flex;align-items:center;gap:12px}
+.hicon{
+  width:42px;height:42px;border-radius:11px;flex-shrink:0;
+  background:linear-gradient(135deg,#00D4FF,#0080FF);
+  display:grid;place-items:center;font-size:20px;
+  box-shadow:0 0 18px rgba(0,212,255,.35);
+}
+h1{
+  font-size:20px;font-weight:800;
+  background:linear-gradient(135deg,#fff 30%,#94A3B8);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+[data-theme="light"] h1{
+  background:linear-gradient(135deg,#1E293B 30%,#64748B);
+  -webkit-background-clip:text;background-clip:text;
+}
+.hsubt{font-size:11px;color:var(--tm);margin-top:2px}
+.hright{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.hdate{
+  background:rgba(255,255,255,.06);border:1px solid var(--cb);
+  border-radius:8px;padding:5px 11px;font-size:11px;color:var(--tm);
+  white-space:nowrap;
+}
+[data-theme="light"] .hdate{background:rgba(0,0,0,.05)}
+
+/* ─── THEME TOGGLE ─── */
+.theme-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 13px;border-radius:10px;cursor:pointer;
+  background:rgba(255,255,255,.06);border:1px solid var(--cb);
+  color:var(--tm);font-size:12px;font-weight:600;
+  transition:all .2s;user-select:none;white-space:nowrap;
+}
+.theme-btn:hover{background:rgba(255,255,255,.12);color:var(--t)}
+[data-theme="light"] .theme-btn{background:rgba(0,0,0,.05)}
+[data-theme="light"] .theme-btn:hover{background:rgba(0,0,0,.1);color:var(--t)}
+
+/* ─── LOGO ─── */
+.hlogo-img{width:48px;height:48px;object-fit:contain;border-radius:8px;flex-shrink:0}
+.btn-portal-premium{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;
+  text-decoration:none;color:#fff;
+  background:linear-gradient(135deg,#0d6b4e,#10b981,#0d6b4e);
+  background-size:200% 200%;animation:btnShimmer 3s ease-in-out infinite;
+  padding:5px 14px;border-radius:20px;
+  border:1px solid rgba(16,185,129,.4);
+  box-shadow:0 2px 8px rgba(16,185,129,.25),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:all .3s ease;
+}
+.btn-portal-premium:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(16,185,129,.4);filter:brightness(1.15)}
+@keyframes btnShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ─── FIRMA ─── */
+@keyframes firmaShine{0%{left:-100%}50%,100%{left:200%}}
+@keyframes firmaBorderGlow{0%,100%{border-color:rgba(212,175,55,.2);box-shadow:0 2px 12px rgba(0,0,0,.15)}50%{border-color:rgba(212,175,55,.45);box-shadow:0 2px 24px rgba(212,175,55,.15),0 4px 16px rgba(0,0,0,.2)}}
+@keyframes signatureShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.topbar-dev-signature{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 22px;border-radius:20px;background:linear-gradient(145deg,rgba(10,18,32,.85),rgba(20,30,48,.9),rgba(15,25,40,.85));border:1px solid rgba(212,175,55,.3);position:relative;overflow:hidden;backdrop-filter:blur(16px);animation:firmaBorderGlow 4s ease infinite}
+.topbar-dev-signature::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,.08),rgba(255,255,255,.05),transparent);animation:firmaShine 5s ease-in-out infinite;pointer-events:none}
+.topbar-dev-signature>*{position:relative;z-index:1}
+.topbar-sig-label{font-size:7px;color:rgba(212,175,55,.7);text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.signature-name{font-size:13px;font-weight:900;letter-spacing:.3px;background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:signatureShimmer 4s ease infinite;line-height:1.3}
+.signature-role{font-size:9px;font-weight:700;color:#22c55e;letter-spacing:.5px}
+[data-theme="light"] .topbar-dev-signature{background:linear-gradient(145deg,rgba(245,240,225,.85),rgba(255,250,240,.9),rgba(245,240,225,.85))}
+[data-theme="light"] .topbar-sig-label{color:rgba(139,105,20,.8)}
+[data-theme="light"] .signature-name{background:linear-gradient(135deg,#8B6914 0%,#b8941f 25%,#6b5b3a 50%,#b8941f 75%,#8B6914 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+[data-theme="light"] .signature-role{color:#15803d}
+
+/* ═══ KPIs ═══ */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.kpi{
+  background:var(--card);border:1px solid var(--cb);border-radius:14px;
+  padding:16px 14px;position:relative;overflow:hidden;
+  transition:transform .2s,box-shadow .2s;cursor:default;
+  box-shadow:var(--card-shadow);
+}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.3)}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.kpi.c1::after{background:linear-gradient(90deg,#00D4FF,#0080FF)}
+.kpi.c2::after{background:linear-gradient(90deg,#EF4444,#FF6B6B)}
+.kpi.c3::after{background:linear-gradient(90deg,#FBBC04,#F59E0B)}
+.kpi.c4::after{background:linear-gradient(90deg,#22C55E,#16A34A)}
+.kpi.c5::after{background:linear-gradient(90deg,#C084FC,#9333EA)}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--tm);margin-bottom:7px}
+.kpi-val{font-size:30px;font-weight:900;line-height:1}
+.kpi.c1 .kpi-val{color:#00D4FF}.kpi.c2 .kpi-val{color:#EF4444}
+.kpi.c3 .kpi-val{color:#FBBC04}.kpi.c4 .kpi-val{color:#22C55E}.kpi.c5 .kpi-val{color:#C084FC}
+.kpi-sub{font-size:10.5px;color:var(--tm);margin-top:6px;padding-top:6px;border-top:1px solid var(--cb)}
+
+/* ═══ LAYOUT ═══ */
+.hero-row{display:grid;grid-template-columns:1fr 320px;gap:16px;margin-bottom:16px;align-items:start}
+.bot-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.hero-row>*,.bot-row>*{min-width:0}
+.card{
+  background:var(--card);border:1px solid var(--cb);border-radius:14px;
+  padding:18px;box-shadow:var(--card-shadow);
+  transition:background .3s,border-color .3s;
+}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:8px;flex-wrap:wrap}
+.ct{font-size:13px;font-weight:700;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.csub{font-size:11px;color:var(--tm);margin-bottom:12px}
+.badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.3px}
+.b0{background:rgba(255,255,255,.07);color:var(--tm)}
+[data-theme="light"] .b0{background:rgba(0,0,0,.07)}
+.b1{background:rgba(0,212,255,.12);color:#00D4FF}
+.b4{background:rgba(34,197,94,.12);color:#22C55E}
+
+/* ─── SEMÁFORO LEGEND ─── */
+.semafor-legend{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.sl{display:flex;align-items:center;gap:4px;font-size:10.5px;color:var(--tm)}
+.sl-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* ─── TABS ─── */
+.utabs{display:flex;gap:5px;flex-wrap:wrap}
+.utab{
+  padding:5px 12px;border-radius:7px;font-size:11px;font-weight:700;cursor:pointer;
+  border:1px solid var(--cb);background:transparent;color:var(--tm);
+  transition:all .2s;user-select:none;
+}
+.utab.active[data-u="UND"],.utab.active[data-su="UND"]{color:var(--und);border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.08)}
+.utab.active[data-u="KG"],.utab.active[data-su="KG"]{color:var(--kg);border-color:rgba(192,132,252,.4);background:rgba(192,132,252,.08)}
+.utab.active[data-u="LT"],.utab.active[data-su="LT"]{color:var(--lt);border-color:rgba(251,146,60,.4);background:rgba(251,146,60,.08)}
+.utab.active[data-u="all"]{color:var(--t);border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.08)}
+[data-theme="light"] .utab.active[data-u="all"]{border-color:rgba(0,0,0,.2);background:rgba(0,0,0,.07)}
+
+/* ─── MONTH PILLS (en gráfico consumo) ─── */
+.mpills-row{
+  display:flex;align-items:center;gap:8px;
+  flex-wrap:wrap;margin-bottom:10px;
+  padding:10px 12px;border-radius:10px;
+  background:rgba(255,255,255,.03);border:1px solid var(--cb);
+}
+[data-theme="light"] .mpills-row{background:rgba(0,0,0,.03)}
+.mp-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ts);white-space:nowrap}
+.mpill{
+  padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;
+  border:2px solid transparent;transition:all .2s;user-select:none;
+  opacity:.35;min-height:32px;display:flex;align-items:center;
+}
+.mpill.on{opacity:1;transform:scale(1.06)}
+.mpill[data-m="all"]{background:rgba(255,255,255,.08);color:var(--tm)}
+.mpill[data-m="all"].on{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:var(--t)}
+[data-theme="light"] .mpill[data-m="all"]{background:rgba(0,0,0,.05)}
+[data-theme="light"] .mpill[data-m="all"].on{border-color:rgba(0,0,0,.2);background:rgba(0,0,0,.09);color:var(--t)}
+.mpill[data-m="dic"]{background:rgba(129,140,248,.15);color:#818CF8}
+.mpill[data-m="dic"].on{border-color:rgba(129,140,248,.6);background:rgba(129,140,248,.2)}
+.mpill[data-m="ene"]{background:rgba(0,212,255,.15);color:#00D4FF}
+.mpill[data-m="ene"].on{border-color:rgba(0,212,255,.6);background:rgba(0,212,255,.2)}
+.mpill[data-m="feb"]{background:rgba(244,114,182,.15);color:#F472B6}
+.mpill[data-m="feb"].on{border-color:rgba(244,114,182,.6);background:rgba(244,114,182,.2)}
+.mpill[data-m="mar"]{background:rgba(52,211,153,.15);color:#34D399}
+.mpill[data-m="mar"].on{border-color:rgba(52,211,153,.6);background:rgba(52,211,153,.2)}
+
+/* ─── CHART SCROLL (mobile) ─── */
+.chart-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:4px}
+.chart-scroll::-webkit-scrollbar{height:4px}
+.chart-scroll::-webkit-scrollbar-track{background:transparent}
+.chart-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+.csi{position:relative}/* chart scroll inner — width set by JS */
+
+/* ─── DETAIL PANEL ─── */
+.dp{height:100%;display:flex;flex-direction:column;min-height:420px}
+.dp-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--ts)}
+.dp-empty .ei{font-size:36px;opacity:.3}
+.dp-empty p{font-size:12px;text-align:center;max-width:185px;line-height:1.6;color:var(--tm)}
+.dpc{display:none;flex-direction:column;gap:11px;height:100%}
+.dphead{display:flex;align-items:flex-start;gap:10px}
+.dpicon{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;font-size:18px;flex-shrink:0;border:1px solid}
+.dpname{font-size:13px;font-weight:700;line-height:1.3}
+.dpcat{font-size:11px;color:var(--tm);margin-top:2px}
+.dp-metrics{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.dpm{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:9px;padding:9px 11px}
+[data-theme="light"] .dpm{background:rgba(0,0,0,.04);border-color:rgba(0,0,0,.08)}
+.dpm-l{font-size:9.5px;color:var(--tm);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.dpm-v{font-size:20px;font-weight:900}
+.dp-status{padding:9px 13px;border-radius:9px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:7px}
+.dps-crit{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);color:#EF4444}
+.dps-low{background:rgba(251,188,4,.1);border:1px solid rgba(251,188,4,.2);color:#FBBC04}
+.dps-mod{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:#F59E0B}
+.dps-ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#22C55E}
+.dp-bar-track{height:7px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden}
+[data-theme="light"] .dp-bar-track{background:rgba(0,0,0,.1)}
+.dp-bar-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.closebtn{
+  background:rgba(255,255,255,.07);border:1px solid var(--cb);
+  border-radius:7px;padding:3px 8px;font-size:11px;color:var(--tm);
+  cursor:pointer;margin-left:auto;flex-shrink:0;transition:.15s;
+}
+.closebtn:hover{background:rgba(255,255,255,.13);color:var(--t)}
+[data-theme="light"] .closebtn{background:rgba(0,0,0,.05)}
+
+/* ═══ TABLE ═══ */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tw::-webkit-scrollbar{height:4px}
+.tw::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:2px}
+table{width:100%;border-collapse:collapse;min-width:680px}
+thead th{
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  color:var(--tm);padding:9px 10px;border-bottom:1px solid var(--cb);
+  text-align:left;white-space:nowrap;cursor:pointer;user-select:none;
+}
+thead th:hover{color:var(--t)}
+thead th.sa::after{content:' ▲'}thead th.sd::after{content:' ▼'}
+tbody td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--cb);border-bottom-width:.5px}
+tbody tr{cursor:pointer;transition:background .15s}
+tbody tr:hover td{background:rgba(255,255,255,.04)}
+[data-theme="light"] tbody tr:hover td{background:rgba(0,0,0,.03)}
+tbody tr.sel td{background:rgba(255,255,255,.07)}
+[data-theme="light"] tbody tr.sel td{background:rgba(0,0,0,.06)}
+.utag{display:inline-block;padding:2px 6px;border-radius:4px;font-size:10px;font-weight:800}
+.u-und{background:rgba(0,212,255,.1);color:var(--und)}
+.u-kg{background:rgba(192,132,252,.1);color:var(--kg)}
+.u-lt{background:rgba(251,146,60,.1);color:var(--lt)}
+.stag{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700}
+.sdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.s-ok{color:#22C55E}.s-ok .sdot{background:#22C55E}
+.s-mod{color:#F59E0B}.s-mod .sdot{background:#F59E0B}
+.s-low{color:#FBBC04}.s-low .sdot{background:#FBBC04}
+.s-crit{color:#EF4444}.s-crit .sdot{background:#EF4444;box-shadow:0 0 6px rgba(239,68,68,.8);animation:blink 1.3s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.dbar{display:flex;align-items:center;gap:4px}
+.dtrack{width:55px;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;display:inline-block}
+[data-theme="light"] .dtrack{background:rgba(0,0,0,.1)}
+.dfill{height:100%;border-radius:2px}
+
+/* ═══ CONTROLS ═══ */
+.ctrl-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ts)}
+.tbtn{
+  padding:6px 11px;border-radius:7px;font-size:11px;font-weight:600;cursor:pointer;
+  border:1px solid var(--cb);background:transparent;color:var(--tm);
+  transition:all .2s;user-select:none;min-height:30px;
+}
+.tbtn.on{color:#FBBF24;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+.divider{width:1px;height:22px;background:var(--cb);flex-shrink:0}
+.chart-btn-row{display:flex;gap:6px}
+
+/* ═══ ANIMATION ═══ */
+@keyframes fIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.kpi{opacity:0;animation:fIn .4s ease forwards}
+.kpi:nth-child(1){animation-delay:.05s}.kpi:nth-child(2){animation-delay:.10s}
+.kpi:nth-child(3){animation-delay:.15s}.kpi:nth-child(4){animation-delay:.20s}.kpi:nth-child(5){animation-delay:.25s}
+.hero-row,.bot-row{opacity:0;animation:fIn .5s ease forwards;animation-delay:.3s}
+.card-tbl{opacity:0;animation:fIn .5s ease forwards;animation-delay:.4s}
+
+/* ═══ RESPONSIVE ═══ */
+@media(max-width:1100px){
+  .hero-row{grid-template-columns:1fr}
+  .bot-row{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .wrap{padding:12px}
+  .kpi-row{grid-template-columns:repeat(3,1fr);gap:8px}
+  .kpi-val{font-size:24px}
+  .kpi-sub{display:none}
+  h1{font-size:17px}
+  .hsubt{display:none}
+  header{gap:8px}
+}
+@media(max-width:480px){
+  .kpi-row{grid-template-columns:1fr 1fr;gap:8px}
+  h1{font-size:15px}
+  .hdate{display:none}
+  .theme-btn span.theme-text{display:none}
+  .mpill{font-size:11px;padding:5px 10px}
+  .tbtn,.utab{padding:6px 9px;font-size:10.5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ══ HEADER ══ -->
+<header>
+  <div class="hlogo">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <img src="LOGO.png" alt="Frutos Tropicales" class="hlogo-img">
+      <a href="portal-gerencia.html" class="btn-portal-premium">&#x2190; Portal</a>
+    </div>
+    <div>
+      <h1>Stock de Laboratorio · Microbiología</h1>
+      <div class="hsubt">Frutos Tropicales Peru Export S.A.C. · Área de Calidad</div>
+    </div>
+  </div>
+  <div class="hright">
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="themeIcon">☀️</span>
+      <span class="theme-text" id="themeText">Modo claro</span>
+    </button>
+    <div class="topbar-dev-signature">
+      <div class="topbar-sig-label">DESARROLLADO POR:</div>
+      <div class="signature-name">Rodrigo Garcia</div>
+      <div class="signature-role">Systems Analyst &amp; Developer-QA</div>
+    </div>
+  </div>
+</header>
+
+<!-- ══ KPIs ══ -->
+<div class="kpi-row">
+  <div class="kpi c1">
+    <div class="kpi-lbl">Total Productos</div>
+    <div class="kpi-val" id="kv1">0</div>
+    <div class="kpi-sub">13 UND · 2 KG · 15 LT</div>
+  </div>
+  <div class="kpi c2">
+    <div class="kpi-lbl">⚠ Crítico</div>
+    <div class="kpi-val" id="kv2">0</div>
+    <div class="kpi-sub">Menos de 7 días de stock</div>
+  </div>
+  <div class="kpi c3">
+    <div class="kpi-lbl">Stock Bajo</div>
+    <div class="kpi-val" id="kv3">0</div>
+    <div class="kpi-sub">Entre 7 y 15 días</div>
+  </div>
+  <div class="kpi c4">
+    <div class="kpi-lbl">UND en Stock</div>
+    <div class="kpi-val" id="kv4">0</div>
+    <div class="kpi-sub">Unidades físicas disponibles</div>
+  </div>
+  <div class="kpi c5">
+    <div class="kpi-lbl">Consumo Dec–Mar</div>
+    <div class="kpi-val" id="kv5">0</div>
+    <div class="kpi-sub">UND consumidas período</div>
+  </div>
+</div>
+
+<!-- ══ HERO ROW ══ -->
+<div class="hero-row">
+  <!-- SEMÁFORO -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct">🚦 Semáforo de Stock — Días Disponibles <span class="badge b0">30 productos</span></div>
+    </div>
+    <p class="csub">Stock actual ÷ consumo mensual estimado · Clic en barra para detalle</p>
+    <div class="semafor-legend">
+      <span class="sl"><span class="sl-dot" style="background:#EF4444"></span>Crítico &lt;7d</span>
+      <span class="sl"><span class="sl-dot" style="background:#FBBC04"></span>Bajo 7–15d</span>
+      <span class="sl"><span class="sl-dot" style="background:#F59E0B"></span>Moderado 15–30d</span>
+      <span class="sl"><span class="sl-dot" style="background:#22C55E"></span>OK ≥30d</span>
+      <span class="sl" style="margin-left:6px"><span class="sl-dot" style="background:rgba(128,128,128,.3)"></span>Sin datos</span>
+    </div>
+    <div class="utabs" style="margin-bottom:10px">
+      <button class="utab active" data-u="all"  onclick="setUTab('all')">Todos (30)</button>
+      <button class="utab"        data-u="UND"  onclick="setUTab('UND')">🔵 UND (13)</button>
+      <button class="utab"        data-u="KG"   onclick="setUTab('KG')">🟣 KG (2)</button>
+      <button class="utab"        data-u="LT"   onclick="setUTab('LT')">🟠 LT (15)</button>
+    </div>
+    <div class="chart-scroll"><div class="csi" id="heroWrap" style="height:560px">
+      <canvas id="cHero"></canvas>
+    </div></div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div class="card dp">
+    <div class="dp-empty" id="dpEmpty">
+      <div class="ei">👆</div>
+      <p>Haz clic en una barra del semáforo o en una fila de la tabla para ver el detalle</p>
+    </div>
+    <div class="dpc" id="dpContent"></div>
+  </div>
+</div>
+
+<!-- ══ BOTTOM ROW ══ -->
+<div class="bot-row">
+
+  <!-- CONSUMO POR PERÍODO -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct">📊 Consumo por Período <span class="badge b1">UND/KG · 14 productos</span></div>
+      <div class="chart-btn-row">
+        <button class="tbtn on" id="btnLbl" onclick="toggleLabels()">🏷 Totales</button>
+        <button class="tbtn"    id="btnSt"  onclick="toggleStack()">⧉ Apilar</button>
+      </div>
+    </div>
+
+    <!-- MONTH PILLS — movidas aquí -->
+    <div class="mpills-row" style="margin-top:8px">
+      <span class="mp-lbl">Filtrar período:</span>
+      <button class="mpill on" data-m="all" id="pillAll">Todos</button>
+      <button class="mpill on" data-m="dic">Diciembre</button>
+      <button class="mpill on" data-m="ene">Enero</button>
+      <button class="mpill on" data-m="feb">Febrero</button>
+      <button class="mpill on" data-m="mar">Mar 1–5</button>
+    </div>
+
+    <p class="csub" id="consumoSubtitle" style="margin-top:6px">Todos los períodos · Clic en leyenda para filtrar productos</p>
+    <div class="chart-scroll"><div class="csi" id="consumoWrap" style="height:340px">
+      <canvas id="cConsumo"></canvas>
+    </div></div>
+  </div>
+
+  <!-- STOCK ACTUAL -->
+  <div class="card">
+    <div class="ch">
+      <div class="ct">📦 Stock Actual por Categoría <span class="badge b0">18/03/2026</span></div>
+    </div>
+    <p class="csub">Cantidad disponible · Clic para seleccionar</p>
+    <div class="utabs" style="margin-bottom:10px" id="stockTabs">
+      <button class="utab active" data-su="UND" onclick="setStockTab('UND')">🔵 UND</button>
+      <button class="utab"        data-su="KG"  onclick="setStockTab('KG')">🟣 KG</button>
+      <button class="utab"        data-su="LT"  onclick="setStockTab('LT')">🟠 LT</button>
+    </div>
+    <div class="chart-scroll"><div class="csi" id="stockWrap" style="height:300px">
+      <canvas id="cStock"></canvas>
+    </div></div>
+  </div>
+</div>
+
+<!-- ══ TABLE ══ -->
+<div class="card card-tbl" style="margin-bottom:18px">
+  <div class="ch" style="margin-bottom:10px">
+    <div class="ct">📋 Inventario Completo <span class="badge b0">30 productos · Hoja1 (2)</span></div>
+    <div style="font-size:10px;color:var(--ts)">Clic en encabezado para ordenar · Clic en fila para detalle</div>
+  </div>
+  <div class="ctrl-row">
+    <span class="lbl">Und:</span>
+    <button class="tbtn on" id="fAll"  onclick="setTF('all')">Todos</button>
+    <button class="tbtn"    id="fUnd"  onclick="setTF('UND')">UND</button>
+    <button class="tbtn"    id="fKg"   onclick="setTF('KG')">KG</button>
+    <button class="tbtn"    id="fLt"   onclick="setTF('LT')">LT</button>
+    <div class="divider"></div>
+    <span class="lbl">Estado:</span>
+    <button class="tbtn on" id="fSAll"  onclick="setSF('all')">Todos</button>
+    <button class="tbtn"    id="fSCrit" onclick="setSF('crit')" style="color:#EF4444">⚠ Crítico</button>
+    <button class="tbtn"    id="fSLow"  onclick="setSF('low')"  style="color:#FBBC04">Bajo</button>
+    <button class="tbtn"    id="fSOk"   onclick="setSF('ok')"   style="color:#22C55E">OK</button>
+  </div>
+  <div class="tw"><table id="mainTable">
+    <thead><tr>
+      <th onclick="sortTbl(0)">#</th>
+      <th onclick="sortTbl(1)">Producto</th>
+      <th onclick="sortTbl(2)">Und</th>
+      <th onclick="sortTbl(3)">Stock</th>
+      <th onclick="sortTbl(4)">Gasto/mes</th>
+      <th onclick="sortTbl(5)">Días rest.</th>
+      <th onclick="sortTbl(6)">Consumo total</th>
+      <th onclick="sortTbl(7)">Estado</th>
+    </tr></thead>
+    <tbody id="tBody"></tbody>
+  </table></div>
+</div>
+
+<footer style="text-align:center;padding:14px;border-top:1px solid var(--cb);font-size:10px;color:var(--ts)">
+  🧪 Dashboard Stock Laboratorio · Frutos Tropicales · 18/03/2026 · Datos: Hoja1(2), MICROBIOLOGIA, ESTIMACION DE CONSUMO
+</footer>
+</div><!-- /wrap -->
+
+<script>
+Chart.register(ChartDataLabels);
+
+/* ════════════ DATA ════════════ */
+const D=[
+  {id:0, n:'MF Coliforme',    full:'MICROFAST Coliforme Coli Count Plate',           cat:'Placas',      und:'UND',stock:36,  gasto:200,total:220,m:{dic:11,ene:62, feb:123,mar:24}},
+  {id:1, n:'MF Aerobic',      full:'MICROFAST Aerobic Count Plate',                  cat:'Placas',      und:'UND',stock:37,  gasto:200,total:215,m:{dic:17,ene:58, feb:120,mar:20}},
+  {id:2, n:'MF Staph.',       full:'MICROFAST Staphylococcus Aureus Count Plate',    cat:'Placas',      und:'UND',stock:68,  gasto:180,total:195,m:{dic:5, ene:55, feb:115,mar:20}},
+  {id:3, n:'MF Yeast&Mold',   full:'MICROFAST Yeast & Mold Count Plate',             cat:'Placas',      und:'UND',stock:41,  gasto:200,total:213,m:{dic:17,ene:58, feb:118,mar:20}},
+  {id:4, n:'MF Listeria',     full:'MICROFAST Listeria Count Plate (x50)',           cat:'Placas',      und:'UND',stock:95,  gasto:130,total:92, m:{dic:17,ene:25, feb:50, mar:0}},
+  {id:5, n:'Aquateste',       full:'Aquateste Coli ONPG/MUG Caldo CX10',            cat:'Kits',        und:'UND',stock:17,  gasto:10, total:3,  m:{dic:0, ene:0,  feb:3,  mar:0}},
+  {id:6, n:'Capiswab',        full:'Capiswab Letheen Broth 10mL x100',              cat:'Muestreo',    und:'UND',stock:115, gasto:100,total:83, m:{dic:17,ene:27, feb:38, mar:1}},
+  {id:7, n:'Capisponge',      full:'Capisponge Neutralizing Buffer Sponge x25',     cat:'Muestreo',    und:'UND',stock:120, gasto:100,total:14, m:{dic:0, ene:0,  feb:14, mar:0}},
+  {id:8, n:'Frascos Est.',    full:'Frascos Estériles 100mL c/Tiosulfato PAQ x10',  cat:'Muestreo',    und:'UND',stock:17,  gasto:10, total:3,  m:{dic:0, ene:0,  feb:3,  mar:0}},
+  {id:9, n:'ATP Quick Swab',  full:'ATP Quick Swab YL0001',                         cat:'ATP',         und:'UND',stock:169, gasto:180,total:183,m:{dic:77,ene:36, feb:70, mar:0}},
+  {id:10,n:'Isopo Surface',   full:'Isopo Surface Protein Allergen',                cat:'Kits',        und:'UND',stock:8,   gasto:10, total:0,  m:{dic:0, ene:0,  feb:0,  mar:0}},
+  {id:11,n:'SIMUL Salmonella',full:'SIMUL Salmonella x96 Pruebas',                  cat:'Kits',        und:'UND',stock:95,  gasto:78, total:80, m:{dic:0, ene:44, feb:28, mar:8}},
+  {id:12,n:'SIMUL Listeria',  full:'SIMUL Listeria Duo x96 Pruebas',                cat:'Kits',        und:'UND',stock:95,  gasto:78, total:80, m:{dic:0, ene:44, feb:28, mar:8}},
+  {id:13,n:'BPW (1 KG)',      full:'Agua Peptonada Bufferada (BPW) Dehydrated 1 KG',cat:'Medios',      und:'KG', stock:0.80,gasto:0.8,total:2.47,m:{dic:.04,ene:1.92,feb:.47,mar:.04}},
+  {id:14,n:'LREB (1 KG)',     full:'Medio de Cultivo para Listeria LREB 1 KG',      cat:'Medios',      und:'KG', stock:1.02,gasto:0.6,total:2.22,m:{dic:0,  ene:1.85,feb:.30,mar:.07}},
+  {id:15,n:'Cloro 4C',        full:'Solución Cloro 4C',                             cat:'Soluc. Cloro',und:'LT', stock:1.70,gasto:2.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:16,n:'Cloro 1',         full:'Solución Cloro 1',                              cat:'Soluc. Cloro',und:'LT', stock:1.90,gasto:1.5,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:17,n:'Cloro 4B',        full:'Solución Cloro 4B',                             cat:'Soluc. Cloro',und:'LT', stock:1.80,gasto:2.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:18,n:'Buffer AP-1',     full:'Solución Buffer AP-1',                          cat:'Soluc. AP',   und:'LT', stock:2.00,gasto:1.5,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:19,n:'Cloro 2.22',      full:'Solución Cloro 2.22',                           cat:'Soluc. Cloro',und:'LT', stock:1.70,gasto:1.5,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:20,n:'Cloro 3',         full:'Solución Cloro 3',                              cat:'Soluc. Cloro',und:'LT', stock:1.70,gasto:1.5,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:21,n:'Titulante AP-2',  full:'Solución Titulante AP-2',                       cat:'Soluc. AP',   und:'LT', stock:2.00,gasto:2.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:22,n:'Yoduro AP-3',     full:'Solución Yoduro AP-3',                          cat:'Soluc. AP',   und:'LT', stock:2.00,gasto:1.5,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:23,n:'Indicadora AP-4', full:'Solución Indicadora AP-4',                      cat:'Soluc. AP',   und:'LT', stock:2.00,gasto:1.5,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:24,n:'Titulante AP-5',  full:'Solución Titulante AP-5',                       cat:'Soluc. AP',   und:'LT', stock:0.08,gasto:2.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:25,n:'Storage',         full:'Storage — Solución de Almacenamiento pH',       cat:'pH Buffers',  und:'LT', stock:0.46,gasto:1.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:26,n:'Cleaning',        full:'Cleaning — Solución de Limpieza pH',            cat:'pH Buffers',  und:'LT', stock:0.47,gasto:1.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:27,n:'pH 10.01',        full:'Buffer de Calibración pH 10.01',                cat:'pH Buffers',  und:'LT', stock:0.47,gasto:1.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:28,n:'pH 4.01',         full:'Buffer de Calibración pH 4.01',                 cat:'pH Buffers',  und:'LT', stock:0.49,gasto:1.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+  {id:29,n:'pH 7.01',         full:'Buffer de Calibración pH 7.01',                 cat:'pH Buffers',  und:'LT', stock:0.47,gasto:1.0,total:0,  m:{dic:0,ene:0,feb:0,mar:0}},
+];
+
+const MC={dic:'#818CF8',ene:'#00D4FF',feb:'#F472B6',mar:'#34D399'};
+const MK=['dic','ene','feb','mar'];
+const ML=['Dic 2025','Ene 2026','Feb 2026','Mar 1-5'];
+
+/* ════════════ THEME HELPERS ════════════ */
+function isLight(){ return document.documentElement.getAttribute('data-theme')==='light' }
+function th(){
+  const l=isLight();
+  return{
+    grid:  l?'rgba(0,0,0,.08)':'rgba(255,255,255,.05)',
+    tick:  l?'#64748B':'#94A3B8',
+    ttBg:  l?'rgba(248,250,252,.98)':'rgba(6,8,26,.97)',
+    ttCol: l?'#1E293B':'#E2E8F0',
+    ttBdr: l?'rgba(0,0,0,.1)':'rgba(255,255,255,.1)',
+    lgnd:  l?'#475569':'#94A3B8',
+    lblCol:l?'#1E293B':'#ffffff',
+    totalCol:l?'#1E293B':'#ffffff',
+  };
+}
+function toggleTheme(){
+  const l=isLight();
+  document.documentElement.setAttribute('data-theme',l?'dark':'light');
+  document.getElementById('themeIcon').textContent=l?'☀️':'🌙';
+  document.getElementById('themeText').textContent=l?'Modo claro':'Modo oscuro';
+  buildHero(); buildConsumo(); buildStock();
+  showDetail();
+}
+
+/* ════════════ HELPERS ════════════ */
+function dias(p){ return p.gasto>0?Math.round(p.stock/(p.gasto/30)):null }
+function status(p){
+  const d=dias(p);
+  if(d===null)return{key:'none',lbl:'Sin datos',cls:'s-ok',dcls:'dps-ok',color:'rgba(128,128,128,.35)'};
+  if(d<7)  return{key:'crit',lbl:'⚠ CRÍTICO · '+d+' días',cls:'s-crit',dcls:'dps-crit',color:'#EF4444'};
+  if(d<15) return{key:'low', lbl:'🟡 Bajo · '+d+' días',   cls:'s-low', dcls:'dps-low', color:'#FBBC04'};
+  if(d<30) return{key:'mod', lbl:'🟠 Moderado · '+d+' días',cls:'s-mod',dcls:'dps-mod', color:'#F59E0B'};
+  return     {key:'ok',  lbl:'✅ OK · '+d+' días',          cls:'s-ok',  dcls:'dps-ok',  color:'#22C55E'};
+}
+function fmtQ(p,n){const v=n??p.stock;return(p.und==='KG'||p.und==='LT')?v.toFixed(2)+' '+p.und:v+' '+p.und}
+function undColor(u){return u==='UND'?'var(--und)':u==='KG'?'var(--kg)':'var(--lt)'}
+function undColorRaw(u){return u==='UND'?'#00D4FF':u==='KG'?'#C084FC':'#FB923C'}
+/* formatea número: enteros sin decimal, decimales con 1 decimal */
+function fmtVal(v){
+  if(!v&&v!==0)return'';
+  const r=parseFloat(v.toFixed(1));
+  return r%1===0?String(r|0):r.toFixed(1);
+}
+
+/* ════════════ STATE ════════════ */
+const S={
+  sel:null,months:new Set(['dic','ene','feb','mar']),
+  labels:true,stacked:false,heroTab:'all',stockTab:'UND',
+  sortCol:-1,sortDir:1
+};
+let charts={};
+let tblFilter='all',tblStatus='all';
+
+/* ════════════ KPI COUNTERS ════════════ */
+function animNum(el,target){
+  const dur=1100,t0=performance.now();
+  function step(now){
+    const p=Math.min((now-t0)/dur,1),e=1-Math.pow(1-p,3);
+    el.textContent=Math.round(target*e);
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+window.addEventListener('DOMContentLoaded',()=>{
+  const crit=D.filter(p=>{const d=dias(p);return d!==null&&d<7}).length;
+  const low =D.filter(p=>{const d=dias(p);return d!==null&&d>=7&&d<15}).length;
+  animNum(document.getElementById('kv1'),30);
+  animNum(document.getElementById('kv2'),crit);
+  animNum(document.getElementById('kv3'),low);
+  animNum(document.getElementById('kv4'),D.filter(p=>p.und==='UND').reduce((s,p)=>s+p.stock,0));
+  animNum(document.getElementById('kv5'),D.filter(p=>p.und==='UND').reduce((s,p)=>s+p.total,0));
+});
+
+/* ════════════ MONTH PILLS ════════════ */
+function updateConsumoSubtitle(){
+  const names={dic:'Dic',ene:'Ene',feb:'Feb',mar:'Mar 1-5'};
+  const sub=S.months.size===MK.length?'Todos los períodos':[...MK.filter(k=>S.months.has(k))].map(k=>names[k]).join(', ');
+  document.getElementById('consumoSubtitle').textContent=sub+' · Clic en leyenda para filtrar productos';
+}
+document.querySelectorAll('.mpill').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const m=btn.dataset.m;
+    if(m==='all'){
+      /* Seleccionar todos */
+      MK.forEach(k=>S.months.add(k));
+      document.querySelectorAll('.mpill').forEach(b=>b.classList.add('on'));
+    } else {
+      if(S.months.has(m)){
+        if(S.months.size===1)return; /* siempre al menos 1 */
+        S.months.delete(m);
+        btn.classList.remove('on');
+        document.getElementById('pillAll')?.classList.remove('on');
+      } else {
+        S.months.add(m);
+        btn.classList.add('on');
+        if(S.months.size===MK.length) document.getElementById('pillAll')?.classList.add('on');
+      }
+    }
+    buildConsumo();
+    updateConsumoSubtitle();
+  });
+});
+
+/* ════════════ HERO — SEMÁFORO ════════════ */
+function setUTab(u){
+  S.heroTab=u;
+  document.querySelectorAll('.utab[data-u]').forEach(b=>b.classList.toggle('active',b.dataset.u===u));
+  buildHero();
+}
+function buildHero(){
+  const t=th();
+  const subset=S.heroTab==='all'?D:D.filter(p=>p.und===S.heroTab);
+  const sorted=[...subset].sort((a,b)=>(dias(a)??999)-(dias(b)??999));
+  const N=sorted.length;
+  const barH=22, minH=400;
+  const h=Math.max(minH, N*barH+80);
+  document.getElementById('heroWrap').style.height=h+'px';
+
+  const diasArr=sorted.map(p=>dias(p));
+  const maxD=Math.max(...diasArr.filter(v=>v!==null),60);
+  const bgs=sorted.map(p=>{
+    const st=status(p),base=st.color;
+    const sel=S.sel===null||S.sel===p.id;
+    if(base.startsWith('rgba'))return base.replace(/[\d.]+\)$/,sel?'.25)':'.08)');
+    return base+(sel?'CC':'28');
+  });
+  const cfg={
+    type:'bar',
+    data:{
+      labels:sorted.map(p=>p.n),
+      datasets:[
+        {
+          label:'Días',
+          data:diasArr.map(d=>d??0),
+          backgroundColor:bgs,
+          borderColor:bgs.map(c=>c.replace('CC','FF').replace('28','55')),
+          borderWidth:sorted.map(p=>S.sel===p.id?2.5:.5),
+          borderRadius:4,
+        },
+        {
+          label:'Meta 30d',
+          data:sorted.map(()=>30),
+          type:'line',borderColor:'rgba(128,128,128,.2)',borderWidth:1.5,
+          borderDash:[5,4],pointRadius:0,fill:false,datalabels:{display:false},order:0,
+        }
+      ]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      layout:{padding:{right:50}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:t.ttBg,bodyColor:t.ttCol,titleColor:t.ttCol,
+          padding:11,borderColor:t.ttBdr,borderWidth:1,
+          callbacks:{
+            title:c=>[c[0].label,''],
+            label:c=>{
+              if(c.datasetIndex===1)return' Meta: 30 días';
+              const p=sorted[c.dataIndex],d=dias(p);
+              return[' Stock: '+fmtQ(p),' Gasto/mes: '+p.gasto+' '+p.und,' Días: '+(d!==null?d+'d':'sin datos')];
+            }
+          }
+        },
+        datalabels:{
+          display:c=>c.datasetIndex===0,
+          color:c=>S.sel===null||S.sel===sorted[c.dataIndex]?.id?t.lblCol:'transparent',
+          font:{size:10,weight:'700'},
+          anchor:'end',align:'right',offset:4,clamp:false,
+          formatter:(v,c)=>{const d=dias(sorted[c.dataIndex]);return d!==null?d+'d':'—'},
+        }
+      },
+      scales:{
+        x:{max:maxD*1.28,grid:{color:t.grid},ticks:{color:t.tick,font:{size:9},callback:v=>v+'d'},
+          title:{display:true,text:'Días de stock disponibles',color:t.tick,font:{size:10}}},
+        y:{grid:{display:false},ticks:{color:t.tick,font:{size:10}}}
+      },
+      onClick(evt,elems){
+        if(!elems.length||elems[0].datasetIndex!==0)S.sel=null;
+        else{const p=sorted[elems[0].index];S.sel=S.sel===p.id?null:p.id}
+        buildHero();buildStock();buildTable();showDetail();
+      },
+      animation:{duration:250}
+    }
+  };
+  if(charts.hero)charts.hero.destroy();
+  charts.hero=new Chart(document.getElementById('cHero'),cfg);
+}
+
+/* ════════════ CONSUMO ════════════ */
+function buildConsumo(){
+  const t=th();
+  const vp=D.filter(p=>p.total>0);
+  const activeMes=MK.filter(k=>S.months.has(k));
+
+  /* calcular max para dar espacio a labels */
+  const maxVal=Math.max(...vp.flatMap(p=>
+    S.stacked
+      ? [activeMes.reduce((s,k)=>s+p.m[k],0)]
+      : activeMes.map(k=>p.m[k])
+  ),1);
+
+  /* min-width del contenedor según nº productos */
+  const minW=Math.max(480, vp.length*activeMes.length*18+120);
+  document.getElementById('consumoWrap').style.minWidth=minW+'px';
+
+  const datasets=activeMes.map(k=>({
+    label:ML[MK.indexOf(k)],
+    data:vp.map(p=>p.m[k]),
+    backgroundColor:MC[k]+'AA',
+    borderColor:MC[k],
+    borderWidth:.8,
+    borderRadius:4,
+    stack:S.stacked?'stack':undefined,
+    datalabels:{
+      display:ctx=>S.labels&&ctx.raw>0,
+      color:t.lblCol,
+      font:{size:S.stacked?9:8,weight:'800'},
+      anchor:S.stacked?'center':'end',
+      align:S.stacked?'center':'top',
+      offset:S.stacked?0:2,
+      clamp:false,
+      formatter:v=>v>=1?(v%1?v.toFixed(1):v):(v>0?v.toFixed(1):''),
+    }
+  }));
+
+  /* totales por producto (cierre compartido) */
+  const totals=vp.map(p=>activeMes.reduce((s,k)=>s+(p.m[k]||0),0));
+
+  /* dataset total para modo apilado — data≈0 para no sumar altura */
+  if(S.stacked){
+    datasets.push({
+      label:'_total',
+      data:vp.map(()=>0.001),
+      backgroundColor:'rgba(0,0,0,0)',
+      borderWidth:0,
+      stack:'stack',
+      datalabels:{
+        display:c=>S.labels&&totals[c.dataIndex]>0,
+        color:t.totalCol,
+        font:{size:12,weight:'900'},
+        anchor:'end',align:'top',offset:5,clamp:false,
+        formatter:(v,c)=>totals[c.dataIndex]>0?fmtVal(totals[c.dataIndex]):'',
+      }
+    });
+  }
+
+  /* plugin afterDraw: totales centrados sobre cada grupo (modo agrupado) */
+  const grpTotPlugin={
+    id:'grpTot',
+    afterDraw(chart){
+      if(S.stacked||!S.labels)return;
+      const ctx2=chart.ctx;
+      vp.forEach((p,i)=>{
+        const tot=totals[i];
+        if(!tot)return;
+        const bars=[];
+        chart.data.datasets.forEach((ds,di)=>{
+          if(ds.label.startsWith('_'))return;
+          const m=chart.getDatasetMeta(di);
+          if(!m.hidden&&m.data[i])bars.push(m.data[i]);
+        });
+        if(!bars.length)return;
+        const cx=(bars[0].x+bars[bars.length-1].x)/2;
+        const topY=Math.min(...bars.map(b=>b.y));
+        ctx2.save();
+        ctx2.font='900 11px "Segoe UI",system-ui,sans-serif';
+        ctx2.fillStyle=isLight()?'#1E293B':'#ffffff';
+        ctx2.textAlign='center';
+        ctx2.textBaseline='bottom';
+        ctx2.fillText(fmtVal(tot),cx,topY-4);
+        ctx2.restore();
+      });
+    }
+  };
+
+  const cfg={
+    type:'bar',
+    data:{labels:vp.map(p=>p.n),datasets},
+    plugins:[grpTotPlugin],
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      clip:false,
+      layout:{padding:{top:28,right:10,bottom:5}},
+      plugins:{
+        legend:{
+          position:'bottom',
+          labels:{color:t.lgnd,font:{size:11},boxWidth:10,padding:8,
+            filter:item=>!item.text.startsWith('_')},
+        },
+        tooltip:{
+          backgroundColor:t.ttBg,bodyColor:t.ttCol,titleColor:t.ttCol,
+          padding:10,borderColor:t.ttBdr,borderWidth:1,
+          callbacks:{
+            footer:ctxArr=>{
+              if(S.stacked)return[];
+              const sum=ctxArr.reduce((s,c)=>s+c.raw,0);
+              return sum>0?['──────','Total: '+sum+(vp[ctxArr[0].dataIndex]?.und==='KG'?' kg':' und')]:[];
+            }
+          }
+        },
+        datalabels:{} /* handled per dataset */
+      },
+      scales:{
+        x:{stacked:S.stacked,grid:{color:t.grid},ticks:{color:t.tick,font:{size:10}}},
+        y:{
+          stacked:S.stacked,
+          max:S.stacked?maxVal*1.22:maxVal*1.28,
+          grid:{color:t.grid},
+          ticks:{color:t.tick,font:{size:9}}
+        }
+      },
+      onClick(evt,elems){
+        if(!elems.length)return;
+        const p=vp[elems[0].index];
+        S.sel=S.sel===p.id?null:p.id;
+        buildHero();buildStock();buildTable();showDetail();
+      },
+      animation:{duration:220}
+    }
+  };
+  if(charts.consumo)charts.consumo.destroy();
+  charts.consumo=new Chart(document.getElementById('cConsumo'),cfg);
+}
+
+/* ════════════ STOCK ACTUAL ════════════ */
+function setStockTab(u){
+  S.stockTab=u;
+  document.querySelectorAll('#stockTabs .utab').forEach(b=>b.classList.toggle('active',b.dataset.su===u));
+  buildStock();
+}
+function buildStock(){
+  const t=th();
+  const sub=D.filter(p=>p.und===S.stockTab);
+  const color=undColorRaw(S.stockTab);
+  document.getElementById('stockWrap').style.minWidth=Math.max(300,sub.length*22+100)+'px';
+  const bgs=sub.map(p=>(S.sel===null||S.sel===p.id)?color+'BB':color+'25');
+  const cfg={
+    type:'bar',
+    data:{
+      labels:sub.map(p=>p.n),
+      datasets:[{
+        label:'Stock',
+        data:sub.map(p=>p.stock),
+        backgroundColor:bgs,
+        borderColor:sub.map(p=>S.sel===p.id?color+'FF':color+'55'),
+        borderWidth:sub.map(p=>S.sel===p.id?2.5:.5),
+        borderRadius:4,
+      }]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      clip:false,
+      layout:{padding:{right:65}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{backgroundColor:t.ttBg,bodyColor:t.ttCol,padding:10,borderColor:t.ttBdr,borderWidth:1,
+          callbacks:{label:c=>' Stock: '+c.raw.toFixed(c.raw%1?2:0)+' '+S.stockTab}},
+        datalabels:{
+          display:S.labels,
+          color:c=>S.sel===null||S.sel===sub[c.dataIndex]?.id?t.lblCol:'transparent',
+          font:{size:10,weight:'700'},anchor:'end',align:'right',offset:4,clamp:false,
+          formatter:v=>v%1?v.toFixed(2):v,
+        }
+      },
+      scales:{
+        x:{max:Math.max(...sub.map(p=>p.stock),1)*1.25,grid:{color:t.grid},ticks:{color:t.tick,font:{size:9}}},
+        y:{grid:{display:false},ticks:{color:t.tick,font:{size:10.5}}}
+      },
+      onClick(evt,elems){
+        if(!elems.length)S.sel=null;
+        else{const p=sub[elems[0].index];S.sel=S.sel===p.id?null:p.id}
+        buildHero();buildStock();buildTable();showDetail();
+      },
+      animation:{duration:220}
+    }
+  };
+  if(charts.stock)charts.stock.destroy();
+  charts.stock=new Chart(document.getElementById('cStock'),cfg);
+}
+
+/* ════════════ DETAIL PANEL ════════════ */
+function showDetail(){
+  const dpE=document.getElementById('dpEmpty'),dpC=document.getElementById('dpContent');
+  const t=th();
+  if(S.sel===null){dpE.style.display='flex';dpC.style.display='none';dpC.innerHTML='';return}
+  const p=D.find(x=>x.id===S.sel);
+  if(!p){dpE.style.display='flex';dpC.style.display='none';return}
+  const st=status(p),d=dias(p),uc=undColorRaw(p.und);
+  const catIcon={Placas:'🔬',Kits:'🧪',Muestreo:'🧫',ATP:'⚡',Medios:'🌱','Soluc. Cloro':'🧴','Soluc. AP':'⚗️','pH Buffers':'📐'}[p.cat]||'📦';
+  const maxStk=Math.max(...D.filter(x=>x.und===p.und).map(x=>x.stock),1);
+  const pct=Math.min(p.stock/maxStk*100,100);
+  dpE.style.display='none';dpC.style.display='flex';
+  dpC.innerHTML=`
+    <div class="dphead">
+      <div class="dpicon" style="background:${uc}18;border-color:${uc}44">${catIcon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="dpname">${p.full}</div>
+        <div class="dpcat">${p.cat} · <span style="color:${uc}">${p.und}</span></div>
+      </div>
+      <button class="closebtn" onclick="S.sel=null;buildHero();buildStock();buildTable();showDetail()">✕</button>
+    </div>
+    <div class="dp-metrics">
+      <div class="dpm"><div class="dpm-l">Stock Actual</div><div class="dpm-v" style="color:${uc}">${fmtQ(p)}</div></div>
+      <div class="dpm"><div class="dpm-l">Días Rest.</div><div class="dpm-v" style="color:${st.color}">${d!==null?d+'d':'—'}</div></div>
+      <div class="dpm"><div class="dpm-l">Gasto/mes Est.</div><div class="dpm-v" style="color:${uc};font-size:17px">${p.gasto} ${p.und}</div></div>
+      <div class="dpm"><div class="dpm-l">Consumo Total</div><div class="dpm-v" style="color:${uc};font-size:17px">${p.total?fmtQ(p,p.total):'Sin datos'}</div></div>
+    </div>
+    <div>
+      <div style="font-size:10px;color:var(--ts);margin-bottom:4px;display:flex;justify-content:space-between">
+        <span>Stock relativo al mismo tipo</span><strong style="color:${uc}">${Math.round(pct)}%</strong>
+      </div>
+      <div class="dp-bar-track"><div class="dp-bar-fill" style="width:${pct}%;background:${uc}"></div></div>
+    </div>
+    ${p.total>0?`
+    <div style="font-size:11px;font-weight:700;color:var(--tm)">Consumo mensual:</div>
+    <div style="position:relative;height:120px;flex-shrink:0"><canvas id="dpChart"></canvas></div>
+    `:`<div style="background:var(--card);border:1px solid var(--cb);border-radius:9px;padding:12px;font-size:11px;color:var(--tm);text-align:center">
+      📋 Sin datos de consumo en el período Dic 2025 – Mar 2026</div>`}
+    <div class="dp-status ${st.dcls}">${st.lbl}</div>
+  `;
+  if(p.total>0){
+    new Chart(document.getElementById('dpChart'),{
+      type:'bar',
+      data:{
+        labels:ML,
+        datasets:[{
+          data:MK.map(k=>p.m[k]),
+          backgroundColor:MK.map(k=>MC[k]+(S.months.has(k)?'AA':'33')),
+          borderColor:MK.map(k=>MC[k]),
+          borderWidth:MK.map(k=>S.months.has(k)?1.5:.5),
+          borderRadius:4,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        clip:false,layout:{padding:{top:22}},
+        plugins:{
+          legend:{display:false},
+          tooltip:{backgroundColor:t.ttBg,bodyColor:t.ttCol,padding:8,borderColor:t.ttBdr,borderWidth:1},
+          datalabels:{
+            display:true,color:t.lblCol,font:{size:9,weight:'700'},
+            anchor:'end',align:'top',offset:2,clamp:false,
+            formatter:v=>v>0?(v%1?v.toFixed(1):v):'',
+          }
+        },
+        scales:{
+          x:{grid:{display:false},ticks:{color:t.tick,font:{size:9}}},
+          y:{grid:{color:t.grid},ticks:{color:t.tick,font:{size:8}}}
+        },
+        animation:{duration:180}
+      }
+    });
+  }
+}
+
+/* ════════════ TABLE ════════════ */
+function setTF(f){
+  tblFilter=f;
+  ['fAll','fUnd','fKg','fLt'].forEach(id=>document.getElementById(id)?.classList.remove('on'));
+  document.getElementById({all:'fAll',UND:'fUnd',KG:'fKg',LT:'fLt'}[f])?.classList.add('on');
+  buildTable();
+}
+function setSF(f){
+  tblStatus=f;
+  ['fSAll','fSCrit','fSLow','fSOk'].forEach(id=>document.getElementById(id)?.classList.remove('on'));
+  document.getElementById({all:'fSAll',crit:'fSCrit',low:'fSLow',ok:'fSOk'}[f])?.classList.add('on');
+  buildTable();
+}
+function sortTbl(col){
+  const ths=document.querySelectorAll('#mainTable thead th');
+  ths.forEach(th=>{th.className=''});
+  if(S.sortCol===col)S.sortDir*=-1;else{S.sortCol=col;S.sortDir=1}
+  ths[col].className=S.sortDir===1?'sa':'sd';
+  buildTable();
+}
+function buildTable(){
+  const tbody=document.getElementById('tBody');
+  let vp=[...D];
+  if(tblFilter!=='all')vp=vp.filter(p=>p.und===tblFilter);
+  if(tblStatus!=='all')vp=vp.filter(p=>{
+    const k=status(p).key;
+    if(tblStatus==='crit')return k==='crit';
+    if(tblStatus==='low') return k==='low'||k==='mod';
+    if(tblStatus==='ok')  return k==='ok'||k==='none';
+    return true;
+  });
+  if(S.sortCol>=0){
+    const keys=[null,'n','und','stock','gasto',null,'total',null];
+    vp.sort((a,b)=>{
+      if(S.sortCol===5)return S.sortDir*((dias(a)??9999)-(dias(b)??9999));
+      if(S.sortCol===0)return S.sortDir*(a.id-b.id);
+      const k=keys[S.sortCol];if(!k)return 0;
+      return typeof a[k]==='string'?S.sortDir*a[k].localeCompare(b[k]):S.sortDir*(a[k]-b[k]);
+    });
+  }
+  tbody.innerHTML='';
+  vp.forEach((p,i)=>{
+    const st=status(p),d=dias(p);
+    const pct=Math.min((d||0)/90*100,100);
+    const uc=undColorRaw(p.und);
+    const tr=document.createElement('tr');
+    tr.className=S.sel===p.id?'sel':'';
+    tr.innerHTML=`
+      <td style="color:var(--ts)">${i+1}</td>
+      <td style="font-weight:600;font-size:11.5px;max-width:180px">${p.full}</td>
+      <td><span class="utag u-${p.und.toLowerCase()}">${p.und}</span></td>
+      <td style="font-weight:700;color:${uc}">${fmtQ(p)}</td>
+      <td style="color:var(--tm);font-size:11px">${p.gasto} ${p.und}/mes</td>
+      <td><div class="dbar">
+        <span style="font-weight:800;color:${st.color};min-width:28px;font-size:12px">${d!==null?d+'d':'—'}</span>
+        <span class="dtrack"><span class="dfill" style="width:${pct}%;background:${st.color}"></span></span>
+      </div></td>
+      <td style="color:var(--tm);font-size:11px">${p.total?fmtQ(p,p.total):'—'}</td>
+      <td><span class="stag ${st.cls}"><span class="sdot"></span>${st.lbl.split('·')[0].trim()}</span></td>
+    `;
+    tr.onclick=()=>{S.sel=S.sel===p.id?null:p.id;buildHero();buildStock();buildTable();showDetail()};
+    tbody.appendChild(tr);
+  });
+}
+
+/* ════════════ TOGGLES ════════════ */
+function toggleLabels(){
+  S.labels=!S.labels;
+  const btn=document.getElementById('btnLbl');
+  btn.classList.toggle('on',S.labels);
+  btn.textContent=S.labels?'🏷 Totales':'🏷 Ocultos';
+  buildConsumo();buildStock();buildHero();
+}
+function toggleStack(){
+  S.stacked=!S.stacked;
+  const btn=document.getElementById('btnSt');
+  btn.classList.toggle('on',S.stacked);
+  btn.textContent=S.stacked?'⧉ Apilado':'⧉ Apilar';
+  buildConsumo();
+}
+
+/* ════════════ INIT ════════════ */
+buildHero();buildConsumo();buildStock();buildTable();showDetail();
+</script>
+</body>
+</html>

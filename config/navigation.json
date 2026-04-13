@@ -1,0 +1,82 @@
+{
+  "sections": [
+    {
+      "label": "General",
+      "icon": "chart-bar",
+      "roles": ["admin"],
+      "items": [
+        { "id": "resumen", "label": "Resumen Ejecutivo", "icon": "\uD83D\uDCCA", "module": "gerencia/resumen" },
+        { "id": "certificaciones", "label": "Certificaciones", "icon": "\uD83D\uDCC4", "module": "gerencia/certificaciones" }
+      ]
+    },
+    {
+      "label": "Produccion",
+      "icon": "factory",
+      "roles": ["admin", "produccion"],
+      "items": [
+        { "id": "indicadores", "label": "Indicadores", "icon": "\uD83D\uDCC8", "module": "produccion/indicadores" },
+        { "id": "produccion-dia", "label": "Produccion del Dia", "icon": "\uD83D\uDCC5", "module": "produccion/produccion-dia" },
+        { "id": "rendimientos", "label": "Rendimientos", "icon": "\uD83C\uDFAF", "module": "produccion/rendimientos" },
+        { "id": "costos", "label": "Costos", "icon": "\uD83D\uDCB0", "module": "produccion/costos" },
+        { "id": "productividad", "label": "Productividad", "icon": "\u26A1", "module": "produccion/productividad" },
+        { "id": "comparativo", "label": "Comparativo Turnos", "icon": "\uD83D\uDD04", "module": "produccion/comparativo" },
+        { "id": "programa", "label": "Programa", "icon": "\uD83D\uDCCB", "module": "produccion/programa" },
+        { "id": "proyecciones", "label": "Proyecciones", "icon": "\uD83D\uDD2E", "module": "produccion/proyecciones" },
+        { "id": "almuerzos", "label": "Almuerzos", "icon": "\uD83C\uDF5D", "module": "produccion/almuerzos" }
+      ]
+    },
+    {
+      "label": "Areas Operativas",
+      "icon": "layers",
+      "roles": ["admin", "produccion"],
+      "items": [
+        { "id": "recepcion", "label": "Recepcion", "icon": "\uD83D\uDCE6", "module": "produccion/areas/recepcion" },
+        { "id": "acondicionado", "label": "Acondicionado", "icon": "\u2702\uFE0F", "module": "produccion/areas/acondicionado" },
+        { "id": "tuneles", "label": "Tuneles IQF", "icon": "\u2744\uFE0F", "module": "produccion/areas/tuneles" },
+        { "id": "empaque", "label": "Empaque", "icon": "\uD83D\uDCE6", "module": "produccion/areas/empaque" }
+      ]
+    },
+    {
+      "label": "Calidad",
+      "icon": "shield-check",
+      "roles": ["admin", "calidad"],
+      "items": [
+        { "id": "temperaturas", "label": "Temperaturas", "icon": "\uD83C\uDF21\uFE0F", "module": "calidad/temperaturas" },
+        { "id": "inspecciones", "label": "Inspecciones", "icon": "\uD83D\uDD0D", "module": "calidad/inspecciones" },
+        { "id": "consumos-calidad", "label": "Consumos", "icon": "\uD83E\uDDEA", "module": "calidad/consumos" },
+        { "id": "laboratorio", "label": "Laboratorio", "icon": "\uD83D\uDD2C", "module": "calidad/laboratorio" },
+        { "id": "costos-analisis", "label": "Costos Analisis", "icon": "\uD83E\uDDEE", "module": "calidad/costos-analisis" },
+        { "id": "reclamos", "label": "Reclamos", "icon": "\u26A0\uFE0F", "module": "calidad/reclamos" }
+      ]
+    },
+    {
+      "label": "Almacen",
+      "icon": "warehouse",
+      "roles": ["admin", "produccion", "calidad"],
+      "items": [
+        { "id": "stock-general", "label": "Stock General", "icon": "\uD83D\uDCE6", "module": "almacen/stock-general" },
+        { "id": "materiales", "label": "Materiales", "icon": "\uD83D\uDDC3\uFE0F", "module": "almacen/materiales" },
+        { "id": "contenedores", "label": "Contenedores", "icon": "\uD83D\uDE9A", "module": "produccion/contenedores" }
+      ]
+    },
+    {
+      "label": "Recursos Humanos",
+      "icon": "users",
+      "roles": ["admin"],
+      "items": [
+        { "id": "rrhh", "label": "Sistema RRHH", "icon": "\uD83D\uDC65", "module": "rrhh/rrhh" }
+      ]
+    }
+  ],
+  "quickApps": {
+    "label": "Registros",
+    "roles": ["admin", "produccion"],
+    "items": [
+      { "id": "registro-produccion", "label": "Registro Produccion", "icon": "\uD83D\uDCDD", "path": "apps/registro-produccion/index.html" },
+      { "id": "registro-personal", "label": "Registro Personal", "icon": "\uD83D\uDC65", "path": "apps/registro-personal/index.html" },
+      { "id": "registro-costos", "label": "Registro Costos", "icon": "\uD83D\uDCB2", "path": "apps/registro-costos/index.html" },
+      { "id": "registro-tuneles", "label": "Registro Tuneles", "icon": "\u2744\uFE0F", "path": "apps/registro-tuneles/index.html" },
+      { "id": "empaque-congelado", "label": "Empaque Congelado", "icon": "\uD83D\uDCE6", "path": "apps/empaque-congelado/index.html" }
+    ]
+  }
+}

@@ -1,0 +1,45 @@
+<!-- Panel: Inspecciones -->
+<div class="kpi-grid">
+  <div class="kpi-card" style="border-top:3px solid var(--verde)">
+    <div class="kpi-label">Inspecciones hoy</div>
+    <div class="kpi-value" style="color:var(--verde)" id="kpiInspTotal">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">registros de temp.</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--verde)">
+    <div class="kpi-label">Registros OK</div>
+    <div class="kpi-value" style="color:var(--verde)" id="kpiInspOk">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">dentro de rango</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--warn)">
+    <div class="kpi-label">Alertas</div>
+    <div class="kpi-value" style="color:var(--warn)" id="kpiInspWarn">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">fuera de rango</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--danger)">
+    <div class="kpi-label">Criticos</div>
+    <div class="kpi-value" style="color:var(--danger)" id="kpiInspCrit">—</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">temperatura critica</div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div class="card-title">📊 Registros por inspector — hoy</div>
+  </div>
+  <div class="chart-wrapper">
+    <canvas id="chartInspectores" height="110"></canvas>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div class="card-title">📋 Reporte de inspecciones</div>
+    <button id="btn-export-insp" class="btn btn-sm btn-primary">⬇ Exportar CSV</button>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Hora</th><th>Area</th><th>Temp.</th><th>Estado</th><th>Turno</th><th>Inspector</th></tr></thead>
+      <tbody id="tablaInspecciones"></tbody>
+    </table>
+  </div>
+</div>

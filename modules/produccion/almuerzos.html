@@ -1,0 +1,24 @@
+<!-- Panel: Gestion de Almuerzos -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🍽️ Gestion de <span style="color:var(--amber)">Almuerzos</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Control de almuerzos y costos de alimentacion</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Almuerzos Hoy</div><div class="kpi-value" id="almHoy">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Costo Total</div><div class="kpi-value" id="almCostoTotal">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Costo/Persona</div><div class="kpi-value" id="almCostoPP">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Personal</div><div class="kpi-value" id="almPersonal">—</div></div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Registro de Almuerzos</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Cantidad</th><th>Costo Unit.</th><th>Costo Total</th><th>Area</th></tr></thead>
+      <tbody id="almTabla"></tbody>
+    </table>
+  </div>
+</div>

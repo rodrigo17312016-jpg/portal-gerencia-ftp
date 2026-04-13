@@ -1,0 +1,99 @@
+<!-- Panel: Certificaciones -->
+<div class="kpi-grid" style="margin-bottom:20px">
+  <div class="kpi-card" style="border-top:3px solid var(--verde)">
+    <div class="kpi-label">Total Certificaciones</div>
+    <div class="kpi-value" id="certTotal">12</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">registradas</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--verde)">
+    <div class="kpi-label">Vigentes</div>
+    <div class="kpi-value" style="color:var(--verde)" id="certVigentes">8</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">&gt; 3 meses</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--warn)">
+    <div class="kpi-label">Proximas a vencer</div>
+    <div class="kpi-value" style="color:var(--warn)" id="certProximas">3</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">&lt; 3 meses</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--danger)">
+    <div class="kpi-label">Vencidas</div>
+    <div class="kpi-value" style="color:var(--danger)" id="certVencidas">1</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:4px">requiere accion</div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">🏅 Certificaciones del Sistema de Gestion</div>
+    <span class="badge badge-verde">12 registradas</span>
+  </div>
+  <div style="display:grid;gap:12px;margin-top:16px" id="certGrid">
+    <!-- Vencida -->
+    <div class="card" style="border-left:4px solid var(--danger);background:var(--danger-bg);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:24px">🏅</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--texto)">BRC Food Safety Grade A</div>
+          <div style="font-size:12px;color:var(--muted)">Vencio: 15 Diciembre 2025</div>
+          <div style="font-size:12px;font-weight:800;color:var(--danger);margin-top:2px">✗ VENCIDA — Requiere renovacion urgente</div>
+        </div>
+      </div>
+    </div>
+    <!-- Proximas a vencer -->
+    <div class="card" style="border-left:4px solid var(--warn);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:24px">🌿</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--texto)">Certificacion Organica UE (EU Organic)</div>
+          <div style="font-size:12px;color:var(--muted)">Vence: 20 Abril 2026</div>
+          <div style="font-size:12px;font-weight:700;color:var(--warn);margin-top:2px">⚠ Proxima a vencer</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--warn);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:24px">🇺🇸</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--texto)">USDA Organic (NOP)</div>
+          <div style="font-size:12px;color:var(--muted)">Vence: 15 Mayo 2026</div>
+          <div style="font-size:12px;font-weight:700;color:var(--warn);margin-top:2px">⚠ Proxima a vencer</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--warn);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <span style="font-size:24px">🇺🇸</span>
+        <div>
+          <div style="font-weight:700;font-size:14px;color:var(--texto)">FDA Food Facility Registration</div>
+          <div style="font-size:12px;color:var(--muted)">Vence: 30 Mayo 2026</div>
+          <div style="font-size:12px;font-weight:700;color:var(--warn);margin-top:2px">⚠ Proxima a vencer</div>
+        </div>
+      </div>
+    </div>
+    <!-- Vigentes -->
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">✅</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">HACCP — Analisis de Peligros y Puntos Criticos</div><div style="font-size:12px;color:var(--muted)">Vence: 10 Agosto 2026</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">🌍</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">GlobalG.A.P. — Buenas Practicas Agricolas</div><div style="font-size:12px;color:var(--muted)">Vence: 25 Septiembre 2026</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">♻️</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">ISO 14001 — Gestion Ambiental</div><div style="font-size:12px;color:var(--muted)">Vence: 30 Noviembre 2026</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">🛡️</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">FSSC 22000 — Seguridad Alimentaria</div><div style="font-size:12px;color:var(--muted)">Vence: 15 Diciembre 2026</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">🏪</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">SMETA / SEDEX — Auditoria Etica</div><div style="font-size:12px;color:var(--muted)">Vence: 28 Enero 2027</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">🧬</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">SENASA — Registro Sanitario Exportacion</div><div style="font-size:12px;color:var(--muted)">Vence: 10 Marzo 2027</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">📋</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">DIGESA — Habilitacion Sanitaria</div><div style="font-size:12px;color:var(--muted)">Vence: 05 Abril 2027</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+    <div class="card" style="border-left:4px solid var(--verde);padding:16px 20px">
+      <div style="display:flex;align-items:center;gap:14px"><span style="font-size:24px">🌱</span><div><div style="font-weight:700;font-size:14px;color:var(--texto)">Rainforest Alliance — Agricultura Sostenible</div><div style="font-size:12px;color:var(--muted)">Vence: 20 Junio 2027</div><div style="font-size:12px;font-weight:700;color:var(--verde);margin-top:2px">✓ Vigente</div></div></div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,38 @@
+<!-- Panel: Produccion del Dia -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🏭 Produccion del <span style="color:var(--verde)">Dia</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Datos en tiempo real desde Supabase · <span id="pdFechaHoy"></span></p>
+  </div>
+  <a href="dashboards/produccion-dia.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
+</div>
+
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr))">
+  <div class="kpi-card"><div class="kpi-label">Consumo MP</div><div class="kpi-value" id="pdConsumo">—</div><div style="font-size:10px;color:var(--muted)" id="pdConsumoSub">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">P. Terminado</div><div class="kpi-value" id="pdPT">—</div><div style="font-size:10px;color:var(--muted)" id="pdPTSub">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Rendimiento</div><div class="kpi-value" id="pdRend">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Kg/Hora</div><div class="kpi-value" id="pdKgHr">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Personal</div><div class="kpi-value" id="pdPersonal">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Registros</div><div class="kpi-value" id="pdRegistros">—</div></div>
+</div>
+
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">📊 Consumo vs PT por Hora</div></div>
+    <div class="chart-wrapper"><canvas id="chartPdHora"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🎯 Rendimiento % por Hora</div></div>
+    <div class="chart-wrapper"><canvas id="chartPdRend"></canvas></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Registro hora a hora</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Hora</th><th>Fruta</th><th>Linea</th><th>Consumo</th><th>PT</th><th>Rend.</th><th>Personal</th><th>Turno</th></tr></thead>
+      <tbody id="pdTabla"></tbody>
+    </table>
+  </div>
+</div>

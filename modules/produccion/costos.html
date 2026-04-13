@@ -1,0 +1,38 @@
+<!-- Panel: Costos de Produccion -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">💰 Costos de <span style="color:var(--amber)">Produccion</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Analisis de costos MOD, materiales y eficiencia</p>
+  </div>
+  <div style="display:flex;gap:8px">
+    <a href="dashboards/costos.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Costo Total/Kg</div><div class="kpi-value" id="costoTotalKg">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Costo MOD/Kg</div><div class="kpi-value" id="costoMODKg">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Personal Actual</div><div class="kpi-value" id="costoPersonal">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">PT Acumulado</div><div class="kpi-value" id="costoPTAcum">—</div></div>
+</div>
+
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">💵 Costo/Kg por Dia</div></div>
+    <div class="chart-wrapper"><canvas id="chartCostoKg"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">👥 Costo MOD por Hora</div></div>
+    <div class="chart-wrapper"><canvas id="chartCostoMOD"></canvas></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Detalle de Costos por Dia</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Personal</th><th>PT (kg)</th><th>Costo HH</th><th>$/Kg</th></tr></thead>
+      <tbody id="costoTabla"></tbody>
+    </table>
+  </div>
+</div>

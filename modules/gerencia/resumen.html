@@ -1,0 +1,93 @@
+<!-- Panel: Resumen Ejecutivo -->
+<div class="exec-hero">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:24px;font-weight:900;color:var(--texto)">
+        Dashboard <span style="color:var(--verde)">Ejecutivo</span>
+      </h2>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px" id="resumen-campaign">
+        Campana 2026 — Frutos Tropicales Peru Export S.A.C.
+      </p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="badge badge-verde">
+        <span class="status-dot online"></span> Sistema Operativo
+      </div>
+      <div class="badge badge-azul" id="resumen-turno">☀️ Turno Dia</div>
+    </div>
+  </div>
+</div>
+
+<!-- KPI Cards -->
+<div class="kpi-grid" style="margin-top:20px">
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Produccion Total</div>
+        <div class="kpi-value" id="kpi-produccion-total">—</div>
+        <div class="kpi-change positive" id="kpi-produccion-change">Cargando...</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">🏭</div>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Rendimiento</div>
+        <div class="kpi-value" id="kpi-rendimiento">—</div>
+        <div class="kpi-change positive" id="kpi-rendimiento-change">Cargando...</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">📈</div>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Temperaturas</div>
+        <div class="kpi-value" id="kpi-temperaturas">—</div>
+        <div class="kpi-change" id="kpi-temp-status">Cargando...</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--cyan-bg);color:var(--cyan)">🌡️</div>
+    </div>
+  </div>
+
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Personal Activo</div>
+        <div class="kpi-value" id="kpi-personal">—</div>
+        <div class="kpi-change" id="kpi-personal-areas">Cargando...</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--purple-bg);color:var(--purple)">👥</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts placeholder -->
+<div class="charts-grid charts-grid-2" style="margin-top:24px">
+  <div class="chart-container">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Produccion por Fruta</div>
+        <div class="chart-subtitle">Ultima semana</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-produccion-fruta"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-container">
+    <div class="chart-header">
+      <div>
+        <div class="chart-title">Rendimiento Diario</div>
+        <div class="chart-subtitle">Ultimos 7 dias</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-rendimiento-diario"></canvas>
+    </div>
+  </div>
+</div>

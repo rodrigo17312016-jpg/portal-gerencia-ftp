@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Productividad y Eficiencia | Frutos Tropicales Peru Export S.A.C.</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+    --verde: #16a34a;
+    --verde-light: #22c55e;
+    --naranja: #ea580c;
+    --naranja-light: #f97316;
+    --azul: #2563eb;
+    --azul-light: #3b82f6;
+    --purple: #7c3aed;
+    --purple-light: #8b5cf6;
+    --cyan: #0891b2;
+    --cyan-light: #06b6d4;
+    --amber: #d97706;
+    --amber-light: #f59e0b;
+    --rose: #e11d48;
+    --rose-light: #f43f5e;
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-card: rgba(30, 41, 59, 0.7);
+    --bg-card-hover: rgba(30, 41, 59, 0.9);
+    --border-color: rgba(148, 163, 184, 0.15);
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    --glass-bg: rgba(15, 23, 42, 0.6);
+    --glass-border: rgba(148, 163, 184, 0.1);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,0.3);
+    --shadow-card: 0 4px 20px rgba(0,0,0,0.2);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --radius-xs: 6px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+[data-theme="light"] {
+    --bg-primary: #f1f5f9;
+    --bg-secondary: #e2e8f0;
+    --bg-card: rgba(255, 255, 255, 0.8);
+    --bg-card-hover: rgba(255, 255, 255, 0.95);
+    --border-color: rgba(148, 163, 184, 0.3);
+    --text-primary: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #94a3b8;
+    --glass-bg: rgba(255, 255, 255, 0.6);
+    --glass-border: rgba(148, 163, 184, 0.2);
+    --shadow-lg: 0 10px 40px rgba(0,0,0,0.08);
+    --shadow-card: 0 4px 20px rgba(0,0,0,0.06);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    transition: var(--transition);
+}
+body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at 20% 20%, rgba(22, 163, 74, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(37, 99, 235, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(124, 58, 237, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+    position: sticky; top: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 28px; gap: 16px;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--glass-border);
+}
+.topbar-brand { display: flex; align-items: center; gap: 12px; }
+.topbar-brand-icon {
+    width: 40px; height: 40px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--verde), var(--verde-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; color: #fff; flex-shrink: 0;
+}
+.topbar-brand h1 { font-size: 17px; font-weight: 700; white-space: nowrap; }
+.topbar-brand span { font-size: 11px; color: var(--text-secondary); display: block; margin-top: 1px; }
+.topbar-actions { display: flex; align-items: center; gap: 10px; }
+.topbar-btn {
+    padding: 8px 14px; border-radius: var(--radius-xs); border: 1px solid var(--border-color);
+    background: var(--bg-card); color: var(--text-primary);
+    font-family: inherit; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 6px;
+}
+.topbar-btn:hover { border-color: var(--verde); background: rgba(22,163,74,0.1); }
+.topbar-btn.active { border-color: var(--verde); background: rgba(22,163,74,0.15); color: var(--verde); }
+
+/* Theme Toggle */
+.theme-toggle {
+    width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--border-color);
+    background: var(--bg-card); color: var(--text-primary);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 16px; transition: var(--transition);
+}
+.theme-toggle:hover { border-color: var(--amber); }
+
+/* Developer Signature */
+/* LOGO */
+.dash-logo{height:48px;width:auto;filter:drop-shadow(0 4px 16px rgba(22,163,74,0.4)) drop-shadow(0 2px 8px rgba(0,0,0,0.3));animation:logoFloat 4s ease-in-out infinite,logoGlow 3s ease-in-out infinite}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 4px 16px rgba(22,163,74,0.3)) drop-shadow(0 2px 8px rgba(0,0,0,0.3))}50%{filter:drop-shadow(0 6px 24px rgba(22,163,74,0.6)) drop-shadow(0 2px 12px rgba(212,175,55,0.2))}}
+.dash-brand-text{font-size:10px;text-transform:uppercase;letter-spacing:4px;font-weight:800;background:linear-gradient(135deg,#d4af37,#fff8dc,#d4af37);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmerGold 3s ease infinite}
+
+.topbar-dev-signature{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 22px;border-radius:20px;background:linear-gradient(145deg,rgba(10,18,32,0.85),rgba(20,30,48,0.9),rgba(15,25,40,0.85));border:1px solid rgba(212,175,55,0.3);position:relative;overflow:hidden;backdrop-filter:blur(16px);animation:firmaBorderGlow 4s ease infinite;box-shadow:0 0 20px rgba(212,175,55,0.08),inset 0 1px 0 rgba(255,255,255,0.06)}
+.topbar-dev-signature::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),rgba(255,255,255,0.05),transparent);animation:firmaShine 5s ease-in-out infinite;pointer-events:none}
+.topbar-dev-signature::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(212,175,55,0.03) 0%,transparent 40%,rgba(192,192,192,0.03) 60%,transparent 100%);pointer-events:none}
+.topbar-dev-signature>*{position:relative;z-index:1}
+.topbar-sig-label{font-size:7px;color:rgba(212,175,55,0.7);text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.topbar-dev-signature .signature-name{font-size:14px;font-weight:900;letter-spacing:0.3px;background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:signatureShimmer 4s ease infinite;line-height:1.3}
+.topbar-dev-signature .signature-role{font-size:9px;font-weight:700;color:#22c55e;letter-spacing:0.5px}
+@keyframes firmaBorderGlow{0%,100%{border-color:rgba(212,175,55,0.2);box-shadow:0 2px 12px rgba(0,0,0,0.15)}50%{border-color:rgba(212,175,55,0.45);box-shadow:0 2px 24px rgba(212,175,55,0.15),0 4px 16px rgba(0,0,0,0.2)}}
+@keyframes firmaShine{0%{left:-100%}50%,100%{left:200%}}
+@keyframes signatureShimmer{0%{background-position:100% 0}50%{background-position:0% 0}100%{background-position:-100% 0}}
+@keyframes shimmerGold{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ── FILTERS BAR ── */
+.filters-bar {
+    display: flex; align-items: center; gap: 12px; padding: 14px 28px;
+    flex-wrap: wrap; background: var(--glass-bg);
+    border-bottom: 1px solid var(--glass-border);
+}
+.filter-group { display: flex; align-items: center; gap: 6px; }
+.filter-group label { font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-right: 4px; }
+.filter-select {
+    padding: 7px 12px; border-radius: var(--radius-xs); border: 1px solid var(--border-color);
+    background: var(--bg-card); color: var(--text-primary);
+    font-family: inherit; font-size: 12px; cursor: pointer; outline: none;
+}
+.filter-chip {
+    padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border-color);
+    background: transparent; color: var(--text-secondary);
+    font-family: inherit; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: var(--transition);
+}
+.filter-chip:hover { border-color: var(--verde); color: var(--verde); }
+.filter-chip.active { background: var(--verde); border-color: var(--verde); color: #fff; }
+.filter-sep { width: 1px; height: 24px; background: var(--border-color); margin: 0 4px; }
+
+/* ── MAIN LAYOUT ── */
+.main-content { position: relative; z-index: 1; padding: 24px 28px 40px; }
+
+/* ── KPI CARDS GRID ── */
+.kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+    gap: 14px; margin-bottom: 28px;
+}
+.kpi-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 18px 16px 14px;
+    transition: var(--transition);
+    position: relative; overflow: hidden;
+}
+.kpi-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-card); border-color: rgba(148,163,184,0.25); }
+.kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+}
+.kpi-card[data-color="verde"]::before { background: linear-gradient(90deg, var(--verde), var(--verde-light)); }
+.kpi-card[data-color="azul"]::before { background: linear-gradient(90deg, var(--azul), var(--azul-light)); }
+.kpi-card[data-color="naranja"]::before { background: linear-gradient(90deg, var(--naranja), var(--naranja-light)); }
+.kpi-card[data-color="purple"]::before { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+.kpi-card[data-color="cyan"]::before { background: linear-gradient(90deg, var(--cyan), var(--cyan-light)); }
+.kpi-card[data-color="amber"]::before { background: linear-gradient(90deg, var(--amber), var(--amber-light)); }
+.kpi-card[data-color="rose"]::before { background: linear-gradient(90deg, var(--rose), var(--rose-light)); }
+.kpi-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.kpi-icon {
+    width: 34px; height: 34px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+}
+.kpi-card[data-color="verde"] .kpi-icon { background: rgba(22,163,74,0.15); color: var(--verde); }
+.kpi-card[data-color="azul"] .kpi-icon { background: rgba(37,99,235,0.15); color: var(--azul); }
+.kpi-card[data-color="naranja"] .kpi-icon { background: rgba(234,88,12,0.15); color: var(--naranja); }
+.kpi-card[data-color="purple"] .kpi-icon { background: rgba(124,58,237,0.15); color: var(--purple); }
+.kpi-card[data-color="cyan"] .kpi-icon { background: rgba(8,145,178,0.15); color: var(--cyan); }
+.kpi-card[data-color="amber"] .kpi-icon { background: rgba(217,119,6,0.15); color: var(--amber); }
+.kpi-card[data-color="rose"] .kpi-icon { background: rgba(225,29,72,0.15); color: var(--rose); }
+.kpi-trend { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; }
+.kpi-trend.up { background: rgba(22,163,74,0.15); color: var(--verde); }
+.kpi-trend.down { background: rgba(225,29,72,0.15); color: var(--rose); }
+.kpi-trend.neutral { background: rgba(148,163,184,0.15); color: var(--text-secondary); }
+.kpi-value { font-size: 28px; font-weight: 800; line-height: 1.1; margin-bottom: 4px; }
+.kpi-label { font-size: 11px; color: var(--text-secondary); font-weight: 500; }
+.kpi-sub { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+/* ── SECTION HEADERS ── */
+.section-header {
+    display: flex; align-items: center; gap: 10px;
+    margin: 32px 0 16px; padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+.section-header h2 { font-size: 18px; font-weight: 700; }
+.section-header .section-icon {
+    width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 15px;
+}
+
+/* ── CHART GRID ── */
+.chart-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px; margin-bottom: 28px;
+}
+.chart-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.chart-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: var(--transition);
+}
+.chart-card:hover { box-shadow: var(--shadow-card); border-color: rgba(148,163,184,0.25); }
+.chart-card.full-width { grid-column: 1 / -1; }
+.chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+.chart-card .chart-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 14px; }
+.chart-wrap { position: relative; width: 100%; }
+.chart-wrap canvas { width: 100% !important; }
+
+/* ── TABLES ── */
+.table-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 18px; overflow-x: auto;
+}
+.table-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 14px; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th {
+    padding: 10px 12px; text-align: left; font-weight: 600; color: var(--text-secondary);
+    border-bottom: 2px solid var(--border-color); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border-color); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(148,163,184,0.05); }
+.badge {
+    display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
+}
+.badge-green { background: rgba(22,163,74,0.15); color: var(--verde); }
+.badge-amber { background: rgba(217,119,6,0.15); color: var(--amber); }
+.badge-red { background: rgba(225,29,72,0.15); color: var(--rose); }
+.badge-blue { background: rgba(37,99,235,0.15); color: var(--azul); }
+.badge-purple { background: rgba(124,58,237,0.15); color: var(--purple); }
+
+/* ── INSIGHTS PANEL ── */
+.insights-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin-bottom: 28px; }
+.insight-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    padding: 20px; transition: var(--transition);
+}
+.insight-card:hover { box-shadow: var(--shadow-card); }
+.insight-card h4 { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.insight-card ul { list-style: none; padding: 0; }
+.insight-card li { font-size: 12px; color: var(--text-secondary); padding: 5px 0 5px 18px; position: relative; line-height: 1.5; }
+.insight-card li::before { content: ''; position: absolute; left: 0; top: 11px; width: 8px; height: 8px; border-radius: 50%; }
+.insight-card.bottleneck li::before { background: var(--rose); }
+.insight-card.recommendation li::before { background: var(--verde); }
+.insight-card.alert li::before { background: var(--amber); }
+.insight-card.metric li::before { background: var(--azul); }
+
+/* ── PROGRESS BAR ── */
+.progress-bar { width: 100%; height: 8px; background: rgba(148,163,184,0.15); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.5); }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1200px) {
+    .chart-grid { grid-template-columns: 1fr; }
+    .chart-grid.cols-3 { grid-template-columns: 1fr 1fr; }
+    .insights-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+    .topbar { padding: 10px 16px; flex-wrap: wrap; }
+    .filters-bar { padding: 10px 16px; }
+    .main-content { padding: 16px; }
+    .kpi-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+    .chart-grid.cols-3 { grid-template-columns: 1fr; }
+    .topbar-dev-signature { display: none; }
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.animate-in { animation: fadeInUp 0.5s ease forwards; }
+.hidden { display: none !important; }
+
+/* ── Portal Back Link ── */
+.portal-back-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:#16a34a;text-decoration:none;font-size:13px;font-weight:600;transition:all 0.3s}
+.portal-back-link:hover{background:rgba(22,163,74,0.2);transform:translateX(-2px)}
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  body { padding:0; }
+  .topbar, [class*="topbar"] { flex-wrap:wrap; padding:10px 14px; gap:6px; }
+  .topbar-dev-signature, [class*="dev-signature"] { padding:5px 10px; }
+  .topbar-dev-signature .signature-name, [class*="signature-name"] { font-size:10px; }
+  .topbar-dev-signature .signature-role, [class*="signature-role"] { font-size:7px; }
+  .dash-logo { width:32px; height:32px; }
+  .dash-brand-text { font-size:14px; }
+  .portal-back-link { font-size:11px; padding:4px 8px; }
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:repeat(2, 1fr) !important; gap:8px; }
+  .kpi-value, [class*="kpi-value"] { font-size:22px; }
+  .grid-2, .grid-23, .charts-grid, [class*="grid-2"] { grid-template-columns:1fr !important; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:200px; }
+  .card, [class*="card"] { padding:12px; border-radius:12px; }
+  .data-table, table { font-size:11px; }
+  .data-table th, .data-table td, table th, table td { padding:6px 8px; white-space:nowrap; }
+  .filter-bar, [class*="filter"] { flex-wrap:wrap; gap:6px; }
+  .filter-chip, [class*="chip"] { font-size:11px; padding:4px 10px; }
+  h1, .section-title { font-size:18px; }
+  h2 { font-size:16px; }
+  .insights-grid, .analysis-grid { grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:1fr !important; }
+  .topbar-dev-signature, [class*="dev-signature"] { display:none; }
+  .kpi-value, [class*="kpi-value"] { font-size:20px; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:170px; }
+  h1, .section-title { font-size:16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ MAIN APP ═══════════ -->
+<div id="mainApp">
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <a href="index.html" class="portal-back-link">← Portal</a>
+    <img src="LOGO.png" alt="Frutos Tropicales" class="dash-logo">
+    <div class="dash-brand-text">Productividad y Eficiencia</div>
+  </div>
+  <div class="topbar-actions">
+    <div class="topbar-dev-signature">
+      <div class="topbar-sig-label">Desarrollado por:</div>
+      <div class="signature-name">Rodrigo Garcia</div>
+      <div class="signature-role">Systems Analyst &amp; Developer-QA</div>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+    <button class="topbar-btn" onclick="exportData()">📊 Exportar</button>
+  </div>
+</header>
+
+<!-- FILTERS BAR -->
+<div class="filters-bar">
+  <div class="filter-group">
+    <label>Periodo:</label>
+    <select class="filter-select" id="filterPeriod">
+      <option value="hoy">Hoy — 25 Mar 2026</option>
+      <option value="semana" selected>Esta Semana — S13</option>
+      <option value="mes">Marzo 2026</option>
+      <option value="campaña">Campaña 2026</option>
+    </select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label>Fruta:</label>
+    <select class="filter-select" id="filterFruit">
+      <option value="todas">Todas</option>
+      <option value="mango" selected>Mango</option>
+      <option value="arandano">Arandano</option>
+      <option value="granada">Granada</option>
+    </select>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label>Area:</label>
+    <button class="filter-chip active" data-area="todas">Todas</button>
+    <button class="filter-chip" data-area="recepcion">Recepcion</button>
+    <button class="filter-chip" data-area="acondicionado">Acondicionado</button>
+    <button class="filter-chip" data-area="tuneles">Tuneles</button>
+    <button class="filter-chip" data-area="empaque">Empaque</button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <label>Turno:</label>
+    <select class="filter-select" id="filterTurno">
+      <option value="ambos">Ambos Turnos</option>
+      <option value="dia">Turno Dia</option>
+      <option value="noche">Turno Noche</option>
+    </select>
+  </div>
+</div>
+
+<!-- ═══════════ MAIN CONTENT ═══════════ -->
+<main class="main-content">
+
+<!-- ──────── KPI CARDS ──────── -->
+<div class="kpi-grid" id="kpiGrid">
+  <!-- KPIs inserted by JS -->
+</div>
+
+<!-- ──────── SECTION: PRODUCCION Y VELOCIDAD ──────── -->
+<div class="section-header">
+  <div class="section-icon" style="background:rgba(22,163,74,0.15);color:var(--verde);">⚡</div>
+  <h2>Produccion y Velocidad</h2>
+</div>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>KG/HR Trend Semanal</h3>
+    <p class="chart-sub">Semanas 8–13 con linea de meta a 2,000 Kg/Hr</p>
+    <div class="chart-wrap"><canvas id="chartKgHrTrend"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>KG/HR por Hora — Hoy</h3>
+    <p class="chart-sub">Produccion por hora con referencia objetivo</p>
+    <div class="chart-wrap"><canvas id="chartKgHrHoy"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Productividad por Area</h3>
+    <p class="chart-sub">Comparativo radar de areas de produccion</p>
+    <div class="chart-wrap"><canvas id="chartRadar"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Kg/Operario/Hora por Area</h3>
+    <p class="chart-sub">Eficiencia individual por zona de trabajo</p>
+    <div class="chart-wrap"><canvas id="chartKgOpArea"></canvas></div>
+  </div>
+</div>
+
+<!-- ──────── SECTION: OEE ──────── -->
+<div class="section-header">
+  <div class="section-icon" style="background:rgba(37,99,235,0.15);color:var(--azul);">🎯</div>
+  <h2>OEE — Overall Equipment Effectiveness</h2>
+</div>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Componentes OEE</h3>
+    <p class="chart-sub">Disponibilidad × Rendimiento × Calidad</p>
+    <div class="chart-wrap"><canvas id="chartOEEComp"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>OEE Trend Semanal</h3>
+    <p class="chart-sub">Evolucion S8–S13 con target 85%</p>
+    <div class="chart-wrap"><canvas id="chartOEETrend"></canvas></div>
+  </div>
+</div>
+
+<!-- ──────── SECTION: BALANCE Y TIEMPOS ──────── -->
+<div class="section-header">
+  <div class="section-icon" style="background:rgba(234,88,12,0.15);color:var(--naranja);">⏱️</div>
+  <h2>Balance de Linea y Tiempos Muertos</h2>
+</div>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Balance de Linea</h3>
+    <p class="chart-sub">Produccion real vs capacidad por estacion — cuellos de botella en rojo</p>
+    <div class="chart-wrap"><canvas id="chartBalance"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Tiempo Muerto por Categoria</h3>
+    <p class="chart-sub">Distribucion de paradas no programadas</p>
+    <div class="chart-wrap"><canvas id="chartDowntimeCat"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Tiempo Muerto por Dia</h3>
+    <p class="chart-sub">Acumulado semanal Lunes a Sabado</p>
+    <div class="chart-wrap"><canvas id="chartDowntimeDay"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Takt Time vs Cycle Time</h3>
+    <p class="chart-sub">Comparativo por paso del proceso</p>
+    <div class="chart-wrap"><canvas id="chartTaktCycle"></canvas></div>
+  </div>
+</div>
+
+<!-- ──────── SECTION: PERSONAL Y EFICIENCIA ──────── -->
+<div class="section-header">
+  <div class="section-icon" style="background:rgba(124,58,237,0.15);color:var(--purple);">👥</div>
+  <h2>Personal y Eficiencia</h2>
+</div>
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Personal vs Produccion</h3>
+    <p class="chart-sub">Correlacion entre dotacion y Kg producidos por dia</p>
+    <div class="chart-wrap"><canvas id="chartPersonalProd"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Eficiencia por Turno</h3>
+    <p class="chart-sub">Dia vs Noche por area</p>
+    <div class="chart-wrap"><canvas id="chartEfTurno"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Horas Productivas vs No Productivas</h3>
+    <p class="chart-sub">Distribucion del tiempo en planta</p>
+    <div class="chart-wrap"><canvas id="chartHorasProd"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3>Capacity Utilization por Area</h3>
+    <p class="chart-sub">Porcentaje de uso de capacidad instalada</p>
+    <div class="chart-wrap"><canvas id="chartCapacity"></canvas></div>
+  </div>
+</div>
+
+<!-- ──────── SECTION: TABLAS ──────── -->
+<div class="section-header">
+  <div class="section-icon" style="background:rgba(8,145,178,0.15);color:var(--cyan);">📋</div>
+  <h2>Tablas de Datos</h2>
+</div>
+
+<!-- Table: Productividad por Area y Turno -->
+<div class="table-card">
+  <h3>Productividad por Area y Turno</h3>
+  <table class="data-table" id="tableProductividad">
+    <thead>
+      <tr>
+        <th>Area</th><th>Turno</th><th>Personal</th><th>Kg/Hr</th><th>Kg/Op/Hr</th><th>Cajas/Hr</th><th>Eficiencia %</th><th>Estado</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Table: Desglose Tiempo Muerto -->
+<div class="table-card">
+  <h3>Desglose de Tiempo Muerto</h3>
+  <table class="data-table" id="tableDowntime">
+    <thead>
+      <tr>
+        <th>Fecha</th><th>Tipo</th><th>Duracion (min)</th><th>Area</th><th>Causa</th><th>Accion Correctiva</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Table: OEE Semanal -->
+<div class="table-card">
+  <h3>OEE Semanal</h3>
+  <table class="data-table" id="tableOEE">
+    <thead>
+      <tr>
+        <th>Semana</th><th>Disponibilidad %</th><th>Rendimiento %</th><th>Calidad %</th><th>OEE %</th><th>Estado</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- Table: Balance de Linea -->
+<div class="table-card">
+  <h3>Balance de Linea Detallado</h3>
+  <table class="data-table" id="tableBalance">
+    <thead>
+      <tr>
+        <th>Estacion</th><th>Capacidad (Kg/Hr)</th><th>Produccion Real</th><th>Eficiencia %</th><th>Cuello de Botella</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- ──────── SECTION: INSIGHTS ──────── -->
+<div class="section-header">
+  <div class="section-icon" style="background:rgba(217,119,6,0.15);color:var(--amber);">💡</div>
+  <h2>Insights y Recomendaciones</h2>
+</div>
+<div class="insights-grid">
+  <div class="insight-card bottleneck">
+    <h4>🔴 Analisis de Cuellos de Botella</h4>
+    <ul>
+      <li>Estacion de <strong>Pelado</strong> opera al 72% de capacidad — principal restriccion de linea.</li>
+      <li>Acondicionado muestra caidas de velocidad entre 11:00–12:00 hr (fatiga pre-almuerzo).</li>
+      <li>La falta de materia prima represento el 28% del tiempo muerto total esta semana.</li>
+      <li>Cambio de producto (Mango → Arandano) promedia 47 min — superior al target de 30 min.</li>
+    </ul>
+  </div>
+  <div class="insight-card recommendation">
+    <h4>🟢 Recomendaciones de Mejora</h4>
+    <ul>
+      <li>Implementar rotacion de personal en Pelado cada 2 horas para mantener velocidad constante.</li>
+      <li>Coordinar recepcion de MP con 1 hora de anticipacion para reducir paradas por falta de insumo.</li>
+      <li>Estandarizar procedimiento de cambio de producto con checklist — meta: reducir a 25 min.</li>
+      <li>Turno Noche en Empaque: reforzar con 3 operarios adicionales para igualar eficiencia del Dia.</li>
+    </ul>
+  </div>
+  <div class="insight-card alert">
+    <h4>🟡 Alertas de Eficiencia</h4>
+    <ul>
+      <li>OEE bajo 75% en Tuneles — investigar disponibilidad de equipos de congelacion.</li>
+      <li>Rendimiento del Turno Noche 12% inferior al Dia — posible falta de supervision.</li>
+      <li>Dia Miercoles registro 4.1 hrs de tiempo muerto — el peor de la semana.</li>
+      <li>Uptime global en 83.3% — por debajo del target de 90%.</li>
+    </ul>
+  </div>
+  <div class="insight-card metric">
+    <h4>🔵 Metricas Destacadas</h4>
+    <ul>
+      <li>Mejor hora: 09:00–10:00 con 2,340 Kg/Hr — pico de productividad del dia.</li>
+      <li>Recepcion lidera en eficiencia por operario con 62.5 Kg/Op/Hr.</li>
+      <li>Calidad se mantiene estable en 97–99% — fortaleza de la operacion.</li>
+      <li>Tendencia de KG/HR mejora +3.2% vs semana anterior (S12).</li>
+    </ul>
+  </div>
+</div>
+
+</main>
+
+
+</div><!-- /mainApp -->
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    initDashboard();
+});
+
+// ═══════════════════════════════════════
+//  THEME TOGGLE
+// ═══════════════════════════════════════
+let currentTheme = localStorage.getItem('theme') || 'dark';
+document.documentElement.setAttribute('data-theme', currentTheme === 'light' ? 'light' : '');
+function toggleTheme() {
+    currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', currentTheme === 'light' ? 'light' : '');
+    localStorage.setItem('theme', currentTheme);
+    document.querySelector('.theme-toggle').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+    rebuildCharts();
+}
+
+// ═══════════════════════════════════════
+//  FILTER CHIPS
+// ═══════════════════════════════════════
+document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        filterByArea(chip.getAttribute('data-area'));
+    });
+});
+
+function filterByArea(area) {
+    const areaLabels = ['Recepcion', 'Acondicionado', 'Tuneles', 'Empaque', 'Despacho'];
+    const areaIndex = areaLabels.findIndex(a => a.toLowerCase() === area);
+    // Toggle visibility on area-based charts (radar, kgOpArea, oeeComp, efTurno, capacity)
+    const areaCharts = ['radar', 'kgOpArea', 'oeeComp', 'efTurno', 'capacity'];
+    areaCharts.forEach(key => {
+        if (!charts[key]) return;
+        charts[key].data.datasets.forEach(ds => {
+            if (area === 'todas') {
+                // Show all data points
+                ds.data.forEach((_, i) => {
+                    const meta = charts[key].getDatasetIndex ? null : null;
+                });
+            }
+        });
+        // Use metadata to hide/show individual bars
+        charts[key].data.labels.forEach((label, i) => {
+            charts[key].data.datasets.forEach((ds, dsi) => {
+                const meta = charts[key].getDatasetMeta(dsi);
+                if (meta.data[i]) {
+                    if (area === 'todas') {
+                        meta.data[i].hidden = false;
+                    } else {
+                        meta.data[i].hidden = (label.toLowerCase() !== area);
+                    }
+                }
+            });
+        });
+        charts[key].update();
+    });
+}
+
+// ═══════════════════════════════════════
+//  EXPORT
+// ═══════════════════════════════════════
+function exportData() {
+    const tables = document.querySelectorAll('.data-table');
+    let csv = '';
+    tables.forEach(t => {
+        const rows = t.querySelectorAll('tr');
+        rows.forEach(r => {
+            const cells = r.querySelectorAll('th, td');
+            csv += Array.from(cells).map(c => '"' + c.textContent.replace(/"/g, '""') + '"').join(',') + '\n';
+        });
+        csv += '\n';
+    });
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `productividad_${new Date().toISOString().slice(0,10)}.csv`;
+    link.click();
+}
+
+// ═══════════════════════════════════════
+//  CHART DEFAULTS
+// ═══════════════════════════════════════
+function getChartColors() {
+    const isDark = currentTheme === 'dark';
+    return {
+        grid: isDark ? 'rgba(148,163,184,0.15)' : 'rgba(148,163,184,0.15)',
+        text: isDark ? '#94a3b8' : '#94a3b8',
+        tooltip: isDark ? 'rgba(15,23,42,0.95)' : 'rgba(255,255,255,0.95)',
+        tooltipText: isDark ? '#f1f5f9' : '#0f172a'
+    };
+}
+
+Chart.defaults.font.family = "'Plus Jakarta Sans', 'Inter', sans-serif";
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.pointStyleWidth = 8;
+
+let charts = {};
+
+function initDashboard() {
+    buildKPIs();
+    buildTables();
+    rebuildCharts();
+}
+
+// ═══════════════════════════════════════
+//  KPI CARDS
+// ═══════════════════════════════════════
+function buildKPIs() {
+    const kpis = [
+        { icon: '⚡', label: 'Kg/Hr Global', value: '2,013', sub: 'Target: 2,000', trend: '+3.2%', trendDir: 'up', color: 'verde' },
+        { icon: '👤', label: 'Kg/Hr/Operario', value: '47.9', sub: 'Promedio por persona', trend: '+1.8%', trendDir: 'up', color: 'azul' },
+        { icon: '📦', label: 'Cajas/Hr', value: '92', sub: 'Cajas producidas por hora', trend: '+4.1%', trendDir: 'up', color: 'verde' },
+        { icon: '📦', label: 'Cj/Hr/Operario', value: '3.3', sub: 'Cajas por persona hora', trend: '+0.5%', trendDir: 'up', color: 'cyan' },
+        { icon: '🎯', label: 'OEE', value: '78%', sub: 'Disp × Rend × Cal', trend: '+2.1%', trendDir: 'up', color: 'azul' },
+        { icon: '🟢', label: 'Disponibilidad', value: '92%', sub: 'Tiempo operativo', trend: '+1.0%', trendDir: 'up', color: 'verde' },
+        { icon: '📈', label: 'Rendimiento', value: '87%', sub: 'Velocidad real vs teorica', trend: '-0.5%', trendDir: 'down', color: 'naranja' },
+        { icon: '✅', label: 'Calidad', value: '98%', sub: 'Producto conforme', trend: '+0.3%', trendDir: 'up', color: 'verde' },
+        { icon: '⏱️', label: 'Tiempo Muerto Total', value: '3.2 hr', sub: 'Paradas no programadas', trend: '-8.5%', trendDir: 'up', color: 'rose' },
+        { icon: '🔧', label: '% Uptime', value: '83.3%', sub: 'Disponibilidad efectiva', trend: '+1.2%', trendDir: 'up', color: 'amber' },
+        { icon: '👥', label: 'Personal Activo', value: '127', sub: 'Operarios en turno', trend: '0%', trendDir: 'neutral', color: 'purple' },
+        { icon: '💪', label: 'Eficiencia MOD', value: '87%', sub: 'Mano de obra directa', trend: '+2.4%', trendDir: 'up', color: 'azul' },
+    ];
+    const grid = document.getElementById('kpiGrid');
+    grid.innerHTML = kpis.map((k, i) => `
+        <div class="kpi-card animate-in" data-color="${k.color}" style="animation-delay:${i*0.04}s">
+            <div class="kpi-header">
+                <div class="kpi-icon">${k.icon}</div>
+                <span class="kpi-trend ${k.trendDir}">${k.trend}</span>
+            </div>
+            <div class="kpi-value">${k.value}</div>
+            <div class="kpi-label">${k.label}</div>
+            <div class="kpi-sub">${k.sub}</div>
+        </div>
+    `).join('');
+}
+
+// ═══════════════════════════════════════
+//  BUILD ALL CHARTS
+// ═══════════════════════════════════════
+function rebuildCharts() {
+    Object.values(charts).forEach(c => c.destroy());
+    charts = {};
+    const cc = getChartColors();
+
+    const baseOpts = (title) => ({
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { labels: { color: cc.text, font: { size: 11 } } },
+            tooltip: {
+                backgroundColor: cc.tooltip, titleColor: cc.tooltipText, bodyColor: cc.tooltipText,
+                borderColor: 'rgba(148,163,184,0.2)', borderWidth: 1, cornerRadius: 8, padding: 10
+            },
+            datalabels: { display: false }
+        },
+        scales: {
+            x: { grid: { color: cc.grid }, ticks: { color: cc.text, font: { size: 10 } } },
+            y: { grid: { color: cc.grid }, ticks: { color: cc.text, font: { size: 10 } } }
+        }
+    });
+
+    function setH(id, h) { document.getElementById(id).parentElement.style.height = h; }
+
+    // ─── 1. KG/HR Trend Semanal ───
+    setH('chartKgHrTrend', '300px');
+    charts.kgHrTrend = new Chart(document.getElementById('chartKgHrTrend'), {
+        type: 'line',
+        data: {
+            labels: ['S8', 'S9', 'S10', 'S11', 'S12', 'S13'],
+            datasets: [
+                {
+                    label: 'Kg/Hr Real', data: [1820, 1870, 1910, 1955, 1950, 2013],
+                    borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.1)',
+                    borderWidth: 3, fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#16a34a'
+                },
+                {
+                    label: 'Meta 2,000', data: [2000, 2000, 2000, 2000, 2000, 2000],
+                    borderColor: '#ea580c', borderWidth: 2, borderDash: [8, 4],
+                    pointRadius: 0, fill: false
+                },
+                {
+                    label: 'Proyeccion', data: [null, null, null, null, 2013, 2080],
+                    borderColor: 'rgba(22,163,74,0.4)', borderWidth: 2, borderDash: [4, 4],
+                    pointRadius: 0, fill: false
+                }
+            ]
+        },
+        options: baseOpts()
+    });
+
+    // ─── 2. KG/HR por Hora Hoy ───
+    setH('chartKgHrHoy', '300px');
+    charts.kgHrHoy = new Chart(document.getElementById('chartKgHrHoy'), {
+        type: 'bar',
+        data: {
+            labels: ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'],
+            datasets: [
+                {
+                    label: 'Kg/Hr', data: [1650, 1920, 2100, 2340, 2250, 1980, 1450, 2080, 2200, 2150, 1950, 1780],
+                    backgroundColor: ctx => ctx.raw >= 2000 ? 'rgba(22,163,74,0.7)' : 'rgba(234,88,12,0.7)',
+                    borderRadius: 6, borderSkipped: false
+                },
+                {
+                    label: 'Objetivo', data: [2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000,2000],
+                    type: 'line', borderColor: '#e11d48', borderWidth: 2, borderDash: [6,3],
+                    pointRadius: 0, fill: false
+                }
+            ]
+        },
+        options: baseOpts()
+    });
+
+    // ─── 3. Productividad por Area (Radar) ───
+    setH('chartRadar', '300px');
+    const radarOpts = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { labels: { color: cc.text } },
+            tooltip: { backgroundColor: cc.tooltip, titleColor: cc.tooltipText, bodyColor: cc.tooltipText },
+            datalabels: { display: false }
+        },
+        scales: {
+            r: {
+                angleLines: { color: cc.grid }, grid: { color: cc.grid },
+                pointLabels: { color: cc.text, font: { size: 11 } },
+                ticks: { color: cc.text, backdropColor: 'transparent' },
+                suggestedMin: 50, suggestedMax: 100
+            }
+        }
+    };
+    charts.radar = new Chart(document.getElementById('chartRadar'), {
+        type: 'radar',
+        data: {
+            labels: ['Recepcion', 'Acondicionado', 'Tuneles', 'Empaque', 'Despacho'],
+            datasets: [
+                {
+                    label: 'Actual', data: [92, 78, 74, 85, 88],
+                    borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.15)', borderWidth: 2, pointRadius: 4
+                },
+                {
+                    label: 'Target', data: [90, 85, 85, 90, 90],
+                    borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.08)', borderWidth: 2, borderDash: [5,3], pointRadius: 3
+                }
+            ]
+        },
+        options: radarOpts
+    });
+
+    // ─── 4. Kg/Op/Hr por Area (Horizontal Bar) ───
+    setH('chartKgOpArea', '300px');
+    const hOpts = JSON.parse(JSON.stringify(baseOpts()));
+    hOpts.indexAxis = 'y';
+    charts.kgOpArea = new Chart(document.getElementById('chartKgOpArea'), {
+        type: 'bar',
+        data: {
+            labels: ['Recepcion', 'Acondicionado', 'Tuneles', 'Empaque', 'Despacho'],
+            datasets: [{
+                label: 'Kg/Op/Hr', data: [62.5, 41.2, 38.7, 52.3, 55.1],
+                backgroundColor: ['rgba(22,163,74,0.7)','rgba(234,88,12,0.7)','rgba(225,29,72,0.7)','rgba(37,99,235,0.7)','rgba(124,58,237,0.7)'],
+                borderRadius: 6, borderSkipped: false
+            }]
+        },
+        options: hOpts
+    });
+
+    // ─── 5. OEE Components ───
+    setH('chartOEEComp', '300px');
+    charts.oeeComp = new Chart(document.getElementById('chartOEEComp'), {
+        type: 'bar',
+        data: {
+            labels: ['Recepcion', 'Acondicionado', 'Tuneles', 'Empaque', 'Despacho'],
+            datasets: [
+                { label: 'Disponibilidad', data: [95, 90, 88, 93, 94], backgroundColor: 'rgba(22,163,74,0.7)', borderRadius: 4 },
+                { label: 'Rendimiento', data: [90, 82, 78, 87, 85], backgroundColor: 'rgba(37,99,235,0.7)', borderRadius: 4 },
+                { label: 'Calidad', data: [99, 97, 98, 98, 99], backgroundColor: 'rgba(124,58,237,0.7)', borderRadius: 4 }
+            ]
+        },
+        options: { ...baseOpts(), scales: { ...baseOpts().scales, x: { ...baseOpts().scales.x, stacked: false }, y: { ...baseOpts().scales.y, max: 100 } } }
+    });
+
+    // ─── 6. OEE Trend ───
+    setH('chartOEETrend', '300px');
+    charts.oeeTrend = new Chart(document.getElementById('chartOEETrend'), {
+        type: 'line',
+        data: {
+            labels: ['S8', 'S9', 'S10', 'S11', 'S12', 'S13'],
+            datasets: [
+                {
+                    label: 'OEE %', data: [71, 73, 74, 76, 76.5, 78],
+                    borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)',
+                    borderWidth: 3, fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#2563eb'
+                },
+                {
+                    label: 'Target 85%', data: [85,85,85,85,85,85],
+                    borderColor: '#d97706', borderWidth: 2, borderDash: [8,4], pointRadius: 0, fill: false
+                }
+            ]
+        },
+        options: baseOpts()
+    });
+
+    // ─── 7. Balance de Linea ───
+    setH('chartBalance', '300px');
+    charts.balance = new Chart(document.getElementById('chartBalance'), {
+        type: 'bar',
+        data: {
+            labels: ['Lavado', 'Pelado', 'Cortado', 'Seleccion', 'Congelado', 'Empaque'],
+            datasets: [
+                {
+                    label: 'Capacidad', data: [2800, 2000, 2400, 2600, 2500, 2300],
+                    backgroundColor: 'rgba(148,163,184,0.2)', borderColor: 'rgba(148,163,184,0.4)', borderWidth: 1, borderRadius: 6
+                },
+                {
+                    label: 'Real', data: [2520, 1440, 2100, 2280, 2050, 2070],
+                    backgroundColor: ctx => {
+                        const cap = [2800,2000,2400,2600,2500,2300];
+                        const eff = ctx.raw / cap[ctx.dataIndex];
+                        return eff < 0.75 ? 'rgba(225,29,72,0.7)' : eff < 0.85 ? 'rgba(217,119,6,0.7)' : 'rgba(22,163,74,0.7)';
+                    },
+                    borderRadius: 6, borderSkipped: false
+                }
+            ]
+        },
+        options: baseOpts()
+    });
+
+    // ─── 8. Downtime by Category (Doughnut) ───
+    setH('chartDowntimeCat', '300px');
+    const doughnutOpts = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'right', labels: { color: cc.text, font: { size: 11 }, padding: 12 } },
+            tooltip: { backgroundColor: cc.tooltip, titleColor: cc.tooltipText, bodyColor: cc.tooltipText },
+            datalabels: {
+                display: true, color: '#fff', font: { weight: 'bold', size: 11 },
+                formatter: (v, ctx) => {
+                    const sum = ctx.dataset.data.reduce((a,b) => a+b, 0);
+                    return Math.round(v/sum*100) + '%';
+                }
+            }
+        }, cutout: '55%'
+    };
+    charts.downtimeCat = new Chart(document.getElementById('chartDowntimeCat'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Mecanico', 'Falta MP', 'Limpieza', 'Cambio Producto', 'Otros'],
+            datasets: [{
+                data: [35, 28, 15, 14, 8],
+                backgroundColor: ['#e11d48','#ea580c','#0891b2','#7c3aed','#64748b'],
+                borderWidth: 0, hoverOffset: 8
+            }]
+        },
+        options: doughnutOpts,
+        plugins: [ChartDataLabels]
+    });
+
+    // ─── 9. Downtime by Day (Stacked) ───
+    setH('chartDowntimeDay', '300px');
+    const stackedOpts = JSON.parse(JSON.stringify(baseOpts()));
+    stackedOpts.scales.x.stacked = true;
+    stackedOpts.scales.y.stacked = true;
+    charts.downtimeDay = new Chart(document.getElementById('chartDowntimeDay'), {
+        type: 'bar',
+        data: {
+            labels: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
+            datasets: [
+                { label: 'Mecanico', data: [25, 15, 40, 20, 10, 30], backgroundColor: 'rgba(225,29,72,0.7)', borderRadius: 2 },
+                { label: 'Falta MP', data: [10, 20, 30, 15, 25, 5], backgroundColor: 'rgba(234,88,12,0.7)', borderRadius: 2 },
+                { label: 'Limpieza', data: [15, 10, 12, 18, 8, 10], backgroundColor: 'rgba(8,145,178,0.7)', borderRadius: 2 },
+                { label: 'Cambio Prod.', data: [0, 25, 0, 0, 20, 0], backgroundColor: 'rgba(124,58,237,0.7)', borderRadius: 2 },
+                { label: 'Otros', data: [5, 8, 5, 10, 3, 5], backgroundColor: 'rgba(100,116,139,0.7)', borderRadius: 2 }
+            ]
+        },
+        options: stackedOpts
+    });
+
+    // ─── 10. Takt Time vs Cycle Time ───
+    setH('chartTaktCycle', '300px');
+    charts.taktCycle = new Chart(document.getElementById('chartTaktCycle'), {
+        type: 'bar',
+        data: {
+            labels: ['Lavado', 'Pelado', 'Cortado', 'Seleccion', 'Congelado', 'Empaque'],
+            datasets: [
+                { label: 'Takt Time (s)', data: [4.2, 4.2, 4.2, 4.2, 4.2, 4.2], backgroundColor: 'rgba(37,99,235,0.6)', borderRadius: 6 },
+                { label: 'Cycle Time (s)', data: [3.1, 5.8, 3.6, 3.4, 4.0, 3.8], backgroundColor: ctx => ctx.raw > 4.2 ? 'rgba(225,29,72,0.7)' : 'rgba(22,163,74,0.7)', borderRadius: 6 }
+            ]
+        },
+        options: baseOpts()
+    });
+
+    // ─── 11. Personal vs Produccion ───
+    setH('chartPersonalProd', '300px');
+    const dualOpts = JSON.parse(JSON.stringify(baseOpts()));
+    dualOpts.scales.y = { type: 'linear', position: 'left', grid: { color: cc.grid }, ticks: { color: '#16a34a', font: { size: 10 } }, title: { display: true, text: 'Personal', color: cc.text } };
+    dualOpts.scales.y1 = { type: 'linear', position: 'right', grid: { drawOnChartArea: false }, ticks: { color: '#2563eb', font: { size: 10 } }, title: { display: true, text: 'Kg Producidos', color: cc.text } };
+    charts.personalProd = new Chart(document.getElementById('chartPersonalProd'), {
+        type: 'bar',
+        data: {
+            labels: ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'],
+            datasets: [
+                {
+                    label: 'Personal', data: [125, 130, 127, 128, 132, 115],
+                    backgroundColor: 'rgba(22,163,74,0.6)', borderRadius: 6, yAxisID: 'y'
+                },
+                {
+                    label: 'Kg Producidos', data: [18200, 19500, 17800, 18900, 20100, 16500],
+                    type: 'line', borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.1)',
+                    borderWidth: 3, fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#2563eb', yAxisID: 'y1'
+                }
+            ]
+        },
+        options: dualOpts
+    });
+
+    // ─── 12. Eficiencia por Turno ───
+    setH('chartEfTurno', '300px');
+    charts.efTurno = new Chart(document.getElementById('chartEfTurno'), {
+        type: 'bar',
+        data: {
+            labels: ['Recepcion', 'Acondicionado', 'Tuneles', 'Empaque', 'Despacho'],
+            datasets: [
+                { label: 'Turno Dia', data: [94, 85, 80, 89, 91], backgroundColor: 'rgba(37,99,235,0.7)', borderRadius: 6 },
+                { label: 'Turno Noche', data: [88, 72, 68, 78, 84], backgroundColor: 'rgba(124,58,237,0.7)', borderRadius: 6 }
+            ]
+        },
+        options: baseOpts()
+    });
+
+    // ─── 13. Horas Productivas vs No Productivas (Pie) ───
+    setH('chartHorasProd', '300px');
+    const pieOpts = {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom', labels: { color: cc.text, font: { size: 11 }, padding: 14 } },
+            tooltip: { backgroundColor: cc.tooltip, titleColor: cc.tooltipText, bodyColor: cc.tooltipText },
+            datalabels: {
+                display: true, color: '#fff', font: { weight: 'bold', size: 12 },
+                formatter: (v) => v + ' hr'
+            }
+        }
+    };
+    charts.horasProd = new Chart(document.getElementById('chartHorasProd'), {
+        type: 'pie',
+        data: {
+            labels: ['Productivas', 'Setup', 'Paradas', 'Limpieza', 'Inactivo'],
+            datasets: [{
+                data: [15.8, 1.2, 2.0, 0.8, 0.2],
+                backgroundColor: ['#16a34a','#2563eb','#e11d48','#0891b2','#64748b'],
+                borderWidth: 0, hoverOffset: 10
+            }]
+        },
+        options: pieOpts,
+        plugins: [ChartDataLabels]
+    });
+
+    // ─── 14. Capacity Utilization (Horizontal Bars = Gauge Style) ───
+    setH('chartCapacity', '300px');
+    const capOpts = JSON.parse(JSON.stringify(baseOpts()));
+    capOpts.indexAxis = 'y';
+    capOpts.scales.x.max = 100;
+    capOpts.plugins.datalabels = { display: true, anchor: 'end', align: 'start', color: '#fff', font: { weight: 'bold', size: 11 }, formatter: v => v + '%' };
+    charts.capacity = new Chart(document.getElementById('chartCapacity'), {
+        type: 'bar',
+        data: {
+            labels: ['Recepcion', 'Acondicionado', 'Tuneles', 'Empaque', 'Despacho'],
+            datasets: [{
+                label: 'Utilizacion %', data: [90, 78, 72, 85, 88],
+                backgroundColor: ctx => {
+                    const v = ctx.raw;
+                    return v >= 85 ? 'rgba(22,163,74,0.8)' : v >= 75 ? 'rgba(217,119,6,0.8)' : 'rgba(225,29,72,0.8)';
+                },
+                borderRadius: 6, borderSkipped: false, barThickness: 28
+            }]
+        },
+        options: capOpts,
+        plugins: [ChartDataLabels]
+    });
+}
+
+// ═══════════════════════════════════════
+//  BUILD TABLES
+// ═══════════════════════════════════════
+function buildTables() {
+    // Table 1: Productividad por Area y Turno
+    const prodData = [
+        ['Recepcion', 'Dia', 18, 520, 62.5, 24, '94%', 'badge-green'],
+        ['Recepcion', 'Noche', 15, 460, 55.8, 21, '88%', 'badge-green'],
+        ['Acondicionado', 'Dia', 35, 580, 41.2, 26, '85%', 'badge-green'],
+        ['Acondicionado', 'Noche', 30, 450, 33.7, 20, '72%', 'badge-amber'],
+        ['Tuneles', 'Dia', 12, 480, 38.7, 22, '80%', 'badge-amber'],
+        ['Tuneles', 'Noche', 10, 370, 30.2, 17, '68%', 'badge-red'],
+        ['Empaque', 'Dia', 22, 510, 52.3, 23, '89%', 'badge-green'],
+        ['Empaque', 'Noche', 18, 420, 40.5, 19, '78%', 'badge-amber'],
+        ['Despacho', 'Dia', 8, 350, 55.1, 16, '91%', 'badge-green'],
+        ['Despacho', 'Noche', 6, 290, 48.3, 13, '84%', 'badge-green'],
+    ];
+    const tb1 = document.querySelector('#tableProductividad tbody');
+    tb1.innerHTML = prodData.map(r => `<tr>
+        <td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td>
+        <td>${r[4]}</td><td>${r[5]}</td><td><span class="badge ${r[7]}">${r[6]}</span></td>
+        <td><span class="badge ${r[7]}">${parseFloat(r[6])>=85?'Optimo':parseFloat(r[6])>=75?'Aceptable':'Bajo'}</span></td>
+    </tr>`).join('');
+
+    // Table 2: Desglose Tiempo Muerto
+    const downData = [
+        ['24/03/2026', 'Mecanico', 45, 'Acondicionado', 'Falla faja transportadora', 'Reemplazo rodamiento'],
+        ['24/03/2026', 'Falta MP', 30, 'Recepcion', 'Retraso camion proveedor', 'Coordinacion logistica'],
+        ['23/03/2026', 'Cambio Prod.', 47, 'Empaque', 'Cambio Mango → Arandano', 'Estandarizar procedimiento'],
+        ['23/03/2026', 'Limpieza', 25, 'Tuneles', 'Limpieza profunda tunel 3', 'Programar fuera de turno'],
+        ['22/03/2026', 'Mecanico', 35, 'Tuneles', 'Falla compresor congelacion', 'Mantenimiento preventivo'],
+        ['22/03/2026', 'Falta MP', 20, 'Acondicionado', 'Fruta sin madurar adecuada', 'Control calidad recepcion'],
+        ['21/03/2026', 'Otros', 15, 'Empaque', 'Corte electrico parcial', 'Revision red electrica'],
+        ['21/03/2026', 'Mecanico', 25, 'Acondicionado', 'Calibracion seleccionadora', 'Checkeo preventivo diario'],
+    ];
+    const tb2 = document.querySelector('#tableDowntime tbody');
+    tb2.innerHTML = downData.map(r => {
+        const typeClass = r[1]==='Mecanico'?'badge-red':r[1]==='Falta MP'?'badge-amber':r[1]==='Limpieza'?'badge-blue':'badge-purple';
+        return `<tr>
+            <td>${r[0]}</td><td><span class="badge ${typeClass}">${r[1]}</span></td>
+            <td>${r[2]} min</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td>
+        </tr>`;
+    }).join('');
+
+    // Table 3: OEE Semanal
+    const oeeData = [
+        ['S8', 89, 83, 97, 71, 'badge-red'],
+        ['S9', 90, 84, 97, 73, 'badge-amber'],
+        ['S10', 91, 84, 97, 74, 'badge-amber'],
+        ['S11', 91, 86, 97, 76, 'badge-amber'],
+        ['S12', 91, 86, 98, 76.5, 'badge-amber'],
+        ['S13', 92, 87, 98, 78, 'badge-amber'],
+    ];
+    const tb3 = document.querySelector('#tableOEE tbody');
+    tb3.innerHTML = oeeData.map(r => `<tr>
+        <td><strong>${r[0]}</strong></td><td>${r[1]}%</td><td>${r[2]}%</td><td>${r[3]}%</td>
+        <td><span class="badge ${r[5]}">${r[4]}%</span></td>
+        <td><span class="badge ${r[4]>=85?'badge-green':r[4]>=75?'badge-amber':'badge-red'}">${r[4]>=85?'Target':r[4]>=75?'Cerca':'Bajo'}</span></td>
+    </tr>`).join('');
+
+    // Table 4: Balance de Linea
+    const balData = [
+        ['Lavado', 2800, 2520, 90, 'No'],
+        ['Pelado', 2000, 1440, 72, 'SI'],
+        ['Cortado', 2400, 2100, 87.5, 'No'],
+        ['Seleccion', 2600, 2280, 87.7, 'No'],
+        ['Congelado', 2500, 2050, 82, 'No'],
+        ['Empaque', 2300, 2070, 90, 'No'],
+    ];
+    const tb4 = document.querySelector('#tableBalance tbody');
+    tb4.innerHTML = balData.map(r => `<tr>
+        <td><strong>${r[0]}</strong></td><td>${r[1].toLocaleString()}</td><td>${r[2].toLocaleString()}</td>
+        <td><span class="badge ${r[3]>=85?'badge-green':r[3]>=75?'badge-amber':'badge-red'}">${r[3]}%</span></td>
+        <td><span class="badge ${r[4]==='SI'?'badge-red':'badge-green'}">${r[4]==='SI'?'⚠️ SI':'✅ No'}</span></td>
+    </tr>`).join('');
+}
+
+</script>
+</body>
+</html>

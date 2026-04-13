@@ -1,0 +1,21 @@
+<!-- Panel: Proyecciones -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">📈 <span style="color:var(--verde)">Proyecciones</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Tendencias y proyecciones de produccion</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Proyeccion Semanal</div><div class="kpi-value" id="proySemanal">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Proyeccion Mensual</div><div class="kpi-value" id="proyMensual">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Tendencia</div><div class="kpi-value" id="proyTendencia">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Dias Analizados</div><div class="kpi-value" id="proyDias">—</div></div>
+</div>
+
+<div class="charts-grid charts-grid-1" style="margin-top:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">📈 Tendencia de Produccion y Proyeccion</div></div>
+    <div class="chart-wrapper"><canvas id="chartProyTendencia"></canvas></div>
+  </div>
+</div>

@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produccion del Dia — Frutos Tropicales Peru Export S.A.C.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+  --verde: #16a34a;
+  --verde-light: #22c55e;
+  --naranja: #ea580c;
+  --naranja-light: #f97316;
+  --azul: #2563eb;
+  --azul-light: #3b82f6;
+  --purple: #7c3aed;
+  --purple-light: #8b5cf6;
+  --cyan: #0891b2;
+  --cyan-light: #06b6d4;
+  --amber: #d97706;
+  --amber-light: #f59e0b;
+  --rose: #e11d48;
+  --rose-light: #f43f5e;
+  --bg-primary: #f0f4f8;
+  --bg-secondary: #ffffff;
+  --bg-card: rgba(255,255,255,0.85);
+  --bg-glass: rgba(255,255,255,0.6);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: rgba(0,0,0,0.08);
+  --shadow: 0 4px 24px rgba(0,0,0,0.06);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.1);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --chart-grid: rgba(0,0,0,0.08);
+  --chart-text: #94a3b8;
+  --topbar-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  --gold: #fbbf24;
+  --gold-shimmer: linear-gradient(90deg, #fbbf24, #f5f5f5, #fbbf24);
+}
+
+[data-theme="dark"] {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-card: rgba(30,41,59,0.85);
+  --bg-glass: rgba(30,41,59,0.6);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.4);
+  --chart-grid: rgba(255,255,255,0.15);
+  --chart-text: #94a3b8;
+  --topbar-bg: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: background 0.4s, color 0.4s;
+}
+
+/* TOPBAR */
+.topbar {
+  background: var(--topbar-bg);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+}
+.topbar-left { display:flex; align-items:center; gap:16px; }
+.portal-back-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:#16a34a;text-decoration:none;font-size:13px;font-weight:600;transition:all 0.3s}
+.portal-back-link:hover{background:rgba(22,163,74,0.2);transform:translateX(-2px)}
+.topbar-title {
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+.topbar-title span { color: var(--verde-light); }
+.topbar-right { display:flex; align-items:center; gap:16px; }
+.topbar-clock {
+  color: #cbd5e1;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  background: rgba(255,255,255,0.06);
+  padding: 6px 14px;
+  border-radius: 8px;
+}
+.theme-toggle {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #fbbf24;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  display: flex; align-items:center; justify-content:center;
+  transition: all 0.3s;
+}
+.theme-toggle:hover { background: rgba(255,255,255,0.15); transform: rotate(20deg); }
+/* STATUS BAR */
+.status-bar {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.status-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  padding: 6px 14px;
+  background: var(--bg-glass);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+}
+.status-chip .dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s ease infinite;
+}
+.dot-green { background: var(--verde); }
+.dot-amber { background: var(--amber); }
+.dot-blue { background: var(--azul); }
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.5; transform:scale(1.3); }
+}
+.status-chip strong { color: var(--text-primary); font-weight: 600; }
+
+/* MAIN */
+.main-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 20px 24px 60px;
+}
+
+/* FILTER BAR */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.filter-bar label {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.filter-input {
+  padding: 8px 14px;
+  border-radius: var(--radius-xs);
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border 0.2s;
+}
+.filter-input:focus { border-color: var(--verde); }
+.filter-chips { display:flex; gap:6px; }
+.chip {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: 1.5px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: inherit;
+}
+.chip:hover { border-color: var(--verde); color: var(--verde); }
+.chip.active {
+  background: var(--verde);
+  color: #fff;
+  border-color: var(--verde);
+  box-shadow: 0 4px 12px rgba(22,163,74,0.3);
+}
+.chip.active-naranja { background: var(--naranja); border-color: var(--naranja); color: #fff; box-shadow: 0 4px 12px rgba(234,88,12,0.3); }
+.chip.active-purple { background: var(--purple); border-color: var(--purple); color: #fff; box-shadow: 0 4px 12px rgba(124,58,237,0.3); }
+.chip.active-rose { background: var(--rose); border-color: var(--rose); color: #fff; box-shadow: 0 4px 12px rgba(225,29,72,0.3); }
+
+/* PROGRESS BAR */
+.progress-section {
+  margin-bottom: 20px;
+  padding: 20px 24px;
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.progress-header h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.progress-header .progress-pct {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--verde);
+}
+.progress-track {
+  width: 100%;
+  height: 28px;
+  background: var(--bg-primary);
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--verde), var(--verde-light), var(--cyan));
+  border-radius: 14px;
+  transition: width 1.5s cubic-bezier(0.22,1,0.36,1);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 12px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  background-size: 200% 100%;
+  animation: progressShine 3s ease infinite;
+}
+@keyframes progressShine {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+/* KPI GRID */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(185px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.kpi-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  box-shadow: var(--shadow);
+  transition: all 0.35s cubic-bezier(0.22,1,0.36,1);
+  position: relative;
+  overflow: hidden;
+  animation: cardIn 0.5s cubic-bezier(0.16,1,0.3,1) backwards;
+}
+.kpi-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.kpi-card.verde::before { background: linear-gradient(90deg, var(--verde), var(--verde-light)); }
+.kpi-card.naranja::before { background: linear-gradient(90deg, var(--naranja), var(--naranja-light)); }
+.kpi-card.azul::before { background: linear-gradient(90deg, var(--azul), var(--azul-light)); }
+.kpi-card.purple::before { background: linear-gradient(90deg, var(--purple), var(--purple-light)); }
+.kpi-card.cyan::before { background: linear-gradient(90deg, var(--cyan), var(--cyan-light)); }
+.kpi-card.amber::before { background: linear-gradient(90deg, var(--amber), var(--amber-light)); }
+.kpi-card.rose::before { background: linear-gradient(90deg, var(--rose), var(--rose-light)); }
+.kpi-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  margin-bottom: 12px;
+}
+.kpi-icon.verde { background: rgba(22,163,74,0.1); color: var(--verde); }
+.kpi-icon.naranja { background: rgba(234,88,12,0.1); color: var(--naranja); }
+.kpi-icon.azul { background: rgba(37,99,235,0.1); color: var(--azul); }
+.kpi-icon.purple { background: rgba(124,58,237,0.1); color: var(--purple); }
+.kpi-icon.cyan { background: rgba(8,145,178,0.1); color: var(--cyan); }
+.kpi-icon.amber { background: rgba(217,119,6,0.1); color: var(--amber); }
+.kpi-icon.rose { background: rgba(225,29,72,0.1); color: var(--rose); }
+.kpi-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  line-height: 1.1;
+}
+.kpi-sub {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+@keyframes cardIn {
+  from { opacity:0; transform: translateY(20px) scale(0.96); }
+  to { opacity:1; transform: translateY(0) scale(1); }
+}
+
+/* CHART GRID */
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.chart-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
+  transition: all 0.35s;
+  animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) backwards;
+}
+.chart-card:hover { box-shadow: var(--shadow-lg); }
+.chart-card.full-width { grid-column: 1 / -1; }
+.chart-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.chart-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 280px;
+}
+.chart-container.tall { height: 320px; }
+
+/* TABLE */
+.table-section {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+  overflow-x: auto;
+  animation: cardIn 0.7s cubic-bezier(0.16,1,0.3,1) backwards;
+}
+.table-section h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+.data-table thead th {
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.5px;
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+}
+.data-table tbody td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+.data-table tbody tr:hover { background: rgba(22,163,74,0.04); }
+.data-table tbody tr.almuerzo {
+  background: rgba(217,119,6,0.08);
+  font-style: italic;
+  color: var(--amber);
+}
+.data-table tfoot td {
+  padding: 12px 14px;
+  font-weight: 800;
+  background: var(--bg-primary);
+  border-top: 2px solid var(--verde);
+  color: var(--verde);
+}
+.rend-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.78rem;
+}
+.rend-high { background: rgba(22,163,74,0.12); color: var(--verde); }
+.rend-mid { background: rgba(217,119,6,0.12); color: var(--amber); }
+.rend-low { background: rgba(225,29,72,0.12); color: var(--rose); }
+
+/* TIMELINE */
+.timeline-section {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 24px;
+}
+.timeline-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 16px; }
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  position: relative;
+  padding: 10px 0;
+}
+.timeline-line {
+  flex: 1;
+  height: 4px;
+  background: linear-gradient(90deg, var(--verde), var(--azul), var(--amber), var(--verde));
+  border-radius: 2px;
+  position: relative;
+}
+.timeline-event {
+  position: absolute;
+  top: -30px;
+  transform: translateX(-50%);
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.timeline-event::after {
+  content: '';
+  display: block;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--verde);
+  border: 3px solid var(--bg-card);
+  margin: 4px auto 0;
+  box-shadow: 0 2px 8px rgba(22,163,74,0.3);
+}
+.timeline-event.amber::after { background: var(--amber); box-shadow: 0 2px 8px rgba(217,119,6,0.3); }
+.timeline-event.rose::after { background: var(--rose); box-shadow: 0 2px 8px rgba(225,29,72,0.3); }
+.timeline-event.azul::after { background: var(--azul); box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+.timeline-event .ev-time { font-weight: 800; color: var(--text-primary); display:block; }
+
+/* FOOTER / SIGNATURE */
+/* LOGO */
+.dash-logo{height:48px;width:auto;filter:drop-shadow(0 4px 16px rgba(22,163,74,0.4)) drop-shadow(0 2px 8px rgba(0,0,0,0.3));animation:logoFloat 4s ease-in-out infinite,logoGlow 3s ease-in-out infinite}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 4px 16px rgba(22,163,74,0.3)) drop-shadow(0 2px 8px rgba(0,0,0,0.3))}50%{filter:drop-shadow(0 6px 24px rgba(22,163,74,0.6)) drop-shadow(0 2px 12px rgba(212,175,55,0.2))}}
+.dash-brand-text{font-size:10px;text-transform:uppercase;letter-spacing:4px;font-weight:800;background:linear-gradient(135deg,#d4af37,#fff8dc,#d4af37);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmerGold 3s ease infinite}
+
+.topbar-dev-signature{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 22px;border-radius:20px;background:linear-gradient(145deg,rgba(10,18,32,0.85),rgba(20,30,48,0.9),rgba(15,25,40,0.85));border:1px solid rgba(212,175,55,0.3);position:relative;overflow:hidden;backdrop-filter:blur(16px);animation:firmaBorderGlow 4s ease infinite;box-shadow:0 0 20px rgba(212,175,55,0.08),inset 0 1px 0 rgba(255,255,255,0.06)}
+.topbar-dev-signature::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),rgba(255,255,255,0.05),transparent);animation:firmaShine 5s ease-in-out infinite;pointer-events:none}
+.topbar-dev-signature::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(212,175,55,0.03) 0%,transparent 40%,rgba(192,192,192,0.03) 60%,transparent 100%);pointer-events:none}
+.topbar-dev-signature>*{position:relative;z-index:1}
+.topbar-sig-label{font-size:7px;color:rgba(212,175,55,0.7);text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.topbar-dev-signature .signature-name{font-size:14px;font-weight:900;letter-spacing:0.3px;background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:signatureShimmer 4s ease infinite;line-height:1.3}
+.topbar-dev-signature .signature-role{font-size:9px;font-weight:700;color:#22c55e;letter-spacing:0.5px}
+@keyframes firmaBorderGlow{0%,100%{border-color:rgba(212,175,55,0.2);box-shadow:0 2px 12px rgba(0,0,0,0.15)}50%{border-color:rgba(212,175,55,0.45);box-shadow:0 2px 24px rgba(212,175,55,0.15),0 4px 16px rgba(0,0,0,0.2)}}
+@keyframes firmaShine{0%{left:-100%}50%,100%{left:200%}}
+@keyframes signatureShimmer{0%{background-position:100% 0}50%{background-position:0% 0}100%{background-position:-100% 0}}
+@keyframes shineSweep{0%{left:-100%}100%{left:200%}}
+@keyframes borderGlow{0%,100%{border-color:rgba(212,175,55,0.25)}50%{border-color:rgba(212,175,55,0.5)}}
+.signature-badge{font-size:9px;font-weight:800;color:#d4af37;letter-spacing:2px;padding:2px 8px;border:1px solid rgba(212,175,55,0.3);border-radius:4px}
+.signature-name{font-size:12px;font-weight:700;background:linear-gradient(135deg,#d4af37,#f5e6a3,#c0c0c0,#d4af37);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmerGold 4s ease infinite}
+@keyframes shimmerGold{0%{background-position:100% 0}100%{background-position:-100% 0}}
+.signature-role{font-size:10px;color:#16a34a;font-weight:600}
+.sig-label{font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#94a3b8}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--text-muted); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-secondary); }
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .chart-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .topbar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+  .topbar-title { font-size: 1rem; }
+  .filter-bar { gap: 8px; }
+  .main-content { padding: 16px 12px 60px; }
+}
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  body { padding:0; }
+  .topbar, [class*="topbar"] { flex-wrap:wrap; padding:10px 14px; gap:6px; }
+  .topbar-dev-signature, [class*="dev-signature"] { padding:5px 10px; }
+  .topbar-dev-signature .signature-name, [class*="signature-name"] { font-size:10px; }
+  .topbar-dev-signature .signature-role, [class*="signature-role"] { font-size:7px; }
+  .dash-logo { width:32px; height:32px; }
+  .dash-brand-text { font-size:14px; }
+  .portal-back-link { font-size:11px; padding:4px 8px; }
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:repeat(2, 1fr) !important; gap:8px; }
+  .kpi-value, [class*="kpi-value"] { font-size:22px; }
+  .grid-2, .grid-23, .charts-grid, [class*="grid-2"] { grid-template-columns:1fr !important; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:200px; }
+  .card, [class*="card"] { padding:12px; border-radius:12px; }
+  .data-table, table { font-size:11px; }
+  .data-table th, .data-table td, table th, table td { padding:6px 8px; white-space:nowrap; }
+  .filter-bar, [class*="filter"] { flex-wrap:wrap; gap:6px; }
+  .filter-chip, [class*="chip"] { font-size:11px; padding:4px 10px; }
+  h1, .section-title { font-size:18px; }
+  h2 { font-size:16px; }
+  .insights-grid, .analysis-grid { grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:1fr !important; }
+  .topbar-dev-signature, [class*="dev-signature"] { display:none; }
+  .kpi-value, [class*="kpi-value"] { font-size:20px; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:170px; }
+  h1, .section-title { font-size:16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- MAIN APP -->
+<div id="mainApp">
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="index.html" class="portal-back-link">&#8592; Portal</a>
+    <img src="LOGO.png" alt="Frutos Tropicales" class="dash-logo">
+    <div class="dash-brand-text">Produccion del Dia</div>
+  </div>
+  <div class="topbar-right">
+    <div class="topbar-dev-signature">
+      <div class="topbar-sig-label">Desarrollado por:</div>
+      <div class="signature-name">Rodrigo Garcia</div>
+      <div class="signature-role">Systems Analyst &amp; Developer-QA</div>
+    </div>
+    <span class="topbar-clock" id="liveClock">--:--:--</span>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">&#9788;</button>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div class="status-bar">
+  <div class="status-chip">
+    <span class="dot dot-green"></span>
+    <span>Turno: <strong>Dia (07:00 - 19:00)</strong></span>
+  </div>
+  <div class="status-chip">
+    <span class="dot dot-blue"></span>
+    <span>Horas Transcurridas: <strong id="hoursElapsed">7</strong></span>
+  </div>
+  <div class="status-chip">
+    <span class="dot dot-green"></span>
+    <span>Linea 1: <strong>Activa</strong></span>
+  </div>
+  <div class="status-chip">
+    <span class="dot dot-amber"></span>
+    <span>Fruta: <strong>Mango</strong></span>
+  </div>
+  <div class="status-chip">
+    <span>Fecha: <strong>25/03/2026</strong></span>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main-content">
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <label>Fecha</label>
+  <input type="date" class="filter-input" value="2026-03-25">
+  <label>Turno</label>
+  <div class="filter-chips">
+    <button class="chip active" onclick="setChip(this,'turno')">Dia</button>
+    <button class="chip" onclick="setChip(this,'turno')">Noche</button>
+    <button class="chip" onclick="setChip(this,'turno')">Ambos</button>
+  </div>
+  <label>Fruta</label>
+  <div class="filter-chips">
+    <button class="chip active-naranja chip-active" onclick="setChipFruit(this)">&#129389; Mango</button>
+    <button class="chip" onclick="setChipFruit(this)">&#129744; Arandano</button>
+    <button class="chip" onclick="setChipFruit(this)">&#127823; Granada</button>
+  </div>
+  <label>Linea</label>
+  <select class="filter-input">
+    <option>Linea 1</option>
+    <option>Linea 2</option>
+    <option>Todas</option>
+  </select>
+</div>
+
+<!-- PROGRESS -->
+<div class="progress-section">
+  <div class="progress-header">
+    <h3>&#127919; Avance Meta Diaria — Consumo de Materia Prima</h3>
+    <div class="progress-pct">88%</div>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" style="width:88%;">14,090 kg</div>
+  </div>
+  <div class="progress-labels">
+    <span>0 kg</span>
+    <span>Meta: 16,000 kg</span>
+  </div>
+</div>
+
+<!-- KPI CARDS -->
+<div class="kpi-grid">
+  <div class="kpi-card verde" style="animation-delay:0.05s">
+    <div class="kpi-icon verde">&#127823;</div>
+    <div class="kpi-label">Consumo MP Hoy</div>
+    <div class="kpi-value">14,090</div>
+    <div class="kpi-sub">kg materia prima</div>
+  </div>
+  <div class="kpi-card azul" style="animation-delay:0.1s">
+    <div class="kpi-icon azul">&#10052;</div>
+    <div class="kpi-label">Chunks IQF</div>
+    <div class="kpi-value">6,437</div>
+    <div class="kpi-sub">kg producto final</div>
+  </div>
+  <div class="kpi-card naranja" style="animation-delay:0.15s">
+    <div class="kpi-icon naranja">&#128200;</div>
+    <div class="kpi-label">Rendimiento</div>
+    <div class="kpi-value">45.7%</div>
+    <div class="kpi-sub">Chunks / Consumo</div>
+  </div>
+  <div class="kpi-card purple" style="animation-delay:0.2s">
+    <div class="kpi-icon purple">&#128230;</div>
+    <div class="kpi-label">Cajas Producidas</div>
+    <div class="kpi-value">644</div>
+    <div class="kpi-sub">cajas x 10 kg</div>
+  </div>
+  <div class="kpi-card cyan" style="animation-delay:0.25s">
+    <div class="kpi-icon cyan">&#9889;</div>
+    <div class="kpi-label">Kg / Hora</div>
+    <div class="kpi-value">2,013</div>
+    <div class="kpi-sub">consumo promedio</div>
+  </div>
+  <div class="kpi-card verde" style="animation-delay:0.3s">
+    <div class="kpi-icon verde">&#128101;</div>
+    <div class="kpi-label">Personal Activo</div>
+    <div class="kpi-value">42</div>
+    <div class="kpi-sub">operarios en turno</div>
+  </div>
+  <div class="kpi-card amber" style="animation-delay:0.35s">
+    <div class="kpi-icon amber">&#9851;</div>
+    <div class="kpi-label">ByP (Subproducto)</div>
+    <div class="kpi-value">563</div>
+    <div class="kpi-sub">kg byproduct</div>
+  </div>
+  <div class="kpi-card azul" style="animation-delay:0.4s">
+    <div class="kpi-icon azul">&#9201;</div>
+    <div class="kpi-label">Hrs Efectivas</div>
+    <div class="kpi-value">7</div>
+    <div class="kpi-sub">horas produccion</div>
+  </div>
+  <div class="kpi-card naranja" style="animation-delay:0.45s">
+    <div class="kpi-icon naranja">&#127919;</div>
+    <div class="kpi-label">Meta Diaria</div>
+    <div class="kpi-value">88%</div>
+    <div class="kpi-sub">14,090 / 16,000 kg</div>
+  </div>
+  <div class="kpi-card rose" style="animation-delay:0.5s">
+    <div class="kpi-icon rose">&#127777;</div>
+    <div class="kpi-label">Temperatura IQF</div>
+    <div class="kpi-value">-30.1&deg;C</div>
+    <div class="kpi-sub">tunel promedio</div>
+  </div>
+</div>
+
+<!-- CHARTS -->
+<div class="chart-grid">
+  <!-- Chart 1: Consumo vs Chunks por Hora -->
+  <div class="chart-card" style="animation-delay:0.1s">
+    <div class="chart-title">Consumo vs Chunks por Hora</div>
+    <div class="chart-subtitle">Materia prima consumida vs producto final — kg</div>
+    <div class="chart-container"><canvas id="chartConsumoChunks"></canvas></div>
+  </div>
+
+  <!-- Chart 2: Rendimiento por Hora -->
+  <div class="chart-card" style="animation-delay:0.15s">
+    <div class="chart-title">Rendimiento % por Hora</div>
+    <div class="chart-subtitle">Objetivo: 50% — Linea roja de referencia</div>
+    <div class="chart-container"><canvas id="chartRendimiento"></canvas></div>
+  </div>
+
+  <!-- Chart 3: Cajas por Hora -->
+  <div class="chart-card" style="animation-delay:0.2s">
+    <div class="chart-title">Cajas Producidas por Hora</div>
+    <div class="chart-subtitle">Proyeccion: 92 cajas/hr</div>
+    <div class="chart-container"><canvas id="chartCajas"></canvas></div>
+  </div>
+
+  <!-- Chart 4: Kg/Hr Trend -->
+  <div class="chart-card" style="animation-delay:0.25s">
+    <div class="chart-title">Kg/Hr Tendencia</div>
+    <div class="chart-subtitle">Consumo de materia prima por hora</div>
+    <div class="chart-container"><canvas id="chartKgHr"></canvas></div>
+  </div>
+
+  <!-- Chart 5: Produccion Acumulada -->
+  <div class="chart-card full-width" style="animation-delay:0.3s">
+    <div class="chart-title">Produccion Acumulada en el Dia</div>
+    <div class="chart-subtitle">Consumo acumulado vs Chunks acumulados — area chart</div>
+    <div class="chart-container tall"><canvas id="chartAcumulado"></canvas></div>
+  </div>
+
+  <!-- Chart 6: Distribucion Hora a Hora -->
+  <div class="chart-card" style="animation-delay:0.35s">
+    <div class="chart-title">Distribucion Hora a Hora</div>
+    <div class="chart-subtitle">Chunks + ByP + Merma = Consumo</div>
+    <div class="chart-container"><canvas id="chartDistribucion"></canvas></div>
+  </div>
+
+  <!-- Chart 7: Personal por Hora -->
+  <div class="chart-card" style="animation-delay:0.4s">
+    <div class="chart-title">Personal Activo por Hora</div>
+    <div class="chart-subtitle">Operarios en linea de produccion</div>
+    <div class="chart-container"><canvas id="chartPersonal"></canvas></div>
+  </div>
+
+  <!-- Chart 8: Temperatura Tuneles -->
+  <div class="chart-card" style="animation-delay:0.45s">
+    <div class="chart-title">Temperatura Tuneles IQF</div>
+    <div class="chart-subtitle">3 tuneles monitoreados — grados Celsius</div>
+    <div class="chart-container"><canvas id="chartTemp"></canvas></div>
+  </div>
+
+  <!-- Chart 9: Eficiencia por Hora -->
+  <div class="chart-card" style="animation-delay:0.5s">
+    <div class="chart-title">Eficiencia por Hora</div>
+    <div class="chart-subtitle">Verde >85% | Amarillo 70-85% | Rojo &lt;70%</div>
+    <div class="chart-container"><canvas id="chartEficiencia"></canvas></div>
+  </div>
+
+  <!-- Chart 10: Consumo por Linea -->
+  <div class="chart-card" style="animation-delay:0.55s">
+    <div class="chart-title">Consumo MP por Linea</div>
+    <div class="chart-subtitle">Distribucion entre lineas de produccion</div>
+    <div class="chart-container"><canvas id="chartLinea"></canvas></div>
+  </div>
+
+  <!-- Chart 11: Comparativo vs Ayer -->
+  <div class="chart-card full-width" style="animation-delay:0.6s">
+    <div class="chart-title">Comparativo Hoy vs Ayer</div>
+    <div class="chart-subtitle">Consumo MP hora a hora — Hoy vs 24 Marzo 2026</div>
+    <div class="chart-container tall"><canvas id="chartVsAyer"></canvas></div>
+  </div>
+</div>
+
+<!-- DATA TABLE -->
+<div class="table-section" style="animation-delay:0.65s">
+  <h3>&#128202; Detalle Hora a Hora — Produccion del Dia</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Hora</th>
+        <th>Fruta</th>
+        <th>Linea</th>
+        <th>Consumo (kg)</th>
+        <th>Chunks (kg)</th>
+        <th>Cajas</th>
+        <th>Rend %</th>
+        <th>ByP (kg)</th>
+        <th>Personal</th>
+        <th>Kg/Hr</th>
+        <th>Observacion</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+    <tfoot id="tableFoot"></tfoot>
+  </table>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline-section">
+  <h3>&#128337; Linea de Tiempo — Eventos del Turno</h3>
+  <div style="position:relative; height:70px; margin-top:20px;">
+    <div class="timeline-line" style="position:absolute; top:36px; left:2%; right:2%;"></div>
+    <div class="timeline-event" style="left:2%;">
+      <span class="ev-time">07:00</span>Inicio Turno
+    </div>
+    <div class="timeline-event azul" style="left:15%;">
+      <span class="ev-time">08:30</span>Pico Consumo
+    </div>
+    <div class="timeline-event" style="left:32%;">
+      <span class="ev-time">10:00</span>Ajuste Linea
+    </div>
+    <div class="timeline-event azul" style="left:48%;">
+      <span class="ev-time">11:15</span>Max Rend 46.5%
+    </div>
+    <div class="timeline-event amber" style="left:60%;">
+      <span class="ev-time">13:00</span>Almuerzo
+    </div>
+    <div class="timeline-event" style="left:75%;">
+      <span class="ev-time">14:00</span>Reinicio
+    </div>
+    <div class="timeline-event rose" style="left:90%;">
+      <span class="ev-time">14:50</span>Ultimo Reg.
+    </div>
+  </div>
+</div>
+
+
+</div><!-- main-content -->
+</div><!-- mainApp -->
+
+<script>
+// ============ INIT ON LOAD ============
+document.addEventListener('DOMContentLoaded', function() {
+  initCharts();
+});
+
+// ============ THEME ============
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  html.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+  localStorage.setItem('dash_theme', html.getAttribute('data-theme'));
+  rebuildCharts();
+}
+(function(){
+  const t = localStorage.getItem('dash_theme');
+  if (t) document.documentElement.setAttribute('data-theme', t);
+})();
+
+// ============ CLOCK ============
+function updateClock() {
+  const now = new Date();
+  document.getElementById('liveClock').textContent =
+    now.toLocaleTimeString('es-PE', {hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ============ FILTERS ============
+function setChip(el, group) {
+  el.parentElement.querySelectorAll('.chip').forEach(c => {
+    c.classList.remove('active','active-naranja','active-purple','active-rose','chip-active');
+  });
+  el.classList.add('active');
+}
+function setChipFruit(el) {
+  el.parentElement.querySelectorAll('.chip').forEach(c => {
+    c.classList.remove('active','active-naranja','active-purple','active-rose','chip-active');
+  });
+  const txt = el.textContent.trim();
+  if (txt.includes('Mango')) el.classList.add('active-naranja','chip-active');
+  else if (txt.includes('Arandano')) el.classList.add('active-purple','chip-active');
+  else if (txt.includes('Granada')) el.classList.add('active-rose','chip-active');
+}
+
+// ============ DATA ============
+const HOURS = ['07-08','08-09','09-10','10-11','11-12','12-13','13-14','14-15'];
+const HOURS_DISPLAY = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00'];
+
+const DATA = [
+  { hora:'07:00-08:00', fruta:'Mango', linea:'L1', consumo:1800, chunks:824, cajas:82, byp:72, personal:40, obs:'Inicio turno' },
+  { hora:'08:00-09:00', fruta:'Mango', linea:'L1', consumo:2100, chunks:970, cajas:97, byp:84, personal:42, obs:'Ritmo optimo' },
+  { hora:'09:00-10:00', fruta:'Mango', linea:'L1', consumo:2000, chunks:902, cajas:90, byp:80, personal:43, obs:'Estable' },
+  { hora:'10:00-11:00', fruta:'Mango', linea:'L1', consumo:2050, chunks:941, cajas:94, byp:82, personal:44, obs:'Ajuste calibracion' },
+  { hora:'11:00-12:00', fruta:'Mango', linea:'L1', consumo:2200, chunks:1023, cajas:102, byp:88, personal:44, obs:'Pico produccion' },
+  { hora:'12:00-13:00', fruta:'Mango', linea:'L1', consumo:1980, chunks:899, cajas:90, byp:79, personal:42, obs:'Pre-almuerzo' },
+  { hora:'13:00-14:00', fruta:'Mango', linea:'L1', consumo:0, chunks:0, cajas:0, byp:0, personal:0, obs:'ALMUERZO' },
+  { hora:'14:00-15:00', fruta:'Mango', linea:'L1', consumo:1960, chunks:878, cajas:89, byp:78, personal:41, obs:'Reinicio post almuerzo' }
+];
+
+const consumoArr = DATA.map(d => d.consumo);
+const chunksArr = DATA.map(d => d.chunks);
+const bypArr = DATA.map(d => d.byp);
+const mermaArr = DATA.map((d,i) => d.consumo - d.chunks - d.byp);
+const rendArr = DATA.map(d => d.consumo > 0 ? +(d.chunks / d.consumo * 100).toFixed(1) : 0);
+const cajasArr = DATA.map(d => d.cajas);
+const personalArr = DATA.map(d => d.personal);
+const kgHrArr = consumoArr.slice();
+
+// Cumulative
+const cumConsumo = [], cumChunks = [];
+let cc=0, ck=0;
+consumoArr.forEach((v,i) => { cc+=v; cumConsumo.push(cc); });
+chunksArr.forEach((v,i) => { ck+=v; cumChunks.push(ck); });
+
+// Temperature data (simulated)
+const tempT1 = [-29.5,-30.1,-30.3,-29.8,-30.5,-30.2,-28.0,-30.1];
+const tempT2 = [-28.8,-29.5,-29.9,-29.3,-30.0,-29.7,-27.5,-29.6];
+const tempT3 = [-30.2,-30.8,-31.0,-30.5,-31.2,-30.9,-28.5,-30.7];
+
+// Eficiencia: chunks/consumo based on target
+const eficienciaArr = DATA.map(d => d.consumo > 0 ? +(d.chunks / d.consumo / 0.50 * 100).toFixed(1) : 0);
+
+// Yesterday data (simulated)
+const ayerConsumo = [1700, 1950, 1900, 2000, 2100, 1850, 0, 1900];
+
+// ============ TABLE ============
+function buildTable() {
+  const tbody = document.getElementById('tableBody');
+  const tfoot = document.getElementById('tableFoot');
+  let html = '';
+  DATA.forEach(d => {
+    const rend = d.consumo > 0 ? (d.chunks / d.consumo * 100).toFixed(1) : 0;
+    const kghr = d.consumo;
+    const isAlmuerzo = d.obs === 'ALMUERZO';
+    const rendClass = rend >= 46 ? 'rend-high' : rend >= 40 ? 'rend-mid' : rend > 0 ? 'rend-low' : '';
+    html += `<tr class="${isAlmuerzo ? 'almuerzo' : ''}">
+      <td><strong>${d.hora}</strong></td>
+      <td>${d.fruta}</td>
+      <td>${d.linea}</td>
+      <td>${isAlmuerzo ? '-' : d.consumo.toLocaleString()}</td>
+      <td>${isAlmuerzo ? '-' : d.chunks.toLocaleString()}</td>
+      <td>${isAlmuerzo ? '-' : d.cajas}</td>
+      <td>${isAlmuerzo ? '-' : '<span class="rend-badge '+rendClass+'">'+rend+'%</span>'}</td>
+      <td>${isAlmuerzo ? '-' : d.byp}</td>
+      <td>${isAlmuerzo ? '-' : d.personal}</td>
+      <td>${isAlmuerzo ? '-' : kghr.toLocaleString()}</td>
+      <td>${d.obs}</td>
+    </tr>`;
+  });
+  tbody.innerHTML = html;
+
+  const totConsumo = DATA.reduce((s,d) => s+d.consumo, 0);
+  const totChunks = DATA.reduce((s,d) => s+d.chunks, 0);
+  const totCajas = DATA.reduce((s,d) => s+d.cajas, 0);
+  const totByp = DATA.reduce((s,d) => s+d.byp, 0);
+  const totRend = (totChunks / totConsumo * 100).toFixed(1);
+  tfoot.innerHTML = `<tr>
+    <td colspan="3"><strong>TOTALES</strong></td>
+    <td><strong>${totConsumo.toLocaleString()}</strong></td>
+    <td><strong>${totChunks.toLocaleString()}</strong></td>
+    <td><strong>${totCajas}</strong></td>
+    <td><span class="rend-badge rend-high"><strong>${totRend}%</strong></span></td>
+    <td><strong>${totByp}</strong></td>
+    <td><strong>42 prom</strong></td>
+    <td><strong>${Math.round(totConsumo/7).toLocaleString()}</strong></td>
+    <td></td>
+  </tr>`;
+}
+
+// ============ CHARTS ============
+let charts = {};
+
+function getChartColors() {
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  return {
+    grid: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.08)',
+    text: isDark ? '#94a3b8' : '#94a3b8',
+    bg: isDark ? 'rgba(30,41,59,0.85)' : 'rgba(255,255,255,0.85)'
+  };
+}
+
+function chartDefaults() {
+  const c = getChartColors();
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { labels: { color: c.text, font: { family: 'Plus Jakarta Sans', size: 11, weight: '600' }, usePointStyle: true, pointStyle: 'circle', padding: 16 } },
+      datalabels: { display: false }
+    },
+    scales: {
+      x: { ticks: { color: c.text, font: { family: 'Inter', size: 10 } }, grid: { color: c.grid } },
+      y: { ticks: { color: c.text, font: { family: 'Inter', size: 10 } }, grid: { color: c.grid } }
+    }
+  };
+}
+
+function destroyCharts() {
+  Object.values(charts).forEach(ch => ch.destroy());
+  charts = {};
+}
+
+function buildCharts() {
+  const cd = chartDefaults();
+  const c = getChartColors();
+
+  // 1. Consumo vs Chunks
+  charts.consumoChunks = new Chart(document.getElementById('chartConsumoChunks'), {
+    type: 'bar',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Consumo (kg)', data: consumoArr, backgroundColor: 'rgba(22,163,74,0.7)', borderColor: '#16a34a', borderWidth: 1, borderRadius: 6 },
+        { label: 'Chunks (kg)', data: chunksArr, backgroundColor: 'rgba(37,99,235,0.7)', borderColor: '#2563eb', borderWidth: 1, borderRadius: 6 }
+      ]
+    },
+    options: { ...cd }
+  });
+
+  // 2. Rendimiento
+  charts.rendimiento = new Chart(document.getElementById('chartRendimiento'), {
+    type: 'line',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Rendimiento %', data: rendArr, borderColor: '#ea580c', backgroundColor: 'rgba(234,88,12,0.1)', fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#ea580c' },
+        { label: 'Objetivo 50%', data: Array(8).fill(50), borderColor: '#e11d48', borderDash: [8,4], pointRadius: 0, borderWidth: 2, fill: false }
+      ]
+    },
+    options: { ...cd, scales: { ...cd.scales, y: { ...cd.scales.y, min: 0, max: 70, ticks: { ...cd.scales.y.ticks, callback: v => v+'%' } } } }
+  });
+
+  // 3. Cajas
+  charts.cajas = new Chart(document.getElementById('chartCajas'), {
+    type: 'bar',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Cajas', data: cajasArr, backgroundColor: 'rgba(124,58,237,0.7)', borderColor: '#7c3aed', borderWidth: 1, borderRadius: 6 },
+        { label: 'Proy. 92 cj/hr', data: Array(8).fill(92), type: 'line', borderColor: '#e11d48', borderDash: [6,3], pointRadius: 0, borderWidth: 2 }
+      ]
+    },
+    options: { ...cd }
+  });
+
+  // 4. Kg/Hr
+  charts.kghr = new Chart(document.getElementById('chartKgHr'), {
+    type: 'line',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Kg/Hr', data: kgHrArr, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.12)', fill: true, tension: 0.4, pointRadius: 5, pointBackgroundColor: '#0891b2', borderWidth: 3 }
+      ]
+    },
+    options: { ...cd }
+  });
+
+  // 5. Acumulado
+  charts.acumulado = new Chart(document.getElementById('chartAcumulado'), {
+    type: 'line',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Consumo Acum.', data: cumConsumo, borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.15)', fill: true, tension: 0.3, pointRadius: 5, borderWidth: 3 },
+        { label: 'Chunks Acum.', data: cumChunks, borderColor: '#2563eb', backgroundColor: 'rgba(37,99,235,0.10)', fill: true, tension: 0.3, pointRadius: 5, borderWidth: 3 },
+        { label: 'Meta 16,000 kg', data: Array(8).fill(16000), borderColor: '#e11d48', borderDash: [8,4], pointRadius: 0, borderWidth: 2, fill: false }
+      ]
+    },
+    options: { ...cd, plugins: { ...cd.plugins, datalabels: { display: false } } }
+  });
+
+  // 6. Distribucion
+  charts.distribucion = new Chart(document.getElementById('chartDistribucion'), {
+    type: 'bar',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Chunks', data: chunksArr, backgroundColor: 'rgba(37,99,235,0.8)', borderRadius: 4 },
+        { label: 'ByP', data: bypArr, backgroundColor: 'rgba(217,119,6,0.8)', borderRadius: 4 },
+        { label: 'Merma', data: mermaArr, backgroundColor: 'rgba(225,29,72,0.6)', borderRadius: 4 }
+      ]
+    },
+    options: { ...cd, scales: { ...cd.scales, x: { ...cd.scales.x, stacked: true }, y: { ...cd.scales.y, stacked: true } } }
+  });
+
+  // 7. Personal
+  charts.personal = new Chart(document.getElementById('chartPersonal'), {
+    type: 'line',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Operarios', data: personalArr, borderColor: '#7c3aed', backgroundColor: 'rgba(124,58,237,0.1)', fill: true, tension: 0.3, pointRadius: 6, pointBackgroundColor: '#7c3aed', borderWidth: 3 }
+      ]
+    },
+    options: { ...cd, scales: { ...cd.scales, y: { ...cd.scales.y, min: 0, max: 55 } } }
+  });
+
+  // 8. Temperatura
+  charts.temp = new Chart(document.getElementById('chartTemp'), {
+    type: 'line',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Tunel 1', data: tempT1, borderColor: '#2563eb', tension: 0.4, pointRadius: 4, borderWidth: 2 },
+        { label: 'Tunel 2', data: tempT2, borderColor: '#ea580c', tension: 0.4, pointRadius: 4, borderWidth: 2 },
+        { label: 'Tunel 3', data: tempT3, borderColor: '#16a34a', tension: 0.4, pointRadius: 4, borderWidth: 2 }
+      ]
+    },
+    options: { ...cd, scales: { ...cd.scales, y: { ...cd.scales.y, ticks: { ...cd.scales.y.ticks, callback: v => v+'°C' } } } }
+  });
+
+  // 9. Eficiencia
+  charts.eficiencia = new Chart(document.getElementById('chartEficiencia'), {
+    type: 'line',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Eficiencia %', data: eficienciaArr, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.1)', fill: true, tension: 0.4, pointRadius: 5, borderWidth: 3, pointBackgroundColor: eficienciaArr.map(v => v >= 85 ? '#16a34a' : v >= 70 ? '#d97706' : '#e11d48') },
+        { label: 'Verde 85%', data: Array(8).fill(85), borderColor: 'rgba(22,163,74,0.4)', borderDash: [5,3], pointRadius: 0, borderWidth: 1.5, fill: false },
+        { label: 'Amarillo 70%', data: Array(8).fill(70), borderColor: 'rgba(217,119,6,0.4)', borderDash: [5,3], pointRadius: 0, borderWidth: 1.5, fill: false }
+      ]
+    },
+    options: { ...cd, scales: { ...cd.scales, y: { ...cd.scales.y, min: 50, max: 110, ticks: { ...cd.scales.y.ticks, callback: v => v+'%' } } } }
+  });
+
+  // 10. Consumo por Linea
+  charts.linea = new Chart(document.getElementById('chartLinea'), {
+    type: 'bar',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Linea 1', data: consumoArr.map(v => Math.round(v*0.62)), backgroundColor: 'rgba(22,163,74,0.7)', borderRadius: 6 },
+        { label: 'Linea 2', data: consumoArr.map(v => Math.round(v*0.38)), backgroundColor: 'rgba(37,99,235,0.7)', borderRadius: 6 }
+      ]
+    },
+    options: { ...cd, scales: { ...cd.scales, x: { ...cd.scales.x, stacked: true }, y: { ...cd.scales.y, stacked: true } } }
+  });
+
+  // 11. Hoy vs Ayer
+  charts.vsAyer = new Chart(document.getElementById('chartVsAyer'), {
+    type: 'bar',
+    data: {
+      labels: HOURS,
+      datasets: [
+        { label: 'Hoy 25/03', data: consumoArr, backgroundColor: 'rgba(22,163,74,0.75)', borderColor: '#16a34a', borderWidth: 1, borderRadius: 6 },
+        { label: 'Ayer 24/03', data: ayerConsumo, backgroundColor: 'rgba(148,163,184,0.45)', borderColor: '#94a3b8', borderWidth: 1, borderRadius: 6 }
+      ]
+    },
+    options: { ...cd }
+  });
+}
+
+function rebuildCharts() {
+  destroyCharts();
+  buildCharts();
+}
+
+// ============ INIT ============
+function initCharts() {
+  buildTable();
+  buildCharts();
+}
+</script>
+</body>
+</html>

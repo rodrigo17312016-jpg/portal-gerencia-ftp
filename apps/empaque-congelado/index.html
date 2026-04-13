@@ -1,0 +1,1917 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de Empaque Congelado — FTP Planta</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+/* ═══════════════ CSS VARIABLES ═══════════════ */
+:root {
+  --bg: #0b0f14;
+  --bg2: #111820;
+  --surface: rgba(20,28,38,0.85);
+  --surface-solid: #141c26;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --verde: #16a34a;
+  --verde-light: #4ade80;
+  --verde-bg: rgba(22,163,74,0.12);
+  --naranja: #ea580c;
+  --naranja-bg: rgba(234,88,12,0.12);
+  --azul: #2563eb;
+  --azul-bg: rgba(37,99,235,0.12);
+  --amber: #f59e0b;
+  --amber-bg: rgba(245,158,11,0.12);
+  --rojo: #ef4444;
+  --rojo-bg: rgba(239,68,68,0.12);
+  --purple: #8b5cf6;
+  --purple-bg: rgba(139,92,246,0.12);
+  --cyan: #06b6d4;
+  --cyan-bg: rgba(6,182,212,0.12);
+  --texto: #f1f5f9;
+  --texto2: #cbd5e1;
+  --muted: #64748b;
+  --radius: 16px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --gold: #d4af37;
+  --gold-light: #fff8dc;
+  --silver: #c0c0c0;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] {
+  --bg: #f0f2f5;
+  --bg2: #e8eaed;
+  --surface: rgba(255,255,255,0.9);
+  --surface-solid: #ffffff;
+  --border: rgba(0,0,0,0.07);
+  --border-hover: rgba(0,0,0,0.14);
+  --texto: #0f172a;
+  --texto2: #334155;
+  --muted: #64748b;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--texto);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ═══════════════ SCROLLBAR ═══════════════ */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:rgba(100,116,139,0.3); border-radius:10px; }
+::-webkit-scrollbar-thumb:hover { background:rgba(100,116,139,0.5); }
+
+/* ═══════════════ TOP BAR ═══════════════ */
+.topbar {
+  background: linear-gradient(135deg, #0a1f10 0%, #143d25 50%, #0d2a17 100%);
+  color: #fff;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 4px 30px rgba(0,0,0,0.4);
+  flex-wrap: wrap;
+}
+[data-theme="light"] .topbar {
+  background: linear-gradient(135deg, #166534, #16a34a, #15803d);
+}
+
+.dash-logo {
+  height: 42px;
+  width: auto;
+  filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+  animation: logoFloat 3s ease-in-out infinite;
+}
+@keyframes logoFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.topbar-title-wrap { flex:1; min-width:200px; }
+.topbar-title {
+  font-size: 20px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light), var(--silver), var(--gold-light), var(--gold));
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s ease infinite;
+}
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.topbar-subtitle {
+  font-size: 11px;
+  color: rgba(255,255,255,0.45);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-top: 2px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.topbar-back {
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.topbar-back:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.theme-toggle {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #fff;
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.theme-toggle:hover {
+  background: rgba(255,255,255,0.2);
+  transform: translateY(-1px);
+}
+
+/* DEVELOPER SIGNATURE */
+.topbar-dev-signature {
+  text-align: right;
+  padding: 8px 16px;
+  background: rgba(0,0,0,0.35);
+  border-radius: 14px;
+  border: 1px solid rgba(212,175,55,0.25);
+  position: relative;
+  overflow: hidden;
+  animation: borderGlow 3s ease-in-out infinite;
+}
+@keyframes borderGlow {
+  0%,100% { border-color: rgba(212,175,55,0.2); box-shadow: 0 0 8px rgba(212,175,55,0.05); }
+  50% { border-color: rgba(212,175,55,0.5); box-shadow: 0 0 20px rgba(212,175,55,0.15); }
+}
+.topbar-dev-signature::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(212,175,55,0.08), transparent);
+  animation: shineSweep 4s ease-in-out infinite;
+}
+@keyframes shineSweep {
+  0% { left: -100%; }
+  50%,100% { left: 100%; }
+}
+.topbar-sig-label {
+  font-size: 8px;
+  color: rgba(212,175,55,0.6);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-weight: 800;
+}
+.signature-name {
+  font-size: 12px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #d4af37, #fff8dc, #c0c0c0, #fff8dc, #d4af37);
+  background-size: 300% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s ease infinite;
+}
+.signature-role {
+  font-size: 9px;
+  font-weight: 700;
+  color: #4ade80;
+  letter-spacing: 0.5px;
+}
+
+/* ═══════════════ CONTENT ═══════════════ */
+.content { padding: 20px; max-width: 1400px; margin: 0 auto; }
+
+/* ═══════════════ CARDS ═══════════════ */
+.card {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 22px;
+  margin-bottom: 18px;
+  box-shadow: var(--shadow);
+  transition: background 0.3s, border-color 0.3s;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--texto);
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.card-title .chevron {
+  margin-left: auto;
+  font-size: 14px;
+  transition: transform 0.3s;
+  color: var(--muted);
+}
+.card-title .chevron.collapsed { transform: rotate(-90deg); }
+.card-body.collapsed { display: none; }
+
+/* ═══════════════ FORM ═══════════════ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.form-group input, .form-group select, .form-group textarea {
+  padding: 11px 14px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--texto);
+  background: var(--surface-solid);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  border-color: var(--verde);
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.15);
+}
+.form-group input::placeholder, .form-group textarea::placeholder { color: var(--muted); opacity: 0.5; }
+.form-group .tooltip-text {
+  font-size: 10px;
+  color: var(--muted);
+  font-style: italic;
+}
+.form-group input:disabled, .form-group select:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ═══════════════ DYNAMIC CUTS SECTION ═══════════════ */
+.cuts-section {
+  margin-top: 14px;
+  padding: 16px 18px;
+  background: rgba(6,182,212,0.06);
+  border: 1px solid rgba(6,182,212,0.15);
+  border-radius: 12px;
+  transition: all 0.3s;
+}
+.cuts-section.hidden { display: none; }
+.cuts-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--cyan);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cuts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 12px;
+}
+.cut-item {
+  background: var(--surface-solid);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+  text-align: center;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.cut-item:hover { border-color: var(--cyan); }
+.cut-item label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 6px;
+}
+.cut-item input {
+  width: 100%;
+  padding: 8px;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--texto);
+  background: var(--surface-solid);
+  text-align: center;
+  outline: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: border-color 0.2s;
+}
+.cut-item input:focus { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(6,182,212,0.15); }
+
+/* PREVIEW CALC */
+.calc-preview {
+  display: flex;
+  gap: 20px;
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: rgba(22,163,74,0.06);
+  border-radius: 12px;
+  border: 1px solid rgba(22,163,74,0.12);
+  flex-wrap: wrap;
+}
+.calc-item { text-align: center; }
+.calc-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.calc-value { font-size: 22px; font-weight: 900; margin-top: 2px; }
+.calc-value.green { color: var(--verde); }
+.calc-value.amber { color: var(--amber); }
+.calc-value.cyan { color: var(--cyan); }
+
+/* BUTTONS */
+.btn-row { display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap; }
+.btn {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(22,163,74,0.45);
+}
+.btn-primary:active { transform: translateY(0); }
+.btn-outline {
+  background: transparent;
+  color: var(--muted);
+  border: 2px solid var(--border);
+}
+.btn-outline:hover {
+  border-color: var(--border-hover);
+  color: var(--texto);
+}
+
+/* ═══════════════ KPI GRID ═══════════════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.kpi-card {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
+.kpi-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--kpi-c, var(--verde));
+}
+.kpi-icon { font-size: 28px; margin-bottom: 8px; }
+.kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+}
+.kpi-value {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--texto);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.kpi-unit { font-size: 14px; font-weight: 600; color: var(--muted); }
+.kpi-meta { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* ═══════════════ CHARTS ═══════════════ */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+.chart-wrap { height: 280px; position: relative; }
+
+/* ═══════════════ TABLE ═══════════════ */
+.table-controls {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 14px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.table-controls input, .table-controls select {
+  padding: 9px 14px;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--texto);
+  background: var(--surface-solid);
+  outline: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: border-color 0.2s;
+}
+.table-controls input:focus, .table-controls select:focus { border-color: var(--verde); }
+.table-wrap { overflow-x: auto; }
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th {
+  background: var(--bg2);
+  padding: 11px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.data-table tbody tr:hover { background: rgba(22,163,74,0.04); }
+.data-table .num { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.badge-green { background: var(--verde-bg); color: var(--verde-light); }
+.badge-amber { background: var(--amber-bg); color: var(--amber); }
+.badge-red { background: var(--rojo-bg); color: var(--rojo); }
+.badge-purple { background: var(--purple-bg); color: var(--purple); }
+.badge-cyan { background: var(--cyan-bg); color: var(--cyan); }
+[data-theme="light"] .badge-green { color: var(--verde); }
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--verde);
+  background: var(--verde-bg);
+  border: 1px solid rgba(22,163,74,0.2);
+}
+.live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--verde);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+.en-proceso-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--verde);
+  background: var(--verde-bg);
+  border: 1px solid rgba(22,163,74,0.2);
+}
+
+.delete-btn, .edit-btn-tbl {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+}
+.edit-btn-tbl { background: var(--azul-bg); color: var(--azul); }
+.edit-btn-tbl:hover { background: var(--azul); color: #fff; transform: scale(1.1); }
+.delete-btn { background: var(--rojo-bg); color: var(--rojo); }
+.delete-btn:hover { background: var(--rojo); color: #fff; transform: scale(1.1); }
+
+.table-footer td {
+  font-weight: 800 !important;
+  background: var(--bg2) !important;
+  border-top: 2px solid var(--verde) !important;
+  color: var(--verde-light) !important;
+}
+[data-theme="light"] .table-footer td { color: var(--verde) !important; }
+
+/* EMPTY STATE */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+}
+.empty-state .empty-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state .empty-text { font-size: 15px; font-weight: 600; }
+.empty-state .empty-sub { font-size: 12px; margin-top: 6px; }
+
+/* ═══════════════ MODAL ═══════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  width: 100%;
+  max-width: 580px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  animation: modalIn 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+@keyframes modalIn {
+  from { transform: scale(0.9) translateY(20px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.modal-title {
+  font-size: 18px;
+  font-weight: 900;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.modal .form-grid {
+  grid-template-columns: 1fr 1fr;
+}
+.modal .btn-row {
+  justify-content: flex-end;
+}
+.btn-cancel {
+  padding: 12px 28px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: transparent;
+  color: var(--muted);
+  transition: all 0.2s;
+}
+.btn-cancel:hover { border-color: var(--border-hover); color: var(--texto); }
+.btn-save {
+  padding: 12px 28px;
+  border: none;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(6,182,212,0.3);
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-save:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(6,182,212,0.45); }
+
+/* ═══════════════ TOAST ═══════════════ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  color: #fff;
+  padding: 14px 28px;
+  border-radius: 14px;
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 8px 30px rgba(22,163,74,0.45);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+/* ═══════════════ SUPABASE STATUS ═══════════════ */
+.supabase-status { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin: 0 4px; }
+
+/* ═══════════════ RESPONSIVE — DESKTOP ═══════════════ */
+@media (min-width: 769px) {
+  .mobile-only { display: none !important; }
+}
+
+/* ═══════════════ RESPONSIVE — MOBILE ═══════════════ */
+@media (max-width: 768px) {
+  .desktop-only { display: none !important; }
+  * { box-sizing: border-box; }
+  body { padding: 0 !important; min-width: auto !important; overflow-x: hidden; }
+  .topbar { flex-wrap: wrap; padding: 10px; gap: 6px; }
+  .topbar > * { flex-shrink: 1; min-width: 0; }
+  .topbar-title { font-size: 14px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar-subtitle { font-size: 9px !important; display: none; }
+  .dash-logo { width: 28px !important; height: 28px !important; }
+  .topbar-back { font-size: 10px !important; padding: 3px 8px !important; }
+  .topbar-dev-signature { padding: 4px 8px !important; max-width: 120px; }
+  .topbar-dev-signature .signature-name { font-size: 9px !important; }
+  .topbar-dev-signature .signature-role { font-size: 6px !important; }
+  .topbar-sig-label { font-size: 5px !important; }
+  .supabase-status { width: 8px !important; height: 8px !important; }
+  .content { padding: 10px !important; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+  .kpi-card { padding: 10px !important; }
+  .kpi-value { font-size: 20px !important; }
+  .kpi-label { font-size: 8px !important; }
+  .kpi-icon { font-size: 20px !important; }
+  .form-grid { grid-template-columns: 1fr !important; gap: 10px !important; }
+  .cuts-grid { grid-template-columns: repeat(2, 1fr) !important; }
+  input, select, textarea { font-size: 14px !important; width: 100% !important; box-sizing: border-box; }
+  label { font-size: 10px !important; }
+  .btn-row { flex-direction: column !important; }
+  .btn-row .btn, .btn-row button { width: 100% !important; justify-content: center; }
+  .grid-2 { grid-template-columns: 1fr !important; }
+  .chart-wrap { height: 200px !important; min-height: 200px !important; }
+  .card { padding: 10px !important; margin-bottom: 10px !important; border-radius: 10px !important; overflow: hidden; }
+  .card-title { font-size: 13px !important; }
+  table, .data-table { font-size: 10px !important; }
+  th, td { padding: 5px 6px !important; white-space: nowrap; }
+  .table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+  .modal { padding: 18px; max-width: 100%; }
+  .modal .form-grid { grid-template-columns: 1fr !important; }
+  .modal-title { font-size: 15px !important; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid { grid-template-columns: 1fr !important; }
+  .topbar-dev-signature { display: none !important; }
+  .cuts-grid { grid-template-columns: 1fr !important; }
+  .chart-wrap { height: 170px !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="index.html" class="topbar-back">&larr; Portal</a>
+  <img src="LOGO.png" class="dash-logo" alt="FTP Logo">
+  <div class="topbar-title-wrap">
+    <div class="topbar-title">Registro de Empaque Congelado</div>
+    <div class="topbar-subtitle">Frutos Tropicales Peru Export S.A.C.</div>
+  </div>
+  <div class="topbar-right">
+    <div id="supabaseStatus" style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(0,0,0,0.3);cursor:help;flex-shrink:0" title="Supabase: Verificando..."></div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="themeBtn">&#127769;</button>
+    <div class="topbar-dev-signature">
+      <div class="topbar-sig-label">Desarrollado por:</div>
+      <div class="signature-name">Rodrigo Garcia</div>
+      <div class="signature-role">Systems Analyst &amp; Developer-QA</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENT -->
+<div class="content">
+
+  <!-- ═══════════ REGISTRATION FORM ═══════════ -->
+  <div class="card" id="formCard">
+    <div class="card-title" onclick="toggleSection('formBody','formChevron')">
+      &#128230; Registrar Empaque Congelado por Hora
+      <span class="chevron" id="formChevron">&#9660;</span>
+    </div>
+    <div class="card-body" id="formBody">
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Fecha</label>
+          <input type="date" id="fFecha">
+        </div>
+        <div class="form-group">
+          <label>Turno Empaque</label>
+          <select id="fTurno">
+            <option value="DIA">TURNO DIA</option>
+            <option value="NOCHE">TURNO NOCHE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Turno Origen Producto</label>
+          <select id="fTurnoOrigen">
+            <option value="DIA">PROCESO TURNO DIA</option>
+            <option value="NOCHE">PROCESO TURNO NOCHE</option>
+          </select>
+          <span class="tooltip-text">Turno de corte en sala de proceso</span>
+        </div>
+        <div class="form-group">
+          <label>Producto / Fruta</label>
+          <select id="fFruta" onchange="onFrutaChange()">
+            <option value="">-- Seleccionar --</option>
+            <option value="FRESA">FRESA</option>
+            <option value="MANGO">MANGO</option>
+            <option value="PALTA">PALTA</option>
+            <option value="ARANDANO">ARANDANO</option>
+            <option value="GRANADA">GRANADA</option>
+            <option value="PIÑA">PIÑA</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Tipo</label>
+          <select id="fTipo">
+            <option value="CONVENCIONAL">CONVENCIONAL</option>
+            <option value="ORGANICO">ORGANICO</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Hora</label>
+          <select id="fHora">
+            <option value="05:00-06:00">05:00 - 06:00</option>
+            <option value="06:00-07:00">06:00 - 07:00</option>
+            <option value="07:00-08:00">07:00 - 08:00</option>
+            <option value="08:00-09:00">08:00 - 09:00</option>
+            <option value="09:00-10:00">09:00 - 10:00</option>
+            <option value="10:00-11:00">10:00 - 11:00</option>
+            <option value="11:00-12:00">11:00 - 12:00</option>
+            <option value="12:00-13:00">12:00 - 13:00</option>
+            <option value="13:00-14:00">13:00 - 14:00</option>
+            <option value="14:00-15:00">14:00 - 15:00</option>
+            <option value="15:00-16:00">15:00 - 16:00</option>
+            <option value="16:00-17:00">16:00 - 17:00</option>
+            <option value="17:00-18:00">17:00 - 18:00</option>
+            <option value="18:00-19:00">18:00 - 19:00</option>
+            <option value="19:00-20:00">19:00 - 20:00</option>
+            <option value="20:00-21:00">20:00 - 21:00</option>
+            <option value="21:00-22:00">21:00 - 22:00</option>
+            <option value="22:00-23:00">22:00 - 23:00</option>
+            <option value="23:00-00:00">23:00 - 00:00</option>
+            <option value="00:00-01:00">00:00 - 01:00</option>
+            <option value="01:00-02:00">01:00 - 02:00</option>
+            <option value="02:00-03:00">02:00 - 03:00</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>KG Presentacion</label>
+          <select id="fKgPresentacion" onchange="onPresentacionChange()">
+            <option value="10">10 kg</option>
+            <option value="13.61">13.61 kg</option>
+            <option value="OTRO">Otro</option>
+          </select>
+        </div>
+        <div class="form-group" id="kgOtroGroup" style="display:none">
+          <label>KG Personalizado</label>
+          <input type="number" id="fKgOtro" placeholder="Ej: 5" min="0.1" step="0.01" oninput="calcPreview()">
+        </div>
+        <div class="form-group">
+          <label>N&deg; Cajas</label>
+          <input type="number" id="fCajas" placeholder="Ej: 92" min="0" step="1" oninput="calcPreview()">
+        </div>
+        <div class="form-group">
+          <label>KG PT</label>
+          <input type="number" id="fKgPT" placeholder="Auto" disabled>
+          <span class="tooltip-text">Se calcula: Cajas x KG Presentacion</span>
+        </div>
+        <div class="form-group">
+          <label>N&deg; Operarios</label>
+          <input type="number" id="fOperarios" placeholder="Ej: 28" min="0" step="1">
+        </div>
+        <div class="form-group">
+          <label>Cliente</label>
+          <input type="text" id="fCliente" placeholder="Nombre del cliente">
+        </div>
+        <div class="form-group">
+          <label>Lote MP</label>
+          <input type="text" id="fLoteMP" placeholder="Ej: L-2026-001">
+        </div>
+        <div class="form-group">
+          <label>Cod. Trazabilidad</label>
+          <input type="text" id="fCodTraz" placeholder="Ej: TRZ-0001">
+        </div>
+        <div class="form-group">
+          <label>Supervisor</label>
+          <input type="text" id="fSupervisor" placeholder="Nombre">
+        </div>
+        <div class="form-group">
+          <label>Observacion</label>
+          <input type="text" id="fObs" placeholder="Opcional">
+        </div>
+      </div>
+
+      <!-- DYNAMIC CUTS SECTION -->
+      <div class="cuts-section hidden" id="cutsSection">
+        <div class="cuts-title">&#127860; Cortes por Fruta: <span id="cutsFrutaName">—</span></div>
+        <div class="cuts-grid" id="cutsGrid">
+          <!-- Dynamic cut inputs injected here -->
+        </div>
+      </div>
+
+      <!-- CALC PREVIEW -->
+      <div class="calc-preview" id="calcPreview" style="display:none">
+        <div class="calc-item">
+          <div class="calc-label">KG PT Total</div>
+          <div class="calc-value green" id="prevKgPT">—</div>
+        </div>
+        <div class="calc-item">
+          <div class="calc-label">CJ/HR*OP</div>
+          <div class="calc-value cyan" id="prevCjHrOp">—</div>
+        </div>
+      </div>
+
+      <!-- BUTTONS -->
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="registrarEmpaque()">&#9989; Registrar Hora</button>
+        <button class="btn btn-outline" onclick="limpiarForm()">Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ KPI CARDS ═══════════ -->
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-c:var(--verde)">
+      <div class="kpi-icon">&#128230;</div>
+      <div class="kpi-label">Cajas Totales</div>
+      <div class="kpi-value" id="kpiCajas">0</div>
+      <div class="kpi-meta">Cajas empacadas hoy</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--naranja)">
+      <div class="kpi-icon">&#9878;&#65039;</div>
+      <div class="kpi-label">KG PT Total</div>
+      <div class="kpi-value" id="kpiKgPT">0 <span class="kpi-unit">kg</span></div>
+      <div class="kpi-meta">Producto terminado empacado</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--azul)">
+      <div class="kpi-icon">&#128200;</div>
+      <div class="kpi-label">CJ/HR Promedio</div>
+      <div class="kpi-value" id="kpiCjHr">0</div>
+      <div class="kpi-meta">Cajas por hora</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--cyan)">
+      <div class="kpi-icon">&#128101;</div>
+      <div class="kpi-label">CJ/HR*OP Prom.</div>
+      <div class="kpi-value" id="kpiCjHrOp">0</div>
+      <div class="kpi-meta">Productividad por operario</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--purple)">
+      <div class="kpi-icon">&#128338;</div>
+      <div class="kpi-label">Horas Registradas</div>
+      <div class="kpi-value" id="kpiHoras">0</div>
+      <div class="kpi-meta">Registros de empaque hoy</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--gold)">
+      <div class="kpi-icon">&#11088;</div>
+      <div class="kpi-label">Mejor Hora</div>
+      <div class="kpi-value" id="kpiBest" style="font-size:18px;">—</div>
+      <div class="kpi-meta">Mayor cantidad de cajas</div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CHARTS ROW 1 ═══════════ -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">&#128202; Cajas Ejecutadas vs Proyectadas por Hora</div>
+      <div class="chart-wrap"><canvas id="chartCajas"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">&#128200; KG PT por Hora</div>
+      <div class="chart-wrap"><canvas id="chartKgPT"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ CHARTS ROW 2 ═══════════ -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">&#128202; Produccion Acumulada (Cajas)</div>
+      <div class="chart-wrap"><canvas id="chartAcumulado"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">&#128202; Productividad CJ/HR*OP por Hora</div>
+      <div class="chart-wrap"><canvas id="chartProductividad"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ HISTORY TABLE ═══════════ -->
+  <div class="card">
+    <div class="card-title" style="justify-content:space-between;">
+      <span>&#128203; Produccion de Empaque Hora a Hora — Hoy</span>
+      <div class="live-badge"><div class="live-dot"></div> Live</div>
+    </div>
+    <div class="table-controls">
+      <label style="font-size:12px;font-weight:700;color:var(--muted)">Filtrar por fecha:</label>
+      <input type="date" id="filterDate" onchange="refreshAll()">
+    </div>
+    <div class="table-wrap">
+      <table class="data-table" id="historyTable">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Producto</th>
+            <th>Corte</th>
+            <th>Tipo</th>
+            <th style="text-align:right">Cajas Ej.</th>
+            <th style="text-align:right">KG PT</th>
+            <th style="text-align:right">CJ/HR</th>
+            <th style="text-align:right">CJ/HR*OP</th>
+            <th style="text-align:right">Operarios</th>
+            <th>Cliente</th>
+            <th>Encargado</th>
+            <th style="text-align:center">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+        <tfoot id="historyFoot"></tfoot>
+      </table>
+    </div>
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon">&#128237;</div>
+      <div class="empty-text">No hay registros de empaque para esta fecha</div>
+      <div class="empty-sub">Registra la primera hora usando el formulario</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════ EDIT MODAL ═══════════ -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-title">&#128295; Editar Registro de Empaque</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="mFecha">
+      </div>
+      <div class="form-group">
+        <label>Turno</label>
+        <select id="mTurno">
+          <option value="DIA">TURNO DIA</option>
+          <option value="NOCHE">TURNO NOCHE</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Turno Origen</label>
+        <select id="mTurnoOrigen">
+          <option value="DIA">PROCESO TURNO DIA</option>
+          <option value="NOCHE">PROCESO TURNO NOCHE</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Hora</label>
+        <select id="mHora">
+          <option value="05:00-06:00">05:00 - 06:00</option>
+          <option value="06:00-07:00">06:00 - 07:00</option>
+          <option value="07:00-08:00">07:00 - 08:00</option>
+          <option value="08:00-09:00">08:00 - 09:00</option>
+          <option value="09:00-10:00">09:00 - 10:00</option>
+          <option value="10:00-11:00">10:00 - 11:00</option>
+          <option value="11:00-12:00">11:00 - 12:00</option>
+          <option value="12:00-13:00">12:00 - 13:00</option>
+          <option value="13:00-14:00">13:00 - 14:00</option>
+          <option value="14:00-15:00">14:00 - 15:00</option>
+          <option value="15:00-16:00">15:00 - 16:00</option>
+          <option value="16:00-17:00">16:00 - 17:00</option>
+          <option value="17:00-18:00">17:00 - 18:00</option>
+          <option value="18:00-19:00">18:00 - 19:00</option>
+          <option value="19:00-20:00">19:00 - 20:00</option>
+          <option value="20:00-21:00">20:00 - 21:00</option>
+          <option value="21:00-22:00">21:00 - 22:00</option>
+          <option value="22:00-23:00">22:00 - 23:00</option>
+          <option value="23:00-00:00">23:00 - 00:00</option>
+          <option value="00:00-01:00">00:00 - 01:00</option>
+          <option value="01:00-02:00">01:00 - 02:00</option>
+          <option value="02:00-03:00">02:00 - 03:00</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Producto</label>
+        <select id="mFruta">
+          <option value="FRESA">FRESA</option>
+          <option value="MANGO">MANGO</option>
+          <option value="PALTA">PALTA</option>
+          <option value="ARANDANO">ARANDANO</option>
+          <option value="GRANADA">GRANADA</option>
+          <option value="PIÑA">PIÑA</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Corte</label>
+        <input type="text" id="mCorte">
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="mTipo">
+          <option value="CONVENCIONAL">CONVENCIONAL</option>
+          <option value="ORGANICO">ORGANICO</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Cliente</label>
+        <input type="text" id="mCliente">
+      </div>
+      <div class="form-group">
+        <label>N&deg; Cajas</label>
+        <input type="number" id="mCajas" min="0" step="1" oninput="calcModalPT()">
+      </div>
+      <div class="form-group">
+        <label>KG Presentacion</label>
+        <input type="number" id="mKgPres" min="0.01" step="0.01" oninput="calcModalPT()">
+      </div>
+      <div class="form-group">
+        <label>KG PT</label>
+        <input type="number" id="mKgPT" disabled>
+      </div>
+      <div class="form-group">
+        <label>N&deg; Operarios</label>
+        <input type="number" id="mOperarios" min="0" step="1">
+      </div>
+      <div class="form-group">
+        <label>Lote MP</label>
+        <input type="text" id="mLoteMP">
+      </div>
+      <div class="form-group">
+        <label>Cod. Trazabilidad</label>
+        <input type="text" id="mCodTraz">
+      </div>
+      <div class="form-group">
+        <label>Supervisor</label>
+        <input type="text" id="mSupervisor">
+      </div>
+      <div class="form-group">
+        <label>Observacion</label>
+        <input type="text" id="mObs">
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-save" onclick="guardarEdicion()">&#128190; Guardar Cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+// ═══════════════════════════════════════════════════
+// EMPAQUE CONGELADO — FULL APP
+// ═══════════════════════════════════════════════════
+
+// ═══════════════ CUTS CONFIG ═══════════════
+const CORTES_POR_FRUTA = {
+  FRESA:    ['ENTER', 'SMOOTHIE'],
+  PALTA:    ['HALVES', 'SLICES', 'PURE', 'CHUNKS'],
+  GRANADA:  ['ARILOS'],
+  ARANDANO: ['ENTERO'],
+  PIÑA:     ['CUBOS'],
+  MANGO:    ['CHUNKS', 'B & P']
+};
+
+// ═══════════════ THEME ═══════════════
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'light' ? 'dark' : 'light';
+  if (next === 'dark') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', 'light');
+  document.getElementById('themeBtn').textContent = next === 'light' ? '\u2600\uFE0F' : '\uD83C\uDF19';
+  localStorage.setItem('empaque_cong_theme', next);
+  rebuildCharts();
+}
+(function initTheme() {
+  const saved = localStorage.getItem('empaque_cong_theme');
+  if (saved === 'light') {
+    document.documentElement.setAttribute('data-theme', 'light');
+    document.getElementById('themeBtn').textContent = '\u2600\uFE0F';
+  }
+})();
+
+// ═══════════════ SECTION TOGGLE ═══════════════
+function toggleSection(bodyId, chevronId) {
+  document.getElementById(bodyId).classList.toggle('collapsed');
+  document.getElementById(chevronId).classList.toggle('collapsed');
+}
+
+// ═══════════════ FRUIT CHANGE — DYNAMIC CUTS ═══════════════
+function onFrutaChange() {
+  const fruta = document.getElementById('fFruta').value;
+  const section = document.getElementById('cutsSection');
+  const grid = document.getElementById('cutsGrid');
+  const nameEl = document.getElementById('cutsFrutaName');
+
+  if (!fruta || !CORTES_POR_FRUTA[fruta]) {
+    section.classList.add('hidden');
+    grid.innerHTML = '';
+    return;
+  }
+
+  section.classList.remove('hidden');
+  nameEl.textContent = fruta;
+  const cortes = CORTES_POR_FRUTA[fruta];
+
+  grid.innerHTML = cortes.map(c => `
+    <div class="cut-item">
+      <label>${c}</label>
+      <input type="number" id="cut_${c.replace(/\s+/g,'_')}" placeholder="Cajas" min="0" step="1" oninput="calcCutsTotals()">
+    </div>
+  `).join('');
+}
+
+// ═══════════════ PRESENTATION CHANGE ═══════════════
+function onPresentacionChange() {
+  const val = document.getElementById('fKgPresentacion').value;
+  document.getElementById('kgOtroGroup').style.display = val === 'OTRO' ? 'flex' : 'none';
+  if (val !== 'OTRO') document.getElementById('fKgOtro').value = '';
+  calcPreview();
+}
+
+function getKgPresentacion() {
+  const val = document.getElementById('fKgPresentacion').value;
+  if (val === 'OTRO') return parseFloat(document.getElementById('fKgOtro').value) || 0;
+  return parseFloat(val) || 0;
+}
+
+// ═══════════════ CALC CUTS TOTALS ═══════════════
+function calcCutsTotals() {
+  // Sum all cut inputs to populate fCajas
+  const inputs = document.querySelectorAll('#cutsGrid input[type="number"]');
+  let total = 0;
+  inputs.forEach(inp => { total += parseInt(inp.value) || 0; });
+  document.getElementById('fCajas').value = total || '';
+  calcPreview();
+}
+
+// ═══════════════ CALC PREVIEW ═══════════════
+function calcPreview() {
+  const cajas = parseInt(document.getElementById('fCajas').value) || 0;
+  const kgPres = getKgPresentacion();
+  const operarios = parseInt(document.getElementById('fOperarios').value) || 0;
+  const preview = document.getElementById('calcPreview');
+
+  if (cajas > 0 && kgPres > 0) {
+    preview.style.display = 'flex';
+    const kgPT = cajas * kgPres;
+    document.getElementById('fKgPT').value = kgPT.toFixed(1);
+    document.getElementById('prevKgPT').textContent = formatNum(kgPT) + ' kg';
+    const cjHrOp = operarios > 0 ? (cajas / operarios).toFixed(1) : '—';
+    document.getElementById('prevCjHrOp').textContent = cjHrOp;
+  } else {
+    preview.style.display = 'none';
+    document.getElementById('fKgPT').value = '';
+  }
+}
+
+// ═══════════════ MODAL CALC ═══════════════
+function calcModalPT() {
+  const cajas = parseInt(document.getElementById('mCajas').value) || 0;
+  const kgPres = parseFloat(document.getElementById('mKgPres').value) || 0;
+  document.getElementById('mKgPT').value = (cajas * kgPres).toFixed(1);
+}
+
+// ═══════════════ STORAGE ═══════════════
+const STORAGE_KEY = 'empaque_congelado_registros';
+function getRecords() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); }
+  catch { return []; }
+}
+function saveRecords(records) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+// ═══════════════ GET ACTIVE CORTE FROM CUTS ═══════════════
+function getCorteFromCuts() {
+  const fruta = document.getElementById('fFruta').value;
+  if (!fruta || !CORTES_POR_FRUTA[fruta]) return '';
+  const cortes = CORTES_POR_FRUTA[fruta];
+  const parts = [];
+  cortes.forEach(c => {
+    const inp = document.getElementById('cut_' + c.replace(/\s+/g,'_'));
+    if (inp && parseInt(inp.value) > 0) {
+      parts.push(c);
+    }
+  });
+  return parts.join(', ') || cortes[0] || '';
+}
+
+function getCutsDetail() {
+  const fruta = document.getElementById('fFruta').value;
+  if (!fruta || !CORTES_POR_FRUTA[fruta]) return {};
+  const detail = {};
+  CORTES_POR_FRUTA[fruta].forEach(c => {
+    const inp = document.getElementById('cut_' + c.replace(/\s+/g,'_'));
+    if (inp) detail[c] = parseInt(inp.value) || 0;
+  });
+  return detail;
+}
+
+// ═══════════════ REGISTER ═══════════════
+async function registrarEmpaque() {
+  const fruta = document.getElementById('fFruta').value;
+  if (!fruta) { showToast('Selecciona un producto/fruta', true); return; }
+
+  const cajas = parseInt(document.getElementById('fCajas').value) || 0;
+  if (cajas <= 0) { showToast('Ingresa el numero de cajas', true); return; }
+
+  const kgPres = getKgPresentacion();
+  if (kgPres <= 0) { showToast('Selecciona o ingresa el KG de presentacion', true); return; }
+
+  const supervisor = document.getElementById('fSupervisor').value.trim();
+  if (supervisor) localStorage.setItem('empaque_cong_supervisor', supervisor);
+
+  const cliente = document.getElementById('fCliente').value.trim();
+  if (cliente) localStorage.setItem('empaque_cong_cliente', cliente);
+
+  const kgPT = cajas * kgPres;
+  const operarios = parseInt(document.getElementById('fOperarios').value) || 0;
+  const cjHr = cajas;
+  const cjHrOp = operarios > 0 ? parseFloat((cajas / operarios).toFixed(2)) : 0;
+  const corte = getCorteFromCuts();
+  const cutsDetail = getCutsDetail();
+
+  const record = {
+    id: Date.now().toString(36) + Math.random().toString(36).substr(2,5),
+    fecha: document.getElementById('fFecha').value,
+    hora: document.getElementById('fHora').value,
+    turno: document.getElementById('fTurno').value,
+    turno_origen: document.getElementById('fTurnoOrigen').value,
+    fruta: fruta,
+    tipo: document.getElementById('fTipo').value,
+    corte: corte,
+    cuts_detail: JSON.stringify(cutsDetail),
+    kg_presentacion: kgPres,
+    cajas: cajas,
+    kg_pt: parseFloat(kgPT.toFixed(1)),
+    cj_hr: cjHr,
+    cj_hr_op: cjHrOp,
+    operarios: operarios,
+    cliente: cliente,
+    lote_mp: document.getElementById('fLoteMP').value.trim(),
+    cod_trazabilidad: document.getElementById('fCodTraz').value.trim(),
+    supervisor: supervisor,
+    observacion: document.getElementById('fObs').value.trim(),
+    created_at: new Date().toISOString()
+  };
+
+  const records = getRecords();
+  records.push(record);
+  saveRecords(records);
+
+  // Supabase sync
+  await syncToSupabase(record);
+
+  showToast('Registro de empaque guardado');
+  limpiarForm();
+  refreshAll();
+  avanzarHora();
+}
+
+async function syncToSupabase(record) {
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try {
+    const { error } = await supabaseClient
+      .from('registro_empaque_congelado')
+      .upsert({
+        fecha: record.fecha,
+        hora: record.hora,
+        turno: record.turno,
+        turno_origen: record.turno_origen,
+        fruta: record.fruta,
+        tipo: record.tipo,
+        corte: record.corte,
+        cuts_detail: record.cuts_detail,
+        kg_presentacion: record.kg_presentacion,
+        cajas: record.cajas,
+        kg_pt: record.kg_pt,
+        cj_hr: record.cj_hr,
+        cj_hr_op: record.cj_hr_op,
+        operarios: record.operarios,
+        cliente: record.cliente,
+        lote_mp: record.lote_mp,
+        cod_trazabilidad: record.cod_trazabilidad,
+        supervisor: record.supervisor,
+        observacion: record.observacion
+      }, { onConflict: 'fecha,hora,turno' });
+
+    if (error) {
+      console.error('Supabase error:', error);
+      showSupabaseToast('Error Supabase: ' + error.message, '#ef4444');
+    } else {
+      showSupabaseToast('Sincronizado con Supabase', '#16a34a');
+    }
+  } catch(e) {
+    console.error('Supabase offline:', e);
+    showSupabaseToast('Sin conexion - guardado local', '#ef4444');
+  }
+}
+
+function limpiarForm() {
+  document.getElementById('fCajas').value = '';
+  document.getElementById('fKgPT').value = '';
+  document.getElementById('fObs').value = '';
+  document.getElementById('fLoteMP').value = '';
+  document.getElementById('fCodTraz').value = '';
+  document.getElementById('calcPreview').style.display = 'none';
+  // Clear cut inputs
+  document.querySelectorAll('#cutsGrid input').forEach(i => i.value = '');
+}
+
+function avanzarHora() {
+  const records = getRecords();
+  const fecha = document.getElementById('fFecha').value;
+  const turno = document.getElementById('fTurno').value;
+  const hoy = records.filter(r => r.fecha === fecha && r.turno === turno);
+  if (hoy.length === 0) return;
+
+  const horas = hoy.map(r => r.hora).sort();
+  const ultima = horas[horas.length - 1];
+  const sel = document.getElementById('fHora');
+  for (let i = 0; i < sel.options.length; i++) {
+    if (sel.options[i].value === ultima && i + 1 < sel.options.length) {
+      sel.selectedIndex = i + 1;
+      break;
+    }
+  }
+}
+
+// ═══════════════ EDIT / DELETE ═══════════════
+let editingId = null;
+
+function openEditModal(id) {
+  const records = getRecords();
+  const r = records.find(rec => rec.id === id);
+  if (!r) return;
+  editingId = id;
+
+  document.getElementById('mFecha').value = r.fecha || '';
+  document.getElementById('mTurno').value = r.turno || 'DIA';
+  document.getElementById('mTurnoOrigen').value = r.turno_origen || 'DIA';
+  document.getElementById('mHora').value = r.hora || '';
+  document.getElementById('mFruta').value = r.fruta || '';
+  document.getElementById('mCorte').value = r.corte || '';
+  document.getElementById('mTipo').value = r.tipo || 'CONVENCIONAL';
+  document.getElementById('mCliente').value = r.cliente || '';
+  document.getElementById('mCajas').value = r.cajas || '';
+  document.getElementById('mKgPres').value = r.kg_presentacion || '';
+  document.getElementById('mKgPT').value = r.kg_pt || '';
+  document.getElementById('mOperarios').value = r.operarios || '';
+  document.getElementById('mLoteMP').value = r.lote_mp || '';
+  document.getElementById('mCodTraz').value = r.cod_trazabilidad || '';
+  document.getElementById('mSupervisor').value = r.supervisor || '';
+  document.getElementById('mObs').value = r.observacion || '';
+
+  document.getElementById('editModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('editModal').classList.remove('active');
+  editingId = null;
+}
+
+async function guardarEdicion() {
+  if (!editingId) return;
+  const records = getRecords();
+  const idx = records.findIndex(r => r.id === editingId);
+  if (idx === -1) { closeModal(); return; }
+
+  const cajas = parseInt(document.getElementById('mCajas').value) || 0;
+  const kgPres = parseFloat(document.getElementById('mKgPres').value) || 0;
+  const operarios = parseInt(document.getElementById('mOperarios').value) || 0;
+  const kgPT = cajas * kgPres;
+  const cjHrOp = operarios > 0 ? parseFloat((cajas / operarios).toFixed(2)) : 0;
+
+  const oldRecord = records[idx];
+
+  records[idx] = {
+    ...records[idx],
+    fecha: document.getElementById('mFecha').value,
+    hora: document.getElementById('mHora').value,
+    turno: document.getElementById('mTurno').value,
+    turno_origen: document.getElementById('mTurnoOrigen').value,
+    fruta: document.getElementById('mFruta').value,
+    corte: document.getElementById('mCorte').value,
+    tipo: document.getElementById('mTipo').value,
+    cliente: document.getElementById('mCliente').value.trim(),
+    cajas: cajas,
+    kg_presentacion: kgPres,
+    kg_pt: parseFloat(kgPT.toFixed(1)),
+    cj_hr: cajas,
+    cj_hr_op: cjHrOp,
+    operarios: operarios,
+    lote_mp: document.getElementById('mLoteMP').value.trim(),
+    cod_trazabilidad: document.getElementById('mCodTraz').value.trim(),
+    supervisor: document.getElementById('mSupervisor').value.trim(),
+    observacion: document.getElementById('mObs').value.trim()
+  };
+
+  saveRecords(records);
+
+  // Sync updated record to Supabase
+  await syncToSupabase(records[idx]);
+
+  closeModal();
+  refreshAll();
+  showToast('Registro actualizado');
+}
+
+async function deleteRecord(id) {
+  if (!confirm('Eliminar este registro?')) return;
+  let records = getRecords();
+  const record = records.find(r => r.id === id);
+  records = records.filter(r => r.id !== id);
+  saveRecords(records);
+
+  // Delete from Supabase
+  if (record && typeof supabaseClient !== 'undefined' && supabaseClient) {
+    try {
+      await supabaseClient.from('registro_empaque_congelado').delete()
+        .eq('fecha', record.fecha).eq('hora', record.hora).eq('turno', record.turno);
+    } catch(e) { console.error('Supabase delete error', e); }
+  }
+
+  refreshAll();
+  showToast('Registro eliminado');
+}
+
+// Close modal on overlay click
+document.getElementById('editModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ═══════════════ TOAST ═══════════════
+function showToast(msg, isError) {
+  const toast = document.getElementById('toast');
+  toast.textContent = (isError ? '\u26A0\uFE0F ' : '\u2705 ') + msg;
+  toast.style.background = isError
+    ? 'linear-gradient(135deg, #dc2626, #b91c1c)'
+    : 'linear-gradient(135deg, #16a34a, #15803d)';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// ═══════════════ FORMAT ═══════════════
+function formatNum(n) {
+  return n.toLocaleString('es-PE', { maximumFractionDigits: 1 });
+}
+
+// ═══════════════ REFRESH ALL ═══════════════
+function refreshAll() {
+  const filterDate = document.getElementById('filterDate').value;
+  const records = getRecords();
+  const todayRecs = records.filter(r => r.fecha === filterDate);
+
+  updateKPIs(todayRecs);
+  updateTable(todayRecs);
+  rebuildCharts(todayRecs);
+}
+
+// ═══════════════ KPIs ═══════════════
+function updateKPIs(recs) {
+  const totalCajas = recs.reduce((s, r) => s + (r.cajas || 0), 0);
+  const totalKgPT = recs.reduce((s, r) => s + (r.kg_pt || 0), 0);
+  const avgCjHr = recs.length > 0 ? Math.round(totalCajas / recs.length) : 0;
+  const totalOp = recs.reduce((s, r) => s + (r.operarios || 0), 0);
+  const avgOp = recs.length > 0 ? totalOp / recs.length : 0;
+  const avgCjHrOp = avgOp > 0 ? (avgCjHr / avgOp).toFixed(1) : '0';
+
+  document.getElementById('kpiCajas').textContent = formatNum(totalCajas);
+  document.getElementById('kpiKgPT').innerHTML = formatNum(totalKgPT) + ' <span class="kpi-unit">kg</span>';
+  document.getElementById('kpiCjHr').textContent = avgCjHr;
+  document.getElementById('kpiCjHrOp').textContent = avgCjHrOp;
+  document.getElementById('kpiHoras').textContent = recs.length;
+
+  if (recs.length > 0) {
+    const best = recs.reduce((a, b) => (a.cajas > b.cajas ? a : b));
+    document.getElementById('kpiBest').innerHTML = best.hora.split('-')[0] + ' <span class="kpi-unit">(' + best.cajas + ' cj)</span>';
+  } else {
+    document.getElementById('kpiBest').innerHTML = '—';
+  }
+}
+
+// ═══════════════ TABLE ═══════════════
+function updateTable(recs) {
+  const tbody = document.getElementById('historyBody');
+  const tfoot = document.getElementById('historyFoot');
+  const empty = document.getElementById('emptyState');
+
+  if (recs.length === 0) {
+    tbody.innerHTML = '';
+    tfoot.innerHTML = '';
+    empty.style.display = 'block';
+    document.querySelector('.table-wrap').style.display = 'none';
+    return;
+  }
+
+  empty.style.display = 'none';
+  document.querySelector('.table-wrap').style.display = 'block';
+
+  const sorted = [...recs].sort((a, b) => a.hora.localeCompare(b.hora));
+  let rows = '';
+
+  sorted.forEach(r => {
+    const cajasColor = r.cajas >= 90 ? 'color:var(--verde)' : r.cajas >= 70 ? 'color:var(--amber)' : 'color:var(--rojo)';
+    const cjhrColor = r.cj_hr >= 90 ? 'color:var(--verde)' : r.cj_hr >= 70 ? 'color:var(--amber)' : 'color:var(--rojo)';
+    const tipoBadge = r.tipo === 'ORGANICO' ? 'badge-green' : 'badge-purple';
+
+    rows += '<tr>' +
+      '<td style="font-weight:700">' + r.hora + '</td>' +
+      '<td>' + r.fruta + '</td>' +
+      '<td>' + (r.corte || '—') + '</td>' +
+      '<td><span class="badge ' + tipoBadge + '">' + (r.tipo || 'CONV') + '</span></td>' +
+      '<td class="num" style="' + cajasColor + ';font-weight:800">' + r.cajas + '</td>' +
+      '<td class="num">' + formatNum(r.kg_pt) + '</td>' +
+      '<td class="num" style="' + cjhrColor + ';font-weight:800">' + r.cj_hr + '</td>' +
+      '<td class="num">' + (r.cj_hr_op || '—') + '</td>' +
+      '<td class="num">' + (r.operarios || '—') + '</td>' +
+      '<td>' + (r.cliente || '—') + '</td>' +
+      '<td>' + (r.supervisor || '—') + '</td>' +
+      '<td style="text-align:center;white-space:nowrap">' +
+        '<button class="edit-btn-tbl" onclick="openEditModal(\'' + r.id + '\')" title="Editar">&#9998;&#65039;</button>' +
+        '<button class="delete-btn" onclick="deleteRecord(\'' + r.id + '\')" title="Eliminar">&#128465;&#65039;</button>' +
+      '</td>' +
+    '</tr>';
+  });
+
+  tbody.innerHTML = rows;
+
+  // Footer
+  const totCajas = recs.reduce((s, r) => s + (r.cajas || 0), 0);
+  const totKgPT = recs.reduce((s, r) => s + (r.kg_pt || 0), 0);
+  const avgCjHr = recs.length > 0 ? Math.round(totCajas / recs.length) : 0;
+  const totOp = recs.reduce((s, r) => s + (r.operarios || 0), 0);
+  const avgOp = recs.length > 0 ? Math.round(totOp / recs.length) : 0;
+  const avgCjHrOp = avgOp > 0 ? (avgCjHr / avgOp).toFixed(1) : '—';
+
+  tfoot.innerHTML = '<tr class="table-footer">' +
+    '<td style="font-weight:800">TOTAL</td>' +
+    '<td>' + recs.length + ' hrs</td>' +
+    '<td></td><td></td>' +
+    '<td class="num">' + formatNum(totCajas) + '</td>' +
+    '<td class="num">' + formatNum(totKgPT) + '</td>' +
+    '<td class="num">' + avgCjHr + ' avg</td>' +
+    '<td class="num">' + avgCjHrOp + '</td>' +
+    '<td class="num">' + avgOp + '</td>' +
+    '<td></td><td></td><td></td>' +
+  '</tr>';
+}
+
+// ═══════════════ CHARTS ═══════════════
+let chartCajas = null, chartKgPT = null, chartAcumulado = null, chartProductividad = null;
+
+function rebuildCharts(recs) {
+  if (!recs) {
+    const filterDate = document.getElementById('filterDate').value;
+    recs = getRecords().filter(r => r.fecha === filterDate);
+  }
+
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  const gridColor = isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)';
+  const textColor = isLight ? '#64748b' : '#94a3b8';
+
+  const sorted = [...recs].sort((a, b) => a.hora.localeCompare(b.hora));
+  const labels = sorted.map(r => r.hora.split('-')[0]);
+
+  // ── BAR: Cajas Ejecutadas ──
+  if (chartCajas) chartCajas.destroy();
+  chartCajas = new Chart(document.getElementById('chartCajas').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'Cajas Ejecutadas',
+        data: sorted.map(r => r.cajas),
+        backgroundColor: sorted.map(r => r.cajas >= 90 ? 'rgba(22,163,74,0.75)' : r.cajas >= 70 ? 'rgba(245,158,11,0.75)' : 'rgba(239,68,68,0.75)'),
+        borderColor: sorted.map(r => r.cajas >= 90 ? '#16a34a' : r.cajas >= 70 ? '#f59e0b' : '#ef4444'),
+        borderWidth: 1,
+        borderRadius: 6,
+        barPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
+        datalabels: {
+          align: 'top', color: textColor,
+          font: { weight: '800', size: 11, family: 'Plus Jakarta Sans' },
+          formatter: v => v || ''
+        }
+      },
+      scales: {
+        x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+
+  // ── BAR: KG PT por Hora ──
+  if (chartKgPT) chartKgPT.destroy();
+  chartKgPT = new Chart(document.getElementById('chartKgPT').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'KG PT',
+        data: sorted.map(r => r.kg_pt),
+        backgroundColor: 'rgba(234,88,12,0.7)',
+        borderColor: '#ea580c',
+        borderWidth: 1,
+        borderRadius: 6,
+        barPercentage: 0.7
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
+        datalabels: {
+          align: 'top', color: textColor,
+          font: { weight: '800', size: 10, family: 'Plus Jakarta Sans' },
+          formatter: v => v ? formatNum(v) : ''
+        }
+      },
+      scales: {
+        x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+
+  // ── COMBO: Produccion Acumulada Cajas ──
+  if (chartAcumulado) chartAcumulado.destroy();
+  const cajasPerHour = sorted.map(r => r.cajas);
+  let cumulative = []; let running = 0;
+  cajasPerHour.forEach(v => { running += v; cumulative.push(running); });
+
+  chartAcumulado = new Chart(document.getElementById('chartAcumulado').getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: 'Cajas por Hora',
+          data: cajasPerHour,
+          backgroundColor: 'rgba(6,182,212,0.65)',
+          borderColor: '#06b6d4',
+          borderWidth: 1, borderRadius: 6,
+          barPercentage: 0.7, yAxisID: 'y', order: 2
+        },
+        {
+          label: 'Acumulado',
+          data: cumulative,
+          type: 'line',
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22,163,74,0.15)',
+          fill: true, tension: 0.3,
+          pointRadius: 5, pointBackgroundColor: '#16a34a',
+          borderWidth: 2.5, yAxisID: 'y1', order: 1
+        }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
+        datalabels: { display: false }
+      },
+      scales: {
+        x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
+        y: {
+          position: 'left',
+          title: { display: true, text: 'Cajas/hora', color: textColor, font: { size: 11, weight: '700' } },
+          ticks: { color: textColor }, grid: { color: gridColor }, beginAtZero: true
+        },
+        y1: {
+          position: 'right',
+          title: { display: true, text: 'Acumulado', color: textColor, font: { size: 11, weight: '700' } },
+          ticks: { color: textColor }, grid: { drawOnChartArea: false }, beginAtZero: true
+        }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+
+  // ── LINE: CJ/HR*OP Productividad ──
+  if (chartProductividad) chartProductividad.destroy();
+  const prodData = sorted.map(r => r.cj_hr_op || 0);
+
+  chartProductividad = new Chart(document.getElementById('chartProductividad').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: 'CJ/HR*OP',
+        data: prodData,
+        borderColor: '#8b5cf6',
+        backgroundColor: 'rgba(139,92,246,0.12)',
+        fill: true, tension: 0.3,
+        pointRadius: 6,
+        pointBackgroundColor: prodData.map(v => v >= 3.5 ? '#16a34a' : v >= 3 ? '#f59e0b' : '#ef4444'),
+        pointBorderColor: prodData.map(v => v >= 3.5 ? '#16a34a' : v >= 3 ? '#f59e0b' : '#ef4444'),
+        borderWidth: 2.5
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
+        datalabels: {
+          align: 'top',
+          color: function(ctx) {
+            const v = ctx.dataset.data[ctx.dataIndex];
+            return v >= 3.5 ? '#16a34a' : v >= 3 ? '#f59e0b' : '#ef4444';
+          },
+          font: { weight: '800', size: 11, family: 'Plus Jakarta Sans' },
+          formatter: v => v ? v.toFixed(1) : ''
+        }
+      },
+      scales: {
+        x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
+        y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true }
+      }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+// ═══════════════ SUPABASE LOAD ═══════════════
+async function loadFromSupabase() {
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+    console.warn('Supabase no disponible');
+    return;
+  }
+  try {
+    const today = getLocalToday();
+    const { data, error } = await supabaseClient
+      .from('registro_empaque_congelado')
+      .select('*')
+      .eq('fecha', today)
+      .order('hora');
+
+    if (error) {
+      console.error('Supabase load error:', error);
+      return;
+    }
+
+    if (data && data.length > 0) {
+      const localRecords = getRecords();
+      const otherDays = localRecords.filter(r => r.fecha !== today);
+      const merged = [...otherDays, ...data.map(d => ({
+        ...d,
+        cajas: parseInt(d.cajas) || 0,
+        kg_pt: parseFloat(d.kg_pt) || 0,
+        kg_presentacion: parseFloat(d.kg_presentacion) || 0,
+        operarios: parseInt(d.operarios) || 0,
+        cj_hr: parseInt(d.cj_hr) || 0,
+        cj_hr_op: parseFloat(d.cj_hr_op) || 0
+      }))];
+      saveRecords(merged);
+      refreshAll();
+    }
+  } catch(e) {
+    console.log('Supabase offline');
+  }
+}
+
+async function checkSupabaseConnectionEmpaque() {
+  const indicator = document.getElementById('supabaseStatus');
+  if (!indicator) return;
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+    indicator.style.background = '#ef4444';
+    indicator.title = 'Supabase: NO conectado';
+    return;
+  }
+  try {
+    // Try a simple query; table may not exist yet so we handle gracefully
+    const { error } = await supabaseClient.from('registro_empaque_congelado').select('fecha').limit(1);
+    if (error) {
+      indicator.style.background = '#f59e0b';
+      indicator.title = 'Supabase: Tabla pendiente - ' + error.message;
+    } else {
+      indicator.style.background = '#16a34a';
+      indicator.title = 'Supabase: Conectado';
+    }
+  } catch(e) {
+    indicator.style.background = '#ef4444';
+    indicator.title = 'Supabase: Sin conexion';
+  }
+}
+
+// ═══════════════ INIT ═══════════════
+(function init() {
+  // Restore saved fields
+  const savedSup = localStorage.getItem('empaque_cong_supervisor');
+  if (savedSup) document.getElementById('fSupervisor').value = savedSup;
+  const savedCliente = localStorage.getItem('empaque_cong_cliente');
+  if (savedCliente) document.getElementById('fCliente').value = savedCliente;
+
+  // Set today's date
+  const d = new Date();
+  const today = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+  document.getElementById('fFecha').value = today;
+  document.getElementById('filterDate').value = today;
+
+  // Set default hour based on current time
+  const currentHour = d.getHours();
+  const hourStr = String(currentHour).padStart(2,'0') + ':00-' + String(currentHour + 1).padStart(2,'0') + ':00';
+  const horaSelect = document.getElementById('fHora');
+  for (let i = 0; i < horaSelect.options.length; i++) {
+    if (horaSelect.options[i].value === hourStr) {
+      horaSelect.selectedIndex = i;
+      break;
+    }
+  }
+
+  refreshAll();
+  loadFromSupabase();
+  checkSupabaseConnectionEmpaque();
+})();
+</script>
+</body>
+</html>

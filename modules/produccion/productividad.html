@@ -1,0 +1,18 @@
+<!-- Panel: Productividad -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">⚡ <span style="color:var(--azul)">Productividad</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Eficiencia laboral y throughput por operario</p>
+  </div>
+  <a href="dashboards/productividad.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
+</div>
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Kg/Hora Real</div><div class="kpi-value" id="prodKgHr">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Proyectado</div><div class="kpi-value" id="prodProy">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">HH / TN</div><div class="kpi-value" id="prodHHTN">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">OEE Planta</div><div class="kpi-value" id="prodOEE">—</div></div>
+</div>
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">📊 KG/HR Real vs Proyectado</div></div><div class="chart-wrapper"><canvas id="chartKgHr"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">👥 Productividad por Turno</div></div><div class="chart-wrapper"><canvas id="chartProdTurno"></canvas></div></div>
+</div>

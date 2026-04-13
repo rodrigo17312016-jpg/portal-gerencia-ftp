@@ -1,0 +1,24 @@
+<!-- Panel: Contenedores -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🚢 <span style="color:var(--azul)">Contenedores</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Tracking de contenedores y exportaciones</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">En Proceso</div><div class="kpi-value" id="contProceso">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Completados</div><div class="kpi-value" id="contCompletados">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">TN Exportadas</div><div class="kpi-value" id="contTN">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Destinos</div><div class="kpi-value" id="contDestinos">—</div></div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Tracking de Contenedores</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Contenedor</th><th>Fruta</th><th>Peso (kg)</th><th>Destino</th><th>Estado</th></tr></thead>
+      <tbody id="contTabla"></tbody>
+    </table>
+  </div>
+</div>

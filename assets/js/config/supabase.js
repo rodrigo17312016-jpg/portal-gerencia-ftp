@@ -1,13 +1,24 @@
 /* ════════════════════════════════════════════════════════
-   SUPABASE - Cliente Unificado
+   SUPABASE - Clientes para ambos proyectos
+   Proyecto 1: Calidad (temperaturas, consumos)
+   Proyecto 2: Produccion (registros, costos, tuneles, empaque)
    ════════════════════════════════════════════════════════ */
 
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
 
+// Proyecto 1: Frutos Tropicales (Calidad)
 const SB_URL = 'https://obnvrfvcujsrmifvlqni.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibnZyZnZjdWpzcm1pZnZscW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDY3OTUsImV4cCI6MjA4OTA4Mjc5NX0.A7BilSrDzqe2rqz1Kh8fg5t-GVNxrLGYJK4IaMlVtBs';
 
-export const supabase = createClient(SB_URL, SB_KEY);
+// Proyecto 2: Frutos Tropicales Produccion
+const SB_PROD_URL = 'https://rslzosmeteyzxmgfkppe.supabase.co';
+const SB_PROD_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzbHpvc21ldGV5enhtZ2ZrcHBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0OTc5NTgsImV4cCI6MjA5MDA3Mzk1OH0.XwitsLRWq10UsYshg_m2ViZh4BnV48zkJCK-JsRa9cs';
+
+// Cliente Calidad (temperaturas, consumos_insumos)
+export const supabaseCalidad = createClient(SB_URL, SB_KEY);
+
+// Cliente Produccion (registro_produccion, registro_personal, config_costos, registro_tuneles, registro_empaque_congelado)
+export const supabase = createClient(SB_PROD_URL, SB_PROD_KEY);
 
 // Estado de conexion
 export let isConnected = false;
@@ -22,7 +33,7 @@ export async function checkConnection() {
   return isConnected;
 }
 
-// Helper legacy para paneles que aun usan REST directo
+// Fetch para tablas de Calidad (proyecto 1)
 export async function fetchSupabase(query) {
   try {
     const res = await fetch(`${SB_URL}/rest/v1/${query}`, {
@@ -38,7 +49,7 @@ export async function fetchSupabase(query) {
   }
 }
 
-// Helper para insertar datos
+// Helper para insertar datos (produccion)
 export async function insertSupabase(table, data) {
   try {
     const { data: result, error } = await supabase.from(table).insert(data).select();
@@ -50,7 +61,7 @@ export async function insertSupabase(table, data) {
   }
 }
 
-// Helper para actualizar datos
+// Helper para actualizar datos (produccion)
 export async function updateSupabase(table, id, data) {
   try {
     const { data: result, error } = await supabase.from(table).update(data).eq('id', id).select();
@@ -62,4 +73,4 @@ export async function updateSupabase(table, id, data) {
   }
 }
 
-export { SB_URL, SB_KEY };
+export { SB_URL, SB_KEY, SB_PROD_URL, SB_PROD_KEY };

@@ -1,24 +1,68 @@
-<!-- Panel: Area de Recepcion -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">📦 Area de <span style="color:var(--verde)">Recepcion</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Control de recepcion de materia prima</p>
+<!-- Panel: Area de Recepcion - Version Completa -->
+<div style="background:linear-gradient(135deg,rgba(234,88,12,0.08),rgba(234,88,12,0.02));border:1px solid rgba(234,88,12,0.15);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <div style="width:52px;height:52px;border-radius:14px;background:rgba(234,88,12,0.12);display:flex;align-items:center;justify-content:center;font-size:26px">&#128230;</div>
+  <div style="flex:1">
+    <h2 style="font-size:20px;font-weight:900;color:var(--texto);margin:0">Recepcion</h2>
+    <p style="font-size:12px;color:var(--muted);margin:2px 0 0">Control de ingreso de materia prima &middot; Datos en tiempo real</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="badge badge-naranja"><span class="status-dot online" style="width:6px;height:6px"></span> En vivo</div>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">TN Recepcionadas</div><div class="kpi-value" id="recTN">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Calidad A/A+</div><div class="kpi-value" id="recCalidad">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Lotes en Planta</div><div class="kpi-value" id="recLotes">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Brix Promedio</div><div class="kpi-value" id="recBrix">—</div></div>
+<!-- 6 KPIs -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">&#9878;&#65039;</div><div class="kpi-label" style="font-size:9px;margin:0">TN RECEPCIONADAS</div></div>
+    <div class="kpi-value" style="font-size:22px" id="recKpiTN">0 <span style="font-size:11px;font-weight:500">TN</span></div>
+    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="recProgressTN" style="width:0%"></div></div>
+    <div style="font-size:10px;color:var(--muted)" id="recKpiTNMeta">Hoy</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">&#127942;</div><div class="kpi-label" style="font-size:9px;margin:0">CALIDAD A/A+</div></div>
+    <div class="kpi-value" style="font-size:22px" id="recKpiCalidad">0<span style="font-size:11px;font-weight:500">%</span></div>
+    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="recProgressCalidad" style="width:0%;background:var(--naranja)"></div></div>
+    <div style="font-size:10px;color:var(--muted)">Lotes con calidad alta</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">&#128203;</div><div class="kpi-label" style="font-size:9px;margin:0">LOTES EN PLANTA</div></div>
+    <div class="kpi-value" style="font-size:22px" id="recKpiLotes">0</div>
+    <div style="font-size:10px;color:var(--muted)">Lotes registrados hoy</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">&#127815;</div><div class="kpi-label" style="font-size:9px;margin:0">BRIX PROMEDIO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="recKpiBrix">--<span style="font-size:11px;font-weight:500">&deg;</span></div>
+    <div style="font-size:10px;color:var(--muted)">Grados Brix promedio</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">&#128101;</div><div class="kpi-label" style="font-size:9px;margin:0">PROVEEDORES</div></div>
+    <div class="kpi-value" style="font-size:22px" id="recKpiProveedores">0</div>
+    <div style="font-size:10px;color:var(--muted)">Proveedores hoy</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--cyan)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">&#128200;</div><div class="kpi-label" style="font-size:9px;margin:0">TN CAMPANA</div></div>
+    <div class="kpi-value" style="font-size:22px" id="recKpiCampana">0 <span style="font-size:11px;font-weight:500">TN</span></div>
+    <div style="font-size:10px;color:var(--muted)">Acumulado 30 dias</div>
+  </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Lotes Recibidos Recientes</div></div>
+<!-- 2 Charts -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:20px">
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#128202; Recepcion por Semana</div></div><div class="chart-wrapper"><canvas id="chartRecSemana"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#127856; Distribucion por Fruta</div></div><div class="chart-wrapper"><canvas id="chartRecFruta"></canvas></div></div>
+</div>
+
+<!-- Tabla Lotes Recepcionados -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header">
+    <div class="card-title">&#128203; Lotes Recepcionados &mdash; Ultimos 7 dias</div>
+    <div class="badge badge-naranja"><span class="status-dot online" style="width:6px;height:6px"></span> Live</div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Fruta</th><th>Lote</th><th>Peso (kg)</th><th>Calidad</th><th>Brix</th><th>Proveedor</th></tr></thead>
-      <tbody id="recTabla"></tbody>
+      <thead><tr><th>Fecha</th><th>Lote</th><th>Proveedor</th><th>Fruta</th><th>Peso Neto</th><th>Jabas</th><th>Calidad</th><th>Brix</th></tr></thead>
+      <tbody id="recLiveBody"><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted)">Cargando datos...</td></tr></tbody>
+      <tfoot id="recLiveFoot"></tfoot>
     </table>
   </div>
 </div>

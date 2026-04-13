@@ -1,35 +1,112 @@
-<!-- Panel: Area de Acondicionado -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">✂️ Area de <span style="color:var(--verde)">Acondicionado</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Procesamiento y acondicionamiento de materia prima</p>
+<!-- Panel: Area de Acondicionado - Version Completa -->
+<div style="background:linear-gradient(135deg,rgba(22,163,74,0.08),rgba(22,163,74,0.02));border:1px solid rgba(22,163,74,0.15);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <div style="width:52px;height:52px;border-radius:14px;background:rgba(22,163,74,0.12);display:flex;align-items:center;justify-content:center;font-size:26px">🔪</div>
+  <div style="flex:1">
+    <h2 style="font-size:20px;font-weight:900;color:var(--texto);margin:0">Acondicionado</h2>
+    <p style="font-size:12px;color:var(--muted);margin:2px 0 0">Pelado, corte, seleccion y preparacion de fruta · Datos en tiempo real</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> En vivo</div>
+    <a href="apps/registro-produccion/index.html" target="_blank" class="btn btn-sm btn-primary">📋 Registro Produccion</a>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Consumo MP</div><div class="kpi-value" id="acondConsumo">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
-  <div class="kpi-card"><div class="kpi-label">P. Terminado</div><div class="kpi-value" id="acondPT">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
-  <div class="kpi-card"><div class="kpi-label">Rendimiento</div><div class="kpi-value" id="acondRend">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Personal</div><div class="kpi-value" id="acondPersonal">—</div></div>
+<!-- Filtros -->
+<div class="filter-bar" style="margin-bottom:16px">
+  <div class="filter-chip active" data-filter="turno" data-value="DIA">Turno Dia</div>
+  <div class="filter-chip" data-filter="turno" data-value="NOCHE">Turno Noche</div>
+  <div class="filter-chip" data-filter="turno" data-value="AMBOS">Ambos Turnos</div>
+  <input type="date" id="acoFilterDate" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600">
+  <select id="acoFilterFruta" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px">
+    <option value="TODAS">Todas las frutas</option>
+    <option value="MANGO">🥭 Mango</option><option value="ARANDANO">🫐 Arandano</option>
+    <option value="GRANADA">🍎 Granada</option><option value="PALTA">🥑 Palta</option>
+    <option value="FRESA">🍓 Fresa</option><option value="PIÑA">🍍 Piña</option>
+  </select>
+  <button id="acoToggleCosto" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.1);color:#f87171;cursor:pointer;font-size:12px;font-weight:600">🔒 Mostrar Costos</button>
 </div>
 
-<div class="charts-grid charts-grid-2" style="margin-top:20px">
-  <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">📊 Consumo vs PT por Hora</div></div>
-    <div class="chart-wrapper"><canvas id="chartAcondHora"></canvas></div>
+<!-- 6 KPIs con iconos y desglose por fruta -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">🏭</div><div class="kpi-label" style="font-size:9px;margin:0">CONSUMO MP HOY</div></div>
+    <div class="kpi-value" style="font-size:22px" id="acoKpiConsumo">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="acoProgressBar" style="width:0%"></div></div>
+    <div style="font-size:10px;color:var(--muted)" id="acoKpiMeta">Proyectado: — TN</div>
+    <div id="acoKpiConsumoFrutas" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px"></div>
   </div>
-  <div class="chart-container">
-    <div class="chart-header"><div class="chart-title">🎯 Rendimiento % por Hora</div></div>
-    <div class="chart-wrapper"><canvas id="chartAcondRend"></canvas></div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">🧊</div><div class="kpi-label" style="font-size:9px;margin:0">P. TERMINADO APROX</div></div>
+    <div class="kpi-value" style="font-size:22px" id="acoKpiPT">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div style="font-size:10px;color:var(--muted)">Peso antes de tunel IQF</div>
+    <div id="acoKpiPTFrutas" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px"></div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">🎯</div><div class="kpi-label" style="font-size:9px;margin:0">RENDIMIENTO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="acoKpiRend">0<span style="font-size:11px;font-weight:500">%</span></div>
+    <div style="font-size:10px" id="acoKpiRendDiff"></div>
+    <div id="acoKpiRendFrutas" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px"></div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">⚡</div><div class="kpi-label" style="font-size:9px;margin:0">PROMEDIO KG/HORA</div></div>
+    <div class="kpi-value" style="font-size:22px" id="acoKpiHrs">0 <span style="font-size:11px;font-weight:500">kg/h</span></div>
+    <div style="font-size:10px;color:var(--muted)">Consumo promedio</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">👥</div><div class="kpi-label" style="font-size:9px;margin:0">PERSONAL ACTIVO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="acoKpiPersonal">0 <span style="font-size:11px;font-weight:500">op.</span></div>
+    <div style="font-size:10px;color:var(--muted)">Sin registros</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--cyan)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">⚡</div><div class="kpi-label" style="font-size:9px;margin:0">REGISTROS HOY</div></div>
+    <div class="kpi-value" style="font-size:22px" id="acoKpiRegistros">0</div>
+    <div style="font-size:10px;color:var(--muted)">Horas registradas</div>
   </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Registro de Acondicionado</div></div>
+<!-- Avance Meta por Fruta -->
+<div id="acoAvanceFrutasContainer" style="margin-bottom:20px"></div>
+
+<!-- Tabla hora a hora LIVE -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header">
+    <div class="card-title">📋 Produccion Hora a Hora — <span id="acoTableDate">Hoy</span></div>
+    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> Live</div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Hora</th><th>Fruta</th><th>Linea</th><th>Consumo MP</th><th>PT</th><th>Rend.</th><th>Personal</th><th>Turno</th></tr></thead>
-      <tbody id="acondTabla"></tbody>
+      <thead><tr><th>Hora</th><th>Turno</th><th>Fruta</th><th>Linea</th><th>Consumo (kg)</th><th>P. Terminado (kg)</th><th>Rend %</th><th>N° Personal</th><th>Supervisor</th></tr></thead>
+      <tbody id="acoLiveBody"><tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">Cargando datos...</td></tr></tbody>
+      <tfoot id="acoLiveFoot"></tfoot>
     </table>
   </div>
+</div>
+
+<!-- Filtros de Graficos -->
+<div class="card" style="padding:10px 14px;margin-bottom:10px">
+  <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+    <span style="font-size:11px;font-weight:800;color:var(--muted)">TURNO:</span>
+    <button class="filter-chip active" data-cfilter="turno" data-value="AMBOS">Ambos</button>
+    <button class="filter-chip" data-cfilter="turno" data-value="DIA">☀️ Dia</button>
+    <button class="filter-chip" data-cfilter="turno" data-value="NOCHE">🌙 Noche</button>
+    <span style="width:1px;height:18px;background:var(--border);margin:0 4px"></span>
+    <span style="font-size:11px;font-weight:800;color:var(--muted)">FRUTA:</span>
+    <button class="filter-chip active" data-cfilter="fruta" data-value="TODAS">Todas</button>
+    <button class="filter-chip" data-cfilter="fruta" data-value="MANGO">🥭</button>
+    <button class="filter-chip" data-cfilter="fruta" data-value="FRESA">🍓</button>
+    <button class="filter-chip" data-cfilter="fruta" data-value="PALTA">🥑</button>
+    <button class="filter-chip" data-cfilter="fruta" data-value="ARANDANO">🫐</button>
+    <button class="filter-chip" data-cfilter="fruta" data-value="PIÑA">🍍</button>
+    <button class="filter-chip" data-cfilter="fruta" data-value="GRANADA">🍎</button>
+  </div>
+</div>
+
+<!-- 4 Charts -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:16px">
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">📊 Consumo vs P. Terminado por Hora — Hoy</div></div><div class="chart-wrapper"><canvas id="chartAcoHora"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">🎯 Rendimiento % por Hora</div></div><div class="chart-wrapper"><canvas id="chartAcoRend"></canvas></div></div>
+</div>
+<div class="charts-grid charts-grid-2">
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">📈 Produccion Acumulada por Hora</div></div><div class="chart-wrapper"><canvas id="chartAcoAcumulado"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">🔀 Comparativo Turnos Dia vs Noche</div></div><div class="chart-wrapper"><canvas id="chartAcoTurnos"></canvas></div></div>
 </div>

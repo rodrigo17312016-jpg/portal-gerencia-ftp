@@ -1,0 +1,24 @@
+<!-- Panel: Tuneles IQF -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">❄️ Tuneles <span style="color:var(--azul)">IQF</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Monitoreo de ciclos de congelamiento IQF</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Ciclos Hoy</div><div class="kpi-value" id="tunCiclos">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Temp Promedio</div><div class="kpi-value" id="tunTemp">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Kg Congelados</div><div class="kpi-value" id="tunKg">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Eficiencia</div><div class="kpi-value" id="tunEficiencia">—</div></div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Ciclos de Congelamiento</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Tunel</th><th>Fruta</th><th>Hora Inicio</th><th>Hora Fin</th><th>Temp (°C)</th><th>Kg</th><th>Estado</th></tr></thead>
+      <tbody id="tunTabla"></tbody>
+    </table>
+  </div>
+</div>

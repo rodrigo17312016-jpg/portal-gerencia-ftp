@@ -1,0 +1,54 @@
+/* ════════════════════════════════════════════════════════
+   GLOBAL RESET & TYPOGRAPHY
+   ════════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--texto);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background 0.3s, color 0.3s;
+  line-height: 1.5;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; font-family: inherit; }
+input, select, textarea { font-family: inherit; }
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(100,116,139,0.3);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,0.5); }
+
+body.dark-mode ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.2); }
+body.dark-mode ::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,0.4); }
+
+/* ── Seleccion ── */
+::selection {
+  background: rgba(22,163,74,0.2);
+  color: var(--texto);
+}
+
+/* ── Focus visible ── */
+:focus-visible {
+  outline: 2px solid var(--verde);
+  outline-offset: 2px;
+}

@@ -1,0 +1,24 @@
+<!-- Panel: Area de Recepcion -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">📦 Area de <span style="color:var(--verde)">Recepcion</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Control de recepcion de materia prima</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">TN Recepcionadas</div><div class="kpi-value" id="recTN">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Calidad A/A+</div><div class="kpi-value" id="recCalidad">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Lotes en Planta</div><div class="kpi-value" id="recLotes">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Brix Promedio</div><div class="kpi-value" id="recBrix">—</div></div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Lotes Recibidos Recientes</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Fruta</th><th>Lote</th><th>Peso (kg)</th><th>Calidad</th><th>Brix</th><th>Proveedor</th></tr></thead>
+      <tbody id="recTabla"></tbody>
+    </table>
+  </div>
+</div>

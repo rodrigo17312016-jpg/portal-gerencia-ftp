@@ -1,0 +1,35 @@
+<!-- Panel: Area de Acondicionado -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">✂️ Area de <span style="color:var(--verde)">Acondicionado</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Procesamiento y acondicionamiento de materia prima</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Consumo MP</div><div class="kpi-value" id="acondConsumo">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">P. Terminado</div><div class="kpi-value" id="acondPT">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Rendimiento</div><div class="kpi-value" id="acondRend">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Personal</div><div class="kpi-value" id="acondPersonal">—</div></div>
+</div>
+
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">📊 Consumo vs PT por Hora</div></div>
+    <div class="chart-wrapper"><canvas id="chartAcondHora"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🎯 Rendimiento % por Hora</div></div>
+    <div class="chart-wrapper"><canvas id="chartAcondRend"></canvas></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Registro de Acondicionado</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Hora</th><th>Fruta</th><th>Linea</th><th>Consumo MP</th><th>PT</th><th>Rend.</th><th>Personal</th><th>Turno</th></tr></thead>
+      <tbody id="acondTabla"></tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+<!-- Panel: Comparativo Turnos -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🔄 Comparativo <span style="color:var(--azul)">Turnos</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Analisis comparativo produccion dia vs noche</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Produccion Dia</div><div class="kpi-value" id="compDia">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Produccion Noche</div><div class="kpi-value" id="compNoche">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Diferencia %</div><div class="kpi-value" id="compDiff">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Mejor Turno</div><div class="kpi-value" id="compMejor">—</div></div>
+</div>
+
+<div class="charts-grid charts-grid-1" style="margin-top:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">📊 Produccion Dia vs Noche por Fecha</div></div>
+    <div class="chart-wrapper"><canvas id="chartCompTurnos"></canvas></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Comparativo Diario</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>PT Dia (kg)</th><th>PT Noche (kg)</th><th>Total (kg)</th><th>Diferencia</th><th>Mejor</th></tr></thead>
+      <tbody id="compTabla"></tbody>
+    </table>
+  </div>
+</div>

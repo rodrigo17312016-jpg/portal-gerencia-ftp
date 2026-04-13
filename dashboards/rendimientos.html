@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Rendimientos — Frutos Tropicales Peru Export S.A.C.</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+  --verde: #16a34a; --verde-light: #22c55e; --verde-bg: rgba(22,163,74,0.12);
+  --naranja: #ea580c; --naranja-light: #f97316; --naranja-bg: rgba(234,88,12,0.12);
+  --azul: #2563eb; --azul-light: #3b82f6; --azul-bg: rgba(37,99,235,0.12);
+  --purple: #7c3aed; --purple-light: #8b5cf6; --purple-bg: rgba(124,58,237,0.12);
+  --cyan: #0891b2; --cyan-light: #06b6d4; --cyan-bg: rgba(8,145,178,0.12);
+  --amber: #d97706; --amber-light: #f59e0b; --amber-bg: rgba(217,119,6,0.12);
+  --rose: #e11d48; --rose-light: #f43f5e; --rose-bg: rgba(225,29,72,0.12);
+  --bg-primary: #0b0f1a; --bg-secondary: #111827; --bg-card: rgba(17,24,39,0.7);
+  --bg-card-hover: rgba(17,24,39,0.9);
+  --text-primary: #f1f5f9; --text-secondary: #94a3b8; --text-muted: #64748b;
+  --border-color: rgba(148,163,184,0.12); --border-glow: rgba(22,163,74,0.3);
+  --glass-bg: rgba(255,255,255,0.03); --glass-border: rgba(255,255,255,0.08);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.4); --shadow-card: 0 4px 24px rgba(0,0,0,0.3);
+  --radius: 16px; --radius-sm: 10px; --radius-xs: 6px;
+  --font-main: 'Plus Jakarta Sans', sans-serif; --font-mono: 'Inter', monospace;
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] {
+  --bg-primary: #f1f5f9; --bg-secondary: #ffffff; --bg-card: rgba(255,255,255,0.8);
+  --bg-card-hover: rgba(255,255,255,0.95);
+  --text-primary: #0f172a; --text-secondary: #475569; --text-muted: #94a3b8;
+  --border-color: rgba(0,0,0,0.08); --border-glow: rgba(22,163,74,0.2);
+  --glass-bg: rgba(255,255,255,0.6); --glass-border: rgba(0,0,0,0.06);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.08); --shadow-card: 0 4px 24px rgba(0,0,0,0.06);
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:var(--font-main); background:var(--bg-primary); color:var(--text-primary); min-height:100vh; overflow-x:hidden; }
+body::before { content:''; position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(ellipse at 20% 20%, rgba(22,163,74,0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(37,99,235,0.06) 0%, transparent 50%); pointer-events:none; z-index:0; }
+/* MAIN APP */
+.app { position:relative; z-index:1; }
+.topbar { display:flex; align-items:center; justify-content:space-between; padding:12px 28px; background:var(--bg-card); backdrop-filter:blur(20px); border-bottom:1px solid var(--border-color); position:sticky; top:0; z-index:100; }
+.topbar-left { display:flex; align-items:center; gap:16px; }
+.topbar-logo { display:flex; align-items:center; gap:10px; }
+.topbar-logo .icon { width:36px; height:36px; background:linear-gradient(135deg, var(--verde), var(--verde-light)); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.topbar-logo .brand { font-size:16px; font-weight:800; }
+.topbar-logo .brand span { color:var(--verde); }
+.topbar-logo .tagline { font-size:10px; color:var(--text-muted); font-weight:500; }
+.topbar-right { display:flex; align-items:center; gap:16px; }
+.theme-toggle { width:40px; height:40px; border-radius:10px; border:1px solid var(--border-color); background:var(--glass-bg); color:var(--text-secondary); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:var(--transition); }
+.theme-toggle:hover { border-color:var(--verde); color:var(--verde); }
+
+/* LOGO */
+.dash-logo{height:48px;width:auto;filter:drop-shadow(0 4px 16px rgba(22,163,74,0.4)) drop-shadow(0 2px 8px rgba(0,0,0,0.3));animation:logoFloat 4s ease-in-out infinite,logoGlow 3s ease-in-out infinite}
+@keyframes logoFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@keyframes logoGlow{0%,100%{filter:drop-shadow(0 4px 16px rgba(22,163,74,0.3)) drop-shadow(0 2px 8px rgba(0,0,0,0.3))}50%{filter:drop-shadow(0 6px 24px rgba(22,163,74,0.6)) drop-shadow(0 2px 12px rgba(212,175,55,0.2))}}
+.dash-brand-text{font-size:10px;text-transform:uppercase;letter-spacing:4px;font-weight:800;background:linear-gradient(135deg,#d4af37,#fff8dc,#d4af37);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:shimmerGold 3s ease infinite}
+@keyframes shimmerGold{0%{background-position:100% 0}100%{background-position:-100% 0}}
+
+/* DEV SIGNATURE */
+.topbar-dev-signature{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 22px;border-radius:20px;background:linear-gradient(145deg,rgba(10,18,32,0.85),rgba(20,30,48,0.9),rgba(15,25,40,0.85));border:1px solid rgba(212,175,55,0.3);position:relative;overflow:hidden;backdrop-filter:blur(16px);animation:firmaBorderGlow 4s ease infinite;box-shadow:0 0 20px rgba(212,175,55,0.08),inset 0 1px 0 rgba(255,255,255,0.06)}
+.topbar-dev-signature::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),rgba(255,255,255,0.05),transparent);animation:firmaShine 5s ease-in-out infinite;pointer-events:none}
+.topbar-dev-signature::after{content:'';position:absolute;inset:0;border-radius:16px;background:linear-gradient(135deg,rgba(212,175,55,0.03) 0%,transparent 40%,rgba(192,192,192,0.03) 60%,transparent 100%);pointer-events:none}
+.topbar-dev-signature>*{position:relative;z-index:1}
+.topbar-sig-label{font-size:7px;color:rgba(212,175,55,0.7);text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.topbar-dev-signature .signature-name{font-size:14px;font-weight:900;letter-spacing:0.3px;background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:signatureShimmer 4s ease infinite;line-height:1.3}
+.topbar-dev-signature .signature-role{font-size:9px;font-weight:700;color:#22c55e;letter-spacing:0.5px}
+@keyframes firmaBorderGlow{0%,100%{border-color:rgba(212,175,55,0.2);box-shadow:0 2px 12px rgba(0,0,0,0.15)}50%{border-color:rgba(212,175,55,0.45);box-shadow:0 2px 24px rgba(212,175,55,0.15),0 4px 16px rgba(0,0,0,0.2)}}
+@keyframes firmaShine{0%{left:-100%}50%,100%{left:200%}}
+@keyframes signatureShimmer{0%{background-position:100% 0}50%{background-position:0% 0}100%{background-position:-100% 0}}
+
+/* FILTERS BAR */
+.filters-bar { display:flex; align-items:center; gap:16px; padding:16px 28px; background:var(--bg-card); backdrop-filter:blur(20px); border-bottom:1px solid var(--border-color); flex-wrap:wrap; }
+.filter-group { display:flex; align-items:center; gap:8px; }
+.filter-group label { font-size:12px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+.chip-group { display:flex; gap:6px; }
+.chip { padding:6px 16px; border-radius:20px; border:1px solid var(--border-color); background:var(--glass-bg); color:var(--text-secondary); font-size:12px; font-weight:600; cursor:pointer; transition:var(--transition); font-family:var(--font-main); }
+.chip:hover { border-color:var(--verde); color:var(--verde); }
+.chip.active { background:linear-gradient(135deg, var(--verde), var(--verde-light)); color:#fff; border-color:transparent; box-shadow:0 4px 12px rgba(22,163,74,0.3); }
+.chip[data-fruit="Mango"].active { background:linear-gradient(135deg, var(--naranja), var(--naranja-light)); box-shadow:0 4px 12px rgba(234,88,12,0.3); }
+.chip[data-fruit="Arandano"].active { background:linear-gradient(135deg, var(--purple), var(--purple-light)); box-shadow:0 4px 12px rgba(124,58,237,0.3); }
+.chip[data-fruit="Granada"].active { background:linear-gradient(135deg, var(--rose), var(--rose-light)); box-shadow:0 4px 12px rgba(225,29,72,0.3); }
+.period-select { padding:6px 14px; border-radius:10px; border:1px solid var(--border-color); background:var(--glass-bg); color:var(--text-primary); font-family:var(--font-main); font-size:12px; font-weight:600; cursor:pointer; outline:none; }
+.period-select option { background:var(--bg-secondary); }
+.live-dot { width:8px; height:8px; border-radius:50%; background:var(--verde); animation:pulse 2s ease-in-out infinite; margin-left:auto; }
+@keyframes pulse { 0%,100% { opacity:1; box-shadow:0 0 0 0 rgba(22,163,74,0.4); } 50% { opacity:0.7; box-shadow:0 0 0 8px rgba(22,163,74,0); } }
+.live-label { font-size:11px; color:var(--verde); font-weight:600; }
+
+/* CONTENT */
+.content { padding:24px 28px; }
+.section-title { font-size:18px; font-weight:800; margin-bottom:16px; display:flex; align-items:center; gap:10px; }
+.section-title .icon { font-size:20px; }
+.kpi-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:28px; }
+.kpi-card { background:var(--bg-card); backdrop-filter:blur(20px); border:1px solid var(--border-color); border-radius:var(--radius); padding:20px; transition:var(--transition); position:relative; overflow:hidden; }
+.kpi-card:hover { transform:translateY(-3px); border-color:var(--border-glow); box-shadow:var(--shadow-card); }
+.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:var(--radius) var(--radius) 0 0; }
+.kpi-card.verde::before { background:linear-gradient(90deg, var(--verde), var(--verde-light)); }
+.kpi-card.naranja::before { background:linear-gradient(90deg, var(--naranja), var(--naranja-light)); }
+.kpi-card.purple::before { background:linear-gradient(90deg, var(--purple), var(--purple-light)); }
+.kpi-card.rose::before { background:linear-gradient(90deg, var(--rose), var(--rose-light)); }
+.kpi-card.azul::before { background:linear-gradient(90deg, var(--azul), var(--azul-light)); }
+.kpi-card.cyan::before { background:linear-gradient(90deg, var(--cyan), var(--cyan-light)); }
+.kpi-card.amber::before { background:linear-gradient(90deg, var(--amber), var(--amber-light)); }
+.kpi-label { font-size:11px; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.kpi-value { font-size:28px; font-weight:800; line-height:1; }
+.kpi-sub { font-size:11px; color:var(--text-muted); margin-top:6px; display:flex; align-items:center; gap:4px; }
+.kpi-sub .trend-up { color:var(--verde); }
+.kpi-sub .trend-down { color:var(--rose); }
+.kpi-icon { position:absolute; top:16px; right:16px; width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; }
+
+/* CHART GRID */
+.charts-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:16px; margin-bottom:28px; }
+.chart-card { background:var(--bg-card); backdrop-filter:blur(20px); border:1px solid var(--border-color); border-radius:var(--radius); padding:20px; transition:var(--transition); }
+.chart-card:hover { border-color:var(--border-glow); }
+.chart-card.full { grid-column:1 / -1; }
+.chart-card .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.chart-card .card-title { font-size:14px; font-weight:700; }
+.chart-card .card-subtitle { font-size:11px; color:var(--text-muted); }
+.chart-container { position:relative; width:100%; height:300px; }
+.chart-card.tall .chart-container { height:400px; }
+
+/* HEATMAP */
+.heatmap-grid { display:grid; gap:3px; }
+.heatmap-cell { border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; min-height:36px; transition:var(--transition); cursor:default; }
+.heatmap-cell:hover { transform:scale(1.1); z-index:2; }
+.heatmap-header { font-size:10px; font-weight:700; color:var(--text-muted); display:flex; align-items:center; justify-content:center; }
+
+/* TABLES */
+.table-card { background:var(--bg-card); backdrop-filter:blur(20px); border:1px solid var(--border-color); border-radius:var(--radius); padding:20px; margin-bottom:16px; overflow-x:auto; }
+.table-card .card-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.table-card .card-title { font-size:14px; font-weight:700; }
+.data-table { width:100%; border-collapse:collapse; font-size:12px; }
+.data-table th { text-align:left; padding:10px 12px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-size:10px; border-bottom:2px solid var(--border-color); }
+.data-table td { padding:10px 12px; border-bottom:1px solid var(--border-color); font-weight:500; }
+.data-table tbody tr:hover { background:rgba(22,163,74,0.04); }
+.data-table .good { color:var(--verde); font-weight:700; }
+.data-table .warn { color:var(--amber); font-weight:700; }
+.data-table .bad { color:var(--rose); font-weight:700; }
+.badge { display:inline-block; padding:2px 8px; border-radius:6px; font-size:10px; font-weight:700; }
+.badge-mango { background:var(--naranja-bg); color:var(--naranja); }
+.badge-arandano { background:var(--purple-bg); color:var(--purple); }
+.badge-granada { background:var(--rose-bg); color:var(--rose); }
+
+/* ANALYSIS */
+.insights-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(300px, 1fr)); gap:16px; margin-bottom:28px; }
+.insight-card { background:var(--bg-card); backdrop-filter:blur(20px); border:1px solid var(--border-color); border-radius:var(--radius); padding:20px; border-left:4px solid var(--verde); }
+.insight-card.warning { border-left-color:var(--amber); }
+.insight-card.danger { border-left-color:var(--rose); }
+.insight-card.info { border-left-color:var(--azul); }
+.insight-title { font-size:13px; font-weight:700; margin-bottom:6px; }
+.insight-text { font-size:12px; color:var(--text-secondary); line-height:1.6; }
+
+/* PORTAL BACK LINK */
+.portal-back-link{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:10px;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.2);color:#16a34a;text-decoration:none;font-size:13px;font-weight:600;transition:all 0.3s}
+.portal-back-link:hover{background:rgba(22,163,74,0.2);transform:translateX(-2px)}
+.portal-back-link .arrow{font-size:15px;transition:transform 0.3s}
+.portal-back-link:hover .arrow{transform:translateX(-3px)}
+
+/* FOOTER */
+.footer { text-align:center; padding:24px 28px; border-top:1px solid var(--border-color); }
+.footer p { font-size:11px; color:var(--text-muted); }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:6px; height:6px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border-color); border-radius:3px; }
+
+@media (max-width:900px) {
+  .charts-grid { grid-template-columns:1fr; }
+  .kpi-grid { grid-template-columns:repeat(2, 1fr); }
+  .topbar { flex-wrap:wrap; gap:8px; padding:12px 16px; }
+  .filters-bar { padding:12px 16px; }
+  .content { padding:16px; }
+}
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+@media (max-width: 768px) {
+  body { padding:0; }
+  .topbar, [class*="topbar"] { flex-wrap:wrap; padding:10px 14px; gap:6px; }
+  .topbar-dev-signature, [class*="dev-signature"] { padding:5px 10px; }
+  .topbar-dev-signature .signature-name, [class*="signature-name"] { font-size:10px; }
+  .topbar-dev-signature .signature-role, [class*="signature-role"] { font-size:7px; }
+  .dash-logo { width:32px; height:32px; }
+  .dash-brand-text { font-size:14px; }
+  .portal-back-link { font-size:11px; padding:4px 8px; }
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:repeat(2, 1fr) !important; gap:8px; }
+  .kpi-value, [class*="kpi-value"] { font-size:22px; }
+  .grid-2, .grid-23, .charts-grid, [class*="grid-2"] { grid-template-columns:1fr !important; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:200px; }
+  .card, [class*="card"] { padding:12px; border-radius:12px; }
+  .data-table, table { font-size:11px; }
+  .data-table th, .data-table td, table th, table td { padding:6px 8px; white-space:nowrap; }
+  .filter-bar, [class*="filter"] { flex-wrap:wrap; gap:6px; }
+  .filter-chip, [class*="chip"] { font-size:11px; padding:4px 10px; }
+  h1, .section-title { font-size:18px; }
+  h2 { font-size:16px; }
+  .insights-grid, .analysis-grid { grid-template-columns:1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid, [class*="kpi-grid"], .kpis { grid-template-columns:1fr !important; }
+  .topbar-dev-signature, [class*="dev-signature"] { display:none; }
+  .kpi-value, [class*="kpi-value"] { font-size:20px; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"] { height:170px; }
+  h1, .section-title { font-size:16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- APP -->
+<div class="app" id="app">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <a href="index.html" class="portal-back-link"><span class="arrow">&#8592;</span> Portal</a>
+      <img src="LOGO.png" alt="Frutos Tropicales" class="dash-logo">
+      <div class="dash-brand-text">Dashboard de Rendimientos</div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-dev-signature">
+        <div class="topbar-sig-label">Desarrollado por:</div>
+        <div class="signature-name">Rodrigo Garcia</div>
+        <div class="signature-role">Systems Analyst &amp; Developer-QA</div>
+      </div>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">🌙</button>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Fruta</label>
+      <div class="chip-group" id="fruitChips">
+        <button class="chip active" data-fruit="All" onclick="setFruit(this)">Todas</button>
+        <button class="chip" data-fruit="Mango" onclick="setFruit(this)">🥭 Mango</button>
+        <button class="chip" data-fruit="Arandano" onclick="setFruit(this)">🫐 Arandano</button>
+        <button class="chip" data-fruit="Granada" onclick="setFruit(this)">🍎 Granada</button>
+      </div>
+    </div>
+    <div class="filter-group">
+      <label>Periodo</label>
+      <select class="period-select" id="periodSelect" onchange="setPeriod(this.value)">
+        <option value="hoy">Hoy</option>
+        <option value="semana" selected>Esta Semana</option>
+        <option value="mes">Este Mes</option>
+        <option value="campana">Campana 2026</option>
+      </select>
+    </div>
+    <div class="live-dot"></div>
+    <span class="live-label">En Vivo — <span id="currentTime"></span></span>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- KPIs -->
+    <div class="section-title"><span class="icon">📊</span> Indicadores Clave de Rendimiento</div>
+    <div class="kpi-grid" id="kpiGrid">
+      <div class="kpi-card verde" id="kpiGlobal">
+        <div class="kpi-icon" style="background:var(--verde-bg); color:var(--verde);">📈</div>
+        <div class="kpi-label">Rendimiento Global</div>
+        <div class="kpi-value" style="color:var(--verde);">45.7%</div>
+        <div class="kpi-sub"><span class="trend-up">▲ +0.3pp</span> vs semana anterior</div>
+      </div>
+      <div class="kpi-card naranja" id="kpiMango">
+        <div class="kpi-icon" style="background:var(--naranja-bg); color:var(--naranja);">🥭</div>
+        <div class="kpi-label">Rend. Mango</div>
+        <div class="kpi-value" style="color:var(--naranja);">45.7%</div>
+        <div class="kpi-sub">Objetivo: 50.0% | <span class="trend-down">-4.3pp</span></div>
+      </div>
+      <div class="kpi-card purple" id="kpiArandano">
+        <div class="kpi-icon" style="background:var(--purple-bg); color:var(--purple);">🫐</div>
+        <div class="kpi-label">Rend. Arandano</div>
+        <div class="kpi-value" style="color:var(--purple);">64.0%</div>
+        <div class="kpi-sub">Objetivo: 65.0% | <span class="trend-down">-1.0pp</span></div>
+      </div>
+      <div class="kpi-card rose" id="kpiGranada">
+        <div class="kpi-icon" style="background:var(--rose-bg); color:var(--rose);">🍎</div>
+        <div class="kpi-label">Rend. Granada</div>
+        <div class="kpi-value" style="color:var(--rose);">57.0%</div>
+        <div class="kpi-sub">Objetivo: 60.0% | <span class="trend-down">-3.0pp</span></div>
+      </div>
+      <div class="kpi-card amber" id="kpiMerma">
+        <div class="kpi-icon" style="background:var(--amber-bg); color:var(--amber);">🗑️</div>
+        <div class="kpi-label">Merma Total</div>
+        <div class="kpi-value" style="color:var(--amber);">54.3%</div>
+        <div class="kpi-sub">Cascara + Semilla + Merma operativa</div>
+      </div>
+      <div class="kpi-card cyan" id="kpiByP">
+        <div class="kpi-icon" style="background:var(--cyan-bg); color:var(--cyan);">♻️</div>
+        <div class="kpi-label">ByP Recovery</div>
+        <div class="kpi-value" style="color:var(--cyan);">4.0%</div>
+        <div class="kpi-sub">Recuperacion de subproducto</div>
+      </div>
+      <div class="kpi-card azul" id="kpiDesv">
+        <div class="kpi-icon" style="background:var(--azul-bg); color:var(--azul);">🎯</div>
+        <div class="kpi-label">Desviacion vs Objetivo</div>
+        <div class="kpi-value" style="color:var(--rose);">-4.3pp</div>
+        <div class="kpi-sub">Promedio ponderado Mango</div>
+      </div>
+      <div class="kpi-card verde" id="kpiMejor">
+        <div class="kpi-icon" style="background:var(--verde-bg); color:var(--verde);">⭐</div>
+        <div class="kpi-label">Mejor Dia S13</div>
+        <div class="kpi-value" style="color:var(--verde);">46.5%</div>
+        <div class="kpi-sub">Martes 25 Mar 2026 — Turno Dia</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW 1 -->
+    <div class="section-title"><span class="icon">📉</span> Analisis de Rendimiento</div>
+    <div class="charts-grid">
+      <!-- C1: Historico Semanal -->
+      <div class="chart-card full tall">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento Historico por Semana — S1 a S13</div><div class="card-subtitle">Lineas de tendencia por fruta con objetivos</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartHistorico"></canvas></div>
+      </div>
+
+      <!-- C2: Por Hora Hoy -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento por Hora — Hoy</div><div class="card-subtitle">Bandas: Verde >45% | Amarillo 40-45% | Rojo <40%</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartHora"></canvas></div>
+      </div>
+
+      <!-- C3: Por Fruta Real vs Obj -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento por Fruta: Real vs Objetivo</div><div class="card-subtitle">Comparacion directa</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartFruta"></canvas></div>
+      </div>
+
+      <!-- C4: Dia vs Noche -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento Dia vs Noche por Fruta</div><div class="card-subtitle">Comparacion de turnos</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartTurnos"></canvas></div>
+      </div>
+
+      <!-- C5: Distribucion Producto -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Distribucion del Producto (Balance)</div><div class="card-subtitle">Stacked 100%: Chunks, ByP, Cascara, Semilla, Merma</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartDistribucion"></canvas></div>
+      </div>
+
+      <!-- C6: Trend Diario -->
+      <div class="chart-card full">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento Trend Diario — Ultimos 30 Dias</div><div class="card-subtitle">Tendencia con media movil</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartTrend"></canvas></div>
+      </div>
+
+      <!-- C7: Scatter Rend vs Brix -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento vs Brix (Mango)</div><div class="card-subtitle">Analisis de correlacion</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartScatter"></canvas></div>
+      </div>
+
+      <!-- C8: Min/Max/Avg por Semana -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Min / Max / Promedio por Semana</div><div class="card-subtitle">Rango de rendimiento semanal</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartRange"></canvas></div>
+      </div>
+
+      <!-- C9: Desviacion vs Objetivo -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Desviacion vs Objetivo por Semana</div><div class="card-subtitle">Positivo verde, negativo rojo</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartDesviacion"></canvas></div>
+      </div>
+
+      <!-- C10: Por Proveedor -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento por Proveedor</div><div class="card-subtitle">Comparacion entre proveedores</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartProveedor"></canvas></div>
+      </div>
+
+      <!-- C11: Por Lote -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Rendimiento por Lote (Ultimos 10)</div><div class="card-subtitle">Barras horizontales por lote</div></div>
+        </div>
+        <div class="chart-container"><canvas id="chartLote"></canvas></div>
+      </div>
+
+      <!-- C12: Heatmap -->
+      <div class="chart-card">
+        <div class="card-header">
+          <div><div class="card-title">Mapa de Calor: Rend. por Hora y Dia</div><div class="card-subtitle">Matriz de rendimiento semanal</div></div>
+        </div>
+        <div id="heatmapContainer" style="padding:8px;"></div>
+      </div>
+    </div>
+
+    <!-- TABLES -->
+    <div class="section-title"><span class="icon">📋</span> Tablas de Datos</div>
+
+    <div class="table-card">
+      <div class="card-header"><div class="card-title">Rendimiento por Lote</div></div>
+      <table class="data-table" id="tableLote">
+        <thead><tr><th>Lote</th><th>Fruta</th><th>Consumo MP (kg)</th><th>Chunks IQF (kg)</th><th>ByP (kg)</th><th>Rend %</th><th>Calidad</th><th>Proveedor</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="table-card">
+      <div class="card-header"><div class="card-title">Rendimiento Semanal Comparativo</div></div>
+      <table class="data-table" id="tableSemanal">
+        <thead><tr><th>Semana</th><th>Mango %</th><th>Arandano %</th><th>Granada %</th><th>Promedio %</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="table-card">
+      <div class="card-header"><div class="card-title">Balance de Materia — Resumen General</div></div>
+      <table class="data-table" id="tableBalance">
+        <thead><tr><th>Componente</th><th>Mango (kg)</th><th>Mango %</th><th>Arandano (kg)</th><th>Arandano %</th><th>Granada (kg)</th><th>Granada %</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <!-- INSIGHTS -->
+    <div class="section-title"><span class="icon">💡</span> Analisis e Insights</div>
+    <div class="insights-grid">
+      <div class="insight-card warning">
+        <div class="insight-title">⚠️ Rendimiento Mango por Debajo del Objetivo</div>
+        <div class="insight-text">El rendimiento promedio de mango se mantiene 4.3pp debajo del objetivo de 50%. Se recomienda revisar calibre de fruta recibida y parametros de corte en la linea de proceso.</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-title">✅ Arandano Cerca del Objetivo</div>
+        <div class="insight-text">Con 64.0% de rendimiento, arandano esta a solo 1.0pp del objetivo (65%). La tendencia de las ultimas 3 semanas es positiva (+0.5pp/semana). Mantener parametros actuales.</div>
+      </div>
+      <div class="insight-card danger">
+        <div class="insight-title">🔴 Granada: Merma Elevada en Turno Noche</div>
+        <div class="insight-text">El turno noche registra 3.2pp menos rendimiento que el turno dia para granada. Posible causa: fatiga del personal y menor supervision. Revisar dotacion de personal nocturno.</div>
+      </div>
+      <div class="insight-card info">
+        <div class="insight-title">📊 Correlacion Brix-Rendimiento</div>
+        <div class="insight-text">Se observa correlacion positiva entre grados Brix y rendimiento en mango (r=0.72). Lotes con Brix >14 presentan rendimientos superiores al 47%. Priorizar recepcion de fruta madura.</div>
+      </div>
+      <div class="insight-card warning">
+        <div class="insight-title">📦 Proveedor Agro Huaral: Rendimiento Inferior</div>
+        <div class="insight-text">Agro Huaral registra el menor rendimiento promedio (43.2%) comparado con FTP (46.1%) y Carranza (45.8%). Evaluar calidad de materia prima y considerar renegociacion de calibres.</div>
+      </div>
+      <div class="insight-card">
+        <div class="insight-title">⭐ Mejor Rendimiento: Semana 11</div>
+        <div class="insight-text">La semana 11 registro el mejor rendimiento global (47.2%) coincidiendo con lotes de mango calibre A de FTP. Replicar condiciones: Brix 14.5, calibre 350-450g, madurez 3/4.</div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+// ======================== DATA ========================
+let currentFruit = 'All';
+let currentPeriod = 'semana';
+let charts = {};
+
+const WEEKS = ['S1','S2','S3','S4','S5','S6','S7','S8','S9','S10','S11','S12','S13'];
+const DATA = {
+  mango:   { weekly:[43.2,44.1,44.8,45.0,44.5,45.2,46.0,45.8,46.2,45.5,47.2,45.9,45.7], obj:50, color:'#ea580c', colorLight:'rgba(234,88,12,0.15)' },
+  arandano:{ weekly:[61.0,61.5,62.0,62.8,63.0,63.2,63.5,63.8,64.0,64.2,64.5,64.3,64.0], obj:65, color:'#7c3aed', colorLight:'rgba(124,58,237,0.15)' },
+  granada: { weekly:[54.0,54.5,55.0,55.5,55.8,56.0,56.5,56.8,57.0,57.2,57.5,57.3,57.0], obj:60, color:'#e11d48', colorLight:'rgba(225,29,72,0.15)' }
+};
+
+const HOURS = ['06:00','07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'];
+const hourlyData = [42.1,43.5,44.8,46.2,47.1,46.5,45.8,44.2,45.9,46.8,47.2,46.1,45.3,44.8,43.9,42.5,41.8];
+
+const DAYS30 = Array.from({length:30}, (_,i) => {const d=new Date(2026,2,25); d.setDate(d.getDate()-29+i); return `${d.getDate()}/${d.getMonth()+1}`;});
+const trend30 = [44.1,43.8,45.2,44.9,45.5,46.1,45.3,44.8,45.7,46.2,45.9,46.5,45.1,44.6,45.8,46.3,45.7,46.0,45.4,46.8,47.2,46.5,45.9,46.1,45.3,44.8,45.7,46.2,45.5,45.7];
+
+const scatterData = Array.from({length:40}, () => ({x:11+Math.random()*6, y:40+Math.random()*12}));
+
+const proveedores = {labels:['FTP','Carranza','Agro Huaral'], data:[46.1,45.8,43.2]};
+const lotes = {
+  labels:['L-2603-01','L-2603-02','L-2503-01','L-2503-02','L-2403-01','L-2403-02','L-2303-01','L-2303-02','L-2203-01','L-2203-02'],
+  data:[46.5,44.8,45.2,47.1,43.9,45.6,46.2,44.1,45.8,43.5]
+};
+
+const heatmapData = [
+  [43,44,45,46,47,46,45,44,46,47,46,45,44,43,42,41,40],
+  [44,45,46,47,47,46,46,45,47,47,46,45,44,44,43,42,41],
+  [42,44,45,46,47,47,46,45,46,47,47,46,45,44,43,42,40],
+  [43,44,46,47,48,47,46,45,46,47,46,45,44,43,42,41,40],
+  [44,45,46,47,47,46,45,44,45,46,46,45,44,43,42,41,39],
+  [41,43,44,45,46,45,44,43,44,45,45,44,43,42,41,40,38],
+  [40,42,43,44,45,44,43,42,43,44,44,43,42,41,40,39,37]
+];
+const DAYNAMES = ['Lun','Mar','Mie','Jue','Vie','Sab','Dom'];
+
+const lotTableData = [
+  {lote:'L-2603-01',fruta:'Mango',consumo:12500,chunks:5813,byp:500,rend:46.5,calidad:'A',prov:'FTP'},
+  {lote:'L-2603-02',fruta:'Mango',consumo:11800,chunks:5286,byp:472,rend:44.8,calidad:'B',prov:'Carranza'},
+  {lote:'L-2503-01',fruta:'Arandano',consumo:3200,chunks:2048,byp:96,rend:64.0,calidad:'A',prov:'FTP'},
+  {lote:'L-2503-02',fruta:'Granada',consumo:4500,chunks:2565,byp:180,rend:57.0,calidad:'A',prov:'Agro Huaral'},
+  {lote:'L-2403-01',fruta:'Mango',consumo:13200,chunks:5797,byp:528,rend:43.9,calidad:'B',prov:'Agro Huaral'},
+  {lote:'L-2403-02',fruta:'Mango',consumo:12000,chunks:5472,byp:480,rend:45.6,calidad:'A',prov:'FTP'},
+  {lote:'L-2303-01',fruta:'Arandano',consumo:2800,chunks:1806,byp:84,rend:64.5,calidad:'A',prov:'Carranza'},
+  {lote:'L-2303-02',fruta:'Granada',consumo:4200,chunks:2394,byp:168,rend:57.0,calidad:'B',prov:'FTP'},
+  {lote:'L-2203-01',fruta:'Mango',consumo:11500,chunks:5267,byp:460,rend:45.8,calidad:'A',prov:'Carranza'},
+  {lote:'L-2203-02',fruta:'Mango',consumo:12800,chunks:5568,byp:512,rend:43.5,calidad:'C',prov:'Agro Huaral'}
+];
+
+document.addEventListener('DOMContentLoaded', function() {
+  initCharts();
+});
+
+// ======================== THEME ========================
+let darkMode = true;
+function toggleTheme() {
+  darkMode = !darkMode;
+  document.documentElement.setAttribute('data-theme', darkMode ? '' : 'light');
+  document.querySelector('.theme-toggle').textContent = darkMode ? '🌙' : '☀️';
+  rebuildAllCharts();
+}
+
+// ======================== FILTERS ========================
+function setFruit(el) {
+  document.querySelectorAll('#fruitChips .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  currentFruit = el.dataset.fruit;
+  updateKPIs();
+  rebuildAllCharts();
+}
+function setPeriod(val) { currentPeriod = val; updateKPIs(); }
+
+function updateKPIs() {
+  const show = (id, visible) => { document.getElementById(id).style.display = visible ? '' : 'none'; };
+  show('kpiMango', currentFruit === 'All' || currentFruit === 'Mango');
+  show('kpiArandano', currentFruit === 'All' || currentFruit === 'Arandano');
+  show('kpiGranada', currentFruit === 'All' || currentFruit === 'Granada');
+  if (currentFruit === 'Mango') {
+    document.querySelector('#kpiGlobal .kpi-value').textContent = '45.7%';
+    document.querySelector('#kpiDesv .kpi-value').textContent = '-4.3pp';
+    document.querySelector('#kpiMerma .kpi-value').textContent = '54.3%';
+  } else if (currentFruit === 'Arandano') {
+    document.querySelector('#kpiGlobal .kpi-value').textContent = '64.0%';
+    document.querySelector('#kpiDesv .kpi-value').textContent = '-1.0pp';
+    document.querySelector('#kpiMerma .kpi-value').textContent = '36.0%';
+  } else if (currentFruit === 'Granada') {
+    document.querySelector('#kpiGlobal .kpi-value').textContent = '57.0%';
+    document.querySelector('#kpiDesv .kpi-value').textContent = '-3.0pp';
+    document.querySelector('#kpiMerma .kpi-value').textContent = '43.0%';
+  } else {
+    document.querySelector('#kpiGlobal .kpi-value').textContent = '45.7%';
+    document.querySelector('#kpiDesv .kpi-value').textContent = '-4.3pp';
+    document.querySelector('#kpiMerma .kpi-value').textContent = '54.3%';
+  }
+}
+
+// ======================== CLOCK ========================
+function updateClock() {
+  const now = new Date();
+  document.getElementById('currentTime').textContent = now.toLocaleTimeString('es-PE', {hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock, 1000);
+
+// ======================== CHART HELPERS ========================
+function getTextColor() { return darkMode ? '#94a3b8' : '#475569'; }
+function getGridColor() { return darkMode ? 'rgba(148,163,184,0.15)' : 'rgba(0,0,0,0.06)'; }
+function baseScales(yTitle, yMin, yMax) {
+  return {
+    x: { ticks:{color:getTextColor(),font:{size:10,family:'Inter'}}, grid:{color:getGridColor()} },
+    y: { title:{display:!!yTitle,text:yTitle||'',color:getTextColor(),font:{size:11,family:'Inter'}}, ticks:{color:getTextColor(),font:{size:10,family:'Inter'}}, grid:{color:getGridColor()}, min:yMin, max:yMax }
+  };
+}
+function makeChart(id, config) {
+  if (charts[id]) { charts[id].destroy(); }
+  const ctx = document.getElementById(id);
+  if (!ctx) return null;
+  charts[id] = new Chart(ctx, config);
+  return charts[id];
+}
+
+function shouldShow(fruit) {
+  if (currentFruit === 'All') return true;
+  return currentFruit.toLowerCase() === fruit.toLowerCase();
+}
+
+// ======================== BUILD ALL CHARTS ========================
+function rebuildAllCharts() {
+  buildChartHistorico();
+  buildChartHora();
+  buildChartFruta();
+  buildChartTurnos();
+  buildChartDistribucion();
+  buildChartTrend();
+  buildChartScatter();
+  buildChartRange();
+  buildChartDesviacion();
+  buildChartProveedor();
+  buildChartLote();
+  buildHeatmap();
+}
+
+// C1: Historico Semanal
+function buildChartHistorico() {
+  const datasets = [];
+  if (shouldShow('mango')) {
+    datasets.push({label:'Mango',data:DATA.mango.weekly,borderColor:'#ea580c',backgroundColor:'rgba(234,88,12,0.1)',borderWidth:2.5,tension:0.4,pointRadius:4,pointHoverRadius:7,fill:true});
+    datasets.push({label:'Obj Mango (50%)',data:Array(13).fill(50),borderColor:'rgba(234,88,12,0.3)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false});
+  }
+  if (shouldShow('arandano')) {
+    datasets.push({label:'Arandano',data:DATA.arandano.weekly,borderColor:'#7c3aed',backgroundColor:'rgba(124,58,237,0.1)',borderWidth:2.5,tension:0.4,pointRadius:4,pointHoverRadius:7,fill:true});
+    datasets.push({label:'Obj Arandano (65%)',data:Array(13).fill(65),borderColor:'rgba(124,58,237,0.3)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false});
+  }
+  if (shouldShow('granada')) {
+    datasets.push({label:'Granada',data:DATA.granada.weekly,borderColor:'#e11d48',backgroundColor:'rgba(225,29,72,0.1)',borderWidth:2.5,tension:0.4,pointRadius:4,pointHoverRadius:7,fill:true});
+    datasets.push({label:'Obj Granada (60%)',data:Array(13).fill(60),borderColor:'rgba(225,29,72,0.3)',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false});
+  }
+  makeChart('chartHistorico', {
+    type:'line', data:{labels:WEEKS, datasets},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:11,family:'Inter'}}},datalabels:{display:false}},scales:baseScales('Rendimiento %',35,70),interaction:{intersect:false,mode:'index'}}
+  });
+}
+
+// C2: Por Hora
+function buildChartHora() {
+  const bgColors = hourlyData.map(v => v >= 45 ? 'rgba(22,163,74,0.7)' : v >= 40 ? 'rgba(217,119,6,0.7)' : 'rgba(225,29,72,0.7)');
+  const borderColors = hourlyData.map(v => v >= 45 ? '#16a34a' : v >= 40 ? '#d97706' : '#e11d48');
+  makeChart('chartHora', {
+    type:'line', data:{labels:HOURS, datasets:[
+      {label:'Rendimiento %',data:hourlyData,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.1)',borderWidth:2.5,tension:0.4,pointRadius:5,pointBackgroundColor:borderColors,pointBorderColor:borderColors,fill:true},
+      {label:'Zona Verde (45%)',data:Array(17).fill(45),borderColor:'rgba(22,163,74,0.4)',borderDash:[5,5],borderWidth:1,pointRadius:0,fill:false},
+      {label:'Zona Roja (40%)',data:Array(17).fill(40),borderColor:'rgba(225,29,72,0.4)',borderDash:[5,5],borderWidth:1,pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:10,family:'Inter'}}},datalabels:{display:false}},scales:baseScales('Rend %',35,52)}
+  });
+}
+
+// C3: Fruta Real vs Obj
+function buildChartFruta() {
+  const labels = [], real = [], obj = [], colors = [], objColors = [];
+  if (shouldShow('mango'))   { labels.push('Mango');   real.push(45.7); obj.push(50); colors.push('#ea580c'); objColors.push('rgba(234,88,12,0.25)'); }
+  if (shouldShow('arandano')){ labels.push('Arandano');real.push(64.0); obj.push(65); colors.push('#7c3aed'); objColors.push('rgba(124,58,237,0.25)'); }
+  if (shouldShow('granada')) { labels.push('Granada'); real.push(57.0); obj.push(60); colors.push('#e11d48'); objColors.push('rgba(225,29,72,0.25)'); }
+  makeChart('chartFruta', {
+    type:'bar', data:{labels, datasets:[
+      {label:'Real',data:real,backgroundColor:colors,borderRadius:8,barPercentage:0.5},
+      {label:'Objetivo',data:obj,backgroundColor:objColors,borderRadius:8,barPercentage:0.5}
+    ]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:10,family:'Inter'}}},datalabels:{color:getTextColor(),anchor:'end',align:'end',font:{size:10,weight:700},formatter:v=>v+'%'}},scales:{x:{ticks:{color:getTextColor()},grid:{color:getGridColor()},min:30,max:75},y:{ticks:{color:getTextColor()},grid:{display:false}}}}
+  });
+}
+
+// C4: Turnos
+function buildChartTurnos() {
+  const labels = [], dia = [], noche = [];
+  if (shouldShow('mango'))   { labels.push('Mango');   dia.push(46.5); noche.push(44.9); }
+  if (shouldShow('arandano')){ labels.push('Arandano');dia.push(64.5); noche.push(63.5); }
+  if (shouldShow('granada')) { labels.push('Granada'); dia.push(58.2); noche.push(55.0); }
+  makeChart('chartTurnos', {
+    type:'bar', data:{labels, datasets:[
+      {label:'Turno Dia',data:dia,backgroundColor:'rgba(37,99,235,0.7)',borderRadius:6,barPercentage:0.6},
+      {label:'Turno Noche',data:noche,backgroundColor:'rgba(124,58,237,0.7)',borderRadius:6,barPercentage:0.6}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:10,family:'Inter'}}},datalabels:{color:'#fff',font:{size:10,weight:700},formatter:v=>v+'%'}},scales:baseScales('Rend %',30,70)}
+  });
+}
+
+// C5: Distribucion
+function buildChartDistribucion() {
+  const labels = [], chunks=[], byp=[], cascara=[], semilla=[], merma=[];
+  if (shouldShow('mango'))   { labels.push('Mango');   chunks.push(45.7); byp.push(4.0); cascara.push(28.0); semilla.push(12.3); merma.push(10.0); }
+  if (shouldShow('arandano')){ labels.push('Arandano');chunks.push(64.0); byp.push(3.0); cascara.push(0);    semilla.push(8.0);  merma.push(25.0); }
+  if (shouldShow('granada')) { labels.push('Granada'); chunks.push(57.0); byp.push(3.5); cascara.push(18.0); semilla.push(12.5); merma.push(9.0); }
+  makeChart('chartDistribucion', {
+    type:'bar', data:{labels, datasets:[
+      {label:'Chunks IQF',data:chunks,backgroundColor:'#16a34a',borderRadius:2},
+      {label:'ByP',data:byp,backgroundColor:'#0891b2',borderRadius:2},
+      {label:'Cascara',data:cascara,backgroundColor:'#d97706',borderRadius:2},
+      {label:'Semilla',data:semilla,backgroundColor:'#7c3aed',borderRadius:2},
+      {label:'Merma Op.',data:merma,backgroundColor:'#e11d48',borderRadius:2}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:10,family:'Inter'}}},datalabels:{display:false}},scales:{x:{stacked:true,ticks:{color:getTextColor()},grid:{display:false}},y:{stacked:true,ticks:{color:getTextColor(),callback:v=>v+'%'},grid:{color:getGridColor()},max:100}}}
+  });
+}
+
+// C6: Trend 30 dias
+function buildChartTrend() {
+  const movAvg = trend30.map((v,i) => {
+    if (i < 4) return null;
+    return +(trend30.slice(i-4,i+1).reduce((a,b)=>a+b,0)/5).toFixed(1);
+  });
+  makeChart('chartTrend', {
+    type:'line', data:{labels:DAYS30, datasets:[
+      {label:'Rendimiento Diario',data:trend30,borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.08)',borderWidth:2,tension:0.3,pointRadius:3,pointHoverRadius:6,fill:true},
+      {label:'Media Movil (5d)',data:movAvg,borderColor:'#ea580c',borderWidth:2,borderDash:[6,3],tension:0.4,pointRadius:0,fill:false},
+      {label:'Objetivo (50%)',data:Array(30).fill(50),borderColor:'rgba(22,163,74,0.3)',borderDash:[4,4],borderWidth:1,pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:10,family:'Inter'}}},datalabels:{display:false}},scales:baseScales('Rend %',40,55),interaction:{intersect:false,mode:'index'}}
+  });
+}
+
+// C7: Scatter
+function buildChartScatter() {
+  makeChart('chartScatter', {
+    type:'scatter', data:{datasets:[{
+      label:'Mango: Rend vs Brix', data:scatterData,
+      backgroundColor:'rgba(234,88,12,0.6)', borderColor:'#ea580c', borderWidth:1, pointRadius:5, pointHoverRadius:8
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:10,family:'Inter'}}},datalabels:{display:false}},scales:{x:{title:{display:true,text:'Grados Brix',color:getTextColor()},ticks:{color:getTextColor()},grid:{color:getGridColor()},min:10,max:18},y:{title:{display:true,text:'Rendimiento %',color:getTextColor()},ticks:{color:getTextColor()},grid:{color:getGridColor()},min:38,max:54}}}
+  });
+}
+
+// C8: Range (Min/Max/Avg)
+function buildChartRange() {
+  const weeks6 = ['S8','S9','S10','S11','S12','S13'];
+  const avg = [45.8,46.2,45.5,47.2,45.9,45.7];
+  const min = [42.1,43.5,42.8,44.5,43.2,42.9];
+  const max = [48.5,49.1,48.2,49.8,48.6,48.3];
+  makeChart('chartRange', {
+    type:'bar', data:{labels:weeks6, datasets:[
+      {label:'Max',data:max,backgroundColor:'rgba(22,163,74,0.3)',borderColor:'#16a34a',borderWidth:1,borderRadius:4},
+      {label:'Promedio',data:avg,backgroundColor:'rgba(37,99,235,0.6)',borderColor:'#2563eb',borderWidth:1,borderRadius:4},
+      {label:'Min',data:min,backgroundColor:'rgba(225,29,72,0.3)',borderColor:'#e11d48',borderWidth:1,borderRadius:4}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:getTextColor(),font:{size:10,family:'Inter'}}},datalabels:{display:false}},scales:baseScales('Rend %',38,52)}
+  });
+}
+
+// C9: Desviacion
+function buildChartDesviacion() {
+  const weeks6 = ['S8','S9','S10','S11','S12','S13'];
+  const desv = [-4.2,-3.8,-4.5,-2.8,-4.1,-4.3];
+  makeChart('chartDesviacion', {
+    type:'bar', data:{labels:weeks6, datasets:[{
+      label:'Desviacion vs Objetivo (pp)', data:desv,
+      backgroundColor: desv.map(v => v >= 0 ? 'rgba(22,163,74,0.7)' : 'rgba(225,29,72,0.7)'),
+      borderColor: desv.map(v => v >= 0 ? '#16a34a' : '#e11d48'),
+      borderWidth:1, borderRadius:6
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{color:getTextColor(),anchor:'end',align:'end',font:{size:10,weight:700},formatter:v=>(v>0?'+':'')+v+'pp'}},scales:baseScales('pp',-6,2)}
+  });
+}
+
+// C10: Proveedor
+function buildChartProveedor() {
+  const colors = ['#16a34a','#2563eb','#d97706'];
+  makeChart('chartProveedor', {
+    type:'bar', data:{labels:proveedores.labels, datasets:[{
+      label:'Rendimiento %', data:proveedores.data,
+      backgroundColor:colors.map(c=>c+'b3'), borderColor:colors, borderWidth:1, borderRadius:8, barPercentage:0.6
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{color:getTextColor(),anchor:'end',align:'end',font:{size:11,weight:700},formatter:v=>v+'%'}},scales:baseScales('Rend %',38,52)}
+  });
+}
+
+// C11: Lotes
+function buildChartLote() {
+  const colors = lotes.data.map(v => v >= 46 ? '#16a34a' : v >= 44 ? '#d97706' : '#e11d48');
+  makeChart('chartLote', {
+    type:'bar', data:{labels:lotes.labels, datasets:[{
+      label:'Rendimiento %', data:lotes.data,
+      backgroundColor:colors.map(c=>c+'99'), borderColor:colors, borderWidth:1, borderRadius:6
+    }]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},datalabels:{color:getTextColor(),anchor:'end',align:'end',font:{size:10,weight:700},formatter:v=>v+'%'}},scales:{x:{ticks:{color:getTextColor()},grid:{color:getGridColor()},min:38,max:52},y:{ticks:{color:getTextColor(),font:{size:10}},grid:{display:false}}}}
+  });
+}
+
+// C12: Heatmap
+function buildHeatmap() {
+  const container = document.getElementById('heatmapContainer');
+  container.innerHTML = '';
+  const cols = HOURS.length + 1;
+  const grid = document.createElement('div');
+  grid.className = 'heatmap-grid';
+  grid.style.gridTemplateColumns = `60px repeat(${HOURS.length}, 1fr)`;
+
+  // Header row
+  const corner = document.createElement('div');
+  corner.className = 'heatmap-header';
+  corner.textContent = 'Dia/Hora';
+  grid.appendChild(corner);
+  HOURS.forEach(h => {
+    const hd = document.createElement('div');
+    hd.className = 'heatmap-header';
+    hd.textContent = h.substring(0,5);
+    grid.appendChild(hd);
+  });
+
+  // Data rows
+  DAYNAMES.forEach((day, di) => {
+    const lbl = document.createElement('div');
+    lbl.className = 'heatmap-header';
+    lbl.textContent = day;
+    grid.appendChild(lbl);
+    heatmapData[di].forEach(val => {
+      const cell = document.createElement('div');
+      cell.className = 'heatmap-cell';
+      cell.textContent = val + '%';
+      let bg, fg;
+      if (val >= 47) { bg = 'rgba(22,163,74,0.7)'; fg = '#fff'; }
+      else if (val >= 45) { bg = 'rgba(22,163,74,0.4)'; fg = '#fff'; }
+      else if (val >= 43) { bg = 'rgba(217,119,6,0.5)'; fg = '#fff'; }
+      else if (val >= 40) { bg = 'rgba(217,119,6,0.3)'; fg = darkMode?'#fff':'#333'; }
+      else { bg = 'rgba(225,29,72,0.5)'; fg = '#fff'; }
+      cell.style.background = bg;
+      cell.style.color = fg;
+      grid.appendChild(cell);
+    });
+  });
+  container.appendChild(grid);
+}
+
+// ======================== TABLES ========================
+function buildTables() {
+  // Lote table
+  const tbody1 = document.querySelector('#tableLote tbody');
+  tbody1.innerHTML = '';
+  lotTableData.forEach(r => {
+    const cls = r.rend >= 46 ? 'good' : r.rend >= 44 ? 'warn' : 'bad';
+    const badge = r.fruta === 'Mango' ? 'badge-mango' : r.fruta === 'Arandano' ? 'badge-arandano' : 'badge-granada';
+    tbody1.innerHTML += `<tr><td><strong>${r.lote}</strong></td><td><span class="badge ${badge}">${r.fruta}</span></td><td>${r.consumo.toLocaleString()}</td><td>${r.chunks.toLocaleString()}</td><td>${r.byp}</td><td class="${cls}">${r.rend}%</td><td>${r.calidad}</td><td>${r.prov}</td></tr>`;
+  });
+
+  // Semanal table
+  const tbody2 = document.querySelector('#tableSemanal tbody');
+  tbody2.innerHTML = '';
+  for (let i = 7; i < 13; i++) {
+    const m = DATA.mango.weekly[i], a = DATA.arandano.weekly[i], g = DATA.granada.weekly[i];
+    const avg = +((m+a+g)/3).toFixed(1);
+    tbody2.innerHTML += `<tr><td><strong>S${i+1}</strong></td><td>${m}%</td><td>${a}%</td><td>${g}%</td><td><strong>${avg}%</strong></td></tr>`;
+  }
+
+  // Balance table
+  const tbody3 = document.querySelector('#tableBalance tbody');
+  tbody3.innerHTML = '';
+  const bal = [
+    {comp:'Ingreso MP Total', m:125000,mp:100, a:32000,ap:100, g:45000,gp:100},
+    {comp:'Chunks IQF', m:57125,mp:45.7, a:20480,ap:64.0, g:25650,gp:57.0},
+    {comp:'ByP (Subproducto)', m:5000,mp:4.0, a:960,ap:3.0, g:1575,gp:3.5},
+    {comp:'Cascara', m:35000,mp:28.0, a:0,ap:0, g:8100,gp:18.0},
+    {comp:'Semilla / Pepa', m:15375,mp:12.3, a:2560,ap:8.0, g:5625,gp:12.5},
+    {comp:'Merma Operativa', m:12500,mp:10.0, a:8000,ap:25.0, g:4050,gp:9.0}
+  ];
+  bal.forEach(r => {
+    tbody3.innerHTML += `<tr><td><strong>${r.comp}</strong></td><td>${r.m.toLocaleString()}</td><td>${r.mp}%</td><td>${r.a.toLocaleString()}</td><td>${r.ap}%</td><td>${r.g.toLocaleString()}</td><td>${r.gp}%</td></tr>`;
+  });
+}
+
+// ======================== INIT ========================
+function initCharts() {
+  updateClock();
+  updateKPIs();
+  rebuildAllCharts();
+  buildTables();
+}
+</script>
+</body>
+</html>

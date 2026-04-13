@@ -1,0 +1,2075 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formatos de Temperaturas — Frutos Tropicales</title>
+<link rel="icon" href="LOGO.png" type="image/png">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+    :root {
+      --bg: #0d1117;
+      --bg-card: #161b22;
+      --bg-card-hover: #1c2333;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --border: #30363d;
+      --accent: #0d9488;
+      --accent-light: #14b8a6;
+      --accent-dark: #0f766e;
+      --red: #8b1a1a;
+      --red-hover: #6b1212;
+      --green: #1a5c25;
+      --green-hover: #0d3d15;
+    }
+
+    body.light-mode {
+      --bg: #f0f4f8;
+      --bg-card: #ffffff;
+      --bg-card-hover: #f8fafc;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    @keyframes floatLogo {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ══════════════ SCREEN STYLES ══════════════ */
+    @media screen {
+      body {
+        font-family: 'Inter', Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        padding: 0;
+        margin: 0;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      /* ── PAGE HEADER ── */
+      .page-header {
+        max-width: 240mm;
+        margin: 0 auto;
+        padding: 20px 24px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .page-header-left {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .page-header-left img {
+        height: 75px;
+        width: auto;
+        animation: floatLogo 3s ease-in-out infinite;
+        filter: drop-shadow(0 4px 12px rgba(13,148,136,0.3));
+      }
+
+      .btn-portal-premium {
+        display: inline-flex; align-items: center; gap: 4px;
+        font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+        text-decoration: none; color: #fff;
+        background: linear-gradient(135deg, #0d6b4e, #10b981, #0d6b4e);
+        background-size: 200% 200%;
+        animation: btnShimmer 3s ease-in-out infinite;
+        padding: 6px 16px; border-radius: 20px;
+        border: 1px solid rgba(16,185,129,0.4);
+        box-shadow: 0 2px 8px rgba(16,185,129,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+        transition: all 0.3s ease;
+      }
+      .btn-portal-premium:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 16px rgba(16,185,129,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+        filter: brightness(1.15);
+      }
+      @keyframes btnShimmer {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+      }
+
+      .page-header-center {
+        text-align: center;
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .page-header-center h1 {
+        font-size: 28px;
+        font-weight: 900;
+        color: var(--accent);
+        letter-spacing: -0.5px;
+        margin-bottom: 6px;
+      }
+
+      .page-header-badge {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--accent);
+        border: 1.5px solid var(--accent);
+        border-radius: 20px;
+        padding: 3px 16px;
+        letter-spacing: 0.5px;
+      }
+
+      .page-header-right {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 8px;
+      }
+
+      .sig-block {
+        display:flex;flex-direction:column;align-items:center;gap:3px;
+        padding:8px 22px;border-radius:20px;
+        background:linear-gradient(145deg,rgba(245,240,225,.85),rgba(255,250,240,.9),rgba(245,240,225,.85));
+        border:1px solid rgba(212,175,55,.3);
+        position:relative;overflow:hidden;
+        animation:firmaBorderGlow 4s ease infinite;
+        box-shadow:0 0 20px rgba(212,175,55,.08),inset 0 1px 0 rgba(255,255,255,.06);
+      }
+      .sig-block::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,.08),rgba(255,255,255,.05),transparent);animation:firmaShineRF 5s ease-in-out infinite;pointer-events:none}
+      @keyframes firmaShineRF{0%{left:-100%}50%,100%{left:200%}}
+      @keyframes firmaBorderGlow{0%,100%{border-color:rgba(212,175,55,.2);box-shadow:0 2px 12px rgba(0,0,0,.1)}50%{border-color:rgba(212,175,55,.45);box-shadow:0 2px 20px rgba(212,175,55,.12)}}
+      .sig-block>*{position:relative;z-index:1}
+      body:not(.light-mode) .sig-block{background:linear-gradient(145deg,rgba(10,18,32,.85),rgba(20,30,48,.9),rgba(15,25,40,.85))}
+      .sig-label {
+        font-size:7px;font-weight:800;color:rgba(139,105,20,.8);
+        letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;
+      }
+      body:not(.light-mode) .sig-label{color:rgba(212,175,55,.7)}
+      .sig-name {
+        background:linear-gradient(135deg,#8B6914 0%,#b8941f 25%,#6b5b3a 50%,#b8941f 75%,#8B6914 100%);
+        background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+        animation:sigShimmerRF 4s ease infinite;font-weight:900;font-size:14px;
+      }
+      body:not(.light-mode) .sig-name{background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+      @keyframes sigShimmerRF{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+      .sig-role {
+        font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.5px;
+      }
+      body:not(.light-mode) .sig-role{color:#22c55e}
+
+      /* ── THEME TOGGLE ── */
+      .theme-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .theme-toggle-label {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text-muted);
+      }
+
+      .theme-switch {
+        position: relative;
+        width: 44px;
+        height: 24px;
+        background: var(--border);
+        border-radius: 12px;
+        transition: background 0.3s;
+        cursor: pointer;
+      }
+
+      .theme-switch::after {
+        content: '';
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        background: #fff;
+        border-radius: 50%;
+        transition: transform 0.3s;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      }
+
+      body.light-mode .theme-switch {
+        background: var(--accent);
+      }
+
+      body.light-mode .theme-switch::after {
+        transform: translateX(20px);
+      }
+
+      /* ── FORMAT TABS ── */
+      .format-tabs {
+        max-width: 240mm;
+        margin: 0 auto 12px;
+        padding: 0 24px;
+        display: flex;
+        gap: 8px;
+        animation: fadeIn 0.5s ease 0.1s both;
+      }
+
+      .format-tab {
+        flex: 1;
+        padding: 12px 20px;
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        background: var(--bg-card);
+        color: var(--text-muted);
+        font-family: 'Inter', Arial, sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.25s;
+        text-align: center;
+      }
+
+      .format-tab:hover {
+        background: var(--bg-card-hover);
+        border-color: var(--accent);
+        color: var(--text);
+      }
+
+      .format-tab.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+        box-shadow: 0 4px 14px rgba(13,148,136,0.35);
+      }
+
+      /* ── CONTROLS ── */
+      .controls {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        max-width: 240mm;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        animation: fadeIn 0.5s ease 0.2s both;
+        transition: background 0.3s, border-color 0.3s;
+      }
+
+      .ctrl {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        flex: 1;
+        min-width: 140px;
+      }
+
+      .ctrl label {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .ctrl input,
+      .ctrl select {
+        padding: 9px 12px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        font-size: 13px;
+        font-family: 'Inter', Arial, sans-serif;
+        outline: none;
+        color: var(--text);
+        background: var(--bg);
+        transition: border-color 0.2s, background 0.3s, color 0.3s;
+      }
+
+      .ctrl input:focus,
+      .ctrl select:focus {
+        border-color: var(--accent);
+      }
+
+      .btn-load {
+        background: var(--red);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Inter', Arial, sans-serif;
+        white-space: nowrap;
+        height: 38px;
+        align-self: flex-end;
+        transition: background 0.2s;
+      }
+
+      .btn-load:hover { background: var(--red-hover); }
+
+      .btn-print {
+        background: var(--green);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        font-family: 'Inter', Arial, sans-serif;
+        white-space: nowrap;
+        height: 38px;
+        align-self: flex-end;
+        transition: background 0.2s;
+      }
+
+      .btn-print:hover { background: var(--green-hover); }
+
+      .status {
+        font-size: 12px;
+        color: var(--text-muted);
+        padding: 6px 0;
+        width: 100%;
+      }
+
+      .preview-wrap {
+        max-width: 240mm;
+        margin: 0 auto;
+        padding: 0 24px 40px;
+        overflow-x: auto;
+      }
+    }
+
+    /* ══════════════ FORM STYLES (both screen & print) ══════════════ */
+    .form-page {
+      background: #fff;
+      width: 210mm;
+      margin: 0 auto;
+      padding: 6mm 8mm;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      font-size: 8pt;
+      color: #000;
+    }
+
+    .form-page-landscape {
+      background: #fff;
+      width: 297mm;
+      min-height: 210mm;
+      margin: 0 auto;
+      padding: 6mm 8mm;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+      font-size: 7pt;
+      color: #000;
+    }
+
+    @media screen {
+      .form-page,
+      .form-page-landscape {
+        box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+
+      .form-page-landscape {
+        min-width: 297mm;
+        height: 210mm;
+        overflow: visible;
+      }
+    }
+
+    /* ── ENCABEZADO ── */
+    .hdr-outer {
+      border: 2px solid #8b1a1a;
+      margin-bottom: 3mm;
+    }
+
+    .hdr-top {
+      display: grid;
+      grid-template-columns: 38mm 1fr 45mm;
+      border-bottom: 1.5px solid #8b1a1a;
+    }
+
+    .hdr-logo {
+      border-right: 1.5px solid #8b1a1a;
+      padding: 2mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hdr-logo img { height: 18mm; width: auto; }
+
+    .hdr-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13pt;
+      font-weight: 900;
+      text-align: center;
+      letter-spacing: 0.5px;
+      padding: 3mm 4mm;
+    }
+
+    .hdr-title-mp {
+      font-size: 11pt;
+      padding: 1.5mm 4mm;
+    }
+
+    /* MP landscape: header más compacto */
+    .form-page-landscape .hdr-outer { margin-bottom: 0.5mm; }
+    .form-page-landscape .hdr-logo { padding: 1mm; }
+    .form-page-landscape .hdr-logo img { height: 13mm; }
+    .form-page-landscape .hdr-code { padding: 1mm 2mm; line-height: 1.4; }
+    .form-page-landscape .hdr-cell { padding: 1mm 3mm; }
+    .form-page-landscape .hdr-val { min-width: 25mm; }
+
+    .hdr-code {
+      border-left: 1.5px solid #8b1a1a;
+      padding: 2mm 3mm;
+      font-size: 7pt;
+      line-height: 1.7;
+    }
+
+    .hdr-code span { font-weight: 700; }
+
+    .hdr-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .hdr-cell {
+      padding: 2mm 3mm;
+      border-right: 1.5px solid #8b1a1a;
+      font-size: 8pt;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hdr-cell:last-child { border-right: none; }
+    .hdr-cell b { font-weight: 700; }
+
+    .hdr-val {
+      border-bottom: 1px solid #8b1a1a;
+      min-width: 30mm;
+      display: inline-block;
+      font-weight: 700;
+      font-size: 9pt;
+      text-align: center;
+    }
+
+    /* ── INFO ROW ── */
+    .info-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      border: 1.5px solid #8b1a1a;
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+
+    .info-left {
+      border-right: 1.5px solid #8b1a1a;
+      padding: 2mm 3mm;
+      grid-row: span 2;
+      display: flex;
+      flex-direction: column;
+      gap: 3mm;
+      justify-content: center;
+    }
+
+    .info-field {
+      display: flex;
+      align-items: center;
+      gap: 6mm;
+      font-size: 8.5pt;
+      font-weight: 700;
+    }
+
+    .info-field-val {
+      border-bottom: 1.5px solid #000;
+      min-width: 40mm;
+      font-size: 10pt;
+      font-weight: 900;
+      display: inline-block;
+    }
+
+    .info-freq {
+      border-right: 1.5px solid #8b1a1a;
+      padding: 2mm 3mm;
+      font-size: 8pt;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .info-acciones { padding: 0; }
+
+    .acciones-title {
+      background: #fff;
+      border-bottom: 1.5px solid #8b1a1a;
+      border-left: 0;
+      text-align: center;
+      font-size: 8pt;
+      font-weight: 900;
+      padding: 1.5mm;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .acciones-text {
+      padding: 1.5mm 2mm;
+      font-size: 7pt;
+      line-height: 1.5;
+    }
+
+    /* ── TABLA PRINCIPAL ── */
+    .main-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1.5px solid #8b1a1a;
+    }
+
+    .main-table th,
+    .main-table td {
+      border: 1px solid #8b1a1a;
+      text-align: center;
+      padding: 0;
+      vertical-align: middle;
+      color: #000;
+    }
+
+    .main-table .th-hora {
+      width: 14mm;
+      background: #fff;
+      font-size: 8pt;
+      font-weight: 700;
+      padding: 1.5mm;
+    }
+
+    .main-table .th-area {
+      font-size: 8pt;
+      font-weight: 700;
+      padding: 2mm 1mm;
+      line-height: 1.3;
+      background: #fff;
+    }
+
+    .main-table .th-sub {
+      font-size: 7pt;
+      font-weight: 400;
+      padding: 1mm;
+      background: #fff;
+    }
+
+    .main-table .th-obs {
+      font-size: 8pt;
+      font-weight: 700;
+      padding: 2mm;
+      background: #fff;
+    }
+
+    .main-table td {
+      height: 6.5mm;
+      font-size: 8.5pt;
+      background: #fff;
+    }
+
+    .main-table td.hora-cell {
+      font-weight: 700;
+      font-size: 8.5pt;
+    }
+
+    .main-table td.obs-cell {
+      text-align: left;
+      padding: 1mm 2mm;
+      font-size: 7.5pt;
+    }
+
+    /* MP table smaller */
+    .main-table-mp th {
+      font-size: 6.5pt !important;
+      padding: 1mm !important;
+    }
+
+    .main-table-mp td {
+      height: 5.5mm;
+      font-size: 6.5pt;
+    }
+
+    .main-table-mp .th-hora {
+      width: 10mm;
+      font-size: 6.5pt;
+    }
+
+    .main-table-mp td.hora-cell {
+      font-size: 6.5pt;
+    }
+
+    .main-table-mp td.obs-cell {
+      font-size: 6pt;
+    }
+
+    /* ── ACCIONES CORRECTIVAS ABAJO ── */
+    .acciones-bottom {
+      border: 1.5px solid #8b1a1a;
+      border-top: none;
+      padding: 1.5mm 3mm;
+      min-height: 10mm;
+    }
+
+    .acciones-bottom-title {
+      font-size: 8pt;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .acciones-bottom-lines {
+      margin-top: 1mm;
+      display: flex;
+      flex-direction: column;
+      gap: 2mm;
+    }
+
+    .acciones-line {
+      border-bottom: 1px solid #8b1a1a;
+      min-height: 4mm;
+      font-size: 8pt;
+    }
+
+    /* ── LEYENDA ── */
+    .mp-bottom-row {
+      display: flex;
+      gap: 4mm;
+      align-items: flex-start;
+      margin-top: 2mm;
+    }
+    .mp-chart-wrap {
+      flex: 0 0 55%;
+      min-width: 0;
+    }
+    .mp-chart-wrap canvas {
+      width: 100% !important;
+      height: 30mm !important;
+    }
+    .mp-params-side {
+      flex: 0 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5mm;
+    }
+    @media print {
+      .mp-chart-wrap canvas {
+        width: 100% !important;
+        height: 28mm !important;
+      }
+    }
+    .leyenda-mp {
+      font-size: 7.5pt;
+      font-weight: 700;
+      margin: 2mm 0 1mm;
+      color: #000;
+    }
+
+    /* ── PARAMETROS ── */
+    .params-wrap {
+      display: flex;
+      justify-content: center;
+      margin: 3mm 0;
+    }
+
+    .params-table {
+      border-collapse: collapse;
+      width: 100mm;
+    }
+
+    .params-table th,
+    .params-table td {
+      border: 1.5px solid #8b1a1a;
+      padding: 1.5mm 3mm;
+      font-size: 8pt;
+      text-align: center;
+      color: #000;
+      background: #fff;
+    }
+
+    .params-table .params-header {
+      font-size: 8.5pt;
+      font-weight: 900;
+      text-align: center;
+      background: #fff;
+    }
+
+    .params-table .col-header {
+      font-weight: 700;
+      background: #fff;
+    }
+
+    .params-table-mp {
+      width: 120mm;
+    }
+
+    /* ── FIRMAS ── */
+    .firmas {
+      display: flex;
+      justify-content: space-between;
+      margin: 4mm 8mm 3mm;
+    }
+
+    .firma {
+      text-align: center;
+      width: 70mm;
+    }
+
+    .firma-line {
+      border-top: 1.5px solid #000;
+      height: 0;
+      padding: 0;
+      margin: 0 auto 1.5mm;
+    }
+
+    .firma-nombre {
+      font-size: 8pt;
+      font-weight: 700;
+      margin-bottom: 1mm;
+    }
+
+    .firma-sub {
+      font-size: 7pt;
+      color: #555;
+      margin: 0;
+    }
+
+    /* ── PIE ── */
+    .footer-doc {
+      text-align: center;
+      font-size: 7pt;
+      color: #333;
+      border-top: 1px solid #8b1a1a;
+      padding-top: 2mm;
+      margin-top: 1mm;
+    }
+
+    /* ── HIDDEN HELPER ── */
+    .hidden { display: none !important; }
+
+    /* ══════════════ PRINT ══════════════ */
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0;
+        margin: 0;
+      }
+
+      .page-header,
+      .format-tabs,
+      .controls,
+      .theme-toggle {
+        display: none !important;
+      }
+
+      .preview-wrap {
+        max-width: none;
+        padding: 0;
+        margin: 0;
+        overflow: visible;
+      }
+
+      .form-page {
+        width: 100%;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        border: none !important;
+        padding: 5mm 7mm;
+        margin: 0;
+        font-size: 7.5pt;
+      }
+
+      .form-page-landscape {
+        width: 100%;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        border: none !important;
+        padding: 4mm 6mm;
+        margin: 0;
+        font-size: 6pt;
+      }
+
+      .main-table td { height: 7.5mm; }
+      .main-table-mp td { height: 4.5mm; }
+      .acciones-bottom { min-height: 10mm; }
+      .acciones-line { min-height: 4mm; }
+      .params-wrap { margin: 2mm 0; }
+      .firmas { margin: 5mm 8mm 1mm; page-break-inside: avoid; }
+      .footer-doc { margin-top: 1mm; padding-top: 1mm; }
+      .form-page-landscape .hdr-outer { margin-bottom: 1.5mm; }
+      .form-page-landscape .params-wrap { margin: 1.5mm 0; }
+      .form-page-landscape .firmas { margin: 4mm 8mm 1mm; }
+      .form-page-landscape .acciones-bottom { min-height: 5mm; }
+      .form-page-landscape .acciones-line { min-height: 2.5mm; }
+      .form-page-landscape .footer-doc { padding-top: 1mm; margin-top: 0; }
+
+      .hidden { display: none !important; }
+      #chartEmpaqueTemp, #chartCamaraPT {
+        max-height: 24mm !important;
+        height: 24mm !important;
+        overflow: hidden !important;
+      }
+      #chartAcondicionado, #chartEmbandejado {
+        max-height: 22mm !important;
+        height: 22mm !important;
+        overflow: hidden !important;
+      }
+      .chart-pair-wrap { overflow: visible !important; max-height: none !important; }
+      .chart-pair-wrap canvas { max-height: 22mm !important; }
+    }
+
+    /* Empaque print: portrait */
+    body.print-empaque {
+      /* default portrait */
+    }
+
+    /* MP print: landscape */
+    body.print-mp .form-page-landscape {
+      width: 100%;
+    }
+    /* Eliminar página en blanco */
+    @media print {
+      html, body { height: auto !important; overflow: hidden !important; margin: 0 !important; padding: 0 !important; }
+      body > *:not(.preview-wrap) { display: none !important; }
+      .preview-wrap { overflow: hidden !important; margin: 0 !important; padding: 0 !important; max-height: 100vh !important; }
+      .form-page.hidden, .form-page-landscape.hidden { display: none !important; height: 0 !important; margin: 0 !important; padding: 0 !important; border: none !important; }
+    }
+
+    @media print {
+      @page { size: A4; margin: 0; }
+    }
+
+    /* ══════════════ RESPONSIVE ══════════════ */
+    @media screen and (max-width: 768px) {
+      .page-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      .page-header-right {
+        align-items: center;
+        text-align: center;
+      }
+
+      .sig-block { text-align: center; }
+
+      .format-tabs {
+        flex-direction: column;
+      }
+
+      .controls {
+        flex-direction: column;
+      }
+
+      .ctrl { min-width: 100%; }
+
+      .btn-load, .btn-print {
+        width: 100%;
+        align-self: stretch;
+      }
+
+      .preview-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════ PAGE HEADER (screen only) ══════════ -->
+  <div class="page-header">
+    <div class="page-header-left">
+      <img src="LOGO.png" alt="Frutos Tropicales">
+      <a href="temperaturas.html" class="btn-portal-premium">🌡️ Ir a Registros de Temperatura</a>
+    </div>
+    <div class="page-header-center">
+      <h1>Formatos de Temperaturas</h1>
+    </div>
+    <div class="page-header-right">
+      <div class="sig-block">
+        <div class="sig-label">DESARROLLADO POR:</div>
+        <div class="sig-name">Rodrigo Garcia</div>
+        <div class="sig-role">Systems Analyst &amp; Developer-QA</div>
+      </div>
+      <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="theme-toggle-label">Modo</span>
+        <div class="theme-switch" id="themeSwitch"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ FORMAT TABS ══════════ -->
+  <div class="format-tabs">
+    <button class="format-tab active" id="tabMP" data-format="materia-prima" onclick="switchFormat('materia-prima')">
+      🚚 Cámaras de Materia Prima
+    </button>
+    <button class="format-tab" id="tabProceso" data-format="proceso" onclick="switchFormat('proceso')">
+      🏭 Sala de Proceso
+    </button>
+    <button class="format-tab" id="tabEmpaque" data-format="empaque" onclick="switchFormat('empaque')">
+      ❄️ Sala de Empaque
+    </button>
+  </div>
+
+  <!-- ══════════ CONTROLS ══════════ -->
+  <div class="controls">
+    <div class="ctrl">
+      <label>Fecha</label>
+      <input type="date" id="ctrlFecha" onchange="autoSelectInspector()" />
+    </div>
+    <div class="ctrl">
+      <label>Turno</label>
+      <select id="ctrlTurno" onchange="autoSelectInspector()">
+        <option value="DIA">TURNO DIA (06:00-17:00)</option>
+        <option value="NOCHE">TURNO NOCHE (18:00-05:00)</option>
+      </select>
+    </div>
+    <div class="ctrl">
+      <label>Inspector responsable</label>
+      <select id="ctrlInspector">
+        <option>LUIS APONTE</option>
+        <option>MAYDA APONTE</option>
+        <option>SHEYLA CAMONES</option>
+        <option>JOHNNY PAJUELO</option>
+        <option>BLANCA MALVACEDA</option>
+        <option>CHRISTY JIMENEZ</option>
+        <option>CORAYMA CHANGANA</option>
+      </select>
+    </div>
+    <button class="btn-load" onclick="cargarDatos()">Cargar datos</button>
+    <button class="btn-print" onclick="imprimirFormato()">Imprimir / PDF</button>
+    <div class="status" id="statusMsg">Selecciona fecha y turno, luego carga los datos.</div>
+  </div>
+
+  <!-- ══════════ PREVIEW ══════════ -->
+  <div class="preview-wrap">
+
+    <!-- ══════════ FORMAT 1: SALA DE EMPAQUE ══════════ -->
+    <div class="form-page hidden" id="formEmpaque">
+
+      <!-- ENCABEZADO -->
+      <div class="hdr-outer">
+        <div class="hdr-top">
+          <div class="hdr-logo">
+            <img src="logo2.png" alt="Frutos Tropicales">
+          </div>
+          <div class="hdr-title">CONTROL DE TEMPERATURA DE SALA DE EMPAQUE</div>
+          <div class="hdr-code">
+            <span>Codigo :</span> FTP.ACC.FRT.13.060<br>
+            <span>Version:</span> 02<br>
+            <span>Fecha  :</span> 03/01/2026
+          </div>
+        </div>
+        <div class="hdr-bottom">
+          <div class="hdr-cell">
+            <b>FECHA:</b>
+            <span class="hdr-val" id="displayFechaE">&nbsp;</span>
+          </div>
+          <div class="hdr-cell" style="justify-content:center;">
+            <b>FRECUENCIA:</b>&nbsp;Cada hora
+          </div>
+          <div class="hdr-cell" style="border-right:none;border-left:1.5px solid #8b1a1a;">
+            <b>JULIANO:</b>
+            <span class="hdr-val" id="displayJulianoE">&nbsp;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIONES CORRECTIVAS ARRIBA -->
+      <table style="width:100%;border-collapse:collapse;border:1.5px solid #8b1a1a;border-bottom:none;margin-bottom:0;">
+        <tr>
+          <td style="padding:0;vertical-align:top;width:100%">
+            <div style="border-bottom:1.5px solid #8b1a1a;text-align:center;font-size:8pt;font-weight:900;padding:1.5mm;letter-spacing:0.5px;">
+              ACCIONES CORRECTIVAS</div>
+            <div style="padding:1.5mm 2mm;font-size:6.5pt;line-height:1.5;">
+              En caso de no encontrar los parametros de acuerdo a lo establecido, comunicar de inmediato al jefe de
+              mantenimiento y jefe de aseguramiento de la calidad, y reajustar parametros de temperatura.
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- TABLA PRINCIPAL EMPAQUE -->
+      <table class="main-table" id="mainTableE">
+        <thead>
+          <tr>
+            <th class="th-hora" rowspan="2">HORA</th>
+            <th class="th-area">TEMPERATURA DE PRODUCTO</th>
+            <th class="th-area">SALA DE EMPAQUE</th>
+            <th class="th-area">CAMARA DE PRODUCTO<br>TERMINADO</th>
+            <th class="th-area">SALA DE DESPACHO</th>
+            <th class="th-obs" rowspan="2">OBSERVACIONES</th>
+          </tr>
+          <tr>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyE"></tbody>
+      </table>
+
+      <!-- ACCIONES CORRECTIVAS ABAJO -->
+      <div class="acciones-bottom">
+        <span class="acciones-bottom-title">ACCIONES CORRECTIVAS:</span>
+        <div class="acciones-bottom-lines">
+          <div class="acciones-line" id="acLineE1">&nbsp;</div>
+          <div class="acciones-line" id="acLineE2">&nbsp;</div>
+          <div class="acciones-line" id="acLineE3">&nbsp;</div>
+        </div>
+      </div>
+
+      <!-- GRAFICOS + PARAMETROS: Gráficos apilados izquierda, Parámetros derecha -->
+      <div class="chart-pair-wrap" style="display:flex;gap:3mm;align-items:flex-start;margin-top:1mm;overflow:hidden;">
+        <!-- Columna izquierda: 2 gráficos apilados -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2mm;">
+          <div>
+            <div style="font-size:7pt;font-weight:700;text-align:center;margin-bottom:1mm;color:#000;">SALA DE EMPAQUE (&deg;C)</div>
+            <div style="position:relative;height:100px;overflow:hidden;"><canvas id="chartEmpaqueTemp"></canvas></div>
+          </div>
+          <div>
+            <div style="font-size:7pt;font-weight:700;text-align:center;margin-bottom:1mm;color:#000;">C&Aacute;MARA DE PRODUCTO TERMINADO (&deg;C)</div>
+            <div style="position:relative;height:100px;overflow:hidden;"><canvas id="chartCamaraPT"></canvas></div>
+          </div>
+        </div>
+        <!-- Columna derecha: Parámetros original -->
+        <div style="flex:0 0 auto;align-self:center;">
+          <table class="params-table" style="width:auto;">
+            <tr><th colspan="2" class="params-header" style="font-size:6.5pt;padding:1.2mm 2mm;font-weight:800;">PAR&Aacute;METROS DE TEMPERATURA (&deg;C)</th></tr>
+            <tr><th class="col-header" style="font-size:6.5pt;padding:1mm 2mm;font-weight:700;">ZONA</th><th class="col-header" style="font-size:6.5pt;padding:1mm 2mm;font-weight:700;">RANGO DE<br>TEMPERATURA (&deg;C)</th></tr>
+            <tr><td style="font-size:6.5pt;padding:1mm 2mm;font-weight:700;">TEMPERATURA DE PRODUCTO</td><td style="font-size:6.5pt;padding:1mm 2mm;text-align:center;">-18 a -20</td></tr>
+            <tr><td style="font-size:6.5pt;padding:1mm 2mm;font-weight:700;">SALA DE EMPAQUE</td><td style="font-size:6.5pt;padding:1mm 2mm;text-align:center;">0 a 8</td></tr>
+            <tr><td style="font-size:6.5pt;padding:1mm 2mm;font-weight:700;">CAMARA DE PRODUCTO TERMINADO</td><td style="font-size:6.5pt;padding:1mm 2mm;text-align:center;">-16 a -25</td></tr>
+            <tr><td style="font-size:6.5pt;padding:1mm 2mm;font-weight:700;">SALA DE DESPACHO</td><td style="font-size:6.5pt;padding:1mm 2mm;text-align:center;">0 a 5</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- FIRMAS -->
+      <div class="firmas" style="margin-top:18mm;">
+        <div class="firma">
+          <div class="firma-line">&nbsp;</div>
+          <div class="firma-nombre" id="firmaInspectorE">&nbsp;</div>
+          <div class="firma-sub">Inspector de Aseguramiento de la Calidad</div>
+        </div>
+        <div class="firma">
+          <div class="firma-line">&nbsp;</div>
+          <div class="firma-nombre">ANAIS GAMBOA</div>
+          <div class="firma-sub">V&deg;B&deg; Coordinador de SIG</div>
+        </div>
+      </div>
+
+      <!-- PIE -->
+      <div class="footer-doc">
+        DOCUMENTO CONTROLADO PROHIBIDA SU REPRODUCCION SIN AUTORIZACION DE FRUTOS TROPICALES PERU EXPORT S.A.C
+      </div>
+
+    </div><!-- /formEmpaque -->
+
+    <!-- ══════════ FORMAT 2: CAMARAS DE MATERIA PRIMA ══════════ -->
+    <div class="form-page-landscape" id="formMP">
+
+      <!-- ENCABEZADO -->
+      <div class="hdr-outer">
+        <div class="hdr-top">
+          <div class="hdr-logo">
+            <img src="logo2.png" alt="Frutos Tropicales">
+          </div>
+          <div class="hdr-title hdr-title-mp">CONTROL DE TEMPERATURA DE CAMARAS DE MATERIA PRIMA</div>
+          <div class="hdr-code">
+            <span>Codigo :</span> FTP.ACC.FRT.13.067<br>
+            <span>Version:</span> 01<br>
+            <span>Fecha  :</span> 22/10/2025
+          </div>
+        </div>
+        <div class="hdr-bottom">
+          <div class="hdr-cell">
+            <b>FECHA:</b>
+            <span class="hdr-val" id="displayFechaMP">&nbsp;</span>
+          </div>
+          <div class="hdr-cell" style="justify-content:center;">
+            <b>FRECUENCIA:</b>&nbsp;Cada hora
+          </div>
+          <div class="hdr-cell" style="border-right:none;border-left:1.5px solid #8b1a1a;">
+            <b>JULIANO:</b>
+            <span class="hdr-val" id="displayJulianoMP">&nbsp;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIONES CORRECTIVAS ARRIBA (MP - compactas) -->
+      <table style="width:100%;border-collapse:collapse;border:1.5px solid #8b1a1a;border-bottom:none;margin-bottom:0;">
+        <tr>
+          <td style="padding:0;vertical-align:top;width:100%">
+            <div style="border-bottom:1.5px solid #8b1a1a;text-align:center;font-size:7pt;font-weight:900;padding:0.8mm;letter-spacing:0.5px;">
+              ACCIONES CORRECTIVAS</div>
+            <div style="padding:0.8mm 2mm;font-size:5.5pt;line-height:1.3;">
+              En caso de no encontrar los parametros de acuerdo a lo establecido, comunicar de inmediato al jefe de
+              mantenimiento y jefe de aseguramiento de la calidad, y reajustar parametros de temperatura.
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- TABLA PRINCIPAL MP — reducir espacio acciones arriba -->
+      <style>.form-page-landscape .acciones-mp-top { font-size:7pt !important; padding:0.8mm !important; }
+      .form-page-landscape .acciones-mp-body { font-size:5.5pt !important; padding:0.8mm 2mm !important; line-height:1.3 !important; }</style>
+      <table class="main-table main-table-mp" id="mainTableMP">
+        <thead>
+          <tr>
+            <th class="th-hora" rowspan="2">HORA</th>
+            <th class="th-area">TEMPERATURA DE<br>CAMARA DE MP</th>
+            <th class="th-area">TEMPERATURA DE<br>PRODUCTO</th>
+            <th class="th-area">REEFER 1</th>
+            <th class="th-area">REEFER 2</th>
+            <th class="th-area">REEFER 3</th>
+            <th class="th-area">REEFER 4</th>
+            <th class="th-area">REEFER 5</th>
+            <th class="th-area">REEFER 6</th>
+            <th class="th-area">REEFER 7</th>
+            <th class="th-area">REEFER 8</th>
+            <th class="th-area">REEFER 9</th>
+            <th class="th-area">REEFER 10</th>
+            <th class="th-obs" rowspan="2">OBSERVACIONES</th>
+          </tr>
+          <tr>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyMP"></tbody>
+      </table>
+
+      <!-- ACCIONES CORRECTIVAS ABAJO (MP compactas) -->
+      <div class="acciones-bottom" style="min-height:4mm;">
+        <span class="acciones-bottom-title" style="font-size:6.5pt;">ACCIONES CORRECTIVAS:</span>
+        <div class="acciones-bottom-lines">
+          <div class="acciones-line" id="acLineMP1" style="min-height:2mm;">&nbsp;</div>
+          <div class="acciones-line" id="acLineMP2" style="min-height:2mm;">&nbsp;</div>
+          <div class="acciones-line" id="acLineMP3" style="min-height:2mm;">&nbsp;</div>
+        </div>
+      </div>
+
+      <!-- LEYENDA -->
+      <div class="leyenda-mp" style="font-size:6.5pt;margin:0.5mm 0;">Temperatura de refrigeracion: 0-8 &deg;C</div>
+
+      <!-- GRAFICO (sin parámetros - MP no tiene) -->
+      <div style="margin-top:0.5mm;text-align:center;">
+        <div style="font-size:7pt;font-weight:700;margin-bottom:0.5mm;color:#000;">TEMPERATURA C&Aacute;MARA DE MP (&deg;C)</div>
+        <div class="mp-chart-wrap" style="max-width:70%;margin:0 auto;">
+          <canvas id="chartCamaraMP"></canvas>
+        </div>
+      </div>
+
+      <!-- FIRMAS -->
+      <div class="firmas" style="margin-top:16mm;">
+        <div class="firma">
+          <div class="firma-line">&nbsp;</div>
+          <div class="firma-nombre" id="firmaInspectorMP">&nbsp;</div>
+          <div class="firma-sub">Inspector de Aseguramiento de la Calidad</div>
+        </div>
+        <div class="firma">
+          <div class="firma-line">&nbsp;</div>
+          <div class="firma-nombre">ANAIS GAMBOA</div>
+          <div class="firma-sub">V°B° Coordinador de SIG</div>
+        </div>
+      </div>
+
+      <!-- PIE -->
+      <div class="footer-doc" style="margin-top:2mm;">
+        DOCUMENTO CONTROLADO PROHIBIDA SU REPRODUCCION SIN AUTORIZACION DE FRUTOS TROPICALES PERU EXPORT S.A.C
+      </div>
+
+    </div><!-- /formMP -->
+
+    <!-- ══════════ FORMAT 3: SALA DE PROCESO ══════════ -->
+    <div class="form-page hidden" id="formProceso">
+
+      <!-- ENCABEZADO -->
+      <div class="hdr-outer">
+        <div class="hdr-top">
+          <div class="hdr-logo">
+            <img src="logo2.png" alt="Frutos Tropicales">
+          </div>
+          <div class="hdr-title">CONTROL DE TEMPERATURA DE SALA DE PROCESO</div>
+          <div class="hdr-code">
+            <span>Codigo :</span> FTP.ACC.FRT.13.059<br>
+            <span>Version:</span> 02<br>
+            <span>Fecha  :</span> 29/01/2026
+          </div>
+        </div>
+        <div class="hdr-bottom">
+          <div class="hdr-cell">
+            <b>FECHA:</b>
+            <span class="hdr-val" id="displayFechaP">&nbsp;</span>
+          </div>
+          <div class="hdr-cell" style="justify-content:center;">
+            <b>FRECUENCIA:</b>&nbsp;Cada hora
+          </div>
+          <div class="hdr-cell" style="border-right:none;border-left:1.5px solid #8b1a1a;">
+            <b>JULIANO:</b>
+            <span class="hdr-val" id="displayJulianoP">&nbsp;</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIONES CORRECTIVAS ARRIBA -->
+      <table style="width:100%;border-collapse:collapse;border:1.5px solid #8b1a1a;border-bottom:none;margin-bottom:0;">
+        <tr>
+          <td style="padding:0;vertical-align:top;width:100%">
+            <div style="border-bottom:1.5px solid #8b1a1a;text-align:center;font-size:8pt;font-weight:900;padding:1.5mm;letter-spacing:0.5px;">
+              ACCIONES CORRECTIVAS</div>
+            <div style="padding:1.5mm 2mm;font-size:6.5pt;line-height:1.5;">
+              En caso de no encontrar los parametros de acuerdo a lo establecido, comunicar de inmediato al jefe de
+              mantenimiento y jefe de aseguramiento de la calidad, y reajustar parametros de temperatura.
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- TABLA PRINCIPAL PROCESO -->
+      <table class="main-table" id="mainTableP">
+        <thead>
+          <tr>
+            <th class="th-hora" rowspan="2">HORA</th>
+            <th class="th-area">SALA DE ACONDICIONADO</th>
+            <th class="th-area">SALA DE EMBANDEJADO</th>
+            <th class="th-area">SALA DE LAVADO DE BANDEJAS</th>
+            <th class="th-area">SALA DE PRE-ENFRIADO</th>
+            <th class="th-obs" rowspan="2">OBSERVACIONES</th>
+          </tr>
+          <tr>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+            <th class="th-sub">T (&deg;C)</th>
+          </tr>
+        </thead>
+        <tbody id="tableBodyP"></tbody>
+      </table>
+
+      <!-- ACCIONES CORRECTIVAS ABAJO -->
+      <div class="acciones-bottom">
+        <span class="acciones-bottom-title">ACCIONES CORRECTIVAS:</span>
+        <div class="acciones-bottom-lines">
+          <div class="acciones-line" id="acLineP1">&nbsp;</div>
+          <div class="acciones-line" id="acLineP2">&nbsp;</div>
+          <div class="acciones-line" id="acLineP3">&nbsp;</div>
+        </div>
+      </div>
+
+      <!-- GRAFICOS + PARAMETROS: Gráficos apilados a la izquierda, Parámetros a la derecha -->
+      <div class="chart-pair-wrap" style="display:flex;gap:3mm;align-items:flex-start;margin-top:1mm;overflow:hidden;">
+        <!-- Columna izquierda: 2 gráficos apilados -->
+        <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2mm;">
+          <div>
+            <div style="font-size:7pt;font-weight:700;text-align:center;margin-bottom:1mm;color:#000;">SALA DE ACONDICIONADO (&deg;C)</div>
+            <div style="position:relative;height:80px;overflow:hidden;"><canvas id="chartAcondicionado"></canvas></div>
+          </div>
+          <div>
+            <div style="font-size:7pt;font-weight:700;text-align:center;margin-bottom:1mm;color:#000;">SALA DE EMBANDEJADO (&deg;C)</div>
+            <div style="position:relative;height:80px;overflow:hidden;"><canvas id="chartEmbandejado"></canvas></div>
+          </div>
+        </div>
+        <!-- Columna derecha: Parámetros original -->
+        <div style="flex:0 0 auto;align-self:center;">
+          <table class="params-table" style="width:auto;">
+            <tr><th colspan="2" class="params-header" style="font-size:7.5pt;padding:1.5mm 3mm;font-weight:800;">PAR&Aacute;METROS DE TEMPERATURA (&deg;C)</th></tr>
+            <tr><th class="col-header" style="font-size:7pt;padding:1.2mm 3mm;font-weight:700;">ZONA</th><th class="col-header" style="font-size:7pt;padding:1.2mm 3mm;font-weight:700;">RANGO DE<br>TEMPERATURA (&deg;C)</th></tr>
+            <tr><td style="font-size:7pt;padding:1.2mm 3mm;font-weight:700;">ACONDICIONADO</td><td style="font-size:7pt;padding:1.2mm 3mm;text-align:center;">14 a 17</td></tr>
+            <tr><td style="font-size:7pt;padding:1.2mm 3mm;font-weight:700;">SALA DE ENBANDEJADO</td><td style="font-size:7pt;padding:1.2mm 3mm;text-align:center;">13 a 15</td></tr>
+            <tr><td style="font-size:7pt;padding:1.2mm 3mm;font-weight:700;">SALA DE LAVADO DE BANDEJAS</td><td style="font-size:7pt;padding:1.2mm 3mm;text-align:center;">13 a 15</td></tr>
+            <tr><td style="font-size:7pt;padding:1.2mm 3mm;font-weight:700;">SALA DE PRE-ENFRIADO</td><td style="font-size:7pt;padding:1.2mm 3mm;text-align:center;">0 a 10</td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- FIRMAS -->
+      <div class="firmas" style="margin-top:18mm;">
+        <div class="firma">
+          <div class="firma-line">&nbsp;</div>
+          <div class="firma-nombre" id="firmaInspectorNombreP">&nbsp;</div>
+          <div class="firma-sub">Inspector de Aseguramiento de la Calidad</div>
+        </div>
+        <div class="firma">
+          <div class="firma-line">&nbsp;</div>
+          <div class="firma-nombre">ANAIS GAMBOA</div>
+          <div class="firma-sub">V&deg;B&deg; Coordinador de SIG</div>
+        </div>
+      </div>
+
+      <!-- PIE -->
+      <div class="footer-doc">
+        DOCUMENTO CONTROLADO PROHIBIDA SU REPRODUCCION SIN AUTORIZACION DE FRUTOS TROPICALES PERU EXPORT S.A.C
+      </div>
+
+    </div><!-- /formProceso -->
+
+  </div><!-- /preview-wrap -->
+
+  <script>
+    /* ══════════════ SUPABASE CONFIG ══════════════ */
+    const SB_URL = 'https://obnvrfvcujsrmifvlqni.supabase.co';
+    const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibnZyZnZjdWpzcm1pZnZscW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDY3OTUsImV4cCI6MjA4OTA4Mjc5NX0.A7BilSrDzqe2rqz1Kh8fg5t-GVNxrLGYJK4IaMlVtBs';
+
+    /* ══════════════ AREA MAPS ══════════════ */
+    const AREAS_MAP_EMPAQUE = {
+      'TEMPERATURA PRODUCTO': 'producto',
+      'EMPAQUE': 'empaque',
+      'CAMARA DE PRODUCTO TERMINADO': 'camara',
+      'DESPACHO': 'despacho',
+    };
+
+    const AREAS_MAP_MP = {
+      'CAMARA MP': 'camara_mp',
+      'CAMARA DE MATERIA PRIMA': 'camara_mp',
+      'PRODUCTO MP': 'producto_mp',
+      'TEMPERATURA DE PRODUCTO(MP)': 'producto_mp',
+      'REEFER 1': 'reefer1',
+      'REEFER 2': 'reefer2',
+      'REEFER 3': 'reefer3',
+      'REEFER 4': 'reefer4',
+      'REEFER 5': 'reefer5',
+      'REEFER 6': 'reefer6',
+      'REEFER 7': 'reefer7',
+      'REEFER 8': 'reefer8',
+      'REEFER 9': 'reefer9',
+      'REEFER 10': 'reefer10',
+    };
+
+    const MP_COLUMNS = [
+      'camara_mp', 'producto_mp',
+      'reefer1', 'reefer2', 'reefer3', 'reefer4', 'reefer5',
+      'reefer6', 'reefer7', 'reefer8', 'reefer9', 'reefer10'
+    ];
+
+    const AREAS_MAP_PROCESO = {
+      'ACONDICIONADO': 'acondicionado',
+      'EMBANDEJADO': 'embandejado',
+      'LAVADO DE BANDEJAS': 'lavado',
+      'PRE-ENFRIADO': 'preenfriado',
+      'PRE ENFRIADO': 'preenfriado'
+    };
+
+    const PROCESO_COLUMNS = ['acondicionado', 'embandejado', 'lavado', 'preenfriado'];
+
+    /* ══════════════ STATE ══════════════ */
+    let activeFormat = localStorage.getItem('reporteFrioFormat') || 'materia-prima';
+
+    /* ══════════════ HELPERS ══════════════ */
+    function getDayOfYear(date) {
+      const start = new Date(date.getFullYear(), 0, 0);
+      return Math.floor((date - start) / 86400000);
+    }
+
+    function formatFecha(str) {
+      const [y, m, d] = str.split('-');
+      return d + '/' + m + '/' + y;
+    }
+
+    function getHorasForTurno(turno) {
+      const horas = [];
+      if (turno === 'DIA') {
+        for (let h = 6; h <= 17; h++) horas.push(String(h).padStart(2, '0') + ':00');
+      } else {
+        for (let h = 18; h <= 23; h++) horas.push(String(h).padStart(2, '0') + ':00');
+        for (let h = 0; h <= 5; h++) horas.push(String(h).padStart(2, '0') + ':00');
+      }
+      return horas;
+    }
+
+    /* ══════════════ THEME ══════════════ */
+    function applyTheme() {
+      const theme = localStorage.getItem('reporteFrioTheme') || 'dark';
+      if (theme === 'light') {
+        document.body.classList.add('light-mode');
+      } else {
+        document.body.classList.remove('light-mode');
+      }
+    }
+
+    function toggleTheme() {
+      const current = localStorage.getItem('reporteFrioTheme') || 'dark';
+      const next = current === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('reporteFrioTheme', next);
+      applyTheme();
+    }
+
+    /* ══════════════ AUTO-SELECCIONAR INSPECTOR ══════════════ */
+    async function autoSelectInspector() {
+      const fecha = document.getElementById('ctrlFecha').value;
+      const turno = document.getElementById('ctrlTurno').value;
+      if (!fecha) return;
+
+      // Obtener las áreas del formato activo
+      var areasMap;
+      if (activeFormat === 'empaque') areasMap = AREAS_MAP_EMPAQUE;
+      else if (activeFormat === 'materia-prima') areasMap = AREAS_MAP_MP;
+      else areasMap = AREAS_MAP_PROCESO;
+      var areaKeys = Object.keys(areasMap);
+
+      try {
+        // Traer registros de esa fecha
+        var res = await fetch(
+          SB_URL + '/rest/v1/registros_temperatura?fecha=eq.' + fecha + '&select=operario,hora,area&limit=5000',
+          { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+        );
+        if (!res.ok) return;
+        var data = await res.json();
+
+        // Filtrar por turno
+        data = data.filter(function(r) {
+          if (!r.hora) return false;
+          var h = parseInt(r.hora.split(':')[0]);
+          return turno === 'DIA' ? (h >= 6 && h <= 17) : (h >= 18 || h <= 5);
+        });
+
+        // Filtrar por áreas del formato activo
+        data = data.filter(function(r) {
+          return r.area && areaKeys.indexOf(r.area) !== -1;
+        });
+
+        // Contar registros por operario
+        var conteo = {};
+        data.forEach(function(r) {
+          if (r.operario) {
+            conteo[r.operario] = (conteo[r.operario] || 0) + 1;
+          }
+        });
+
+        // Encontrar el operario con más registros
+        var maxOp = null, maxCount = 0;
+        for (var op in conteo) {
+          if (conteo[op] > maxCount) {
+            maxCount = conteo[op];
+            maxOp = op;
+          }
+        }
+
+        if (maxOp) {
+          var sel = document.getElementById('ctrlInspector');
+          // Buscar coincidencia en las opciones
+          for (var i = 0; i < sel.options.length; i++) {
+            if (sel.options[i].text.toUpperCase() === maxOp.toUpperCase()) {
+              sel.selectedIndex = i;
+              break;
+            }
+          }
+        }
+      } catch(e) {
+        console.log('Auto-inspector: sin datos para sugerir');
+      }
+    }
+
+    /* ══════════════ FORMAT SWITCHING ══════════════ */
+    function switchFormat(format) {
+      activeFormat = format;
+      localStorage.setItem('reporteFrioFormat', format);
+
+      const tabE = document.getElementById('tabEmpaque');
+      const tabMP = document.getElementById('tabMP');
+      const tabP = document.getElementById('tabProceso');
+      const formE = document.getElementById('formEmpaque');
+      const formMP = document.getElementById('formMP');
+      const formP = document.getElementById('formProceso');
+
+      tabE.classList.remove('active');
+      tabMP.classList.remove('active');
+      tabP.classList.remove('active');
+      formE.classList.add('hidden');
+      formMP.classList.add('hidden');
+      formP.classList.add('hidden');
+
+      if (format === 'empaque') {
+        tabE.classList.add('active');
+        formE.classList.remove('hidden');
+      } else if (format === 'materia-prima') {
+        tabMP.classList.add('active');
+        formMP.classList.remove('hidden');
+      } else if (format === 'proceso') {
+        tabP.classList.add('active');
+        formP.classList.remove('hidden');
+      }
+      autoSelectInspector();
+    }
+
+    /* ══════════════ PRINT ══════════════ */
+    function imprimirFormato() {
+      /* Inject dynamic @page rule for landscape if MP */
+      let styleTag = document.getElementById('printPageStyle');
+      if (!styleTag) {
+        styleTag = document.createElement('style');
+        styleTag.id = 'printPageStyle';
+        document.head.appendChild(styleTag);
+      }
+
+      document.body.classList.remove('print-mp', 'print-empaque', 'print-proceso');
+
+      if (activeFormat === 'materia-prima') {
+        document.body.classList.add('print-mp');
+        styleTag.textContent = '@media print { @page { size: landscape; margin: 5mm; } }';
+      } else if (activeFormat === 'proceso') {
+        document.body.classList.add('print-proceso');
+        styleTag.textContent = '@media print { @page { size: A4 portrait; margin: 0; } }';
+      } else {
+        document.body.classList.add('print-empaque');
+        styleTag.textContent = '@media print { @page { size: A4 portrait; margin: 0; } }';
+      }
+
+      setTimeout(function() { window.print(); }, 100);
+    }
+
+    /* ══════════════ LOAD DATA ══════════════ */
+    async function cargarDatos() {
+      const fecha = document.getElementById('ctrlFecha').value;
+      const turno = document.getElementById('ctrlTurno').value;
+      const inspector = document.getElementById('ctrlInspector').value;
+      const msg = document.getElementById('statusMsg');
+
+      if (!fecha) {
+        msg.textContent = 'Selecciona una fecha.';
+        return;
+      }
+
+      const dateObj = new Date(fecha + 'T12:00:00');
+      const fechaFormatted = formatFecha(fecha);
+      const juliano = getDayOfYear(dateObj);
+
+      /* Update ONLY the active format header fields */
+      const formatNames = {
+        'materia-prima': 'Cámaras de Materia Prima',
+        'proceso': 'Sala de Proceso',
+        'empaque': 'Sala de Empaque'
+      };
+
+      if (activeFormat === 'empaque') {
+        document.getElementById('displayFechaE').textContent = fechaFormatted;
+        document.getElementById('displayJulianoE').textContent = juliano;
+        document.getElementById('firmaInspectorE').textContent = inspector;
+      } else if (activeFormat === 'materia-prima') {
+        document.getElementById('displayFechaMP').textContent = fechaFormatted;
+        document.getElementById('displayJulianoMP').textContent = juliano;
+        document.getElementById('firmaInspectorMP').textContent = inspector;
+      } else if (activeFormat === 'proceso') {
+        document.getElementById('displayFechaP').textContent = fechaFormatted;
+        document.getElementById('displayJulianoP').textContent = juliano;
+        document.getElementById('firmaInspectorNombreP').textContent = inspector;
+      }
+
+      msg.textContent = 'Cargando datos de ' + formatNames[activeFormat] + '...';
+
+      try {
+        const res = await fetch(
+          SB_URL + '/rest/v1/registros_temperatura?fecha=eq.' + fecha + '&order=hora.asc',
+          { headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY } }
+        );
+        let data = res.ok ? await res.json() : [];
+
+        /* Filter by turno */
+        data = data.filter(function(r) {
+          const h = parseInt(r.hora.split(':')[0]);
+          return turno === 'DIA' ? (h >= 6 && h <= 17) : (h >= 18 || h <= 5);
+        });
+
+        /* Only build the active format table */
+        let totalRegs = 0;
+        if (activeFormat === 'empaque') {
+          const areas = Object.keys(AREAS_MAP_EMPAQUE);
+          const filtered = data.filter(function(r) { return areas.indexOf(r.area) !== -1; });
+          buildTableEmpaque(filtered, turno);
+          totalRegs = filtered.length;
+        } else if (activeFormat === 'materia-prima') {
+          const areas = Object.keys(AREAS_MAP_MP);
+          const filtered = data.filter(function(r) { return areas.indexOf(r.area) !== -1; });
+          buildTableMP(filtered, turno);
+          totalRegs = filtered.length;
+        } else if (activeFormat === 'proceso') {
+          const areas = Object.keys(AREAS_MAP_PROCESO);
+          const filtered = data.filter(function(r) { return areas.indexOf(r.area) !== -1; });
+          buildTableProceso(filtered, turno);
+          totalRegs = filtered.length;
+        }
+
+        msg.textContent = totalRegs + ' registros cargados - ' + formatNames[activeFormat] + ' - ' + fechaFormatted + ' - Turno ' + turno;
+      } catch (e) {
+        msg.textContent = 'Error: ' + e.message;
+      }
+    }
+
+    /* ══════════════ BUILD TABLE: EMPAQUE ══════════════ */
+    function buildTableEmpaque(data, turno) {
+      const horas = getHorasForTurno(turno);
+
+      /* Organize by hour and area */
+      const byHora = {};
+      data.forEach(function(r) {
+        const hh = r.hora.slice(0, 2);
+        if (!byHora[hh]) byHora[hh] = {};
+        const col = AREAS_MAP_EMPAQUE[r.area];
+        if (col && !byHora[hh][col]) byHora[hh][col] = r;
+      });
+
+      const tbody = document.getElementById('tableBodyE');
+      tbody.innerHTML = '';
+
+      horas.forEach(function(hora) {
+        const hh = hora.slice(0, 2);
+        const regs = byHora[hh] || {};
+        const tr = document.createElement('tr');
+
+        /* Hora */
+        const tdH = document.createElement('td');
+        tdH.className = 'hora-cell';
+        tdH.textContent = hora;
+        tr.appendChild(tdH);
+
+        /* 4 temperature columns */
+        ['producto', 'empaque', 'camara', 'despacho'].forEach(function(col) {
+          const td = document.createElement('td');
+          const r = regs[col];
+          if (r) {
+            td.textContent = r.temperatura + '\u00B0C';
+          } else {
+            td.textContent = '';
+          }
+          tr.appendChild(td);
+        });
+
+        /* Observaciones */
+        const tdO = document.createElement('td');
+        tdO.className = 'obs-cell';
+        const obsTexts = Object.values(regs)
+          .filter(function(r) { return r && r.observaciones && r.observaciones.trim(); })
+          .map(function(r) { return r.observaciones.trim(); }).join(' / ');
+        tdO.textContent = obsTexts;
+        tr.appendChild(tdO);
+
+        tbody.appendChild(tr);
+      });
+
+      /* Clear acciones lines */
+      ['acLineE1', 'acLineE2', 'acLineE3'].forEach(function(id) {
+        document.getElementById(id).textContent = ' ';
+      });
+
+      /* Build Empaque charts */
+      buildChartsEmpaque(horas, byHora);
+    }
+
+    /* ══════════════ BUILD TABLE: MATERIA PRIMA ══════════════ */
+    function buildTableMP(data, turno) {
+      const horas = getHorasForTurno(turno);
+
+      /* Organize by hour and area */
+      const byHora = {};
+      data.forEach(function(r) {
+        const hh = r.hora.slice(0, 2);
+        if (!byHora[hh]) byHora[hh] = {};
+        const col = AREAS_MAP_MP[r.area];
+        if (col && !byHora[hh][col]) byHora[hh][col] = r;
+      });
+
+      const tbody = document.getElementById('tableBodyMP');
+      tbody.innerHTML = '';
+
+      horas.forEach(function(hora) {
+        const hh = hora.slice(0, 2);
+        const regs = byHora[hh] || {};
+        const tr = document.createElement('tr');
+
+        /* Hora */
+        const tdH = document.createElement('td');
+        tdH.className = 'hora-cell';
+        tdH.textContent = hora;
+        tr.appendChild(tdH);
+
+        /* 12 temperature columns */
+        MP_COLUMNS.forEach(function(col) {
+          const td = document.createElement('td');
+          const r = regs[col];
+          if (r) {
+            td.textContent = r.temperatura + '\u00B0C';
+          } else {
+            td.textContent = '';
+          }
+          tr.appendChild(td);
+        });
+
+        /* Observaciones */
+        const tdO = document.createElement('td');
+        tdO.className = 'obs-cell';
+        const obsTexts = Object.values(regs)
+          .filter(function(r) { return r && r.observaciones && r.observaciones.trim(); })
+          .map(function(r) { return r.observaciones.trim(); }).join(' / ');
+        tdO.textContent = obsTexts;
+        tr.appendChild(tdO);
+
+        tbody.appendChild(tr);
+      });
+
+      /* Clear acciones lines */
+      ['acLineMP1', 'acLineMP2', 'acLineMP3'].forEach(function(id) {
+        document.getElementById(id).textContent = ' ';
+      });
+
+      /* Build Cámara MP chart */
+      buildChartCamaraMP(horas, byHora);
+    }
+
+    /* ══════════════ CHART INSTANCES STORE ══════════════ */
+    var chartInstances = {};
+
+    /* ══════════════ GENERIC CHART HELPER ══════════════ */
+    function createTempChart(canvasId, label, data, labels, lowerLimit, upperLimit, lineColor) {
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); }
+
+      /* Short hour labels: 08:00 → 08 */
+      var shortLabels = labels.map(function(l) { return l.replace(':00',''); });
+
+      /* Dynamic Y-axis: -4 from min data or limit */
+      var validTemps = data.filter(function(v) { return v !== null && v !== undefined; });
+      var dataMin = validTemps.length ? Math.min.apply(null, validTemps) : lowerLimit;
+      var dataMax = validTemps.length ? Math.max.apply(null, validTemps) : upperLimit;
+      var yMin = Math.floor(Math.min(dataMin, lowerLimit) - 4);
+      var yMax = Math.ceil(Math.max(dataMax, upperLimit) + 2);
+
+      /* All points BLACK for B/W printing */
+      var pointColors = data.map(function(t) {
+        if (t === null || t === undefined) return '#94a3b8';
+        return '#000';
+      });
+      var pointBorderColors = data.map(function(t) {
+        if (t === null || t === undefined) return '#94a3b8';
+        return '#000';
+      });
+
+      chartInstances[canvasId] = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: shortLabels,
+          datasets: [{
+            label: label,
+            data: data,
+            borderColor: '#000',
+            backgroundColor: 'rgba(0,0,0,0.03)',
+            borderWidth: 1.5,
+            pointBackgroundColor: pointColors,
+            pointBorderColor: pointBorderColors,
+            pointBorderWidth: 1,
+            pointRadius: 2,
+            pointStyle: 'rectRot',
+            fill: false,
+            tension: 0.3,
+            spanGaps: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          layout: { padding: { top: 14, right: 18 } },
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: 'Hora', font: { size: 8, weight: 'bold' }, color: '#000' },
+              ticks: { font: { size: 8, weight: 'bold' }, color: '#000', maxRotation: 0 },
+              grid: { color: 'rgba(0,0,0,0.08)' }
+            },
+            y: {
+              title: { display: true, text: 'Temp (\u00B0C)', font: { size: 7, weight: 'bold' }, color: '#000' },
+              ticks: { font: { size: 8, weight: 'bold' }, color: '#000', callback: function(v) { return v + '\u00B0C'; } },
+              afterBuildTicks: function(axis) {
+                var vals = axis.ticks.map(function(t) { return t.value; });
+                /* Forzar que upperLimit y lowerLimit aparezcan en el eje */
+                [upperLimit, lowerLimit].forEach(function(lim) {
+                  if (vals.indexOf(lim) === -1) {
+                    axis.ticks.push({value: lim});
+                    vals.push(lim);
+                  }
+                });
+                axis.ticks.sort(function(a,b) { return a.value - b.value; });
+                /* Eliminar ticks duplicados */
+                var seen = {};
+                axis.ticks = axis.ticks.filter(function(t) {
+                  if (seen[t.value]) return false;
+                  seen[t.value] = true;
+                  return true;
+                });
+              },
+              grid: { color: 'rgba(0,0,0,0.08)' },
+              suggestedMin: yMin,
+              suggestedMax: yMax
+            }
+          }
+        },
+        plugins: [{
+          id: 'tempLabels',
+          afterDatasetsDraw: function(chart) {
+            var ctx = chart.ctx;
+            var dataset = chart.data.datasets[0];
+            var meta = chart.getDatasetMeta(0);
+            dataset.data.forEach(function(value, index) {
+              if (value === null || value === undefined) return;
+              var point = meta.data[index];
+              if (!point) return;
+              ctx.save();
+              ctx.font = 'bold 8px Arial';
+              ctx.fillStyle = '#000';
+              ctx.textAlign = 'center';
+              ctx.fillText(Number(value).toFixed(1), point.x, point.y - 6);
+              ctx.restore();
+            });
+          }
+        }]
+      });
+    }
+
+    /* ══════════════ CHART: CÁMARA MP (B/N para impresión) ══════════════ */
+    function buildChartCamaraMP(horas, byHora) {
+      var labels = horas.map(function(h) { return h; });
+      var temps = horas.map(function(hora) {
+        var hh = hora.slice(0, 2);
+        var regs = byHora[hh] || {};
+        var r = regs['camara_mp'];
+        return r ? r.temperatura : null;
+      });
+      createTempChartBW('chartCamaraMP', 'Camara MP', temps, labels, 0, 8);
+    }
+
+    /* Chart especial B/N para MP — impresión blanco y negro */
+    function createTempChartBW(canvasId, label, data, labels, lowerLimit, upperLimit) {
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      if (chartInstances[canvasId]) { chartInstances[canvasId].destroy(); }
+      var shortLabels = labels.map(function(l) { return l.replace(':00',''); });
+      var validTemps = data.filter(function(v) { return v !== null && v !== undefined; });
+      var dataMin = validTemps.length ? Math.min.apply(null, validTemps) : lowerLimit;
+      var dataMax = validTemps.length ? Math.max.apply(null, validTemps) : upperLimit;
+      var yMin = Math.floor(Math.min(dataMin, lowerLimit) - 4);
+      var yMax = Math.ceil(Math.max(dataMax, upperLimit) + 2);
+
+      /* Todo en negro para B/N */
+      var pointStyles = data.map(function(t) {
+        if (t === null || t === undefined) return 'circle';
+        return (t >= lowerLimit && t <= upperLimit) ? 'rectRot' : 'triangle';
+      });
+
+      chartInstances[canvasId] = new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: shortLabels,
+          datasets: [{
+            label: label, data: data,
+            borderColor: '#000', backgroundColor: 'rgba(0,0,0,0.03)',
+            borderWidth: 1.5,
+            pointBackgroundColor: '#000', pointBorderColor: '#000',
+            pointBorderWidth: 1, pointRadius: 2,
+            pointStyle: pointStyles,
+            fill: false, tension: 0.3, spanGaps: true
+          }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, animation: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { title: { display: true, text: 'Hora', font: { size: 8, weight: 'bold' }, color: '#000' }, ticks: { font: { size: 8, weight: 'bold' }, color: '#000', maxRotation: 0 }, grid: { color: 'rgba(0,0,0,0.1)' } },
+            y: { title: { display: true, text: 'Temperatura (\u00B0C)', font: { size: 8, weight: 'bold' }, color: '#000' }, ticks: { font: { size: 8, weight: 'bold' }, color: '#000', callback: function(v) { return v + '\u00B0C'; } }, grid: { color: 'rgba(0,0,0,0.1)' }, suggestedMin: yMin, suggestedMax: yMax }
+          }
+        },
+        plugins: [{
+          id: 'tempLabelsBW',
+          afterDatasetsDraw: function(chart) {
+            var ctx = chart.ctx;
+            var dataset = chart.data.datasets[0];
+            var meta = chart.getDatasetMeta(0);
+            dataset.data.forEach(function(value, index) {
+              if (value === null || value === undefined) return;
+              var point = meta.data[index];
+              if (!point) return;
+              ctx.save();
+              ctx.font = 'bold 8px Arial';
+              ctx.fillStyle = '#000';
+              ctx.textAlign = 'center';
+              ctx.fillText(Number(value).toFixed(1), point.x, point.y - 5);
+              ctx.restore();
+            });
+          }
+        }]
+      });
+    }
+
+    /* ══════════════ CHARTS: PROCESO ══════════════ */
+    function buildChartsProceso(horas, byHora) {
+      var labels = horas.map(function(h) { return h; });
+
+      var tempsAcond = horas.map(function(hora) {
+        var hh = hora.slice(0, 2);
+        var regs = byHora[hh] || {};
+        var r = regs['acondicionado'];
+        return r ? r.temperatura : null;
+      });
+      createTempChart('chartAcondicionado', 'Acondicionado', tempsAcond, labels, 14, 17, '#0d9488');
+
+      var tempsEmband = horas.map(function(hora) {
+        var hh = hora.slice(0, 2);
+        var regs = byHora[hh] || {};
+        var r = regs['embandejado'];
+        return r ? r.temperatura : null;
+      });
+      createTempChart('chartEmbandejado', 'Embandejado', tempsEmband, labels, 13, 15, '#2563eb');
+    }
+
+    /* ══════════════ CHARTS: EMPAQUE ══════════════ */
+    function buildChartsEmpaque(horas, byHora) {
+      var labels = horas.map(function(h) { return h; });
+
+      var tempsEmpaque = horas.map(function(hora) {
+        var hh = hora.slice(0, 2);
+        var regs = byHora[hh] || {};
+        var r = regs['empaque'];
+        return r ? r.temperatura : null;
+      });
+      createTempChart('chartEmpaqueTemp', 'Empaque', tempsEmpaque, labels, 0, 8, '#0d9488');
+
+      var tempsCamara = horas.map(function(hora) {
+        var hh = hora.slice(0, 2);
+        var regs = byHora[hh] || {};
+        var r = regs['camara'];
+        return r ? r.temperatura : null;
+      });
+      createTempChart('chartCamaraPT', 'Camara PT', tempsCamara, labels, -25, -16, '#7c3aed');
+    }
+
+    /* ══════════════ BUILD TABLE: PROCESO ══════════════ */
+    function buildTableProceso(data, turno) {
+      const horas = getHorasForTurno(turno);
+
+      /* Organize by hour and area */
+      const byHora = {};
+      data.forEach(function(r) {
+        const hh = r.hora.slice(0, 2);
+        if (!byHora[hh]) byHora[hh] = {};
+        const col = AREAS_MAP_PROCESO[r.area];
+        if (col && !byHora[hh][col]) byHora[hh][col] = r;
+      });
+
+      const tbody = document.getElementById('tableBodyP');
+      tbody.innerHTML = '';
+
+      horas.forEach(function(hora) {
+        const hh = hora.slice(0, 2);
+        const regs = byHora[hh] || {};
+        const tr = document.createElement('tr');
+
+        /* Hora */
+        const tdH = document.createElement('td');
+        tdH.className = 'hora-cell';
+        tdH.textContent = hora;
+        tr.appendChild(tdH);
+
+        /* 4 temperature columns */
+        PROCESO_COLUMNS.forEach(function(col) {
+          const td = document.createElement('td');
+          const r = regs[col];
+          if (r) {
+            td.textContent = r.temperatura + '\u00B0C';
+          } else {
+            td.textContent = '';
+          }
+          tr.appendChild(td);
+        });
+
+        /* Observaciones */
+        const tdO = document.createElement('td');
+        tdO.className = 'obs-cell';
+        const obsTexts = Object.values(regs)
+          .filter(function(r) { return r && r.observaciones && r.observaciones.trim(); })
+          .map(function(r) { return r.observaciones.trim(); }).join(' / ');
+        tdO.textContent = obsTexts;
+        tr.appendChild(tdO);
+
+        tbody.appendChild(tr);
+      });
+
+      /* Clear acciones lines */
+      ['acLineP1', 'acLineP2', 'acLineP3'].forEach(function(id) {
+        document.getElementById(id).textContent = ' ';
+      });
+
+      /* Build Proceso charts */
+      buildChartsProceso(horas, byHora);
+    }
+
+    /* ══════════════ INIT ══════════════ */
+    window.onload = function() {
+      /* Theme */
+      applyTheme();
+
+      /* Date defaults (Lima timezone) */
+      const now = new Date(new Date().toLocaleString('en-US', { timeZone: 'America/Lima' }));
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      document.getElementById('ctrlFecha').value = y + '-' + m + '-' + d;
+
+      const h = now.getHours();
+      document.getElementById('ctrlTurno').value = (h >= 6 && h <= 17) ? 'DIA' : 'NOCHE';
+
+      /* Restore format tab */
+      switchFormat(activeFormat);
+    };
+  </script>
+</body>
+
+</html>

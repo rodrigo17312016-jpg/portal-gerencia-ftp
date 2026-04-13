@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Personal — FTP Planta</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root{
+  --bg:#0b0f1a;--surface:rgba(255,255,255,0.04);--surface-solid:#141825;--border:rgba(255,255,255,0.08);
+  --amber:#d97706;--amber-bg:rgba(217,119,6,0.12);--amber-glow:rgba(217,119,6,0.25);
+  --verde:#16a34a;--verde-bg:rgba(22,163,74,0.12);
+  --azul:#3b82f6;--azul-bg:rgba(59,130,246,0.12);
+  --cyan:#06b6d4;--cyan-bg:rgba(6,182,212,0.12);
+  --rojo:#ef4444;--rojo-bg:rgba(239,68,68,0.12);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,0.12);
+  --texto:#e2e8f0;--texto-strong:#f8fafc;--muted:#64748b;
+  --radius:16px;--shadow:0 4px 24px rgba(0,0,0,0.3);
+  --glass:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.06);
+}
+[data-theme="light"]{
+  --bg:#f0f2f5;--surface:rgba(255,255,255,0.9);--surface-solid:#ffffff;--border:rgba(0,0,0,0.08);
+  --texto:#0f172a;--texto-strong:#020617;--muted:#64748b;
+  --glass:rgba(255,255,255,0.7);--glass-border:rgba(0,0,0,0.06);
+  --shadow:0 4px 24px rgba(0,0,0,0.08);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans','Inter',system-ui,sans-serif;background:var(--bg);color:var(--texto);min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* ===== TOP BAR ===== */
+.topbar{background:linear-gradient(135deg,#1a0e00,#2d1800,#1a0e00);color:#fff;padding:14px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100;box-shadow:0 4px 30px rgba(0,0,0,0.5);border-bottom:1px solid rgba(217,119,6,0.15);}
+.dash-logo{height:44px;filter:drop-shadow(0 2px 8px rgba(217,119,6,0.3));animation:floatLogo 3s ease-in-out infinite;}
+@keyframes floatLogo{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.topbar-title{font-size:20px;font-weight:900;background:linear-gradient(135deg,#d4af37,#fff8dc,#d4af37,#fff8dc);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s ease infinite;}
+.topbar-sub{font-size:10px;color:rgba(255,255,255,0.4);font-weight:700;text-transform:uppercase;letter-spacing:1.5px;}
+.topbar-spacer{flex:1;}
+.topbar-back{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:7px 14px;border-radius:10px;color:rgba(255,255,255,0.6);font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.topbar-back:hover{background:rgba(217,119,6,0.15);color:#fbbf24;border-color:rgba(217,119,6,0.3);}
+.theme-toggle{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);padding:7px 12px;border-radius:10px;color:rgba(255,255,255,0.6);font-size:16px;cursor:pointer;transition:all 0.2s;}
+.theme-toggle:hover{background:rgba(217,119,6,0.15);color:#fbbf24;}
+
+/* Signature */
+.topbar-dev-signature{text-align:right;padding:6px 14px;background:rgba(0,0,0,0.4);border:1px solid rgba(212,175,55,0.2);border-radius:12px;position:relative;overflow:hidden;animation:borderGlow 3s ease-in-out infinite;}
+@keyframes borderGlow{0%,100%{border-color:rgba(212,175,55,0.2);box-shadow:0 0 8px rgba(212,175,55,0.05)}50%{border-color:rgba(212,175,55,0.5);box-shadow:0 0 16px rgba(212,175,55,0.15)}}
+.topbar-dev-signature::after{content:'';position:absolute;top:0;left:-100%;width:60%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,0.08),transparent);animation:shineSweep 4s ease-in-out infinite;}
+@keyframes shineSweep{0%{left:-100%}50%{left:100%}100%{left:100%}}
+.topbar-sig-label{font-size:8px;color:rgba(212,175,55,0.5);text-transform:uppercase;letter-spacing:2px;font-weight:800;}
+.signature-name{font-size:12px;font-weight:900;background:linear-gradient(135deg,#d4af37,#fff8dc,#c0c0c0,#fff8dc,#d4af37);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:shimmer 3s ease infinite;}
+.signature-role{font-size:9px;color:#4ade80;font-weight:700;letter-spacing:0.5px;}
+@keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* ===== CONTENT ===== */
+.content{padding:20px;max-width:1300px;margin:0 auto;}
+
+/* ===== KPI CARDS ===== */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.kpi-card{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden;transition:all 0.3s;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,0,0,0.2);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--kpi-c,var(--amber));}
+.kpi-icon{font-size:24px;margin-bottom:6px;}
+.kpi-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;}
+.kpi-value{font-size:28px;font-weight:900;color:var(--texto-strong);line-height:1;}
+.kpi-unit{font-size:12px;font-weight:600;color:var(--muted);}
+.kpi-meta{font-size:10px;color:var(--muted);margin-top:6px;}
+
+/* ===== GLASS CARD ===== */
+.card{background:var(--surface);backdrop-filter:blur(20px);border:1px solid var(--glass-border);border-radius:var(--radius);padding:22px;margin-bottom:18px;box-shadow:var(--shadow);transition:all 0.3s;}
+.card-title{font-size:16px;font-weight:800;color:var(--texto-strong);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+/* ===== FORM ===== */
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-group label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;}
+.form-group input,.form-group select,.form-group textarea{padding:10px 14px;border:2px solid var(--border);border-radius:12px;font-size:14px;font-weight:600;color:var(--texto);background:var(--surface-solid);outline:none;transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-bg);}
+.form-group textarea{resize:vertical;min-height:60px;}
+[data-theme="light"] .form-group input,[data-theme="light"] .form-group select,[data-theme="light"] .form-group textarea{background:#fff;color:#0f172a;}
+.form-row{display:flex;gap:12px;margin-top:14px;align-items:flex-end;flex-wrap:wrap;}
+
+/* ===== DISTRIBUTION GRID ===== */
+.dist-section{margin-top:16px;}
+.dist-area-header{font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;padding:8px 14px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;}
+.dist-area-header .area-subtotal{font-size:16px;font-weight:900;}
+.dist-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px;margin-bottom:4px;}
+.dist-item{display:flex;flex-direction:column;gap:3px;}
+.dist-item label{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.dist-item input{padding:8px 10px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-weight:700;color:var(--texto);background:var(--surface-solid);outline:none;transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;text-align:center;width:100%;}
+.dist-item input:focus{border-color:var(--amber);box-shadow:0 0 0 2px var(--amber-bg);}
+[data-theme="light"] .dist-item input{background:#fff;color:#0f172a;}
+.dist-total{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--amber-bg);border:2px solid rgba(217,119,6,0.3);border-radius:12px;margin-top:12px;}
+.dist-total-label{font-size:13px;font-weight:800;color:var(--amber);}
+.dist-total-value{font-size:24px;font-weight:900;color:var(--amber);}
+.dist-warning{background:var(--rojo-bg);border:2px solid rgba(239,68,68,0.3);color:var(--rojo);padding:10px 16px;border-radius:10px;font-size:12px;font-weight:700;margin-top:8px;display:none;align-items:center;gap:6px;}
+
+/* ===== BUTTONS ===== */
+.btn{padding:11px 24px;border:none;border-radius:12px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;display:inline-flex;align-items:center;gap:6px;}
+.btn-primary{background:linear-gradient(135deg,#d97706,#b45309);color:#fff;}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px var(--amber-glow);}
+.btn-secondary{background:var(--surface);color:var(--muted);border:1px solid var(--border);}
+.btn-secondary:hover{background:var(--amber-bg);color:var(--amber);border-color:var(--amber);}
+.btn-danger{background:var(--rojo-bg);color:var(--rojo);border:1px solid rgba(239,68,68,0.2);}
+.btn-danger:hover{background:rgba(239,68,68,0.2);}
+.btn-sm{padding:6px 12px;font-size:11px;border-radius:8px;}
+
+/* ===== TABLE ===== */
+.table-wrap{overflow-x:auto;border-radius:var(--radius);}
+.data-table{width:100%;border-collapse:collapse;font-size:12px;}
+.data-table th{background:var(--amber-bg);padding:10px 12px;text-align:left;font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid rgba(217,119,6,0.2);}
+.data-table td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:top;}
+.data-table tbody tr{transition:background 0.15s;}
+.data-table tbody tr:hover{background:var(--amber-bg);}
+.data-table .num{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;}
+.data-table tfoot td{font-weight:800;background:var(--surface);border-top:2px solid var(--amber);}
+
+/* ===== CHARTS ===== */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
+.chart-wrap{height:280px;position:relative;}
+
+/* ===== EXPANDABLE DIST ===== */
+.dist-expand-btn{background:var(--amber-bg);color:var(--amber);border:none;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;}
+.dist-expand-btn:hover{background:rgba(217,119,6,0.25);}
+.dist-detail{display:none;margin-top:6px;padding:8px;background:var(--surface);border:1px solid var(--border);border-radius:8px;font-size:10px;line-height:1.6;}
+.dist-detail.show{display:block;}
+.dist-detail-group{margin-bottom:4px;}
+.dist-detail-group-title{font-weight:800;text-transform:uppercase;font-size:9px;letter-spacing:0.5px;}
+.dist-detail-item{color:var(--muted);display:inline;}
+.dist-detail-item b{color:var(--texto);}
+
+/* ===== EMPTY STATE ===== */
+.empty-state{text-align:center;padding:60px 20px;color:var(--muted);}
+.empty-state-icon{font-size:56px;margin-bottom:12px;opacity:0.5;}
+.empty-state-title{font-size:18px;font-weight:800;margin-bottom:6px;color:var(--texto);}
+.empty-state-text{font-size:13px;}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,#d97706,#b45309);color:#fff;padding:14px 22px;border-radius:14px;font-weight:700;font-size:14px;box-shadow:0 8px 30px var(--amber-glow);transform:translateY(80px);opacity:0;transition:all 0.35s cubic-bezier(.4,0,.2,1);z-index:9999;display:flex;align-items:center;gap:8px;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ===== LIVE DOT ===== */
+.live-badge{display:flex;align-items:center;gap:6px;background:var(--amber-bg);padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;color:var(--amber);}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.4)}}
+
+/* ===== RESPONSIVE ===== */
+
+/* ===== COLLAPSIBLE ADMIN ===== */
+.collapse-header{display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:14px 18px;background:var(--surface);border:1px solid var(--glass-border);border-radius:var(--radius);margin-bottom:0;transition:all 0.2s;user-select:none;}
+.collapse-header:hover{background:var(--amber-bg);border-color:rgba(217,119,6,0.2);}
+.collapse-header .collapse-title{font-size:14px;font-weight:800;color:var(--texto-strong);display:flex;align-items:center;gap:8px;}
+.collapse-header .collapse-arrow{font-size:14px;color:var(--muted);transition:transform 0.25s;}
+.collapse-header.open .collapse-arrow{transform:rotate(180deg);}
+.collapse-body{display:none;padding:18px;background:var(--surface);border:1px solid var(--glass-border);border-top:none;border-radius:0 0 var(--radius) var(--radius);margin-bottom:18px;}
+.collapse-body.open{display:block;}
+.admin-form-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;margin-bottom:14px;}
+.admin-form-row .form-group{flex:1;min-width:140px;}
+.custom-badge{display:inline-block;font-size:8px;font-weight:800;color:#fff;background:linear-gradient(135deg,#8b5cf6,#6d28d9);padding:1px 6px;border-radius:6px;margin-left:4px;vertical-align:middle;letter-spacing:0.5px;text-transform:uppercase;}
+.admin-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;}
+.admin-table th{background:var(--amber-bg);padding:8px 10px;text-align:left;font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:0.8px;border-bottom:2px solid rgba(217,119,6,0.2);}
+.admin-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+.admin-table tbody tr:hover{background:var(--amber-bg);}
+.admin-table input,.admin-table select{padding:5px 8px;border:1px solid var(--border);border-radius:6px;font-size:12px;font-weight:600;color:var(--texto);background:var(--surface-solid);font-family:'Plus Jakarta Sans',sans-serif;outline:none;}
+.admin-table input:focus,.admin-table select:focus{border-color:var(--amber);}
+[data-theme="light"] .admin-table input,[data-theme="light"] .admin-table select{background:#fff;color:#0f172a;}
+.btn-icon{padding:5px 8px;border:none;border-radius:6px;font-size:13px;cursor:pointer;transition:all 0.15s;font-family:'Plus Jakarta Sans',sans-serif;background:transparent;}
+.btn-icon:hover{transform:scale(1.15);}
+.btn-icon.edit{color:var(--amber);}
+.btn-icon.delete{color:var(--rojo);}
+.btn-icon.save{color:var(--verde);}
+.btn-icon.cancel{color:var(--muted);}
+
+/* ═══ MOBILE RESPONSIVE ═══ */
+.supabase-status { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin: 0 4px; }
+.supabase-status.connected { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.supabase-status.disconnected { background: #ef4444; box-shadow: 0 0 6px #ef4444; }
+
+@media (max-width: 768px) {
+  * { box-sizing: border-box; }
+  body { padding: 0 !important; min-width: auto !important; overflow-x: hidden; }
+
+  /* Topbar */
+  .topbar, [class*="topbar"] {
+    flex-wrap: wrap; padding: 10px; gap: 6px;
+  }
+  .topbar > * { flex-shrink: 1; min-width: 0; }
+  .topbar h1, .topbar-title, [class*="topbar"] h1 { font-size: 14px !important; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .topbar h1 + div, .topbar-sub { font-size: 9px !important; display: none; }
+  .dash-logo, .topbar img:first-of-type { width: 28px !important; height: 28px !important; }
+  .portal-back-link, .topbar-back, a[href*="index"] { font-size: 10px !important; padding: 3px 8px !important; }
+  .topbar-dev-signature, [class*="dev-signature"] {
+    padding: 4px 8px !important; max-width: 120px;
+  }
+  .topbar-dev-signature .signature-name { font-size: 9px !important; }
+  .topbar-dev-signature .signature-role { font-size: 6px !important; }
+  .topbar-sig-label { font-size: 5px !important; }
+  .topbar-btn, .topbar button, #btnMoneda, .btn-moneda { font-size: 10px !important; padding: 4px 8px !important; }
+  .supabase-status { width: 8px !important; height: 8px !important; }
+
+  /* Main content */
+  main, .main-content, .content, [class*="content"] { padding: 10px !important; }
+
+  /* KPI grid */
+  .kpi-grid, .kpis, [class*="kpi-grid"], [class*="kpis-grid"] {
+    grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important;
+  }
+  .kpi-card, [class*="kpi-card"], [class*="kpi"] > div { padding: 10px !important; }
+  .kpi-value, [class*="kpi-value"] { font-size: 20px !important; }
+  .kpi-label, [class*="kpi-label"] { font-size: 8px !important; }
+  .kpi-icon { width: 32px !important; height: 32px !important; font-size: 16px !important; }
+
+  /* Form */
+  .form-grid, [class*="form-grid"], .config-grid, [class*="config"] > div[style*="grid"] {
+    grid-template-columns: 1fr !important; gap: 10px !important;
+  }
+  .form-group, [class*="form-group"] { min-width: 0 !important; }
+  input, select, textarea { font-size: 14px !important; width: 100% !important; box-sizing: border-box; }
+  label { font-size: 10px !important; }
+  .form-hint, [class*="hint"] { font-size: 9px !important; }
+
+  /* Buttons */
+  .btn-submit, [class*="btn-submit"], button[type="submit"] { width: 100% !important; padding: 12px !important; font-size: 14px !important; }
+  .form-actions, [class*="form-actions"] { flex-direction: column !important; gap: 8px !important; }
+  .btn-clear, [class*="btn-clear"] { width: 100% !important; }
+  .btn-row { flex-direction: column !important; }
+  .btn-row .btn { width: 100% !important; justify-content: center; }
+
+  /* Charts */
+  .grid-2, [class*="grid-2"], .charts-grid { grid-template-columns: 1fr !important; }
+  .chart-wrap, [class*="chart-wrap"], [class*="chart-container"], canvas {
+    height: 200px !important; min-height: 200px !important;
+  }
+  .card, [class*="card"]:not(.kpi-card) { padding: 10px !important; margin-bottom: 10px !important; border-radius: 10px !important; overflow: hidden; }
+  .card-title, [class*="card-title"] { font-size: 13px !important; }
+
+  /* Tables */
+  table, .data-table { font-size: 10px !important; }
+  th, td { padding: 5px 6px !important; white-space: nowrap; }
+  div[style*="overflow-x"], .table-wrap { overflow-x: auto !important; -webkit-overflow-scrolling: touch; }
+
+  /* Sections */
+  h2, .section-title, [class*="section-title"] { font-size: 16px !important; }
+  .filter-bar, [class*="filter"] { flex-wrap: wrap !important; gap: 4px !important; }
+  .filter-chip, [class*="chip"] { font-size: 10px !important; padding: 4px 8px !important; }
+
+  /* Cross-app section */
+  .cross-app-grid, .crossapp-grid, [class*="cross-app"], [class*="crossapp"] { grid-template-columns: repeat(2, 1fr) !important; gap: 6px !important; }
+  .cross-app-card, [class*="cross-app"] > div { padding: 8px !important; }
+
+  /* Area positions grid (personal app) */
+  .area-positions, [class*="positions"] { grid-template-columns: repeat(2, 1fr) !important; gap: 4px !important; }
+  .area-group { margin-bottom: 10px !important; }
+  .dist-grid { grid-template-columns: repeat(2, 1fr) !important; }
+
+  /* Collapsible sections */
+  .form-section, [class*="form-section"] { margin-bottom: 10px !important; }
+  .collapse-header { padding: 10px 12px !important; }
+  .collapse-body { padding: 12px !important; }
+  .admin-form-row { flex-direction: column !important; }
+  .admin-form-row .form-group { min-width: 0 !important; width: 100% !important; }
+
+  /* Preview box */
+  .preview-box, [class*="preview"] { padding: 10px !important; font-size: 12px !important; }
+  .preview-value { font-size: 14px !important; word-break: break-all; }
+}
+
+@media (max-width: 480px) {
+  .kpi-grid, .kpis, [class*="kpi-grid"] { grid-template-columns: 1fr !important; }
+  .topbar-dev-signature, [class*="dev-signature"] { display: none !important; }
+  .cross-app-grid, .crossapp-grid, [class*="cross-app"], [class*="crossapp"] { grid-template-columns: 1fr !important; }
+  .area-positions, [class*="positions"] { grid-template-columns: 1fr !important; }
+  .dist-grid { grid-template-columns: 1fr !important; }
+  .chart-wrap, [class*="chart-wrap"] { height: 170px !important; }
+  h2, .section-title { font-size: 14px !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== TOP BAR ===== -->
+<div class="topbar">
+  <img src="LOGO.png" class="dash-logo" alt="Logo FTP" onerror="this.style.display='none'">
+  <div>
+    <div class="topbar-title">Control de Personal</div>
+    <div class="topbar-sub">Frutos Tropicales Peru Export S.A.C.</div>
+  </div>
+  <div class="topbar-spacer"></div>
+  <div id="supabaseStatus" style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(0,0,0,0.3);cursor:help;flex-shrink:0" title="Supabase: Verificando..."></div>
+  <div class="live-badge"><span class="dot"></span> En vivo</div>
+  <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="themeBtn">🌙</button>
+  <a class="topbar-back" href="index.html">← Portal</a>
+  <div class="topbar-dev-signature">
+    <div class="topbar-sig-label">Desarrollado por:</div>
+    <div class="signature-name">Rodrigo Garcia</div>
+    <div class="signature-role">Systems Analyst &amp; Developer-QA</div>
+  </div>
+</div>
+
+<!-- ===== MAIN CONTENT ===== -->
+<div class="content">
+
+  <!-- KPIs -->
+  <div class="kpi-grid">
+    <div class="kpi-card" style="--kpi-c:var(--amber)">
+      <div class="kpi-icon">👷</div>
+      <div class="kpi-label">Personal Actual</div>
+      <div class="kpi-value" id="kpiActual">0 <span class="kpi-unit">personas</span></div>
+      <div class="kpi-meta">Ultima hora registrada</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--azul)">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-label">Promedio Diario</div>
+      <div class="kpi-value" id="kpiPromedio">0 <span class="kpi-unit">personas</span></div>
+      <div class="kpi-meta">Promedio de todas las horas</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--verde)">
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-label">Registros Hoy</div>
+      <div class="kpi-value" id="kpiRegistros">0</div>
+      <div class="kpi-meta">Horas registradas hoy</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--cyan)">
+      <div class="kpi-icon">🔺</div>
+      <div class="kpi-label">Mayor Dotacion</div>
+      <div class="kpi-value" id="kpiMax">0 <span class="kpi-unit">personas</span></div>
+      <div class="kpi-meta">Maximo en una hora</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--purple)">
+      <div class="kpi-icon">🔻</div>
+      <div class="kpi-label">Menor Dotacion</div>
+      <div class="kpi-value" id="kpiMin">0 <span class="kpi-unit">personas</span></div>
+      <div class="kpi-meta">Minimo en una hora</div>
+    </div>
+    <div class="kpi-card" style="--kpi-c:var(--rojo)">
+      <div class="kpi-icon">↕️</div>
+      <div class="kpi-label">Variacion</div>
+      <div class="kpi-value" id="kpiVar">0 <span class="kpi-unit">personas</span></div>
+      <div class="kpi-meta">Diferencia max - min</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">📊 Personal por Hora</div>
+      <div class="chart-wrap"><canvas id="chartHora"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🍩 Distribucion por Area</div>
+      <div class="chart-wrap"><canvas id="chartArea"></canvas></div>
+    </div>
+  </div>
+
+  <!-- REGISTRATION FORM -->
+  <div class="card">
+    <div class="card-title">📝 Registrar Personal por Hora</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="fFecha">
+      </div>
+      <div class="form-group">
+        <label>Hora</label>
+        <select id="fHora">
+          <option value="">Seleccionar...</option>
+          <option value="05:00-06:00">05:00 - 06:00</option>
+          <option value="06:00-07:00">06:00 - 07:00</option>
+          <option value="07:00-08:00">07:00 - 08:00</option>
+          <option value="08:00-09:00">08:00 - 09:00</option>
+          <option value="09:00-10:00">09:00 - 10:00</option>
+          <option value="10:00-11:00">10:00 - 11:00</option>
+          <option value="11:00-12:00">11:00 - 12:00</option>
+          <option value="12:00-13:00">12:00 - 13:00</option>
+          <option value="13:00-14:00">13:00 - 14:00</option>
+          <option value="14:00-15:00">14:00 - 15:00</option>
+          <option value="15:00-16:00">15:00 - 16:00</option>
+          <option value="16:00-17:00">16:00 - 17:00</option>
+          <option value="17:00-18:00">17:00 - 18:00</option>
+          <option value="18:00-19:00">18:00 - 19:00</option>
+          <option value="19:00-20:00">19:00 - 20:00</option>
+          <option value="20:00-21:00">20:00 - 21:00</option>
+          <option value="21:00-22:00">21:00 - 22:00</option>
+          <option value="22:00-23:00">22:00 - 23:00</option>
+          <option value="23:00-00:00">23:00 - 00:00</option>
+          <option value="00:00-01:00">00:00 - 01:00</option>
+          <option value="01:00-02:00">01:00 - 02:00</option>
+          <option value="02:00-03:00">02:00 - 03:00</option>
+          <option value="03:00-04:00">03:00 - 04:00</option>
+          <option value="04:00-05:00">04:00 - 05:00</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Fruta</label>
+        <select id="fFruta">
+          <option value="">Seleccionar...</option>
+          <option value="Mango">Mango</option>
+          <option value="Arandano">Arandano</option>
+          <option value="Granada">Granada</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Linea</label>
+        <select id="fLinea">
+          <option value="">Seleccionar...</option>
+          <option value="General">General</option>
+          <option value="Linea 1">Linea 1</option>
+          <option value="Linea 2">Linea 2</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Turno</label>
+        <select id="fTurno">
+          <option value="">Seleccionar...</option>
+          <option value="TURNO DIA">TURNO DIA</option>
+          <option value="TURNO NOCHE">TURNO NOCHE</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>N° Total Personal</label>
+        <input type="number" id="fTotal" min="0" placeholder="0">
+      </div>
+      <div class="form-group">
+        <label>Registrado por</label>
+        <input type="text" id="fRegistrado" placeholder="Nombre del supervisor">
+      </div>
+    </div>
+
+    <!-- DISTRIBUTION -->
+    <div class="dist-section">
+      <div class="card-title" style="margin-top:16px;">👥 Distribucion del Personal (Balance de Linea)</div>
+      <div id="distContainer"></div>
+
+      <!-- Total & Warning -->
+      <div class="dist-total">
+        <span class="dist-total-label">TOTAL DISTRIBUIDO</span>
+        <span class="dist-total-value" id="distTotalValue">0</span>
+      </div>
+      <div class="dist-warning" id="distWarning">⚠️ El total distribuido no coincide con el N° Total de Personal</div>
+    </div>
+
+    <!-- ADMIN LABORES CUSTOM -->
+    <div style="margin-top:18px;">
+      <div class="collapse-header" id="adminCollapseHeader" onclick="toggleAdminPanel()">
+        <span class="collapse-title">⚙️ Administrar Labores</span>
+        <span class="collapse-arrow">▼</span>
+      </div>
+      <div class="collapse-body" id="adminCollapseBody">
+        <div class="admin-form-row">
+          <div class="form-group">
+            <label>Nombre de la labor</label>
+            <input type="text" id="adminLaborNombre" placeholder="Ej: Etiquetado">
+          </div>
+          <div class="form-group">
+            <label>Area</label>
+            <select id="adminLaborArea">
+              <option value="">Seleccionar...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Valor predeterminado</label>
+            <input type="number" id="adminLaborDefault" min="0" value="0">
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="agregarLaborCustom()" style="margin-bottom:5px;">+ Agregar Labor</button>
+        </div>
+        <div id="adminLaboresTable"></div>
+      </div>
+    </div>
+
+    <!-- Observacion -->
+    <div class="form-group" style="margin-top:16px;">
+      <label>Observacion</label>
+      <textarea id="fObs" placeholder="Observaciones adicionales..."></textarea>
+    </div>
+
+    <div class="form-row">
+      <button class="btn btn-primary" onclick="guardarRegistro()">💾 Guardar Registro</button>
+      <button class="btn btn-secondary" onclick="limpiarForm()">🔄 Limpiar</button>
+    </div>
+  </div>
+
+  <!-- HISTORY TABLE -->
+  <div class="card">
+    <div class="card-title">📋 Historial de Registros</div>
+    <div id="historyContent">
+      <div class="empty-state">
+        <div class="empty-state-icon">📭</div>
+        <div class="empty-state-title">No hay registros</div>
+        <div class="empty-state-text">Los registros de personal apareceran aqui al guardarlos</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script>
+/* ===== SUPABASE HELPERS ===== */
+function getLocalToday(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function showSupabaseToast(msg, color){
+  const existing = document.getElementById('supaToast');
+  if (existing) existing.remove();
+  const toast = document.createElement('div');
+  toast.id = 'supaToast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 28px;border-radius:12px;color:#fff;font-weight:700;font-size:14px;z-index:99999;box-shadow:0 8px 32px rgba(0,0,0,0.3);background:'+(color||'#16a34a')+';transition:opacity 0.3s';
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
+}
+
+async function loadFromSupabase() {
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+    console.warn('Supabase no disponible');
+    showSupabaseToast('Supabase no conectado - usando datos locales', '#ef4444');
+    return;
+  }
+  try {
+    const { data, error } = await supabaseClient
+      .from('registro_personal')
+      .select('*')
+      .eq('fecha', getLocalToday())
+      .order('hora');
+
+    if (error) {
+      console.error('Supabase load error:', error);
+      showSupabaseToast('Error al cargar de Supabase: ' + error.message, '#ef4444');
+      return;
+    }
+
+    if (data && data.length > 0) {
+      const localRecords = JSON.parse(localStorage.getItem('personal_registros') || '[]');
+      const otherDays = localRecords.filter(r => r.fecha !== getLocalToday());
+      const merged = [...otherDays, ...data.map(d => ({...d, num_personal: parseInt(d.num_personal)}))];
+      localStorage.setItem('personal_registros', JSON.stringify(merged));
+      if (typeof renderHistorial === 'function') renderHistorial();
+      if (typeof updateKPIs === 'function') updateKPIs();
+      if (typeof updateCharts === 'function') updateCharts();
+    }
+  } catch(e) {
+    console.log('Supabase offline - usando datos locales');
+  }
+}
+
+async function loadLaboresFromSupabase() {
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try {
+    const { data, error } = await supabaseClient.from('labores_custom').select('*').eq('activo', true);
+    if (error) console.error('Supabase labores error:', error);
+    if (data) localStorage.setItem('personal_labores_custom', JSON.stringify(data));
+  } catch(e) { console.log('Labores Supabase offline'); }
+}
+
+async function saveLaborToSupabase(labor) {
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try {
+    const { error } = await supabaseClient.from('labores_custom').upsert(labor);
+    if (error) console.error('Supabase save labor error:', error);
+  } catch(e) { console.log('Save labor Supabase offline'); }
+}
+
+/* ===== DISTRIBUTION POSITIONS (by area from Excel) ===== */
+const POSITIONS = {
+  recepcion: [
+    {key:'descarga',label:'Descarga',def:8},
+    {key:'seleccion_rec',label:'Seleccion',def:4},
+    {key:'desinfeccion_rec',label:'Desinfeccion',def:1},
+    {key:'maduracion',label:'Maduracion (traslado)',def:1},
+    {key:'desinfeccion_rec2',label:'Desinfeccion',def:1},
+    {key:'descarte_rec',label:'Descarte',def:2}
+  ],
+  acondicionado: [
+    {key:'abastecimiento',label:'Abastecimiento',def:1},
+    {key:'control_servis',label:'Control de servis',def:1},
+    {key:'pelado',label:'Pelado',def:10},
+    {key:'despepado',label:'Despepado',def:5},
+    {key:'descarte_acon',label:'Descarte',def:2},
+    {key:'inspeccion',label:'Inspeccion',def:4},
+    {key:'cubeteo',label:'Cubeteo',def:4},
+    {key:'seleccion_acon',label:'Seleccion',def:2},
+    {key:'pcc',label:'PCC',def:0},
+    {key:'abast_bandejas',label:'Abastecimiento de bandejas',def:1},
+    {key:'zaranda',label:'Zaranda',def:1},
+    {key:'embandejado',label:'Embandejado',def:9},
+    {key:'paletizado_acon',label:'Paletizado',def:2},
+    {key:'lavado_bandejas',label:'Lavado de bandejas',def:3},
+    {key:'lavado_laminas',label:'Lavado de laminas',def:2},
+    {key:'laminado',label:'Laminado',def:6}
+  ],
+  empaque: [
+    {key:'tunel',label:'Tunel',def:2},
+    {key:'lanzado',label:'Lanzado',def:2},
+    {key:'retiro_bandejas',label:'Retiro de bandejas',def:2},
+    {key:'retiro_lamina',label:'Retiro de lamina',def:2},
+    {key:'chancado',label:'Chancado',def:3},
+    {key:'seleccion_emp',label:'Seleccion',def:6},
+    {key:'recepcion_emp',label:'Recepcion',def:1},
+    {key:'pesado',label:'Pesado',def:1},
+    {key:'encintado_dm',label:'Encintado, DM y paletizado',def:1},
+    {key:'codificado',label:'Codificado',def:2},
+    {key:'camara_apt',label:'Camara APT',def:2}
+  ],
+  calidad: [
+    {key:'bpm',label:'BPM',def:4},
+    {key:'lavado_jabas',label:'Lavado de jabas',def:2},
+    {key:'control_plagas',label:'Control de plagas',def:1},
+    {key:'inspector_calidad',label:'Inspector de calidad',def:5},
+    {key:'sanidad',label:'Sanidad',def:6},
+    {key:'jardinero',label:'Jardinero',def:1}
+  ],
+  rrhh: [
+    {key:'lavanderia',label:'Lavanderia',def:1}
+  ],
+  vigilancia: [
+    {key:'ssgg',label:'SSGG',def:2}
+  ],
+  mantenimiento: [
+    {key:'mtto',label:'MTTO.',def:3}
+  ],
+  ti: [
+    {key:'soporte_ti',label:'Soporte de TI',def:1}
+  ],
+  produccion: [
+    {key:'inspector_produccion',label:'Inspector de produccion',def:3},
+    {key:'asistente',label:'Asistente',def:1},
+    {key:'planillas',label:'Planillas',def:1}
+  ]
+};
+
+const AREA_LABELS = {
+  recepcion:'RECEPCION',
+  acondicionado:'ACONDICIONADO',
+  empaque:'EMPAQUE',
+  calidad:'CALIDAD',
+  rrhh:'RRHH',
+  vigilancia:'VIGILANCIA',
+  mantenimiento:'MANTENIMIENTO',
+  ti:'TI',
+  produccion:'PRODUCCION'
+};
+
+const AREA_COLORS = {
+  recepcion:'#ea580c',
+  acondicionado:'#16a34a',
+  empaque:'#7c3aed',
+  calidad:'#0891b2',
+  rrhh:'#d97706',
+  vigilancia:'#64748b',
+  mantenimiento:'#2563eb',
+  ti:'#6366f1',
+  produccion:'#dc2626'
+};
+
+/* ===== CUSTOM LABORES ===== */
+const LS_CUSTOM_KEY = 'personal_labores_custom';
+function getCustomLabores(){ return JSON.parse(localStorage.getItem(LS_CUSTOM_KEY)||'[]'); }
+function saveCustomLabores(arr){ localStorage.setItem(LS_CUSTOM_KEY, JSON.stringify(arr)); }
+
+function getAllPositions(){
+  // Deep clone POSITIONS and merge custom labores
+  const merged = {};
+  Object.keys(POSITIONS).forEach(a => { merged[a] = [...POSITIONS[a]]; });
+  getCustomLabores().forEach(cl => {
+    if(!merged[cl.area]) merged[cl.area] = [];
+    merged[cl.area].push({key:cl.key, label:cl.label, def:cl.def||0, custom:true});
+  });
+  return merged;
+}
+
+/* ===== INIT ===== */
+let chartHora = null;
+let chartArea = null;
+const LS_KEY = 'personal_registros';
+
+function getRegistros(){ return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); }
+function saveRegistros(arr){ localStorage.setItem(LS_KEY, JSON.stringify(arr)); window.dispatchEvent(new Event('storage')); }
+
+document.addEventListener('DOMContentLoaded', () => {
+  // Default date
+  document.getElementById('fFecha').value = todayStr();
+  // Restore registrado
+  const lastReg = localStorage.getItem('personal_last_registrado');
+  if(lastReg) document.getElementById('fRegistrado').value = lastReg;
+  // Build admin area select
+  populateAdminAreaSelect();
+  // Build dist inputs
+  buildAllDistInputs();
+  // Render admin table
+  renderAdminTable();
+  // Theme
+  const savedTheme = localStorage.getItem('personal_theme');
+  if(savedTheme === 'light') { document.documentElement.setAttribute('data-theme','light'); document.getElementById('themeBtn').textContent = '☀️'; }
+  initCharts();
+  updateDashboard();
+  // Load from Supabase
+  loadFromSupabase().then(() => updateDashboard());
+  loadLaboresFromSupabase().then(() => { buildAllDistInputs(); renderAdminTable(); });
+  // Check Supabase connection status indicator
+  checkSupabaseConnection();
+});
+
+function todayStr(){
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function buildAllDistInputs(){
+  const container = document.getElementById('distContainer');
+  container.innerHTML = '';
+  const allPos = getAllPositions();
+  Object.keys(allPos).forEach(area => {
+    const color = AREA_COLORS[area];
+    // Area header
+    const header = document.createElement('div');
+    header.className = 'dist-area-header';
+    header.style.background = hexToRgba(color, 0.12);
+    header.style.color = color;
+    header.style.borderLeft = `4px solid ${color}`;
+    header.innerHTML = `<span>${AREA_LABELS[area]}</span><span class="area-subtotal" id="subtotal-${area}">0</span>`;
+    container.appendChild(header);
+    // Grid
+    const grid = document.createElement('div');
+    grid.className = 'dist-grid';
+    grid.id = 'dist-'+area;
+    allPos[area].forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'dist-item';
+      const badge = p.custom ? '<span class="custom-badge">Custom</span>' : '';
+      div.innerHTML = `<label title="${p.label}">${p.label}${badge}</label><input type="number" min="0" value="${p.def||0}" data-dist="${p.key}" data-area="${area}" oninput="updateDistTotal()">`;
+      grid.appendChild(div);
+    });
+    container.appendChild(grid);
+  });
+  updateDistTotal();
+}
+
+function hexToRgba(hex, alpha){
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function updateDistTotal(){
+  let grandTotal = 0;
+  const allAreas = Object.keys(getAllPositions());
+  allAreas.forEach(area => {
+    let sub = 0;
+    document.querySelectorAll(`[data-area="${area}"]`).forEach(inp => { sub += parseInt(inp.value)||0; });
+    const el = document.getElementById('subtotal-'+area);
+    if(el) el.textContent = sub;
+    grandTotal += sub;
+  });
+  document.getElementById('distTotalValue').textContent = grandTotal;
+  const fTotal = parseInt(document.getElementById('fTotal').value)||0;
+  const warn = document.getElementById('distWarning');
+  if(fTotal > 0 && grandTotal !== fTotal){
+    warn.style.display = 'flex';
+    warn.textContent = `⚠️ Total distribuido (${grandTotal}) no coincide con N° Total Personal (${fTotal})`;
+  } else {
+    warn.style.display = 'none';
+  }
+}
+document.addEventListener('input', e => { if(e.target.id === 'fTotal') updateDistTotal(); });
+
+/* ===== THEME (no chart destroy/recreate) ===== */
+function toggleTheme(){
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  if(isLight){
+    document.documentElement.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙';
+    localStorage.setItem('personal_theme','dark');
+  } else {
+    document.documentElement.setAttribute('data-theme','light');
+    document.getElementById('themeBtn').textContent = '☀️';
+    localStorage.setItem('personal_theme','light');
+  }
+  updateChartsTheme();
+}
+
+function updateChartsTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
+  const tickColor = isDark ? '#94a3b8' : '#64748b';
+  const legendColor = isDark ? '#e2e8f0' : '#0f172a';
+
+  if(chartHora){
+    chartHora.options.scales.y.grid.color = gridColor;
+    chartHora.options.scales.y.ticks.color = tickColor;
+    chartHora.options.scales.x.ticks.color = tickColor;
+    chartHora.options.plugins.datalabels.color = legendColor;
+    chartHora.update('none');
+  }
+  if(chartArea){
+    chartArea.options.plugins.legend.labels.color = legendColor;
+    chartArea.update('none');
+  }
+}
+
+/* ===== SAVE ===== */
+async function guardarRegistro(){
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) {
+    showToast('ERROR: Supabase no conectado');
+    return;
+  }
+  const fecha = document.getElementById('fFecha').value;
+  const hora = document.getElementById('fHora').value;
+  const fruta = document.getElementById('fFruta').value;
+  const linea = document.getElementById('fLinea').value;
+  const turno = document.getElementById('fTurno').value;
+  const total = parseInt(document.getElementById('fTotal').value)||0;
+  const registrado = document.getElementById('fRegistrado').value.trim();
+
+  if(!fecha||!hora||!fruta||!linea||!turno||!total){
+    showToast('⚠️ Completa todos los campos obligatorios','warning');
+    return;
+  }
+
+  // Build distribution object grouped by area (includes custom labores)
+  const allPos = getAllPositions();
+  const distribucion = {};
+  Object.keys(allPos).forEach(area => {
+    distribucion[area] = {};
+    allPos[area].forEach(p => {
+      const inp = document.querySelector(`[data-dist="${p.key}"]`);
+      distribucion[area][p.key] = parseInt(inp ? inp.value : 0)||0;
+    });
+  });
+
+  const registro = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    fecha, hora, fruta, linea, turno,
+    num_personal: total,
+    distribucion,
+    observacion: document.getElementById('fObs').value.trim(),
+    registrado_por: registrado,
+    created_at: (function(){const _d=new Date();return _d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0')+' '+String(_d.getHours()).padStart(2,'0')+':'+String(_d.getMinutes()).padStart(2,'0')+':'+String(_d.getSeconds()).padStart(2,'0')})()
+  };
+
+  const registros = getRegistros();
+  registros.push(registro);
+  saveRegistros(registros);
+
+  // Save to Supabase
+  try {
+    const { data, error } = await supabaseClient
+      .from('registro_personal')
+      .upsert({
+        fecha: registro.fecha,
+        hora: registro.hora,
+        turno: registro.turno,
+        fruta: registro.fruta,
+        linea: registro.linea,
+        num_personal: registro.num_personal,
+        distribucion: registro.distribucion,
+        observacion: registro.observacion,
+        registrado_por: registro.registrado_por
+      }, { onConflict: 'fecha,hora,linea' });
+
+    if (error) {
+      console.error('Supabase error:', error);
+      showSupabaseToast('ERROR Supabase: ' + error.message, '#ef4444');
+    } else {
+      showSupabaseToast('Registrado en Supabase', '#16a34a');
+    }
+  } catch(e) {
+    console.error('Supabase offline', e);
+    showSupabaseToast('Supabase sin conexion - guardado local', '#ef4444');
+  }
+
+  // Remember registrado
+  if(registrado) localStorage.setItem('personal_last_registrado', registrado);
+
+  showToast('✅ Registro guardado correctamente');
+  limpiarForm();
+  updateDashboard();
+}
+
+function limpiarForm(){
+  document.getElementById('fFecha').value = todayStr();
+  document.getElementById('fHora').value = '';
+  document.getElementById('fFruta').value = '';
+  document.getElementById('fLinea').value = '';
+  document.getElementById('fTurno').value = '';
+  document.getElementById('fTotal').value = '';
+  document.getElementById('fObs').value = '';
+  // Reset dist to defaults
+  buildAllDistInputs();
+}
+
+async function eliminarRegistro(id){
+  if(!confirm('¿Eliminar este registro?')) return;
+  // Find the record before deleting for Supabase delete
+  const allRegistros = getRegistros();
+  const toDelete = allRegistros.find(r => r.id === id);
+  const registros = allRegistros.filter(r => r.id !== id);
+  saveRegistros(registros);
+
+  // Delete from Supabase
+  if (toDelete && typeof supabaseClient !== 'undefined' && supabaseClient) {
+    try {
+      const { error } = await supabaseClient
+        .from('registro_personal')
+        .delete()
+        .eq('fecha', toDelete.fecha)
+        .eq('hora', toDelete.hora)
+        .eq('linea', toDelete.linea);
+      if (error) {
+        console.error('Supabase delete error:', error);
+        showSupabaseToast('Error al eliminar en Supabase: ' + error.message, '#ef4444');
+      }
+    } catch(e) {
+      console.error('Supabase offline', e);
+      showSupabaseToast('Sin conexion a Supabase al eliminar', '#ef4444');
+    }
+  }
+
+  updateDashboard();
+  showToast('🗑️ Registro eliminado');
+}
+
+/* ===== DASHBOARD UPDATE ===== */
+function updateDashboard(){
+  const todos = getRegistros();
+  const hoy = todayStr();
+  const regHoy = todos.filter(r => r.fecha === hoy);
+
+  // KPIs
+  const totales = regHoy.map(r => r.num_personal);
+  const actual = totales.length ? totales[totales.length - 1] : 0;
+  const promedio = totales.length ? Math.round(totales.reduce((a,b)=>a+b,0)/totales.length) : 0;
+  const maxVal = totales.length ? Math.max(...totales) : 0;
+  const minVal = totales.length ? Math.min(...totales) : 0;
+
+  document.getElementById('kpiActual').innerHTML = `${actual} <span class="kpi-unit">personas</span>`;
+  document.getElementById('kpiPromedio').innerHTML = `${promedio} <span class="kpi-unit">personas</span>`;
+  document.getElementById('kpiRegistros').textContent = regHoy.length;
+  document.getElementById('kpiMax').innerHTML = `${maxVal} <span class="kpi-unit">personas</span>`;
+  document.getElementById('kpiMin').innerHTML = `${minVal} <span class="kpi-unit">personas</span>`;
+  document.getElementById('kpiVar').innerHTML = `${maxVal - minVal} <span class="kpi-unit">personas</span>`;
+
+  // Charts
+  updateCharts(regHoy);
+
+  // Table
+  renderTable(regHoy);
+}
+
+/* ===== CHARTS ===== */
+function getChartColors(){
+  const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+  return {
+    text: isLight ? '#0f172a' : '#e2e8f0',
+    grid: isLight ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.06)',
+    tooltipBg: isLight ? '#fff' : '#1e293b',
+    tooltipText: isLight ? '#0f172a' : '#e2e8f0'
+  };
+}
+
+function initCharts(){
+  const cc = getChartColors();
+  const ctx1 = document.getElementById('chartHora').getContext('2d');
+  chartHora = new Chart(ctx1, {
+    type: 'bar',
+    data: { labels:[], datasets:[{label:'Personal',data:[],backgroundColor:'rgba(217,119,6,0.6)',borderColor:'#d97706',borderWidth:2,borderRadius:8}] },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{anchor:'end',align:'top',color:cc.text,font:{weight:'bold',size:11}}},
+      scales:{
+        x:{ticks:{color:cc.text,font:{size:10}},grid:{display:false}},
+        y:{beginAtZero:true,ticks:{color:cc.text},grid:{color:cc.grid}}
+      }
+    },
+    plugins:[ChartDataLabels]
+  });
+
+  const ctx2 = document.getElementById('chartArea').getContext('2d');
+  chartArea = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: Object.values(AREA_LABELS),
+      datasets:[{data:new Array(Object.keys(AREA_LABELS).length).fill(0),backgroundColor:Object.values(AREA_COLORS),borderWidth:0,hoverOffset:8}]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins:{
+        legend:{position:'bottom',labels:{color:cc.text,font:{size:11,weight:'bold'},padding:12,usePointStyle:true}},
+        datalabels:{color:'#fff',font:{weight:'bold',size:12},formatter:(v)=> v > 0 ? v : ''}
+      }
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function updateCharts(regHoy){
+  if(!chartHora || !chartArea) return;
+
+  // Bar chart - personal by hour
+  const horaMap = {};
+  regHoy.forEach(r => {
+    if(!horaMap[r.hora]) horaMap[r.hora] = 0;
+    horaMap[r.hora] += r.num_personal;
+  });
+  const allHours = ['05:00-06:00','06:00-07:00','07:00-08:00','08:00-09:00','09:00-10:00','10:00-11:00','11:00-12:00','12:00-13:00','13:00-14:00','14:00-15:00','15:00-16:00','16:00-17:00','17:00-18:00','18:00-19:00','19:00-20:00','20:00-21:00','21:00-22:00','22:00-23:00','23:00-00:00','00:00-01:00','01:00-02:00','02:00-03:00','03:00-04:00','04:00-05:00'];
+  const labels = allHours.filter(h => horaMap[h]);
+  const data = labels.map(h => horaMap[h]);
+
+  chartHora.data.labels = labels.map(h => h.split('-')[0]);
+  chartHora.data.datasets[0].data = data;
+  chartHora.update();
+
+  // Doughnut - areas (support both old flat format and new grouped format)
+  const allPos = getAllPositions();
+  const areaSums = {};
+  Object.keys(allPos).forEach(a => { areaSums[a] = 0; });
+
+  regHoy.forEach(r => {
+    if(!r.distribucion) return;
+    const firstKey = Object.keys(r.distribucion)[0];
+    if(firstKey && typeof r.distribucion[firstKey] === 'object'){
+      Object.keys(allPos).forEach(area => {
+        if(r.distribucion[area]){
+          Object.values(r.distribucion[area]).forEach(v => { areaSums[area] += (v||0); });
+        }
+      });
+    } else {
+      Object.entries(r.distribucion).forEach(([k,v]) => {
+        for(const area of Object.keys(allPos)){
+          if(allPos[area].find(p => p.key === k)){
+            areaSums[area] += v;
+            break;
+          }
+        }
+      });
+    }
+  });
+
+  chartArea.data.datasets[0].data = Object.keys(allPos).map(a => areaSums[a]);
+  chartArea.update();
+}
+
+/* ===== TABLE ===== */
+function renderTable(regHoy){
+  const container = document.getElementById('historyContent');
+  if(!regHoy.length){
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📭</div><div class="empty-state-title">No hay registros</div><div class="empty-state-text">Los registros de personal apareceran aqui al guardarlos</div></div>`;
+    return;
+  }
+
+  // Sort by hora
+  const sorted = [...regHoy].sort((a,b) => a.hora.localeCompare(b.hora));
+  const totalSum = sorted.reduce((a,r)=>a+r.num_personal,0);
+  const avg = Math.round(totalSum/sorted.length);
+
+  let html = `<div class="table-wrap"><table class="data-table">
+    <thead><tr>
+      <th>Hora</th><th>Turno</th><th>Fruta</th><th>Linea</th><th class="num">N° Personal</th><th>Distribucion</th><th>Observacion</th><th>Acciones</th>
+    </tr></thead><tbody>`;
+
+  sorted.forEach(r => {
+    const distSummary = getDistSummary(r.distribucion);
+    html += `<tr>
+      <td><strong>${r.hora}</strong></td>
+      <td style="font-size:10px;font-weight:700;">${r.turno||'-'}</td>
+      <td>${r.fruta}</td>
+      <td>${r.linea}</td>
+      <td class="num">${r.num_personal}</td>
+      <td>
+        ${distSummary}
+        <button class="dist-expand-btn" onclick="toggleDistDetail('${r.id}')">Ver detalle</button>
+        <div class="dist-detail" id="detail-${r.id}">${getDistDetail(r.distribucion)}</div>
+      </td>
+      <td style="font-size:11px;max-width:120px;">${r.observacion||'-'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="eliminarRegistro('${r.id}')">🗑️</button></td>
+    </tr>`;
+  });
+
+  html += `</tbody><tfoot><tr>
+    <td colspan="4"><strong>PROMEDIOS</strong></td>
+    <td class="num"><strong>${avg}</strong></td>
+    <td colspan="3"></td>
+  </tr></tfoot></table></div>`;
+
+  container.innerHTML = html;
+}
+
+function getAreaSumsFromDist(dist){
+  if(!dist) return {};
+  const allPos = getAllPositions();
+  const sums = {};
+  Object.keys(allPos).forEach(area => { sums[area] = 0; });
+  const firstKey = Object.keys(dist)[0];
+  if(firstKey && typeof dist[firstKey] === 'object'){
+    Object.keys(allPos).forEach(area => {
+      if(dist[area]) Object.values(dist[area]).forEach(v => { sums[area] += (v||0); });
+    });
+  } else {
+    Object.entries(dist).forEach(([k,v]) => {
+      for(const area of Object.keys(allPos)){
+        if(allPos[area].find(p => p.key === k)){ sums[area] += v; break; }
+      }
+    });
+  }
+  return sums;
+}
+
+function getDistSummary(dist){
+  if(!dist) return '-';
+  const sums = getAreaSumsFromDist(dist);
+  return Object.entries(sums).filter(([,v])=>v>0).map(([k,v]) => `<span style="color:${AREA_COLORS[k]};font-weight:700;font-size:10px;">${AREA_LABELS[k]}: ${v}</span>`).join(' | ');
+}
+
+function getDistDetail(dist){
+  if(!dist) return '';
+  let html = '';
+  const allPos = getAllPositions();
+  const firstKey = Object.keys(dist)[0];
+  const isGrouped = firstKey && typeof dist[firstKey] === 'object';
+
+  Object.keys(allPos).forEach(area => {
+    html += `<div class="dist-detail-group"><span class="dist-detail-group-title" style="color:${AREA_COLORS[area]}">${AREA_LABELS[area]}:</span> `;
+    html += allPos[area].map(p => {
+      let val = 0;
+      if(isGrouped && dist[area]) val = dist[area][p.key]||0;
+      else val = dist[p.key]||0;
+      return `<span class="dist-detail-item">${p.label}: <b>${val}</b></span>`;
+    }).join(', ');
+    html += '</div>';
+  });
+  return html;
+}
+
+function toggleDistDetail(id){
+  const el = document.getElementById('detail-'+id);
+  if(el) el.classList.toggle('show');
+}
+
+/* ===== TOAST ===== */
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+/* ===== ADMIN PANEL ===== */
+function toggleAdminPanel(){
+  const header = document.getElementById('adminCollapseHeader');
+  const body = document.getElementById('adminCollapseBody');
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+function populateAdminAreaSelect(){
+  const sel = document.getElementById('adminLaborArea');
+  sel.innerHTML = '<option value="">Seleccionar...</option>';
+  Object.keys(AREA_LABELS).forEach(k => {
+    sel.innerHTML += `<option value="${k}">${AREA_LABELS[k]}</option>`;
+  });
+}
+
+function agregarLaborCustom(){
+  const nombre = document.getElementById('adminLaborNombre').value.trim();
+  const area = document.getElementById('adminLaborArea').value;
+  const def = parseInt(document.getElementById('adminLaborDefault').value)||0;
+  if(!nombre||!area){ showToast('⚠️ Completa nombre y area'); return; }
+  const key = 'custom_'+nombre.toLowerCase().replace(/[^a-z0-9]+/g,'_')+'_'+Date.now().toString(36);
+  const customs = getCustomLabores();
+  const newLabor = {key, label:nombre, area, def, activo:true};
+  customs.push(newLabor);
+  saveCustomLabores(customs);
+  saveLaborToSupabase(newLabor);
+  // Reset form
+  document.getElementById('adminLaborNombre').value = '';
+  document.getElementById('adminLaborArea').value = '';
+  document.getElementById('adminLaborDefault').value = '0';
+  // Rebuild
+  buildAllDistInputs();
+  renderAdminTable();
+  showToast('✅ Labor personalizada agregada');
+}
+
+function renderAdminTable(){
+  const customs = getCustomLabores();
+  const container = document.getElementById('adminLaboresTable');
+  if(!customs.length){
+    container.innerHTML = '<p style="font-size:11px;color:var(--muted);margin-top:8px;">No hay labores personalizadas aun.</p>';
+    return;
+  }
+  let html = `<table class="admin-table"><thead><tr><th>Labor</th><th>Area</th><th>Valor Predet.</th><th>Acciones</th></tr></thead><tbody>`;
+  customs.forEach((cl,i) => {
+    html += `<tr id="admin-row-${i}">
+      <td><span id="admin-label-${i}">${cl.label}</span></td>
+      <td><span id="admin-area-${i}" style="color:${AREA_COLORS[cl.area]};font-weight:700;">${AREA_LABELS[cl.area]}</span></td>
+      <td><span id="admin-def-${i}">${cl.def||0}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="btn-icon edit" onclick="editarLaborCustom(${i})" title="Editar">✏️</button>
+        <button class="btn-icon delete" onclick="eliminarLaborCustom(${i})" title="Eliminar">🗑️</button>
+      </td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function editarLaborCustom(idx){
+  const customs = getCustomLabores();
+  const cl = customs[idx];
+  const row = document.getElementById('admin-row-'+idx);
+  if(!row) return;
+  const areaOptions = Object.keys(AREA_LABELS).map(k => `<option value="${k}" ${k===cl.area?'selected':''}>${AREA_LABELS[k]}</option>`).join('');
+  row.innerHTML = `
+    <td><input type="text" value="${cl.label}" id="edit-label-${idx}" style="width:100%;"></td>
+    <td><select id="edit-area-${idx}">${areaOptions}</select></td>
+    <td><input type="number" value="${cl.def||0}" id="edit-def-${idx}" min="0" style="width:60px;"></td>
+    <td style="white-space:nowrap;">
+      <button class="btn-icon save" onclick="guardarEditLaborCustom(${idx})" title="Guardar">✅</button>
+      <button class="btn-icon cancel" onclick="renderAdminTable()" title="Cancelar">❌</button>
+    </td>`;
+}
+
+function guardarEditLaborCustom(idx){
+  const label = document.getElementById('edit-label-'+idx).value.trim();
+  const area = document.getElementById('edit-area-'+idx).value;
+  const def = parseInt(document.getElementById('edit-def-'+idx).value)||0;
+  if(!label||!area){ showToast('⚠️ Completa nombre y area'); return; }
+  const customs = getCustomLabores();
+  customs[idx].label = label;
+  customs[idx].area = area;
+  customs[idx].def = def;
+  saveCustomLabores(customs);
+  saveLaborToSupabase(customs[idx]);
+  buildAllDistInputs();
+  renderAdminTable();
+  showToast('✅ Labor actualizada');
+}
+
+async function eliminarLaborCustom(idx){
+  if(!confirm('¿Eliminar esta labor personalizada?')) return;
+  const customs = getCustomLabores();
+  const removed = customs.splice(idx,1)[0];
+  saveCustomLabores(customs);
+  // Delete from Supabase
+  if (removed && typeof supabaseClient !== 'undefined' && supabaseClient) {
+    try {
+      await supabaseClient.from('labores_custom').delete().eq('key', removed.key);
+    } catch(e) { console.log('Supabase delete labor offline'); }
+  }
+  buildAllDistInputs();
+  renderAdminTable();
+  showToast('🗑️ Labor eliminada');
+}
+
+/* ===== INITIAL DIST TOTAL ===== */
+setTimeout(updateDistTotal, 100);
+</script>
+</body>
+</html>

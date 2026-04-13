@@ -1,0 +1,36 @@
+<!-- Panel: Rendimientos -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🎯 <span style="color:var(--verde)">Rendimientos</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Analisis de rendimiento por fruta, lote y turno</p>
+  </div>
+  <a href="dashboards/rendimientos.html" target="_blank" class="btn btn-sm btn-primary">🚀 Dashboard Completo</a>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">🥭 Rend. Mango</div><div class="kpi-value" id="rendMango">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">🫐 Rend. Arandano</div><div class="kpi-value" id="rendArandano">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">🍎 Rend. Granada</div><div class="kpi-value" id="rendGranada">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">🏭 Promedio Planta</div><div class="kpi-value" id="rendPromedio">—</div></div>
+</div>
+
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">📊 Rendimiento Historico</div></div>
+    <div class="chart-wrapper"><canvas id="chartRendHistorico"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🔄 Rendimiento Dia vs Noche</div></div>
+    <div class="chart-wrapper"><canvas id="chartRendTurno"></canvas></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Rendimiento por Fecha</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Fruta</th><th>Consumo MP</th><th>P. Terminado</th><th>Rendimiento</th><th>Turno</th></tr></thead>
+      <tbody id="rendTabla"></tbody>
+    </table>
+  </div>
+</div>

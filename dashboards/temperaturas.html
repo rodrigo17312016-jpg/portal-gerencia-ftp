@@ -1,0 +1,2435 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Control de Temperaturas · Frutos Tropicales</title>
+<link rel="icon" href="LOGO.png" type="image/png">
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#00d4aa">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Temperaturas FTP">
+<link rel="apple-touch-icon" href="icons/icon-192x192.png">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0a0f1e;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: rgba(255,255,255,0.08);
+    --accent: #00d4aa;
+    --accent2: #3b82f6;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --text: #f1f5f9;
+    --muted: #64748b;
+    --success: #10b981;
+  }
+
+  /* MODO CLARO */
+  body.light-mode {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --surface2: #f8fafc;
+    --border: rgba(0,0,0,0.08);
+    --accent: #0d9488;
+    --accent2: #2563eb;
+    --warn: #d97706;
+    --danger: #dc2626;
+    --text: #0f172a;
+    --muted: #64748b;
+    --success: #16a34a;
+  }
+
+  /* SWITCH */
+  .theme-switch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .switch-track {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: #334155;
+    border-radius: 12px;
+    transition: background 0.3s;
+    flex-shrink: 0;
+  }
+  body.light-mode .switch-track {
+    background: #cbd5e1;
+  }
+  .switch-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #00d4aa;
+    transition: transform 0.3s, background 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  body.light-mode .switch-thumb {
+    transform: translateX(20px);
+    background: #f59e0b;
+  }
+  .switch-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* HEADER — 3 columnas: logo | título+formatos | firma+switch */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 16px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    z-index: 100;
+  }
+
+  /* Logo (izquierda) */
+  .header-logo {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Centro: título + formatos apilados */
+  .header-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .header-title {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    font-family: 'DM Sans', sans-serif;
+    text-align: center;
+    text-transform: uppercase;
+    background: linear-gradient(135deg, #0d9488, #10b981, #34d399, #0d9488);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmerTitle 3s ease infinite;
+  }
+  @keyframes shimmerTitle {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .btn-formatos {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 5px 14px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    white-space: nowrap;
+    border: 1.5px solid var(--accent);
+    background: rgba(0,212,170,0.06);
+    box-shadow: 0 0 10px rgba(0,212,170,0.1);
+    transition: all 0.25s;
+  }
+  .btn-formatos:hover {
+    background: rgba(0,212,170,0.14);
+    box-shadow: 0 0 18px rgba(0,212,170,0.2);
+    transform: translateY(-1px);
+  }
+  body.light-mode .btn-formatos {
+    border-color: #0d9488;
+    color: #0d9488;
+    background: rgba(13,148,136,0.07);
+  }
+
+  /* Derecha: firma arriba, switch abajo */
+  .header-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .clock {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+  .date-text { font-size: 11px; color: var(--muted); text-align: right; }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    padding: 12px 24px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .nav-tab {
+    padding: 8px 18px;
+    border-radius: 8px 8px 0 0;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--muted);
+    border: 1px solid transparent;
+    border-bottom: none;
+    transition: all 0.2s;
+    background: transparent;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .nav-tab:hover { color: var(--text); background: var(--surface2); }
+  .nav-tab.active {
+    color: var(--accent);
+    background: var(--bg);
+    border-color: var(--border);
+  }
+
+  /* MAIN LAYOUT */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    margin-bottom: 16px;
+  }
+
+  /* FORM CARD */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  input, select, textarea {
+    resize: none;
+    resize: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(0,212,170,0.1);
+  }
+  select option { background: var(--surface2); }
+
+  .temp-input-wrap {
+    position: relative;
+  }
+  .temp-input-wrap input {
+    font-family: 'DM Mono', monospace;
+    font-size: 22px;
+    font-weight: 500;
+    text-align: center;
+    padding: 14px;
+    letter-spacing: 1px;
+  }
+  .temp-unit {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+  }
+  .temp-indicator {
+    height: 4px;
+    border-radius: 2px;
+    margin-top: 6px;
+    transition: all 0.3s;
+    background: var(--muted);
+  }
+
+  /* STATUS badge */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .status-ok { background: rgba(16,185,129,0.15); color: var(--success); }
+  .status-warn { background: rgba(245,158,11,0.15); color: var(--warn); }
+  .status-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+  .dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  /* BTN */
+  .btn {
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.3px;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #0a0f1e;
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    margin-top: 20px;
+  }
+  .btn-primary:hover { background: #00eec0; transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* Area checkbox chips */
+  .area-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 7px 14px; border-radius: 10px; cursor: pointer;
+    font-size: 11px; font-weight: 600; letter-spacing: 0.2px;
+    border: 1.5px solid var(--border2); background: var(--surface2); color: var(--text);
+    transition: all 0.2s ease; user-select: none;
+  }
+  .area-chip:hover { border-color: var(--accent); background: rgba(0,214,178,0.06); }
+  .area-chip.selected {
+    background: rgba(0,214,178,0.12); border-color: var(--accent); color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(0,214,178,0.15);
+  }
+  .area-chip input[type="checkbox"] { display: none; }
+  .area-chip .chip-dot {
+    width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid var(--muted);
+    transition: all 0.2s;
+  }
+  .area-chip.selected .chip-dot {
+    background: var(--accent); border-color: var(--accent);
+    box-shadow: 0 0 4px rgba(0,214,178,0.4);
+  }
+
+  /* Dynamic temp field cards */
+  .multi-temp-card {
+    background: var(--surface2); border: 1px solid var(--border2); border-radius: 14px;
+    padding: 14px 16px; margin-bottom: 8px;
+    display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center;
+    animation: slideIn 0.25s ease;
+  }
+  .multi-temp-card .mtc-area {
+    font-size: 12px; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .multi-temp-card .mtc-area .mtc-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+  .multi-temp-card .mtc-rango {
+    font-size: 9px; color: var(--muted); margin-top: 2px;
+  }
+  .multi-temp-card .mtc-input-wrap {
+    display: flex; align-items: center; gap: 4px;
+  }
+  .multi-temp-card .mtc-input {
+    width: 80px; text-align: center; font-size: 16px; font-weight: 700;
+    font-family: 'DM Mono', monospace; padding: 8px; border-radius: 10px;
+    border: 1.5px solid var(--border2); background: var(--surface); color: var(--text);
+  }
+  .multi-temp-card .mtc-input:focus { border-color: var(--accent); outline: none; }
+  .multi-temp-card .mtc-unit { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .multi-temp-card .mtc-status {
+    font-size: 10px; margin-top: 4px; min-height: 16px;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+  .btn-secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 999;
+    min-width: 280px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-icon { font-size: 22px; }
+  .toast-text { font-size: 14px; font-weight: 500; }
+  .toast-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .table-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-title { font-size: 14px; font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 10px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  td {
+    padding: 12px 16px;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .temp-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    font-weight: 500;
+  }
+  .temp-ok { color: var(--success); }
+  .temp-warn { color: var(--warn); }
+  .temp-danger { color: var(--danger); }
+
+  /* DASHBOARD */
+  .dash-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .dash-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .dash-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 14px 14px 0 0;
+  }
+  .dash-card.cold::before { background: var(--accent2); }
+  .dash-card.frozen::before { background: var(--accent); }
+  .dash-card.ambient::before { background: var(--warn); }
+  .dash-card.critical::before { background: var(--danger); }
+
+  .dash-area { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .dash-temp {
+    font-family: 'DM Mono', monospace;
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .dash-temp .unit { font-size: 16px; color: var(--muted); }
+  .dash-last { font-size: 11px; color: var(--muted); }
+  .dash-person { font-size: 12px; margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+
+  /* AREA CONFIG */
+  .areas-list { display: flex; flex-direction: column; gap: 10px; }
+  .area-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .area-color { width: 10px; height: 36px; border-radius: 4px; flex-shrink: 0; }
+  .area-info { flex: 1; }
+  .area-name { font-size: 14px; font-weight: 500; }
+  .area-range { font-size: 12px; color: var(--muted); margin-top: 2px; font-family: 'DM Mono', monospace; }
+
+  /* SQL panel */
+  .code-block {
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+    color: #c9d1d9;
+    overflow-x: auto;
+    position: relative;
+  }
+  .kw { color: #ff7b72; }
+  .fn { color: #79c0ff; }
+  .str { color: #a5d6ff; }
+  .cm { color: #6e7681; }
+  .copy-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    padding: 4px 10px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.2s;
+  }
+  .copy-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  .info-box {
+    background: rgba(59,130,246,0.08);
+    border: 1px solid rgba(59,130,246,0.2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: #93c5fd;
+    line-height: 1.6;
+    margin: 16px 0;
+  }
+  .info-box strong { color: #bfdbfe; }
+
+  /* CHART AREA */
+  .chart-container {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  .chart-title { font-size: 13px; font-weight: 600; color: var(--muted); margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.8px; }
+  canvas { width: 100% !important; }
+
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-bar select, .filter-bar input { width: auto; flex: 1; min-width: 140px; }
+
+  /* ===== TABLE SCROLL (always active) ===== */
+  .table-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-scroll table {
+    min-width: 680px;
+  }
+
+  /* ===== RESPONSIVE: TABLET (max-width: 900px) ===== */
+  @media (max-width: 900px) {
+    .main { max-width: 100%; padding: 20px 16px; }
+    .dash-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .form-grid.three { grid-template-columns: 1fr 1fr; }
+    .form-card { padding: 20px; }
+    .chart-container { padding: 16px; }
+    .logo-text { font-size: 12px; }
+    .clock { font-size: 16px; }
+  }
+
+  /* ===== RESPONSIVE: MOBILE (max-width: 640px) ===== */
+  @media (max-width: 640px) {
+    /* --- Header móvil: 2 columnas logo|firma, centro abajo --- */
+    .header {
+      grid-template-columns: auto 1fr;
+      grid-template-rows: auto auto;
+      padding: 10px 12px;
+      gap: 6px 8px;
+    }
+    .header-logo { order: 1; }
+    .header-right { order: 2; }
+    .header-center {
+      order: 3;
+      grid-column: 1 / -1;
+    }
+    .header-title { font-size: 14px; }
+    .btn-formatos { font-size: 10px; padding: 5px 10px; }
+    .header-logo img { height: 38px !important; }
+    /* Firma 30% más pequeña en móvil */
+    .topbar-dev-sig { padding: 3px 8px; }
+    .topbar-sig-label { font-size: 6px !important; letter-spacing: 0.8px !important; }
+    .topbar-sig-name { font-size: 9px !important; }
+    .topbar-sig-role { font-size: 7px !important; }
+    .switch-track { width: 36px !important; height: 18px !important; }
+    .switch-thumb { width: 14px !important; height: 14px !important; font-size: 8px !important; }
+    .switch-label { font-size: 9px !important; }
+    .clock { font-size: 16px; }
+    .date-text { font-size: 10px; }
+
+    /* --- Nav tabs scroll horizontal --- */
+    .nav-tabs {
+      padding: 8px 12px 0;
+      gap: 2px;
+    }
+    .nav-tab {
+      padding: 8px 14px;
+      font-size: 12px;
+    }
+
+    /* --- Main content --- */
+    .main { padding: 12px 8px; }
+    .section-title { font-size: 12px; margin-bottom: 12px; }
+
+    /* --- Form cards --- */
+    .form-card { padding: 16px 12px; margin-bottom: 16px; border-radius: 12px; }
+    .form-grid { grid-template-columns: 1fr; gap: 12px; }
+    .form-grid.three { grid-template-columns: 1fr; }
+    label { font-size: 11px; }
+    input, select, textarea { font-size: 14px; padding: 12px; border-radius: 8px; }
+    .temp-input-wrap input { font-size: 20px; padding: 12px; }
+    .temp-unit { font-size: 16px; right: 12px; }
+
+    /* --- Botones táctiles --- */
+    .btn { padding: 14px 20px; font-size: 14px; min-height: 44px; }
+    .btn-primary { padding: 16px; font-size: 15px; }
+    .btn-secondary { padding: 10px 14px; font-size: 13px; min-height: 44px; }
+    .btn-icon { padding: 8px 12px; font-size: 14px; min-height: 44px; min-width: 44px; }
+
+    /* --- Dashboard cards --- */
+    .dash-grid { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+    .dash-card { padding: 14px 16px; border-radius: 12px; }
+    .dash-area { font-size: 10px; margin-bottom: 6px; }
+    .dash-temp { font-size: 26px; margin-bottom: 4px; }
+    .dash-temp .unit { font-size: 14px; }
+    .dash-last { font-size: 10px; }
+    .dash-person { font-size: 11px; margin-top: 6px; padding-top: 6px; }
+
+    /* --- Filtros --- */
+    .filter-bar {
+      flex-direction: column;
+      gap: 8px;
+    }
+    .filter-bar select, .filter-bar input {
+      width: 100%;
+      flex: none;
+      min-width: unset;
+      min-height: 44px;
+      font-size: 14px;
+    }
+
+    /* --- Tablas --- */
+    .table-wrap { border-radius: 12px; }
+    .table-head { padding: 12px 14px; }
+    .table-title { font-size: 13px; }
+    th { font-size: 10px; padding: 8px 10px; }
+    td { font-size: 12px; padding: 10px; }
+    .temp-val { font-size: 14px; }
+    .table-scroll table { min-width: 580px; }
+
+    /* --- Status badges --- */
+    .status-badge { font-size: 11px; padding: 4px 10px; }
+
+    /* --- Chart --- */
+    .chart-container { padding: 14px; border-radius: 12px; margin-bottom: 14px; }
+    .chart-title { font-size: 12px; margin-bottom: 12px; }
+
+    /* --- Code block --- */
+    .code-block { padding: 14px; font-size: 11.5px; border-radius: 10px; }
+    .info-box { padding: 12px 14px; font-size: 12px; border-radius: 8px; }
+
+    /* --- Toast móvil --- */
+    .toast {
+      left: 12px;
+      right: 12px;
+      bottom: 16px;
+      min-width: unset;
+      border-radius: 10px;
+      padding: 14px 16px;
+    }
+
+    /* --- Modal móvil --- */
+    .modal-overlay { padding: 12px; }
+    .modal {
+      padding: 20px 16px;
+      border-radius: 14px;
+      max-width: 100%;
+      max-height: 85vh;
+    }
+    .modal-title { font-size: 14px; margin-bottom: 16px; }
+    .modal-actions { flex-direction: column; gap: 8px; }
+    .btn-danger, .btn-save { min-height: 44px; font-size: 14px; text-align: center; }
+
+    /* --- Areas config --- */
+    .area-item { padding: 12px 14px; border-radius: 10px; }
+    .area-name { font-size: 13px; }
+    .area-range { font-size: 11px; }
+
+    /* --- Estilo dark mode para inputs time/date --- */
+    [data-theme="dark"] input[type="time"],
+    [data-theme="dark"] input[type="date"] {
+      color-scheme: dark;
+      background: var(--surface2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+    [data-theme="dark"] #registroClock {
+      color: var(--accent);
+    }
+  }
+
+  /* ===== RESPONSIVE: ULTRA-SMALL (max-width: 400px) ===== */
+  @media (max-width: 400px) {
+    .dash-grid { grid-template-columns: 1fr; }
+    .dash-temp { font-size: 28px; }
+    .header { padding: 8px 10px; }
+    .logo-icon { width: 30px; height: 30px; font-size: 15px; border-radius: 6px; }
+    .logo-text { font-size: 11px; }
+    .main { padding: 10px 6px; }
+    .form-card { padding: 14px 10px; }
+    .nav-tab { padding: 7px 10px; font-size: 11px; }
+    .modal { padding: 16px 12px; }
+  }
+
+  /* MODAL EDITAR */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .modal-close:hover { color: var(--text); background: var(--surface2); }
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .btn-danger {
+    background: rgba(239,68,68,0.15);
+    color: var(--danger);
+    border: 1px solid rgba(239,68,68,0.3);
+    font-size: 13px;
+    padding: 8px 16px;
+  }
+  .btn-danger:hover { background: rgba(239,68,68,0.25); }
+  .btn-save {
+    background: var(--accent);
+    color: #0a0f1e;
+    font-size: 13px;
+    padding: 8px 20px;
+    flex: 1;
+  }
+  .btn-save:hover { background: #00eec0; }
+  .btn-icon {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 9px;
+    transition: all 0.15s;
+    line-height: 1.4;
+  }
+  .btn-icon:hover { color: var(--text); border-color: var(--accent); }
+  .btn-icon.del:hover { color: var(--danger); border-color: var(--danger); }
+
+  /* ===== PREMIUM FIRMA + LOGO FLOAT ===== */
+  @keyframes shimmer-gold-temp {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes logoFloatTemp {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-3px); }
+  }
+  .logo-float-img {
+    animation: logoFloatTemp 3s ease-in-out infinite;
+    filter: drop-shadow(0 2px 8px rgba(0,212,170,0.35));
+  }
+  @keyframes firmaBorderGlow {
+    0%,100% { border-color:rgba(212,175,55,.2); box-shadow:0 2px 12px rgba(0,0,0,.15); }
+    50% { border-color:rgba(212,175,55,.45); box-shadow:0 2px 24px rgba(212,175,55,.15),0 4px 16px rgba(0,0,0,.2); }
+  }
+  @keyframes firmaShine { 0%{left:-100%} 50%,100%{left:200%} }
+  @keyframes signatureShimmer { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+  .topbar-dev-sig {
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:8px 22px; border-radius:20px;
+    background:linear-gradient(145deg,rgba(245,240,225,.85),rgba(255,250,240,.9),rgba(245,240,225,.85));
+    border:1px solid rgba(212,175,55,.3);
+    position:relative; overflow:hidden; backdrop-filter:blur(16px);
+    animation:firmaBorderGlow 4s ease infinite;
+    box-shadow:0 0 20px rgba(212,175,55,.08),inset 0 1px 0 rgba(255,255,255,.06);
+  }
+  .topbar-dev-sig::before {
+    content:''; position:absolute; top:0; left:-100%; width:50%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(212,175,55,.08),rgba(255,255,255,.05),transparent);
+    animation:firmaShine 5s ease-in-out infinite; pointer-events:none;
+  }
+  .topbar-dev-sig::after {
+    content:''; position:absolute; inset:0; border-radius:16px;
+    background:linear-gradient(135deg,rgba(212,175,55,.03) 0%,transparent 40%,rgba(192,192,192,.03) 60%,transparent 100%);
+    pointer-events:none;
+  }
+  .topbar-dev-sig > * { position:relative; z-index:1; }
+  body:not(.light-mode) .topbar-dev-sig {
+    background:linear-gradient(145deg,rgba(10,18,32,.85),rgba(20,30,48,.9),rgba(15,25,40,.85));
+  }
+  .topbar-sig-label {
+    font-size:7px; color:rgba(139,105,20,.8); text-transform:uppercase;
+    letter-spacing:2px; font-weight:800;
+  }
+  body:not(.light-mode) .topbar-sig-label { color:rgba(212,175,55,.7); }
+  .topbar-sig-name {
+    font-size:13px; font-weight:900; letter-spacing:.3px;
+    background:linear-gradient(135deg,#8B6914 0%,#b8941f 25%,#6b5b3a 50%,#b8941f 75%,#8B6914 100%);
+    background-size:300% 100%;
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+    animation:signatureShimmer 4s ease infinite; line-height:1.3; white-space:nowrap;
+  }
+  body:not(.light-mode) .topbar-sig-name {
+    background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);
+    background-size:300% 100%;
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  }
+  .topbar-sig-role {
+    font-size:9px; font-weight:700; color:#15803d; letter-spacing:.5px;
+  }
+  body:not(.light-mode) .topbar-sig-role { color:#22c55e; }
+
+  /* ===== INDICADOR SUPABASE ===== */
+  .sb-status {
+    display:inline-flex; align-items:center; gap:6px;
+    padding:4px 10px; border-radius:20px; font-size:10px; font-weight:700;
+    letter-spacing:.5px; cursor:default; transition:all .3s ease;
+    margin-top:4px;
+  }
+  .sb-dot {
+    width:8px; height:8px; border-radius:50%; display:inline-block;
+  }
+  /* Verificando */
+  .sb-checking .sb-dot { background:#f59e0b; box-shadow:0 0 6px #f59e0b; animation:sb-pulse 1.2s infinite; }
+  .sb-checking .sb-text { color:#f59e0b; }
+  .sb-checking { background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); }
+  /* Conectado */
+  .sb-connected .sb-dot { background:#22c55e; box-shadow:0 0 8px #22c55e; }
+  .sb-connected .sb-text { color:#22c55e; }
+  .sb-connected { background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); }
+  /* Desconectado */
+  .sb-error .sb-dot { background:#ef4444; box-shadow:0 0 6px #ef4444; }
+  .sb-error .sb-text { color:#ef4444; }
+  .sb-error { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); }
+  /* Light mode */
+  body.light-mode .sb-connected { background:rgba(22,163,74,0.08); border-color:rgba(22,163,74,0.3); }
+  body.light-mode .sb-connected .sb-text { color:#15803d; }
+  body.light-mode .sb-connected .sb-dot { background:#16a34a; box-shadow:0 0 6px #16a34a; }
+  @keyframes sb-pulse {
+    0%,100% { opacity:1; } 50% { opacity:.3; }
+  }
+
+  /* Clock theme-aware colors */
+  body:not(.light-mode) #registroClock { color: #00d4aa !important; }
+  body.light-mode #registroClock { color: #0d9488 !important; font-weight: 700; }
+  body:not(.light-mode) #registroDate { color: #64748b !important; }
+  body.light-mode #registroDate { color: #1e40af !important; font-weight: 600; }
+  body:not(.light-mode) #registroTurno { background: rgba(0,212,170,0.08) !important; border-color: rgba(0,212,170,0.2) !important; color: #00d4aa !important; }
+  body.light-mode #registroTurno { background: rgba(37,99,235,0.08) !important; border-color: rgba(37,99,235,0.2) !important; color: #1d4ed8 !important; font-weight: 700; }
+
+  /* ===== PESTAÑAS DE FORMATO (selector de grupo de áreas) ===== */
+  .format-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 12px 0;
+    flex-wrap: wrap;
+  }
+  .format-tab {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    transition: all 0.2s;
+  }
+  .format-tab:hover { border-color: var(--accent); color: var(--text); }
+  .format-tab.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  /* Responsive: format-tabs en móvil */
+  @media (max-width: 640px) {
+    .format-tabs { gap: 6px; padding: 8px 0; }
+    .format-tab { padding: 8px 12px; font-size: 11px; }
+  }
+
+
+  /* ===== PREMIUM FIRMA + LOGO FLOAT ===== */
+  @keyframes shimmer-gold-temp {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes logoFloatTemp {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-3px); }
+  }
+  .logo-float-img {
+    animation: logoFloatTemp 3s ease-in-out infinite;
+    filter: drop-shadow(0 2px 8px rgba(0,212,170,0.35));
+  }
+  .btn-portal-premium {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;
+    text-decoration: none; color: #fff;
+    background: linear-gradient(135deg, #0d6b4e, #10b981, #0d6b4e);
+    background-size: 200% 200%;
+    animation: btnShimmer 3s ease-in-out infinite;
+    padding: 5px 14px; border-radius: 20px;
+    border: 1px solid rgba(16,185,129,0.4);
+    box-shadow: 0 2px 8px rgba(16,185,129,0.25), inset 0 1px 0 rgba(255,255,255,0.15);
+    transition: all 0.3s ease;
+  }
+  .btn-portal-premium:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(16,185,129,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    filter: brightness(1.15);
+  }
+  @keyframes btnShimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .topbar-dev-sig {
+    background: rgba(245,158,11,0.07);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 10px;
+    padding: 5px 12px;
+    text-align: right;
+  }
+  .topbar-sig-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 1px;
+  }
+  .topbar-sig-name {
+    font-size: 13px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b, #fde68a, #f59e0b);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer-gold-temp 3s linear infinite;
+    white-space: nowrap;
+  }
+  .topbar-sig-role {
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  /* Clock theme-aware colors */
+  body:not(.light-mode) #registroClock { color: #00d4aa !important; }
+  body.light-mode #registroClock { color: #0d9488 !important; font-weight: 700; }
+  body:not(.light-mode) #registroDate { color: #64748b !important; }
+  body.light-mode #registroDate { color: #1e40af !important; font-weight: 600; }
+  body:not(.light-mode) #registroTurno { background: rgba(0,212,170,0.08) !important; border-color: rgba(0,212,170,0.2) !important; color: #00d4aa !important; }
+  body.light-mode #registroTurno { background: rgba(37,99,235,0.08) !important; border-color: rgba(37,99,235,0.2) !important; color: #1d4ed8 !important; font-weight: 700; }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <!-- IZQUIERDA: Logo + Regresar -->
+  <div class="header-logo" style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <img src="LOGO.png" alt="Frutos Tropicales" class="logo-float-img" style="height:69px;width:auto;object-fit:contain;" />
+    <!-- Botón Portal deshabilitado por el momento -->
+    <!--<a href="portal-gerencia.html" class="btn-portal-premium">← Portal de Gerencia</a>-->
+  </div>
+
+  <!-- CENTRO: Título + Reporte de Formatos -->
+  <div class="header-center">
+    <div class="header-title" style="font-weight:800;">Registro de Temperaturas</div>
+    <a href="reporte_frio.html" class="btn-formatos">📋 Reporte de Formatos</a>
+  </div>
+
+  <!-- DERECHA: Firma arriba + Switch abajo -->
+  <div class="header-right">
+    <div class="topbar-dev-sig">
+      <div class="topbar-sig-label">DESARROLLADO POR:</div>
+      <div class="topbar-sig-name">Rodrigo Garcia</div>
+      <div class="topbar-sig-role">Systems Analyst &amp; Developer-QA</div>
+    </div>
+    <div id="supabase-status" class="sb-status sb-checking" title="Verificando conexión...">
+      <span class="sb-dot"></span>
+      <span class="sb-text">Verificando...</span>
+    </div>
+    <div class="theme-switch" onclick="toggleTheme()" title="Cambiar modo">
+      <div class="switch-track">
+        <div class="switch-thumb" id="switchThumb">🌙</div>
+      </div>
+      <span class="switch-label" id="switchLabel">Modo oscuro</span>
+    </div>
+  </div>
+</div>
+
+<div class="nav-tabs">
+  <button class="nav-tab active" onclick="showPanel('registro')">📋 Registro</button>
+  <button class="nav-tab" onclick="showPanel('historial')">📊 Historial</button>
+  <button class="nav-tab" onclick="showPanel('dashboard')">🌡️ Dashboard</button>
+  <button class="nav-tab" onclick="showPanel('config')">⚙️ Detalles</button>
+</div>
+
+<!-- ============== PANEL: REGISTRO ============== -->
+<div class="main">
+<div id="panel-registro" class="panel active">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 20px;">
+    <div>
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;">Fecha y hora actual</div>
+      <div id="registroClock" style="font-family:'DM Mono',monospace;font-size:22px;color:var(--accent);letter-spacing:1px;line-height:1.2;white-space:nowrap;">--:--:--</div>
+      <div id="registroDate" style="font-size:12px;color:var(--muted);margin-top:2px;">--</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:4px;">Turno</div>
+      <div id="registroTurno" style="font-size:13px;font-weight:600;color:var(--text);background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 14px;"></div>
+    </div>
+  </div>
+  <div class="form-card">
+    <div class="section-title">Nuevo registro de temperatura</div>
+
+    <!-- Pestañas de selección de formato/grupo de áreas -->
+    <div class="format-tabs" id="formatTabs">
+      <button class="format-tab active" onclick="selectFormato('mp')" data-fmt="mp">🚛 Cámaras de Materia Prima</button>
+      <button class="format-tab" onclick="selectFormato('proceso')" data-fmt="proceso">🏭 Sala de Proceso</button>
+      <button class="format-tab" onclick="selectFormato('empaque')" data-fmt="empaque">❄️ Sala de Empaque</button>
+    </div>
+
+    <div class="form-grid" style="margin-bottom:12px;grid-template-columns:1fr 1fr;">
+      <div class="form-group">
+        <label>Hora de medición</label>
+        <input type="time" id="hora" oninput="document.getElementById('turno').value = calcularTurno(this.value)" />
+        <input type="hidden" id="turno" />
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="fecha" />
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label>Inspector responsable</label>
+      <select id="operario">
+        <option value="">— Seleccionar —</option>
+        <option>LUIS APONTE</option>
+        <option>MAYDA APONTE</option>
+        <option>SHEYLA CAMONES</option>
+        <option>JOHNNY PAJUELO</option>
+        <option>BLANCA MALVACEDA</option>
+        <option>CHRISTY JIMENEZ</option>
+        <option>CORAYMA CHANGANA</option>
+      </select>
+    </div>
+
+    <!-- Selección múltiple de áreas -->
+    <div class="form-group" style="margin-bottom:16px">
+      <label id="areaLabel" style="margin-bottom:8px;display:flex;align-items:center;gap:8px">
+        ZONA / REEFERS
+        <span id="areaCount" style="font-size:10px;background:var(--accent);color:#fff;padding:2px 8px;border-radius:10px;display:none">0 seleccionadas</span>
+      </label>
+      <div id="areaCheckboxes" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    </div>
+
+    <!-- Campos dinámicos de temperatura por área -->
+    <div id="multiTempFields" style="margin-bottom:16px"></div>
+
+    <div class="form-group" style="margin-bottom:16px">
+      <label>Observaciones (opcional — aplica a todos)</label>
+      <textarea id="observaciones" rows="2" placeholder="Ej: Puerta abierta 2 min. por ingreso de pallets..."></textarea>
+    </div>
+
+    <button class="btn btn-primary" onclick="guardarRegistroMultiple()">✓ Guardar registro</button>
+  </div>
+
+  <!-- Últimos registros -->
+  <div class="section-title">Registros de hoy — <span id="contadorHoy" style="color:var(--accent);font-weight:700"></span></div>
+  <div class="table-wrap table-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Área</th>
+          <th>Temp.</th>
+          <th>Estado</th>
+          <th>Inspector</th>
+          <th>Observación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaRegistros">
+        <tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Sin registros aún hoy</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============== PANEL: HISTORIAL ============== -->
+<div id="panel-historial" class="panel">
+  <div class="filter-bar" style="flex-direction:column;gap:10px;">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <input type="date" id="filtroFecha" style="width:auto;min-width:160px;" />
+      <button class="btn btn-secondary" onclick="filtrarHistorial()">Filtrar</button>
+      <button class="btn btn-secondary" onclick="limpiarFiltroHistorial()">Limpiar</button>
+      <button class="btn btn-secondary" onclick="exportarCSV()">⬇ Exportar CSV</button>
+    </div>
+    <div id="filtroAreaChips" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+  </div>
+
+  <div class="table-wrap">
+    <div class="table-head">
+      <span class="table-title" id="historialTitle">Historial de registros</span>
+      <span class="date-text" id="historialCount"></span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Hora</th>
+          <th>Área</th>
+          <th>Temperatura</th>
+          <th>Estado</th>
+          <th>Turno</th>
+          <th>Operario</th>
+          <th>Observación</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaHistorial">
+        <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Agregue registros para ver historial</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ============== PANEL: DASHBOARD ============== -->
+<div id="panel-dashboard" class="panel">
+  <div class="section-title">Estado actual por área</div>
+  <div class="dash-grid" id="dashCards">
+    <div class="dash-card frozen">
+      <div class="dash-area">Cámara Frigorífica 1</div>
+      <div class="dash-temp">—<span class="unit">°C</span></div>
+      <div class="dash-last">Sin datos</div>
+      <div class="dash-person" style="color:var(--muted)">Sin operario</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:8px">Temperatura por hora · hoy</div>
+  <div style="margin-bottom:12px">
+    <select id="filtroAreaChart" onchange="actualizarChartHoras()" style="width:auto;min-width:200px">
+      <option value="">Todas las áreas (promedio)</option>
+      <!-- Cámaras de Materia Prima -->
+      <option>CAMARA DE MATERIA PRIMA</option>
+      <!-- Sala de Proceso -->
+      <option>ACONDICIONADO</option>
+      <option>EMBANDEJADO</option>
+      <option>LAVADO DE BANDEJAS</option>
+      <option>PRE ENFRIADO</option>
+      <!-- Sala de Empaque -->
+      <option>EMPAQUE</option>
+      <option>TEMPERATURA PRODUCTO</option>
+      <option>CAMARA DE PRODUCTO TERMINADO</option>
+      <option>DESPACHO</option>
+    </select>
+  </div>
+  <div class="chart-container">
+    <canvas id="chartHoras" height="220"></canvas>
+  </div>
+</div>
+
+<!-- ============== PANEL: CONFIG ============== -->
+<div id="panel-config" class="panel">
+  <div class="section-title">Rangos de temperatura por área</div>
+
+  <div class="areas-list">
+    <div class="area-item">
+      <div class="area-color" style="background:#10b981"></div>
+      <div class="area-info">
+        <div class="area-name">CAMARA DE MATERIA PRIMA</div>
+        <div class="area-range">Límite: &le; 8°C &nbsp;|&nbsp; Alerta: &gt; 8°C &nbsp;|&nbsp; Crítico: &gt; 13°C</div>
+      </div>
+      <span class="status-badge status-ok"><span class="dot"></span>Materia prima</span>
+    </div>
+    <div class="area-item">
+      <div class="area-color" style="background:#f59e0b"></div>
+      <div class="area-info">
+        <div class="area-name">ACONDICIONADO</div>
+        <div class="area-range">Límite: &le; 17°C &nbsp;|&nbsp; Alerta: &gt; 17°C &nbsp;|&nbsp; Crítico: &gt; 22°C</div>
+      </div>
+      <span class="status-badge status-warn"><span class="dot"></span>Acondicionado</span>
+    </div>
+    <div class="area-item">
+      <div class="area-color" style="background:#f59e0b"></div>
+      <div class="area-info">
+        <div class="area-name">EMBANDEJADO</div>
+        <div class="area-range">Límite: &le; 15°C &nbsp;|&nbsp; Alerta: &gt; 15°C &nbsp;|&nbsp; Crítico: &gt; 20°C</div>
+      </div>
+      <span class="status-badge status-warn"><span class="dot"></span>Proceso</span>
+    </div>
+    <div class="area-item">
+      <div class="area-color" style="background:#f59e0b"></div>
+      <div class="area-info">
+        <div class="area-name">LAVADO DE BANDEJAS</div>
+        <div class="area-range">Límite: &le; 18°C &nbsp;|&nbsp; Alerta: &gt; 18°C &nbsp;|&nbsp; Crítico: &gt; 23°C</div>
+      </div>
+      <span class="status-badge status-warn"><span class="dot"></span>Lavado</span>
+    </div>
+    <div class="area-item">
+      <div class="area-color" style="background:#3b82f6"></div>
+      <div class="area-info">
+        <div class="area-name">PRE ENFRIADO</div>
+        <div class="area-range">Límite: &le; 10°C &nbsp;|&nbsp; Alerta: &gt; 10°C &nbsp;|&nbsp; Crítico: &gt; 15°C</div>
+      </div>
+      <span class="status-badge status-ok"><span class="dot"></span>Pre-frío</span>
+    </div>
+    <div class="area-item">
+      <div class="area-color" style="background:#3b82f6"></div>
+      <div class="area-info">
+        <div class="area-name">EMPAQUE</div>
+        <div class="area-range">Límite: &le; 5°C &nbsp;|&nbsp; Alerta: &gt; 5°C &nbsp;|&nbsp; Crítico: &gt; 10°C</div>
+      </div>
+      <span class="status-badge status-ok"><span class="dot"></span>Empaque frío</span>
+    </div>
+    <div class="area-item">
+      <div class="area-color" style="background:#00d4aa"></div>
+      <div class="area-info">
+        <div class="area-name">TEMPERATURA PRODUCTO</div>
+        <div class="area-range">Límite: &le; -18°C &nbsp;|&nbsp; Alerta: &gt; -18°C &nbsp;|&nbsp; Crítico: &gt; -13°C</div>
+      </div>
+      <span class="status-badge status-ok"><span class="dot"></span>Producto IQF</span>
+    </div>
+    <!-- TEMPERATURA DE PRODUCTO(MP) y REEFERs: sin alertas, solo OK -->
+    <div class="area-item">
+      <div class="area-color" style="background:#00d4aa"></div>
+      <div class="area-info">
+        <div class="area-name">CAMARA DE PRODUCTO TERMINADO</div>
+        <div class="area-range">Límite: &le; -20°C &nbsp;|&nbsp; Alerta: &gt; -20°C &nbsp;|&nbsp; Crítico: &gt; -15°C</div>
+      </div>
+      <span class="status-badge status-ok"><span class="dot"></span>Producto terminado</span>
+    </div>
+    <div class="area-item">
+      <div class="area-color" style="background:#3b82f6"></div>
+      <div class="area-info">
+        <div class="area-name">DESPACHO</div>
+        <div class="area-range">Límite: &le; 5°C &nbsp;|&nbsp; Alerta: &gt; 5°C &nbsp;|&nbsp; Crítico: &gt; 10°C</div>
+      </div>
+      <span class="status-badge status-ok"><span class="dot"></span>Despacho frío</span>
+    </div>
+  </div>
+</div>
+
+<!-- ============== PANEL: EXPORTAR / BASE DE DATOS ============== -->
+<div id="panel-exportar" class="panel">
+  <div class="section-title">Conexión a Supabase (base de datos)</div>
+  <div class="info-box">
+    <strong>¿Cómo conectar a tu base de datos real?</strong><br>
+    1. Crea una cuenta gratuita en <strong>supabase.com</strong><br>
+    2. Crea un proyecto y ejecuta el SQL de abajo<br>
+    3. Reemplaza la URL y la API KEY en este archivo<br>
+    4. Los registros se enviarán directamente a tu base de datos PostgreSQL
+  </div>
+
+  <div style="margin-bottom:16px">
+    <div class="section-title">1. SQL para crear la tabla en Supabase</div>
+    <div class="code-block">
+      <button class="copy-btn" onclick="copiarSQL()">Copiar</button>
+      <span id="sqlCode"><span class="kw">CREATE TABLE</span> <span class="fn">registros_temperatura</span> (<br>
+&nbsp;&nbsp;id&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">uuid</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">DEFAULT</span> <span class="fn">gen_random_uuid</span>() <span class="kw">PRIMARY KEY</span>,<br>
+&nbsp;&nbsp;fecha&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">date</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">NOT NULL</span>,<br>
+&nbsp;&nbsp;hora&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">time</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">NOT NULL</span>,<br>
+&nbsp;&nbsp;area&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">varchar</span>(<span class="str">100</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">NOT NULL</span>,<br>
+&nbsp;&nbsp;temperatura&nbsp;&nbsp;<span class="fn">numeric</span>(<span class="str">5,1</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">NOT NULL</span>,<br>
+&nbsp;&nbsp;estado&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">varchar</span>(<span class="str">20</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">CHECK</span>(estado <span class="kw">IN</span> (<span class="str">'OK'</span>,<span class="str">'ALERTA'</span>,<span class="str">'CRITICO'</span>)),<br>
+&nbsp;&nbsp;operario&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">varchar</span>(<span class="str">100</span>)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">NOT NULL</span>,<br>
+&nbsp;&nbsp;turno&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">varchar</span>(<span class="str">50</span>),<br>
+&nbsp;&nbsp;observaciones <span class="fn">text</span>,<br>
+&nbsp;&nbsp;created_at&nbsp;&nbsp;&nbsp;<span class="fn">timestamptz</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">DEFAULT</span> <span class="fn">now</span>()<br>
+);<br><br>
+<span class="cm">-- Habilitar acceso público de lectura para Power BI</span><br>
+<span class="kw">ALTER TABLE</span> registros_temperatura <span class="kw">ENABLE ROW LEVEL SECURITY</span>;<br>
+<span class="kw">CREATE POLICY</span> <span class="str">"allow_all"</span> <span class="kw">ON</span> registros_temperatura <span class="kw">FOR ALL USING</span> (<span class="kw">true</span>);</span>
+    </div>
+  </div>
+
+  <div style="margin-bottom:16px">
+    <div class="section-title">2. Configuración de conexión</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Supabase URL</label>
+        <input type="text" id="sbUrl" placeholder="https://xxxx.supabase.co" />
+      </div>
+      <div class="form-group">
+        <label>API Key (anon/public)</label>
+        <input type="text" id="sbKey" placeholder="eyJhbGciOiJI..." />
+      </div>
+    </div>
+    <button class="btn btn-secondary" onclick="guardarConfig()" style="margin-top:12px">Guardar configuración</button>
+  </div>
+
+  <div>
+    <div class="section-title">3. Conexión Power BI / Looker Studio</div>
+    <div class="code-block" style="margin-bottom:8px">
+      <span class="cm">-- URL de la API REST de Supabase para Power BI (PostgreSQL connector)</span><br>
+      <span class="cm">-- Host:    db.XXXX.supabase.co</span><br>
+      <span class="cm">-- Puerto:  5432</span><br>
+      <span class="cm">-- DB:      postgres</span><br>
+      <span class="cm">-- User:    postgres</span><br>
+      <span class="cm">-- Pass:    (la que configuraste en Supabase)</span><br><br>
+      <span class="cm">-- Query base para gráfico por área en Power BI:</span><br>
+      <span class="kw">SELECT</span> fecha, area, <span class="fn">AVG</span>(temperatura) <span class="kw">as</span> temp_promedio,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">MIN</span>(temperatura) <span class="kw">as</span> temp_min, <span class="fn">MAX</span>(temperatura) <span class="kw">as</span> temp_max,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">COUNT</span>(*) <span class="kw">as</span> total_registros<br>
+      <span class="kw">FROM</span> registros_temperatura<br>
+      <span class="kw">GROUP BY</span> fecha, area <span class="kw">ORDER BY</span> fecha <span class="kw">DESC</span>;
+    </div>
+    <div class="info-box">
+      <strong>Para Looker Studio (Google):</strong> Usa el conector PostgreSQL con las mismas credenciales. Crea un origen de datos y arrastra los campos al lienzo.<br><br>
+      <strong>Para Power BI Desktop:</strong> Obtener datos → PostgreSQL → pega las credenciales de Supabase → elige la tabla registros_temperatura.
+    </div>
+  </div>
+</div>
+
+</div><!-- /main -->
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span class="toast-icon" id="toastIcon">✅</span>
+  <div>
+    <div class="toast-text" id="toastText">Registro guardado</div>
+    <div class="toast-sub" id="toastSub">Los datos se enviaron correctamente</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ====== ESTADO ======
+let registros = [];
+// Credenciales Supabase — fijas para todos los dispositivos
+let config = {
+  sbUrl: 'https://obnvrfvcujsrmifvlqni.supabase.co',
+  sbKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibnZyZnZjdWpzcm1pZnZscW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDY3OTUsImV4cCI6MjA4OTA4Mjc5NX0.A7BilSrDzqe2rqz1Kh8fg5t-GVNxrLGYJK4IaMlVtBs'
+};
+// Sobrescribir con config local si existe
+const localConfig = JSON.parse(localStorage.getItem('temp_config') || '{}');
+if (localConfig.sbUrl) config.sbUrl = localConfig.sbUrl;
+if (localConfig.sbKey) config.sbKey = localConfig.sbKey;
+let chartAreas = null, chartHoras = null;
+
+// ====== VERIFICAR CONEXIÓN SUPABASE ======
+async function checkSupabaseConnection() {
+  const el = document.getElementById('supabase-status');
+  if (!el || !config.sbUrl || !config.sbKey) {
+    if (el) { el.className = 'sb-status sb-error'; el.title = 'Sin configuración'; el.querySelector('.sb-text').textContent = 'Offline'; }
+    return;
+  }
+  try {
+    const res = await fetch(`${config.sbUrl}/rest/v1/registros_temperatura?limit=1`, {
+      headers: { 'apikey': config.sbKey, 'Authorization': `Bearer ${config.sbKey}` }
+    });
+    if (res.ok) {
+      el.className = 'sb-status sb-connected';
+      el.title = 'Conectado al servidor';
+      el.querySelector('.sb-text').textContent = 'Conectado';
+    } else {
+      el.className = 'sb-status sb-error';
+      el.title = 'Error de conexión';
+      el.querySelector('.sb-text').textContent = 'Sin conexión';
+    }
+  } catch(e) {
+    el.className = 'sb-status sb-error';
+    el.title = 'Sin conexión al servidor';
+    el.querySelector('.sb-text').textContent = 'Sin conexión';
+  }
+}
+
+// ====== CARGAR DESDE SUPABASE ======
+async function cargarRegistrosSupabase() {
+  if (!config.sbUrl || !config.sbKey) {
+    // Sin Supabase: cargar local
+    registros = JSON.parse(localStorage.getItem('temp_registros') || '[]');
+    renderTablaHoy();
+    renderDashboard();
+    return;
+  }
+  try {
+    const nowL = new Date();
+    const today = `${nowL.getFullYear()}-${String(nowL.getMonth()+1).padStart(2,'0')}-${String(nowL.getDate()).padStart(2,'0')}`;
+    const res = await fetch(
+      `${config.sbUrl}/rest/v1/registros_temperatura?fecha=eq.${today}&order=created_at.desc&limit=1000`,
+      { headers: { 'apikey': config.sbKey, 'Authorization': `Bearer ${config.sbKey}` } }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      // Mapear campos de Supabase al formato local
+      registros = data.map(r => ({
+        id: r.id,
+        supabase_id: r.id,
+        fecha: r.fecha,
+        hora: r.hora ? r.hora.slice(0,5) : '',
+        area: r.area,
+        temperatura: parseFloat(r.temperatura),
+        estado: r.estado,
+        operario: r.operario,
+        turno: r.turno,
+        observaciones: r.observaciones,
+        created_at: r.created_at
+      }));
+    }
+  } catch(e) {
+    console.error('Error cargando desde Supabase:', e);
+    registros = JSON.parse(localStorage.getItem('temp_registros') || '[]');
+  }
+  renderTablaHoy();
+  renderDashboard();
+}
+
+async function cargarTodosRegistros() {
+  if (!config.sbUrl || !config.sbKey) {
+    registros = JSON.parse(localStorage.getItem('temp_registros') || '[]');
+    return;
+  }
+  try {
+    const res = await fetch(
+      `${config.sbUrl}/rest/v1/registros_temperatura?order=fecha.desc,hora.desc&limit=1000`,
+      { headers: { 'apikey': config.sbKey, 'Authorization': `Bearer ${config.sbKey}` } }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      registros = data.map(r => ({
+        id: r.id,
+        supabase_id: r.id,
+        fecha: r.fecha,
+        hora: r.hora ? r.hora.slice(0,5) : '',
+        area: r.area,
+        temperatura: parseFloat(r.temperatura),
+        estado: r.estado,
+        operario: r.operario,
+        turno: r.turno,
+        observaciones: r.observaciones,
+        created_at: r.created_at
+      }));
+    }
+  } catch(e) {
+    console.error('Error:', e);
+    registros = JSON.parse(localStorage.getItem('temp_registros') || '[]');
+  }
+}
+
+// ====== RANGOS POR ÁREA ======
+const rangos = {
+  'CAMARA DE MATERIA PRIMA':      { limite: 8,   critico: 13  },
+  'ACONDICIONADO':               { limite: 17,  critico: 22  },
+  'EMBANDEJADO':                  { limite: 15,  critico: 20  },
+  'LAVADO DE BANDEJAS':           { limite: 18,  critico: 23  },
+  'PRE ENFRIADO':                 { limite: 10,  critico: 15  },
+  'EMPAQUE':                      { limite: 5,   critico: 10  },
+  'TEMPERATURA PRODUCTO':         { limite: -18, critico: -13 },
+  'CAMARA DE PRODUCTO TERMINADO': { limite: -20, critico: -15 },
+  'DESPACHO':                     { limite: 5,   critico: 10  },
+  // Nuevas áreas: Temperatura de producto para materia prima
+  'TEMPERATURA DE PRODUCTO(MP)':  { limite: -20, critico: -15 },
+  // Reefers 1-10: rango de refrigeración estándar (0 a 8°C)
+  'REEFER 1':                     { limite: 8,   critico: 13  },
+  'REEFER 2':                     { limite: 8,   critico: 13  },
+  'REEFER 3':                     { limite: 8,   critico: 13  },
+  'REEFER 4':                     { limite: 8,   critico: 13  },
+  'REEFER 5':                     { limite: 8,   critico: 13  },
+  'REEFER 6':                     { limite: 8,   critico: 13  },
+  'REEFER 7':                     { limite: 8,   critico: 13  },
+  'REEFER 8':                     { limite: 8,   critico: 13  },
+  'REEFER 9':                     { limite: 8,   critico: 13  },
+  'REEFER 10':                    { limite: 8,   critico: 13  },
+};
+
+function getEstado(area, temp) {
+  const r = rangos[area];
+  if (!r) return 'OK';
+  // REEFERs y TEMPERATURA DE PRODUCTO(MP): siempre OK (sin alertas)
+  if (area.startsWith('REEFER') || area === 'TEMPERATURA DE PRODUCTO(MP)') return 'OK';
+  // Para areas de congelado el limite es negativo: superar = subir por encima del limite
+  if (r.limite < 0) {
+    if (temp > r.critico) return 'CRITICO';
+    if (temp > r.limite)  return 'ALERTA';
+  } else {
+    if (temp > r.critico) return 'CRITICO';
+    if (temp > r.limite)  return 'ALERTA';
+  }
+  return 'OK';
+}
+
+// ====== RELOJ ======
+function actualizarReloj() {
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('es-PE', {timeZone:'America/Lima', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false});
+  const dateStr = now.toLocaleDateString('es-PE', {timeZone:'America/Lima', weekday:'long', day:'numeric', month:'long', year:'numeric' });
+  const rc = document.getElementById('registroClock');
+  const rd = document.getElementById('registroDate');
+  const rt = document.getElementById('registroTurno');
+  if (rc) rc.textContent = timeStr;
+  if (rd) rd.textContent = dateStr;
+  if (rt) {
+    const h = now.getHours();
+    rt.textContent = (h >= 6 && h <= 18) ? 'TURNO DIA (06:00-17:00)' : 'TURNO NOCHE (18:00-05:00)';
+  }
+}
+setInterval(actualizarReloj, 1000);
+actualizarReloj();
+
+function calcularTurno(horaStr) {
+  if (!horaStr) return '';
+  const h = parseInt(horaStr.split(':')[0]);
+  // Turno Dia: 06:00 a 18:00 (h >= 6 && h <= 18)
+  // Turno Noche: 19:00 a 05:00
+  if (h >= 6 && h <= 18) return 'TURNO DIA (06:00-17:00)';
+  return 'TURNO NOCHE (18:00-05:00)';
+}
+
+// ====== SELECTOR DE FORMATO (grupo de áreas) ======
+var currentFormato = 'mp';
+
+// Definición de áreas por formato — el value es lo que se guarda en Supabase
+var FORMATO_AREAS = {
+  mp: [
+    {value: 'CAMARA DE MATERIA PRIMA', label: 'CAMARA DE MATERIA PRIMA'},
+    {value: 'TEMPERATURA DE PRODUCTO(MP)', label: 'TEMPERATURA DE PRODUCTO(MP)'},
+    {value: 'REEFER 1', label: 'REEFER 1'},
+    {value: 'REEFER 2', label: 'REEFER 2'},
+    {value: 'REEFER 3', label: 'REEFER 3'},
+    {value: 'REEFER 4', label: 'REEFER 4'},
+    {value: 'REEFER 5', label: 'REEFER 5'},
+    {value: 'REEFER 6', label: 'REEFER 6'},
+    {value: 'REEFER 7', label: 'REEFER 7'},
+    {value: 'REEFER 8', label: 'REEFER 8'},
+    {value: 'REEFER 9', label: 'REEFER 9'},
+    {value: 'REEFER 10', label: 'REEFER 10'}
+  ],
+  proceso: [
+    {value: 'ACONDICIONADO', label: 'ACONDICIONADO'},
+    {value: 'EMBANDEJADO', label: 'EMBANDEJADO'},
+    {value: 'LAVADO DE BANDEJAS', label: 'LAVADO DE BANDEJAS'},
+    {value: 'PRE ENFRIADO', label: 'PRE ENFRIADO'}
+  ],
+  empaque: [
+    {value: 'TEMPERATURA PRODUCTO', label: 'TEMPERATURA DE PRODUCTO'},
+    {value: 'EMPAQUE', label: 'EMPAQUE'},
+    {value: 'CAMARA DE PRODUCTO TERMINADO', label: 'CAMARA DE PRODUCTO TERMINADO'},
+    {value: 'DESPACHO', label: 'DESPACHO'}
+  ]
+};
+
+// Función para cambiar el formato activo y generar checkboxes de áreas
+function selectFormato(fmt) {
+  currentFormato = fmt;
+  document.querySelectorAll('.format-tab').forEach(function(btn) {
+    btn.classList.toggle('active', btn.dataset.fmt === fmt);
+  });
+
+  var areaLabel = document.getElementById('areaLabel');
+  if (areaLabel) {
+    areaLabel.childNodes[0].textContent = (fmt === 'mp') ? 'ZONA / REEFERS ' : 'ÁREAS ';
+  }
+
+  // Generar checkboxes
+  var container = document.getElementById('areaCheckboxes');
+  container.innerHTML = '';
+  FORMATO_AREAS[fmt].forEach(function(a) {
+    var chip = document.createElement('label');
+    chip.className = 'area-chip';
+    chip.innerHTML = '<input type="checkbox" value="' + a.value + '" onchange="onAreaToggle()"><span class="chip-dot"></span>' + a.label;
+    container.appendChild(chip);
+  });
+
+  // Limpiar campos dinámicos
+  document.getElementById('multiTempFields').innerHTML = '';
+  updateAreaCount();
+}
+
+function onAreaToggle() {
+  // Toggle visual state
+  document.querySelectorAll('.area-chip').forEach(function(chip) {
+    var cb = chip.querySelector('input[type="checkbox"]');
+    chip.classList.toggle('selected', cb.checked);
+  });
+  updateAreaCount();
+  renderMultiTempFields();
+}
+
+function getSelectedAreas() {
+  var areas = [];
+  document.querySelectorAll('#areaCheckboxes input[type="checkbox"]:checked').forEach(function(cb) {
+    areas.push(cb.value);
+  });
+  return areas;
+}
+
+function updateAreaCount() {
+  var count = getSelectedAreas().length;
+  var badge = document.getElementById('areaCount');
+  if (count > 0) {
+    badge.style.display = 'inline';
+    badge.textContent = count + ' seleccionada' + (count > 1 ? 's' : '');
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderMultiTempFields() {
+  var areas = getSelectedAreas();
+  var container = document.getElementById('multiTempFields');
+
+  // Preserve existing values
+  var existing = {};
+  container.querySelectorAll('.multi-temp-card').forEach(function(card) {
+    var key = card.dataset.area;
+    var input = card.querySelector('.mtc-input');
+    if (input && input.value) existing[key] = input.value;
+  });
+
+  if (areas.length === 0) {
+    container.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:12px;padding:16px;border:1.5px dashed var(--border2);border-radius:14px">Selecciona una o más áreas arriba para registrar temperaturas</div>';
+    return;
+  }
+
+  container.innerHTML = areas.map(function(areaVal) {
+    var r = rangos[areaVal];
+    var rangoText = '';
+    if (r && !areaVal.startsWith('REEFER') && areaVal !== 'TEMPERATURA DE PRODUCTO(MP)') {
+      rangoText = 'Límite: ' + r.limite + '°C · Crítico: ' + r.critico + '°C';
+    }
+    var prev = existing[areaVal] || '';
+    return '<div class="multi-temp-card" data-area="' + areaVal + '">' +
+      '<div>' +
+        '<div class="mtc-area"><span class="mtc-dot"></span>' + areaVal + '</div>' +
+        (rangoText ? '<div class="mtc-rango">' + rangoText + '</div>' : '') +
+        '<div class="mtc-status" id="mts-' + areaVal.replace(/[^a-zA-Z0-9]/g,'_') + '"></div>' +
+      '</div>' +
+      '<div class="mtc-input-wrap">' +
+        '<input type="number" class="mtc-input" placeholder="0.0" step="0.1" min="-50" max="50" value="' + prev + '" oninput="updateMultiStatus(this,\'' + areaVal.replace(/'/g,"\\'") + '\')">' +
+        '<span class="mtc-unit">°C</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function updateMultiStatus(input, areaVal) {
+  var val = parseFloat(input.value);
+  var safeId = 'mts-' + areaVal.replace(/[^a-zA-Z0-9]/g,'_');
+  var el = document.getElementById(safeId);
+  if (!el) return;
+  if (isNaN(val)) { el.innerHTML = ''; return; }
+  var estado = getEstado(areaVal, val);
+  if (estado === 'OK') {
+    el.innerHTML = '<span class="status-badge status-ok" style="font-size:10px"><span class="dot"></span>OK</span>';
+  } else if (estado === 'ALERTA') {
+    el.innerHTML = '<span class="status-badge status-warn" style="font-size:10px"><span class="dot"></span>⚠ Alerta</span>';
+  } else {
+    el.innerHTML = '<span class="status-badge status-danger" style="font-size:10px"><span class="dot"></span>🚨 Crítico</span>';
+  }
+}
+
+// ====== INIT ======
+window.onload = async () => {
+  const today = new Date().toLocaleDateString('sv', {timeZone:'America/Lima'});
+  document.getElementById('fecha').value = today;
+  const now = new Date();
+  const horaPeruStr = now.toLocaleTimeString('es-PE', {timeZone:'America/Lima', hour:'2-digit', minute:'2-digit', hour12:false});
+  const horaInicial = horaPeruStr;
+  document.getElementById('hora').value = horaInicial;
+  document.getElementById('turno').value = calcularTurno(horaInicial);
+  if (config.sbUrl) document.getElementById('sbUrl').value = config.sbUrl;
+  if (config.sbKey) document.getElementById('sbKey').value = config.sbKey;
+  // Restaurar último formato usado o default "mp"
+  var lastFmt = localStorage.getItem('temp_last_formato') || 'mp';
+  selectFormato(lastFmt);
+
+  // Restaurar último operario
+  var lastOp = localStorage.getItem('temp_last_operario');
+  if (lastOp) {
+    var selOp = document.getElementById('operario');
+    for (var i = 0; i < selOp.options.length; i++) {
+      if (selOp.options[i].value === lastOp) { selOp.selectedIndex = i; break; }
+    }
+  }
+
+  // Restaurar últimas áreas seleccionadas
+  var lastAreas = JSON.parse(localStorage.getItem('temp_last_areas') || '[]');
+  if (lastAreas.length > 0) {
+    setTimeout(function() {
+      lastAreas.forEach(function(areaVal) {
+        var cb = document.querySelector('#areaCheckboxes input[type="checkbox"][value="' + areaVal + '"]');
+        if (cb) {
+          cb.checked = true;
+          cb.closest('.area-chip').classList.add('selected');
+        }
+      });
+      updateAreaCount();
+      renderMultiTempFields();
+    }, 100);
+  }
+
+  await cargarRegistrosSupabase();
+  checkSupabaseConnection();
+};
+
+// ====== TABS ======
+async function showPanel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  event.target.classList.add('active');
+  if (id === 'dashboard') {
+    await cargarRegistrosSupabase();
+    setTimeout(() => { renderChartHoras(); }, 100);
+  }
+  if (id === 'historial') {
+    renderFiltroAreaChips();
+    await cargarTodosRegistros();
+    renderHistorial();
+  }
+  if (id === 'registro') {
+    await cargarRegistrosSupabase();
+  }
+}
+
+// ====== UPDATE TEMP STATUS ======
+function updateAreaInfo() {
+  const area = document.getElementById('area').value;
+  const r = rangos[area];
+  // REEFERs y PRODUCTO(MP): no mostrar límites ni alertas
+  if (r && !area.startsWith('REEFER') && area !== 'TEMPERATURA DE PRODUCTO(MP)') {
+    document.getElementById('rangoInfo').textContent = `Límite máximo: ${r.limite}°C · Crítico: +5°C sobre el límite (${r.critico}°C)`;
+  } else {
+    document.getElementById('rangoInfo').textContent = '';
+  }
+  updateTempStatus();
+}
+
+function updateTempStatus() {
+  const val = parseFloat(document.getElementById('temperatura').value);
+  const area = document.getElementById('area').value;
+  const indicator = document.getElementById('tempIndicator');
+  const statusEl = document.getElementById('tempStatus');
+  if (isNaN(val) || !area) { indicator.style.background = 'var(--muted)'; statusEl.innerHTML = ''; return; }
+  const estado = getEstado(area, val);
+  if (estado === 'OK') {
+    indicator.style.background = 'var(--success)';
+    statusEl.innerHTML = '<span class="status-badge status-ok"><span class="dot"></span>Temperatura correcta</span>';
+  } else if (estado === 'ALERTA') {
+    indicator.style.background = 'var(--warn)';
+    statusEl.innerHTML = '<span class="status-badge status-warn"><span class="dot"></span>⚠ Fuera de rango</span>';
+  } else {
+    indicator.style.background = 'var(--danger)';
+    statusEl.innerHTML = '<span class="status-badge status-danger"><span class="dot"></span>🚨 Temperatura CRÍTICA</span>';
+  }
+}
+
+// ====== GUARDAR REGISTRO MÚLTIPLE ======
+async function guardarRegistroMultiple() {
+  const areas = getSelectedAreas();
+  const operario = document.getElementById('operario').value;
+  const hora = document.getElementById('hora').value;
+  const fecha = document.getElementById('fecha').value;
+  const obs = document.getElementById('observaciones').value;
+  const turno = document.getElementById('turno').value;
+
+  if (areas.length === 0) {
+    showToast('❌', 'Sin áreas', 'Selecciona al menos un área', 'danger');
+    return;
+  }
+  if (!operario || !hora || !fecha) {
+    showToast('❌', 'Campos incompletos', 'Completa inspector, hora y fecha', 'danger');
+    return;
+  }
+
+  // Recopilar temperaturas de cada área
+  var registrosToSave = [];
+  var missing = [];
+  areas.forEach(function(areaVal) {
+    var card = document.querySelector('.multi-temp-card[data-area="' + areaVal + '"]');
+    if (!card) return;
+    var input = card.querySelector('.mtc-input');
+    var temp = parseFloat(input.value);
+    if (isNaN(temp)) { missing.push(areaVal); return; }
+    registrosToSave.push({
+      fecha: fecha,
+      hora: hora,
+      area: areaVal,
+      temperatura: temp,
+      estado: getEstado(areaVal, temp),
+      operario: operario,
+      turno: turno || null,
+      observaciones: obs.trim() !== '' ? obs.trim() : null
+    });
+  });
+
+  if (missing.length > 0) {
+    showToast('❌', 'Temperaturas faltantes', missing.join(', '), 'danger');
+    return;
+  }
+
+  // Guardar en Supabase o local
+  var ok = 0, fail = 0;
+  if (config.sbUrl && config.sbKey) {
+    try {
+      const res = await fetch(config.sbUrl + '/rest/v1/registros_temperatura', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': config.sbKey,
+          'Authorization': 'Bearer ' + config.sbKey,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(registrosToSave)
+      });
+      if (res.ok) {
+        ok = registrosToSave.length;
+        showToast('✅', ok + ' registro' + (ok > 1 ? 's' : '') + ' guardado' + (ok > 1 ? 's' : ''), registrosToSave.map(function(r){ return r.area + ' ' + r.temperatura + '°C'; }).join(' · '));
+        await cargarRegistrosSupabase();
+      } else {
+        var errText = await res.text();
+        console.error('Supabase error:', res.status, errText);
+        showToast('⚠️', 'Error ' + res.status, errText.slice(0, 120));
+        fail = registrosToSave.length;
+      }
+    } catch (e) {
+      console.error('Fetch error:', e);
+      showToast('⚠️', 'Sin conexión', 'Guardando localmente');
+      registrosToSave.forEach(function(r) {
+        registros.push(Object.assign({}, r, {id: Date.now() + Math.random(), created_at: new Date().toISOString()}));
+      });
+      localStorage.setItem('temp_registros', JSON.stringify(registros));
+      ok = registrosToSave.length;
+    }
+  } else {
+    registrosToSave.forEach(function(r) {
+      registros.push(Object.assign({}, r, {id: Date.now() + Math.random(), created_at: new Date().toISOString()}));
+    });
+    localStorage.setItem('temp_registros', JSON.stringify(registros));
+    ok = registrosToSave.length;
+    showToast('✅', ok + ' registro' + (ok > 1 ? 's' : '') + ' guardado' + (ok > 1 ? 's' : ''), 'Almacenamiento local');
+  }
+
+  // Guardar preferencias del inspector y áreas usadas para el próximo registro
+  localStorage.setItem('temp_last_operario', operario);
+  localStorage.setItem('temp_last_formato', currentFormato);
+  localStorage.setItem('temp_last_areas', JSON.stringify(areas));
+
+  // Reset: limpiar temperaturas y observaciones, pero RE-SELECCIONAR las mismas áreas
+  document.getElementById('observaciones').value = '';
+  // Re-generar las áreas del mismo formato y re-seleccionar las mismas
+  selectFormato(currentFormato);
+  // Re-marcar las mismas áreas que usó
+  setTimeout(function() {
+    areas.forEach(function(areaVal) {
+      var cb = document.querySelector('#areaCheckboxes input[type="checkbox"][value="' + areaVal + '"]');
+      if (cb) {
+        cb.checked = true;
+        cb.closest('.area-chip').classList.add('selected');
+      }
+    });
+    updateAreaCount();
+    renderMultiTempFields();
+  }, 50);
+
+
+  if (!config.sbUrl || !config.sbKey) {
+    renderTablaHoy();
+    renderDashboard();
+  }
+}
+
+// ====== TABLA HOY ======
+function renderTablaHoy() {
+  // registros ya están filtrados por hoy desde Supabase, ordenar por último registrado (created_at)
+  const hoy = [...registros].sort((a,b) => {
+    if (a.created_at && b.created_at) return b.created_at.localeCompare(a.created_at);
+    return b.hora.localeCompare(a.hora);
+  });
+  const tbody = document.getElementById('tablaRegistros');
+  const contador = document.getElementById('contadorHoy');
+  if (contador) contador.textContent = hoy.length + ' registros';
+  if (hoy.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:24px">Sin registros aún hoy</td></tr>'; return; }
+  tbody.innerHTML = hoy.map(r => `
+    <tr>
+      <td style="font-family:'DM Mono',monospace;font-size:13px;white-space:nowrap">${r.hora}</td>
+      <td style="font-size:12px;white-space:nowrap">${r.area}</td>
+      <td style="white-space:nowrap"><span class="temp-val temp-${r.estado==='OK'?'ok':r.estado==='ALERTA'?'warn':'danger'}">${r.temperatura}°C</span></td>
+      <td style="white-space:nowrap"><span class="status-badge status-${r.estado==='OK'?'ok':r.estado==='ALERTA'?'warn':'danger'}"><span class="dot"></span>${r.estado}</span></td>
+      <td style="font-size:12px;white-space:nowrap">${r.operario}</td>
+      <td style="font-size:12px;color:var(--muted);white-space:nowrap;max-width:160px;overflow:hidden;text-overflow:ellipsis">${r.observaciones||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-icon" onclick="abrirEditar('${r.id}')" title="Editar">✏️</button>
+        <button class="btn-icon del" onclick="confirmarEliminar('${r.id}')" title="Eliminar">🗑</button>
+      </td>
+    </tr>`).join('');
+}
+
+// ====== HISTORIAL ======
+function renderHistorial(filtro = {}) {
+  let data = [...registros].sort((a,b) => {
+    if (a.created_at && b.created_at) return b.created_at.localeCompare(a.created_at);
+    return (b.fecha+b.hora).localeCompare(a.fecha+a.hora);
+  });
+  if (filtro.fecha) data = data.filter(r => r.fecha === filtro.fecha);
+  if (filtro.areas && filtro.areas.length > 0) data = data.filter(r => filtro.areas.includes(r.area));
+  document.getElementById('historialCount').textContent = `${data.length} registros`;
+  const tbody = document.getElementById('tablaHistorial');
+  if (data.length === 0) { tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:var(--muted);padding:24px">Sin registros con ese filtro</td></tr>'; return; }
+  tbody.innerHTML = data.map(r => `
+    <tr>
+      <td style="font-size:12px;font-family:'DM Mono',monospace">${r.fecha}</td>
+      <td style="font-size:12px;font-family:'DM Mono',monospace">${r.hora}</td>
+      <td style="font-size:13px">${r.area}</td>
+      <td><span class="temp-val temp-${r.estado==='OK'?'ok':r.estado==='ALERTA'?'warn':'danger'}">${r.temperatura}°C</span></td>
+      <td><span class="status-badge status-${r.estado==='OK'?'ok':r.estado==='ALERTA'?'warn':'danger'}"><span class="dot"></span>${r.estado}</span></td>
+      <td style="font-size:12px">${r.turno||'—'}</td>
+      <td style="font-size:12px">${r.operario}</td>
+      <td style="font-size:11px;color:var(--muted);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.observaciones||'—'}</td>
+      <td style="white-space:nowrap">
+        <button class="btn-icon" onclick="abrirEditarHistorial('${r.id}')" title="Editar">✏️</button>
+        <button class="btn-icon del" onclick="abrirEliminarHistorial('${r.id}')" title="Eliminar">🗑</button>
+      </td>
+    </tr>`).join('');
+}
+// ====== HISTORIAL: CHIPS DE ÁREAS ======
+const HISTORIAL_AREAS = [
+  'CAMARA DE MATERIA PRIMA','TEMPERATURA DE PRODUCTO(MP)',
+  'REEFER 1','REEFER 2','REEFER 3','REEFER 4','REEFER 5',
+  'REEFER 6','REEFER 7','REEFER 8','REEFER 9','REEFER 10',
+  'ACONDICIONADO','EMBANDEJADO','LAVADO DE BANDEJAS','PRE ENFRIADO',
+  'EMPAQUE','TEMPERATURA PRODUCTO','CAMARA DE PRODUCTO TERMINADO','DESPACHO'
+];
+
+function renderFiltroAreaChips() {
+  const container = document.getElementById('filtroAreaChips');
+  container.innerHTML = HISTORIAL_AREAS.map(a =>
+    `<label class="area-chip" onclick="toggleFiltroChip(this)"><input type="checkbox" value="${a}"><span class="chip-dot"></span>${a}</label>`
+  ).join('');
+}
+
+function toggleFiltroChip(chip) {
+  const cb = chip.querySelector('input[type="checkbox"]');
+  chip.classList.toggle('selected', cb.checked);
+  filtrarHistorial();
+}
+
+function getSelectedFiltroAreas() {
+  var areas = [];
+  document.querySelectorAll('#filtroAreaChips input[type="checkbox"]:checked').forEach(cb => areas.push(cb.value));
+  return areas;
+}
+
+function limpiarFiltroHistorial() {
+  document.getElementById('filtroFecha').value = '';
+  document.querySelectorAll('#filtroAreaChips .area-chip').forEach(chip => {
+    chip.classList.remove('selected');
+    chip.querySelector('input[type="checkbox"]').checked = false;
+  });
+  filtrarHistorial();
+}
+
+async function filtrarHistorial() {
+  await cargarTodosRegistros();
+  const fecha = document.getElementById('filtroFecha').value;
+  const areas = getSelectedFiltroAreas();
+  renderHistorial({ fecha: fecha, areas: areas });
+}
+
+// ====== EXPORT CSV ======
+function exportarCSV() {
+  const headers = ['id','fecha','hora','area','temperatura','estado','operario','turno','observaciones','created_at'];
+  const rows = registros.map(r => headers.map(h => `"${(r[h]||'').toString().replace(/"/g,'""')}"`).join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `temperaturas_${new Date().toISOString().split('T')[0]}.csv`; a.click();
+}
+
+// ====== DASHBOARD ======
+// Áreas excluidas del dashboard y gráficas
+const AREAS_EXCLUIDAS = ['TEMPERATURA DE PRODUCTO(MP)','REEFER 1','REEFER 2','REEFER 3','REEFER 4','REEFER 5','REEFER 6','REEFER 7','REEFER 8','REEFER 9','REEFER 10'];
+
+function renderDashboard() {
+  const today = new Date().toLocaleDateString('sv', {timeZone:'America/Lima'});
+  const hoy = registros.filter(r => r.fecha === today);
+  const areas = Object.keys(rangos).filter(a => !AREAS_EXCLUIDAS.includes(a));
+  const cardColors = { 'CAMARA DE MATERIA PRIMA':'cold','ACONDICIONADO':'ambient','EMBANDEJADO':'ambient','LAVADO DE BANDEJAS':'ambient','PRE ENFRIADO':'cold','EMPAQUE':'cold','TEMPERATURA PRODUCTO':'frozen','CAMARA DE PRODUCTO TERMINADO':'frozen','DESPACHO':'cold','TEMPERATURA DE PRODUCTO(MP)':'frozen','REEFER 1':'cold','REEFER 2':'cold','REEFER 3':'cold','REEFER 4':'cold','REEFER 5':'cold','REEFER 6':'cold','REEFER 7':'cold','REEFER 8':'cold','REEFER 9':'cold','REEFER 10':'cold' };
+  const container = document.getElementById('dashCards');
+  container.innerHTML = areas.map(area => {
+    const regs = hoy.filter(r => r.area === area).sort((a,b) => b.hora.localeCompare(a.hora));
+    const ultimo = regs[0];
+    const color = ultimo ? (ultimo.estado==='CRITICO'?'critical':ultimo.estado==='ALERTA'?'ambient':cardColors[area]||'cold') : cardColors[area]||'cold';
+    const estadoColor = ultimo ? (ultimo.estado==='OK' ? 'var(--success)' : ultimo.estado==='ALERTA' ? 'var(--warn)' : 'var(--danger)') : 'var(--muted)';
+    const estadoBg   = ultimo ? (ultimo.estado==='OK' ? 'rgba(16,185,129,0.15)' : ultimo.estado==='ALERTA' ? 'rgba(245,158,11,0.15)' : 'rgba(239,68,68,0.15)') : 'transparent';
+    const estadoLabel= ultimo ? (ultimo.estado==='OK' ? '✓ ÓPTIMO' : ultimo.estado==='ALERTA' ? '⚠ ALERTA' : '🚨 CRÍTICO') : '— Sin datos';
+    return `<div class="dash-card ${color}">
+      <div class="dash-area">${area}</div>
+      <div class="dash-temp">${ultimo ? ultimo.temperatura : '—'}<span class="unit">°C</span></div>
+      <div class="dash-last">${ultimo ? `Última: ${ultimo.hora}` : 'Sin datos hoy'}</div>
+      <div class="dash-person" style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+        <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:0.5px;background:${estadoBg};color:${estadoColor};">${estadoLabel}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ====== CHARTS ======
+const AREA_COLORS = ['#00d4aa','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#10b981','#06b6d4'];
+
+function renderChartAreas() {
+  const today = new Date().toLocaleDateString('sv', {timeZone:'America/Lima'});
+  const hoy = registros.filter(r => r.fecha === today);
+  const areas = Object.keys(rangos);
+  const promedios = areas.map(a => {
+    const regs = hoy.filter(r => r.area === a);
+    return regs.length ? (regs.reduce((s,r) => s+r.temperatura, 0)/regs.length).toFixed(1) : null;
+  });
+  const ctx = document.getElementById('chartAreas').getContext('2d');
+  if (chartAreas) chartAreas.destroy();
+  chartAreas = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: areas.map(a => a.replace('Cámara Frigorífica', 'Cám. F.')),
+      datasets: [{ label: 'Temp. promedio (°C)', data: promedios, backgroundColor: AREA_COLORS.map(c => c+'99'), borderColor: AREA_COLORS, borderWidth: 2, borderRadius: 6 }]
+    },
+    options: {
+      responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y !== null ? ctx.parsed.y+'°C' : 'Sin datos'}` } } },
+      scales: { x: { ticks: { color: '#64748b', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#64748b', callback: v => parseFloat(v).toFixed(1)+'°C' }, grid: { color: 'rgba(255,255,255,0.07)' } } }
+    }
+  });
+}
+
+function renderChartHoras() { actualizarChartHoras(); }
+
+function actualizarChartHoras() {
+  const today = new Date().toLocaleDateString('sv', {timeZone:'America/Lima'});
+  const areaFiltro = document.getElementById('filtroAreaChart').value;
+  const horas = Array.from({length: 24}, (_,i) => `${String(i).padStart(2,'0')}:00`);
+  const CHART_COLORS = ['#00d4aa','#3b82f6','#f59e0b','#8b5cf6','#ef4444','#10b981','#06b6d4','#ec4899','#f97316'];
+  const areasChart = Object.keys(rangos).filter(a => !AREAS_EXCLUIDAS.includes(a));
+
+  let datasets;
+  if (areaFiltro) {
+    // Una sola área seleccionada
+    const data = registros.filter(r => r.fecha === today && r.area === areaFiltro);
+    const puntos = horas.map(h => {
+      const regs = data.filter(r => r.hora.startsWith(h.slice(0,2)));
+      return regs.length ? (regs.reduce((s,r) => s+r.temperatura, 0)/regs.length).toFixed(1) : null;
+    });
+    datasets = [{ label: areaFiltro, data: puntos, borderColor: '#00d4aa', backgroundColor: 'rgba(0,212,170,0.08)', borderWidth: 2, pointRadius: 4, pointBackgroundColor: '#00d4aa', tension: 0.3, spanGaps: true }];
+  } else {
+    // Todas las áreas, una línea por cada una
+    datasets = areasChart.map((area, i) => {
+      const data = registros.filter(r => r.fecha === today && r.area === area);
+      const puntos = horas.map(h => {
+        const regs = data.filter(r => r.hora.startsWith(h.slice(0,2)));
+        return regs.length ? (regs.reduce((s,r) => s+r.temperatura, 0)/regs.length).toFixed(1) : null;
+      });
+      const color = CHART_COLORS[i % CHART_COLORS.length];
+      return { label: area, data: puntos, borderColor: color, backgroundColor: color+'15', borderWidth: 2, pointRadius: 3, pointBackgroundColor: color, tension: 0.3, spanGaps: true };
+    });
+  }
+
+  const ctx = document.getElementById('chartHoras').getContext('2d');
+  if (chartHoras) chartHoras.destroy();
+  chartHoras = new Chart(ctx, {
+    type: 'line',
+    data: { labels: horas, datasets: datasets },
+    options: {
+      responsive: true, plugins: { legend: { labels: { color: '#94a3b8', font: { size: 11 } }, position: 'top' } },
+      scales: { x: { ticks: { color: '#64748b', maxRotation: 45, font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.05)' } }, y: { ticks: { color: '#64748b', callback: v => parseFloat(v).toFixed(1)+'°C' }, grid: { color: 'rgba(255,255,255,0.07)' } } }
+    }
+  });
+}
+
+// ====== TOAST ======
+function showToast(icon, text, sub, type='success') {
+  const t = document.getElementById('toast');
+  document.getElementById('toastIcon').textContent = icon;
+  document.getElementById('toastText').textContent = text;
+  document.getElementById('toastSub').textContent = sub;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ====== CONFIG ======
+function guardarConfig() {
+  config.sbUrl = document.getElementById('sbUrl').value.trim().replace(/\/$/, '');
+  config.sbKey = document.getElementById('sbKey').value.trim();
+  localStorage.setItem('temp_config', JSON.stringify(config));
+  showToast('✅', 'Configuración guardada', 'Se usará Supabase para nuevos registros');
+}
+
+// ====== MODAL EDITAR ======
+let editingId = null;
+
+function abrirEditar(id) {
+  const r = registros.find(x => String(x.id) === String(id));
+  if (!r) return;
+  editingId = id;
+  document.getElementById('editId').value = id;
+  document.getElementById('editArea').value = r.area;
+  document.getElementById('editOperario').value = r.operario;
+  document.getElementById('editFecha').value = r.fecha || new Date().toLocaleDateString('sv', {timeZone:'America/Lima'});
+  document.getElementById('editHora').value = r.hora;
+  document.getElementById('editTemp').value = r.temperatura;
+  document.getElementById('editTurno').value = r.turno || calcularTurno(r.hora);
+  document.getElementById('editObs').value = r.observaciones || '';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function cerrarModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+}
+
+async function guardarEdicion() {
+  if (editingId === null) return;
+  const idx = registros.findIndex(x => String(x.id) === String(editingId));
+  if (idx === -1) return;
+  const area  = document.getElementById('editArea').value;
+  const temp  = parseFloat(document.getElementById('editTemp').value);
+  const fecha = document.getElementById('editFecha').value;
+  const hora  = document.getElementById('editHora').value;
+  const turno = document.getElementById('editTurno').value;
+  const obs   = document.getElementById('editObs').value;
+  const op    = document.getElementById('editOperario').value;
+  if (!area || isNaN(temp) || !hora || !fecha) { showToast('❌', 'Campos incompletos', 'Completa área, temperatura, fecha y hora'); return; }
+  const estado = getEstado(area, temp);
+  registros[idx] = { ...registros[idx], area, temperatura: temp, fecha, hora, turno, observaciones: obs.trim()||null, operario: op, estado };
+  localStorage.setItem('temp_registros', JSON.stringify(registros));
+
+  // Actualizar en Supabase si tiene id UUID (registros enviados al servidor)
+  if (config.sbUrl && config.sbKey && registros[idx].supabase_id) {
+    const payload = { area, temperatura: temp, fecha, hora, turno: turno||null, observaciones: obs.trim()||null, operario: op, estado };
+    fetch(`${config.sbUrl}/rest/v1/registros_temperatura?id=eq.${registros[idx].supabase_id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'apikey': config.sbKey, 'Authorization': `Bearer ${config.sbKey}`, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(payload)
+    });
+  }
+
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+  await cargarRegistrosSupabase();
+  showToast('✅', 'Registro actualizado', `${area} · ${temp}°C · ${hora}`);
+}
+
+function confirmarEliminar(id) {
+  editingId = id;
+  const r = registros.find(x => String(x.id) === String(id));
+  if (!r) return;
+  // Open modal and scroll to delete button
+  abrirEditar(id);
+  setTimeout(() => document.querySelector('.btn-danger').focus(), 100);
+}
+
+async function eliminarRegistro() {
+  if (editingId === null) return;
+  const r = registros.find(x => String(x.id) === String(editingId));
+  // Eliminar de Supabase si aplica
+  if (r && config.sbUrl && config.sbKey && r.supabase_id) {
+    fetch(`${config.sbUrl}/rest/v1/registros_temperatura?id=eq.${r.supabase_id}`, {
+      method: 'DELETE',
+      headers: { 'apikey': config.sbKey, 'Authorization': `Bearer ${config.sbKey}` }
+    });
+  }
+  registros = registros.filter(x => String(x.id) !== String(editingId));
+  localStorage.setItem('temp_registros', JSON.stringify(registros));
+  document.getElementById('modalOverlay').classList.remove('open');
+  editingId = null;
+  await cargarRegistrosSupabase();
+  showToast('🗑', 'Registro eliminado', 'El registro fue borrado correctamente');
+}
+
+// ====== MODO CLARO/OSCURO ======
+function toggleTheme() {
+  const isLight = document.body.classList.toggle('light-mode');
+  const thumb = document.getElementById('switchThumb');
+  const label = document.getElementById('switchLabel');
+  if (isLight) {
+    thumb.textContent = '☀️';
+    label.textContent = 'Modo claro';
+  } else {
+    thumb.textContent = '🌙';
+    label.textContent = 'Modo oscuro';
+  }
+  localStorage.setItem('theme', isLight ? 'light' : 'dark');
+}
+
+// Restaurar tema guardado
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-mode');
+    // Update switch after DOM loads
+    window.addEventListener('DOMContentLoaded', () => {
+      const thumb = document.getElementById('switchThumb');
+      const label = document.getElementById('switchLabel');
+      if (thumb) thumb.textContent = '☀️';
+      if (label) label.textContent = 'Modo claro';
+    });
+  }
+})();
+
+// ====== SQL COPY ======
+function copiarSQL() {
+  const sql = `CREATE TABLE registros_temperatura (
+  id            uuid             DEFAULT gen_random_uuid() PRIMARY KEY,
+  fecha         date             NOT NULL,
+  hora          time             NOT NULL,
+  area          varchar(100)     NOT NULL,
+  temperatura   numeric(5,1)     NOT NULL,
+  estado        varchar(20)      CHECK(estado IN ('OK','ALERTA','CRITICO')),
+  operario      varchar(100)     NOT NULL,
+  turno         varchar(50),
+  observaciones text,
+  created_at    timestamptz      DEFAULT now()
+);
+ALTER TABLE registros_temperatura ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "allow_all" ON registros_temperatura FOR ALL USING (true);`;
+  navigator.clipboard.writeText(sql).then(() => showToast('📋', 'SQL copiado', 'Pégalo en el editor SQL de Supabase'));
+}
+</script>
+
+<!-- MODAL EDITAR REGISTRO -->
+<div class="modal-overlay" id="modalOverlay" onclick="cerrarModal(event)">
+  <div class="modal">
+    <div class="modal-title">
+      <span>✏️ Editar registro</span>
+      <button class="modal-close" onclick="cerrarModal()">✕</button>
+    </div>
+    <input type="hidden" id="editId" />
+    <div class="form-grid" style="margin-bottom:14px;grid-template-columns:1fr 1fr;">
+      <div class="form-group">
+        <label>Área</label>
+        <select id="editArea">
+          <!-- Cámaras de Materia Prima -->
+          <option value="CAMARA DE MATERIA PRIMA">CAMARA DE MATERIA PRIMA</option>
+          <option value="TEMPERATURA DE PRODUCTO(MP)">TEMPERATURA DE PRODUCTO(MP)</option>
+          <option value="REEFER 1">REEFER 1</option>
+          <option value="REEFER 2">REEFER 2</option>
+          <option value="REEFER 3">REEFER 3</option>
+          <option value="REEFER 4">REEFER 4</option>
+          <option value="REEFER 5">REEFER 5</option>
+          <option value="REEFER 6">REEFER 6</option>
+          <option value="REEFER 7">REEFER 7</option>
+          <option value="REEFER 8">REEFER 8</option>
+          <option value="REEFER 9">REEFER 9</option>
+          <option value="REEFER 10">REEFER 10</option>
+          <!-- Sala de Proceso -->
+          <option value="ACONDICIONADO">ACONDICIONADO</option>
+          <option value="EMBANDEJADO">EMBANDEJADO</option>
+          <option value="LAVADO DE BANDEJAS">LAVADO DE BANDEJAS</option>
+          <option value="PRE ENFRIADO">PRE ENFRIADO</option>
+          <!-- Sala de Empaque -->
+          <option value="EMPAQUE">EMPAQUE</option>
+          <option value="TEMPERATURA PRODUCTO">TEMPERATURA PRODUCTO</option>
+          <option value="CAMARA DE PRODUCTO TERMINADO">CAMARA DE PRODUCTO TERMINADO</option>
+          <option value="DESPACHO">DESPACHO</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Supervisor</label>
+        <select id="editOperario">
+          <option>LUIS APONTE</option>
+          <option>MAYDA APONTE</option>
+          <option>SHEYLA CAMONES</option>
+          <option>JOHNNY PAJUELO</option>
+          <option>BLANCA MALVACEDA</option>
+          <option>CHRISTY JIMENEZ</option>
+          <option>CORAYMA CHANGANA</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid three" style="margin-bottom:14px">
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="editFecha" />
+      </div>
+      <div class="form-group">
+        <label>Hora</label>
+        <input type="time" id="editHora" oninput="document.getElementById('editTurno').value = calcularTurno(this.value)" />
+      </div>
+      <div class="form-group">
+        <label>Turno (automático)</label>
+        <input type="text" id="editTurno" readonly style="background:var(--surface2);color:var(--accent);font-weight:600;cursor:default;" />
+      </div>
+    </div>
+    <div class="form-grid" style="margin-bottom:14px">
+      <div class="form-group">
+        <label>Temperatura (°C)</label>
+        <div class="temp-input-wrap">
+          <input type="number" id="editTemp" step="0.1" min="-50" max="50" />
+          <span class="temp-unit">°C</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Observaciones</label>
+      <textarea id="editObs" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-danger" onclick="eliminarRegistro()">🗑 Eliminar</button>
+      <button class="btn btn-save" onclick="guardarEdicion()">✓ Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== HISTORIAL: EDITAR/ELIMINAR DIRECTO ======
+function abrirEditarHistorial(id) {
+  abrirEditar(id);
+}
+
+function abrirEliminarHistorial(id) {
+  abrirEditar(id);
+  setTimeout(() => document.querySelector('.btn-danger').focus(), 100);
+}
+</script>
+
+<!-- Registrar Service Worker para PWA -->
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(function(reg) {
+    console.log('[PWA] Service Worker registrado:', reg.scope);
+  }).catch(function(err) {
+    console.log('[PWA] Error registrando SW:', err);
+  });
+}
+</script>
+</body>
+</html>

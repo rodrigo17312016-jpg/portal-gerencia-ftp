@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Consumo Diario Microbiologia | Frutos Tropicales</title>
+<link rel="icon" href="LOGO.png" type="image/png">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root{
+  --bg:#06081A;--card:rgba(255,255,255,.043);--cb:rgba(255,255,255,.09);
+  --t:#E2E8F0;--tm:#94A3B8;--ts:#4B5563;--tshadow:rgba(6,8,26,.96);
+  --und:#00D4FF;--kg:#C084FC;--lt:#FB923C;
+  --ok:#22C55E;--mod:#F59E0B;--low:#FBBC04;--crit:#EF4444;
+  --card-shadow:none;
+  --accent1:#00D4FF;--accent2:#C084FC;--accent3:#FB923C;--accent4:#22C55E;--accent5:#EF4444;
+}
+[data-theme="light"]{
+  --bg:#EEF2F7;--card:rgba(255,255,255,.88);--cb:rgba(0,0,0,.1);
+  --t:#1E293B;--tm:#475569;--ts:#94A3B8;--tshadow:rgba(248,250,252,.98);
+  --card-shadow:0 2px 10px rgba(0,0,0,.08);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t);overflow-x:hidden;min-height:100vh;transition:background .3s,color .3s}
+body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:radial-gradient(ellipse 60% 40% at 5% 20%,rgba(0,212,255,.07) 0%,transparent 55%),radial-gradient(ellipse 45% 50% at 95% 75%,rgba(192,132,252,.07) 0%,transparent 55%),radial-gradient(ellipse 35% 35% at 50% 5%,rgba(251,146,60,.05) 0%,transparent 45%);transition:opacity .3s}
+[data-theme="light"] body::before{background:radial-gradient(ellipse 60% 40% at 5% 20%,rgba(59,130,246,.05) 0%,transparent 55%),radial-gradient(ellipse 45% 50% at 95% 75%,rgba(139,92,246,.04) 0%,transparent 55%),radial-gradient(ellipse 35% 35% at 50% 5%,rgba(249,115,22,.03) 0%,transparent 45%)}
+.wrap{max-width:1500px;margin:0 auto;padding:20px;position:relative;z-index:1}
+
+/* HEADER */
+header{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid var(--cb);gap:12px;flex-wrap:wrap}
+.hlogo{display:flex;align-items:center;gap:12px}
+.hlogo-img{width:48px;height:48px;object-fit:contain;border-radius:8px;flex-shrink:0}
+.hicon{width:42px;height:42px;border-radius:11px;flex-shrink:0;background:linear-gradient(135deg,#EF4444,#F59E0B);display:grid;place-items:center;font-size:20px;box-shadow:0 0 18px rgba(239,68,68,.35)}
+h1{font-size:20px;font-weight:800;background:linear-gradient(135deg,#fff 30%,#94A3B8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+[data-theme="light"] h1{background:linear-gradient(135deg,#1E293B 30%,#64748B);-webkit-background-clip:text;background-clip:text}
+.hsubt{font-size:11px;color:var(--tm);margin-top:2px}
+.hright{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.hdate{background:rgba(255,255,255,.06);border:1px solid var(--cb);border-radius:8px;padding:5px 11px;font-size:11px;color:var(--tm);white-space:nowrap}
+[data-theme="light"] .hdate{background:rgba(0,0,0,.05)}
+.theme-btn{display:flex;align-items:center;gap:6px;padding:7px 13px;border-radius:10px;cursor:pointer;background:rgba(255,255,255,.06);border:1px solid var(--cb);color:var(--tm);font-size:12px;font-weight:600;transition:all .2s;user-select:none;white-space:nowrap}
+.theme-btn:hover{background:rgba(255,255,255,.12);color:var(--t)}
+[data-theme="light"] .theme-btn{background:rgba(0,0,0,.05)}
+[data-theme="light"] .theme-btn:hover{background:rgba(0,0,0,.1);color:var(--t)}
+.btn-portal-premium{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;text-decoration:none;color:#fff;background:linear-gradient(135deg,#0d6b4e,#10b981,#0d6b4e);background-size:200% 200%;animation:btnShimmer 3s ease-in-out infinite;padding:5px 14px;border-radius:20px;border:1px solid rgba(16,185,129,.4);box-shadow:0 2px 8px rgba(16,185,129,.25),inset 0 1px 0 rgba(255,255,255,.15);transition:all .3s ease}
+.btn-portal-premium:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(16,185,129,.4);filter:brightness(1.15)}
+@keyframes btnShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* FIRMA */
+@keyframes firmaShine{0%{left:-100%}50%,100%{left:200%}}
+@keyframes firmaBorderGlow{0%,100%{border-color:rgba(212,175,55,.2);box-shadow:0 2px 12px rgba(0,0,0,.15)}50%{border-color:rgba(212,175,55,.45);box-shadow:0 2px 24px rgba(212,175,55,.15),0 4px 16px rgba(0,0,0,.2)}}
+@keyframes signatureShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+.topbar-dev-signature{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 22px;border-radius:20px;background:linear-gradient(145deg,rgba(10,18,32,.85),rgba(20,30,48,.9),rgba(15,25,40,.85));border:1px solid rgba(212,175,55,.3);position:relative;overflow:hidden;backdrop-filter:blur(16px);animation:firmaBorderGlow 4s ease infinite}
+.topbar-dev-signature::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,.08),rgba(255,255,255,.05),transparent);animation:firmaShine 5s ease-in-out infinite;pointer-events:none}
+.topbar-dev-signature>*{position:relative;z-index:1}
+.topbar-sig-label{font-size:7px;color:rgba(212,175,55,.7);text-transform:uppercase;letter-spacing:2px;font-weight:800}
+.signature-name{font-size:13px;font-weight:900;letter-spacing:.3px;background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:signatureShimmer 4s ease infinite;line-height:1.3}
+.signature-role{font-size:9px;font-weight:700;color:#22c55e;letter-spacing:.5px}
+[data-theme="light"] .topbar-dev-signature{background:linear-gradient(145deg,rgba(245,240,225,.85),rgba(255,250,240,.9),rgba(245,240,225,.85))}
+[data-theme="light"] .topbar-sig-label{color:rgba(139,105,20,.8)}
+[data-theme="light"] .signature-name{background:linear-gradient(135deg,#8B6914 0%,#b8941f 25%,#6b5b3a 50%,#b8941f 75%,#8B6914 100%);background-size:300% 100%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+[data-theme="light"] .signature-role{color:#15803d}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--cb);border-radius:14px;padding:16px 14px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s;cursor:default;box-shadow:var(--card-shadow)}
+.kpi:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(0,0,0,.3)}
+.kpi::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:14px 14px 0 0}
+.kpi.c1::after{background:linear-gradient(90deg,#00D4FF,#0080FF)}
+.kpi.c2::after{background:linear-gradient(90deg,#EF4444,#FF6B6B)}
+.kpi.c3::after{background:linear-gradient(90deg,#FBBC04,#F59E0B)}
+.kpi.c4::after{background:linear-gradient(90deg,#22C55E,#16A34A)}
+.kpi.c5::after{background:linear-gradient(90deg,#C084FC,#9333EA)}
+.kpi.c6::after{background:linear-gradient(90deg,#FB923C,#EA580C)}
+.kpi-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:var(--tm);margin-bottom:7px}
+.kpi-val{font-size:26px;font-weight:900;line-height:1}
+.kpi.c1 .kpi-val{color:#00D4FF}.kpi.c2 .kpi-val{color:#EF4444}
+.kpi.c3 .kpi-val{color:#FBBC04}.kpi.c4 .kpi-val{color:#22C55E}
+.kpi.c5 .kpi-val{color:#C084FC}.kpi.c6 .kpi-val{color:#FB923C}
+.kpi-sub{font-size:10.5px;color:var(--tm);margin-top:6px;padding-top:6px;border-top:1px solid var(--cb)}
+.kpi-trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-left:4px}
+.kpi-trend.up{background:rgba(239,68,68,.15);color:#EF4444}
+.kpi-trend.down{background:rgba(34,197,94,.15);color:#22C55E}
+
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--cb);border-radius:14px;padding:16px;box-shadow:var(--card-shadow);transition:box-shadow .2s}
+.ch{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:6px}
+.ct{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.csub{font-size:11px;color:var(--ts);margin-bottom:10px}
+.badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:6px}
+.b0{background:rgba(255,255,255,.06);color:var(--tm)}
+.b1{background:rgba(0,212,255,.12);color:#00D4FF}
+.b2{background:rgba(239,68,68,.12);color:#EF4444}
+.b3{background:rgba(192,132,252,.12);color:#C084FC}
+[data-theme="light"] .b0{background:rgba(0,0,0,.06)}
+
+/* LAYOUT */
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px;align-items:start}
+.row-full{margin-bottom:16px}
+.row2>*,.row3>*{min-width:0}
+.chart-scroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+.csi{position:relative}
+
+/* FILTERS */
+.filter-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:12px}
+.filter-bar .lbl{font-size:10px;font-weight:700;color:var(--tm);text-transform:uppercase;letter-spacing:.8px}
+.mpill{font-size:12px;font-weight:600;padding:6px 14px;border-radius:20px;border:1px solid var(--cb);background:transparent;color:var(--tm);cursor:pointer;transition:all .2s;user-select:none}
+.mpill.on{background:rgba(0,212,255,.15);color:#00D4FF;border-color:rgba(0,212,255,.3)}
+.mpill:hover{background:rgba(255,255,255,.08)}
+[data-theme="light"] .mpill:hover{background:rgba(0,0,0,.06)}
+.tbtn{font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:8px;border:1px solid var(--cb);background:transparent;color:var(--tm);cursor:pointer;transition:all .2s}
+.tbtn.on{background:rgba(0,212,255,.12);color:#00D4FF;border-color:rgba(0,212,255,.3)}
+.tbtn:hover{background:rgba(255,255,255,.08)}
+.divider{width:1px;height:18px;background:var(--cb);margin:0 4px}
+
+/* PRODUCT SELECTOR */
+.prod-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.pchip{font-size:10.5px;font-weight:600;padding:4px 10px;border-radius:14px;border:1px solid var(--cb);background:transparent;color:var(--tm);cursor:pointer;transition:all .2s;white-space:nowrap}
+.pchip.on{border-color:currentColor;background:rgba(255,255,255,.08)}
+.pchip:hover{background:rgba(255,255,255,.06)}
+
+/* TABLE */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{position:sticky;top:0;background:var(--bg);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--tm);padding:10px 8px;text-align:left;cursor:pointer;user-select:none;border-bottom:2px solid var(--cb);white-space:nowrap}
+th:hover{color:var(--t)}
+td{padding:9px 8px;border-bottom:1px solid var(--cb);white-space:nowrap}
+tr:hover td{background:rgba(255,255,255,.03)}
+[data-theme="light"] tr:hover td{background:rgba(0,0,0,.02)}
+.cost-cell{font-weight:700;font-variant-numeric:tabular-nums}
+.cost-high{color:#EF4444}.cost-med{color:#F59E0B}.cost-low{color:#22C55E}
+.bar-mini{display:inline-block;height:6px;border-radius:3px;margin-left:6px;vertical-align:middle;min-width:2px}
+
+/* HEATMAP */
+.heatmap-wrap{overflow-x:auto;padding-bottom:8px}
+.heatmap{display:grid;gap:2px;font-size:9px}
+.hm-cell{border-radius:3px;display:flex;align-items:center;justify-content:center;font-weight:600;transition:transform .15s;cursor:pointer;min-width:22px;height:22px}
+.hm-cell:hover{transform:scale(1.3);z-index:2}
+.hm-header{font-size:8px;font-weight:700;color:var(--tm);text-align:center;padding:2px}
+.hm-legend{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--tm);margin-top:8px}
+.hm-legend-box{width:14px;height:14px;border-radius:3px}
+
+/* TOOLTIP */
+.chart-tooltip{position:absolute;background:rgba(15,23,42,.95);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 14px;font-size:11px;color:#E2E8F0;pointer-events:none;z-index:100;backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:280px;white-space:nowrap;opacity:0;transition:opacity .15s}
+[data-theme="light"] .chart-tooltip{background:rgba(255,255,255,.95);color:#1E293B;border-color:rgba(0,0,0,.1)}
+
+/* DETAIL PANEL */
+.dp{min-height:200px}
+.dp-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:200px;color:var(--ts);text-align:center;padding:20px}
+.dp-empty .ei{font-size:36px;margin-bottom:8px}
+.dpc{display:none}
+.dp-title{font-size:15px;font-weight:800;margin-bottom:4px}
+.dp-cost{font-size:28px;font-weight:900;margin:8px 0}
+.dp-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}
+.dp-item{background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px}
+.dp-item-lbl{font-size:9px;font-weight:700;text-transform:uppercase;color:var(--tm);letter-spacing:.6px}
+.dp-item-val{font-size:16px;font-weight:800;margin-top:2px}
+
+/* RESPONSIVE */
+@media(max-width:1100px){.row2,.row3{grid-template-columns:1fr}.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:768px){.wrap{padding:12px}.kpi-row{grid-template-columns:repeat(2,1fr);gap:8px}.kpi-val{font-size:20px}.kpi-sub{display:none}h1{font-size:17px}.hsubt{display:none}header{gap:8px}}
+@media(max-width:480px){.kpi-row{grid-template-columns:1fr 1fr;gap:8px}h1{font-size:15px}.hdate{display:none}.theme-btn span.theme-text{display:none}.mpill{font-size:11px;padding:5px 10px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<header>
+  <div class="hlogo">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:6px">
+      <img src="LOGO.png" alt="Frutos Tropicales" class="hlogo-img">
+      <a href="portal-gerencia.html" class="btn-portal-premium">&#x2190; Portal</a>
+    </div>
+    <div>
+      <h1>Consumo Diario & Costos - Microbiologia</h1>
+      <div class="hsubt">Frutos Tropicales Peru Export S.A.C. - Area de Calidad - Laboratorio Interno</div>
+    </div>
+  </div>
+  <div class="hright">
+    <div class="hdate" id="dateRange">12/12/2025 - 05/03/2026</div>
+    <button class="theme-btn" onclick="toggleTheme()">
+      <span id="themeIcon">&#9728;&#65039;</span>
+      <span class="theme-text" id="themeText">Modo claro</span>
+    </button>
+    <div class="topbar-dev-signature">
+      <div class="topbar-sig-label">DESARROLLADO POR:</div>
+      <div class="signature-name">Rodrigo Garcia</div>
+      <div class="signature-role">Systems Analyst &amp; Developer-QA</div>
+    </div>
+  </div>
+</header>
+
+<!-- KPIs -->
+<div class="kpi-row">
+  <div class="kpi c1"><div class="kpi-lbl">Costo Total Periodo</div><div class="kpi-val" id="kv1">S/ 0</div><div class="kpi-sub" id="ks1">14 productos analizados</div></div>
+  <div class="kpi c2"><div class="kpi-lbl">Costo Promedio Diario</div><div class="kpi-val" id="kv2">S/ 0</div><div class="kpi-sub" id="ks2">Promedio dias activos</div></div>
+  <div class="kpi c3"><div class="kpi-lbl">Dia Mas Costoso</div><div class="kpi-val" id="kv3">S/ 0</div><div class="kpi-sub" id="ks3">-</div></div>
+  <div class="kpi c4"><div class="kpi-lbl">Total Unidades</div><div class="kpi-val" id="kv4">0</div><div class="kpi-sub" id="ks4">Consumidas en el periodo</div></div>
+  <div class="kpi c5"><div class="kpi-lbl">Producto + Costoso</div><div class="kpi-val" id="kv5">-</div><div class="kpi-sub" id="ks5">-</div></div>
+  <div class="kpi c6"><div class="kpi-lbl">Dias con Actividad</div><div class="kpi-val" id="kv6">0</div><div class="kpi-sub" id="ks6">de 88 dias del periodo</div></div>
+</div>
+
+<!-- GLOBAL FILTERS -->
+<div class="card" style="margin-bottom:16px">
+  <div class="ch"><div class="ct">Filtros Globales <span class="badge b1" id="filterBadge">Todos los datos</span></div></div>
+  <div class="filter-bar">
+    <span class="lbl">Periodo:</span>
+    <button class="mpill on" data-m="all" onclick="toggleMonth('all')">Todos</button>
+    <button class="mpill on" data-m="dic" onclick="toggleMonth('dic')">Diciembre</button>
+    <button class="mpill on" data-m="ene" onclick="toggleMonth('ene')">Enero</button>
+    <button class="mpill on" data-m="feb" onclick="toggleMonth('feb')">Febrero</button>
+    <button class="mpill on" data-m="mar" onclick="toggleMonth('mar')">Marzo</button>
+    <div class="divider"></div>
+    <span class="lbl">Vista:</span>
+    <button class="tbtn on" id="viewDay" onclick="setView('day')">Diario</button>
+    <button class="tbtn" id="viewWeek" onclick="setView('week')">Semanal</button>
+    <button class="tbtn" id="viewMonth" onclick="setView('month')">Mensual</button>
+    <div class="divider"></div>
+    <span class="lbl">Metrica:</span>
+    <button class="tbtn on" id="metCost" onclick="setMetric('cost')">Costo (S/)</button>
+    <button class="tbtn" id="metQty" onclick="setMetric('qty')">Cantidad</button>
+  </div>
+  <div class="prod-chips" id="prodChips"></div>
+</div>
+
+<!-- ROW 1: Timeline + Donut -->
+<div class="row2">
+  <div class="card">
+    <div class="ch">
+      <div class="ct">Costo Diario en el Tiempo <span class="badge b2" id="timelineBadge">S/ 14,634.79</span></div>
+      <div style="display:flex;gap:4px">
+        <button class="tbtn on" id="btnBar" onclick="setChartType('bar')">Barras</button>
+        <button class="tbtn" id="btnLine" onclick="setChartType('line')">Linea</button>
+        <button class="tbtn" id="btnArea" onclick="setChartType('area')">Area</button>
+      </div>
+    </div>
+    <p class="csub">Clic en barra para ver detalle del dia - Linea punteada = promedio</p>
+    <div class="chart-scroll"><div class="csi" id="timelineWrap" style="height:320px"><canvas id="cTimeline"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">Distribucion de Costos <span class="badge b3">Por producto</span></div></div>
+    <p class="csub">Top 10 productos por costo total - Clic para filtrar</p>
+    <div class="csi" style="height:320px;display:flex;align-items:center;justify-content:center"><canvas id="cDonut"></canvas></div>
+  </div>
+</div>
+
+<!-- ROW 2: Heatmap -->
+<div class="row-full">
+  <div class="card">
+    <div class="ch">
+      <div class="ct">Mapa de Calor - Consumo Diario <span class="badge b0" id="heatBadge">14 productos</span></div>
+      <div style="display:flex;gap:4px">
+        <button class="tbtn on" id="hmCost" onclick="setHeatMetric('cost')">Costo</button>
+        <button class="tbtn" id="hmQty" onclick="setHeatMetric('qty')">Cantidad</button>
+      </div>
+    </div>
+    <p class="csub">Intensidad de color = magnitud del consumo / costo - Hover para detalle</p>
+    <div class="heatmap-wrap" id="heatmapWrap"></div>
+    <div class="hm-legend" id="heatLegend"></div>
+  </div>
+</div>
+
+<!-- ROW 3: Top Products + Weekly + Detail -->
+<div class="row3">
+  <div class="card">
+    <div class="ch"><div class="ct">Ranking de Costos <span class="badge b2">Por producto</span></div></div>
+    <p class="csub">Costo total acumulado - Clic para detalle</p>
+    <div class="chart-scroll"><div class="csi" id="rankWrap" style="height:400px"><canvas id="cRank"></canvas></div></div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">Tendencia Semanal <span class="badge b1">Evolucion</span></div></div>
+    <p class="csub">Costo total por semana - Detecta incrementos</p>
+    <div class="chart-scroll"><div class="csi" id="weekWrap" style="height:400px"><canvas id="cWeek"></canvas></div></div>
+  </div>
+  <div class="card dp" id="detailPanel">
+    <div class="dp-empty" id="dpEmpty">
+      <div class="ei">&#128270;</div>
+      <p>Selecciona un dia, producto o celda del heatmap para ver el detalle completo</p>
+    </div>
+    <div class="dpc" id="dpContent"></div>
+  </div>
+</div>
+
+<!-- TABLE -->
+<div class="card" style="margin-bottom:16px">
+  <div class="ch" style="margin-bottom:8px">
+    <div class="ct">Tabla de Consumo Diario Detallado <span class="badge b0" id="tblBadge">14 productos</span></div>
+    <div style="display:flex;gap:4px;align-items:center">
+      <input type="text" id="tblSearch" placeholder="Buscar producto..." style="font-size:11px;padding:5px 10px;border-radius:8px;border:1px solid var(--cb);background:rgba(255,255,255,.06);color:var(--t);outline:none;width:160px" oninput="renderTable()">
+      <button class="tbtn" id="btnExport" onclick="exportCSV()">Exportar CSV</button>
+    </div>
+  </div>
+  <div class="tw"><table id="mainTable">
+    <thead><tr>
+      <th onclick="sortTbl(0)">#</th>
+      <th onclick="sortTbl(1)">Producto</th>
+      <th onclick="sortTbl(2)">Und</th>
+      <th onclick="sortTbl(3)">Costo Und (S/)</th>
+      <th onclick="sortTbl(4)">Total Consumido</th>
+      <th onclick="sortTbl(5)">Costo Total (S/)</th>
+      <th onclick="sortTbl(6)">Promedio/Dia</th>
+      <th onclick="sortTbl(7)">Max Dia</th>
+      <th onclick="sortTbl(8)">% del Costo</th>
+      <th>Sparkline</th>
+    </tr></thead>
+    <tbody id="tBody"></tbody>
+  </table></div>
+</div>
+
+<!-- DAILY BREAKDOWN TABLE -->
+<div class="card" style="margin-bottom:18px">
+  <div class="ch" style="margin-bottom:8px">
+    <div class="ct">Desglose Diario Completo <span class="badge b0" id="dailyBadge">Todas las fechas</span></div>
+    <div style="display:flex;gap:4px;align-items:center">
+      <button class="tbtn on" id="dailyCost" onclick="setDailyView('cost')">Costos</button>
+      <button class="tbtn" id="dailyQty" onclick="setDailyView('qty')">Cantidades</button>
+    </div>
+  </div>
+  <div class="tw" style="max-height:450px;overflow-y:auto" id="dailyTableWrap"></div>
+</div>
+
+<footer style="text-align:center;padding:14px;border-top:1px solid var(--cb);font-size:10px;color:var(--ts)">
+  Dashboard Consumo Diario Microbiologia - Frutos Tropicales - Datos: COSTO DE MICROBIOLOGIA- FTP.xlsx
+</footer>
+</div>
+
+<!-- TOOLTIP -->
+<div class="chart-tooltip" id="tooltip"></div>
+
+<script>
+/* ═══════ DATA ═══════ */
+const RAW_DATA = {"dates": [{"col": 4, "date": "2025-12-12", "day": "12/12"}, {"col": 5, "date": "2025-12-13", "day": "13/12"}, {"col": 6, "date": "2025-12-14", "day": "14/12"}, {"col": 7, "date": "2025-12-15", "day": "15/12"}, {"col": 8, "date": "2025-12-16", "day": "16/12"}, {"col": 9, "date": "2025-12-17", "day": "17/12"}, {"col": 10, "date": "2025-12-18", "day": "18/12"}, {"col": 11, "date": "2025-12-19", "day": "19/12"}, {"col": 12, "date": "2025-12-20", "day": "20/12"}, {"col": 13, "date": "2025-12-21", "day": "21/12"}, {"col": 14, "date": "2025-12-22", "day": "22/12"}, {"col": 15, "date": "2025-12-23", "day": "23/12"}, {"col": 16, "date": "2025-12-24", "day": "24/12"}, {"col": 17, "date": "2025-12-25", "day": "25/12"}, {"col": 18, "date": "2025-12-26", "day": "26/12"}, {"col": 19, "date": "2025-12-27", "day": "27/12"}, {"col": 20, "date": "2025-12-28", "day": "28/12"}, {"col": 21, "date": "2025-12-29", "day": "29/12"}, {"col": 22, "date": "2025-12-30", "day": "30/12"}, {"col": 23, "date": "2025-12-31", "day": "31/12"}, {"col": 24, "date": "2026-01-01", "day": "01/01"}, {"col": 25, "date": "2026-01-02", "day": "02/01"}, {"col": 26, "date": "2026-01-03", "day": "03/01"}, {"col": 27, "date": "2026-01-04", "day": "04/01"}, {"col": 28, "date": "2026-01-05", "day": "05/01"}, {"col": 29, "date": "2026-01-06", "day": "06/01"}, {"col": 30, "date": "2026-01-07", "day": "07/01"}, {"col": 31, "date": "2026-01-08", "day": "08/01"}, {"col": 32, "date": "2026-01-09", "day": "09/01"}, {"col": 33, "date": "2026-01-10", "day": "10/01"}, {"col": 34, "date": "2026-01-11", "day": "11/01"}, {"col": 35, "date": "2026-01-12", "day": "12/01"}, {"col": 36, "date": "2026-01-13", "day": "13/01"}, {"col": 37, "date": "2026-01-14", "day": "14/01"}, {"col": 38, "date": "2026-01-15", "day": "15/01"}, {"col": 39, "date": "2026-01-16", "day": "16/01"}, {"col": 40, "date": "2026-01-17", "day": "17/01"}, {"col": 41, "date": "2026-01-18", "day": "18/01"}, {"col": 42, "date": "2026-01-19", "day": "19/01"}, {"col": 43, "date": "2026-01-20", "day": "20/01"}, {"col": 44, "date": "2026-01-21", "day": "21/01"}, {"col": 45, "date": "2026-01-22", "day": "22/01"}, {"col": 46, "date": "2026-01-23", "day": "23/01"}, {"col": 47, "date": "2026-01-24", "day": "24/01"}, {"col": 48, "date": "2026-01-25", "day": "25/01"}, {"col": 49, "date": "2026-01-26", "day": "26/01"}, {"col": 50, "date": "2026-01-27", "day": "27/01"}, {"col": 51, "date": "2026-01-28", "day": "28/01"}, {"col": 52, "date": "2026-01-29", "day": "29/01"}, {"col": 53, "date": "2026-01-30", "day": "30/01"}, {"col": 54, "date": "2026-01-31", "day": "31/01"}, {"col": 55, "date": "2026-02-01", "day": "01/02"}, {"col": 56, "date": "2026-02-02", "day": "02/02"}, {"col": 57, "date": "2026-02-03", "day": "03/02"}, {"col": 58, "date": "2026-02-04", "day": "04/02"}, {"col": 59, "date": "2026-02-05", "day": "05/02"}, {"col": 60, "date": "2026-02-06", "day": "06/02"}, {"col": 61, "date": "2026-02-07", "day": "07/02"}, {"col": 62, "date": "2026-02-08", "day": "08/02"}, {"col": 63, "date": "2026-02-09", "day": "09/02"}, {"col": 64, "date": "2026-02-10", "day": "10/02"}, {"col": 65, "date": "2026-02-11", "day": "11/02"}, {"col": 66, "date": "2026-02-12", "day": "12/02"}, {"col": 67, "date": "2026-02-13", "day": "13/02"}, {"col": 68, "date": "2026-02-14", "day": "14/02"}, {"col": 69, "date": "2026-02-15", "day": "15/02"}, {"col": 70, "date": "2026-02-16", "day": "16/02"}, {"col": 71, "date": "2026-02-17", "day": "17/02"}, {"col": 72, "date": "2026-02-18", "day": "18/02"}, {"col": 73, "date": "2026-02-19", "day": "19/02"}, {"col": 74, "date": "2026-02-20", "day": "20/02"}, {"col": 75, "date": "2026-02-21", "day": "21/02"}, {"col": 76, "date": "2026-02-22", "day": "22/02"}, {"col": 77, "date": "2026-02-23", "day": "23/02"}, {"col": 78, "date": "2026-02-24", "day": "24/02"}, {"col": 79, "date": "2026-02-25", "day": "25/02"}, {"col": 80, "date": "2026-02-26", "day": "26/02"}, {"col": 81, "date": "2026-02-27", "day": "27/02"}, {"col": 82, "date": "2026-02-28", "day": "28/02"}, {"col": 83, "date": "2026-03-01", "day": "01/03"}, {"col": 84, "date": "2026-03-02", "day": "02/03"}, {"col": 85, "date": "2026-03-03", "day": "03/03"}, {"col": 86, "date": "2026-03-04", "day": "04/03"}, {"col": 87, "date": "2026-03-05", "day": "05/03"}, {"col": 88, "date": "2026-03-06", "day": "06/03"}, {"col": 89, "date": "2026-03-07", "day": "07/03"}, {"col": 90, "date": "2026-03-08", "day": "08/03"}, {"col": 91, "date": "2026-03-09", "day": "09/03"}], "products": [{"name": "MICROFAST COLIFORME COLI COUNT PLATE - 25UND", "costBox": 145.5, "costUnit": 5.82, "total": 220.0, "totalCost": 1280.4, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 4.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 4.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 1.0, "2025-12-30": 2.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 1.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 2.0, "2026-01-07": 1.0, "2026-01-08": 3.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 5.0, "2026-01-14": 1.0, "2026-01-15": 1.0, "2026-01-16": 3.0, "2026-01-17": 1.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 5.0, "2026-01-21": 2.0, "2026-01-22": 3.0, "2026-01-23": 3.0, "2026-01-24": 2.0, "2026-01-25": 0.0, "2026-01-26": 4.0, "2026-01-27": 5.0, "2026-01-28": 3.0, "2026-01-29": 12.0, "2026-01-30": 3.0, "2026-01-31": 5.0, "2026-02-01": 0, "2026-02-02": 5.0, "2026-02-03": 6.0, "2026-02-04": 6.0, "2026-02-05": 6.0, "2026-02-06": 4.0, "2026-02-07": 6.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 8.0, "2026-02-11": 5.0, "2026-02-12": 4.0, "2026-02-13": 8.0, "2026-02-14": 4.0, "2026-02-15": 0, "2026-02-16": 4.0, "2026-02-17": 5.0, "2026-02-18": 4.0, "2026-02-19": 6.0, "2026-02-20": 4.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 6.0, "2026-02-24": 5.0, "2026-02-25": 6.0, "2026-02-26": 4.0, "2026-02-27": 10.0, "2026-02-28": 8.0, "2026-03-01": 0, "2026-03-02": 4.0, "2026-03-03": 6.0, "2026-03-04": 7.0, "2026-03-05": 3.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "MICROFAST AEROBIC COUNT PLATE - 25UND", "costBox": 82.54, "costUnit": 3.3016, "total": 215.0, "totalCost": 709.84, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 4.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 4.0, "2025-12-27": 6.0, "2025-12-28": 0, "2025-12-29": 1.0, "2025-12-30": 2.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 3.0, "2026-01-03": 1.0, "2026-01-04": 0, "2026-01-05": 1.0, "2026-01-06": 2.0, "2026-01-07": 1.0, "2026-01-08": 3.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 5.0, "2026-01-14": 1.0, "2026-01-15": 1.0, "2026-01-16": 3.0, "2026-01-17": 1.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 5.0, "2026-01-21": 2.0, "2026-01-22": 3.0, "2026-01-23": 3.0, "2026-01-24": 2.0, "2026-01-25": 0.0, "2026-01-26": 4.0, "2026-01-27": 5.0, "2026-01-28": 3.0, "2026-01-29": 8.0, "2026-01-30": 3.0, "2026-01-31": 5.0, "2026-02-01": 0, "2026-02-02": 5.0, "2026-02-03": 3.0, "2026-02-04": 6.0, "2026-02-05": 6.0, "2026-02-06": 4.0, "2026-02-07": 3.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 3.0, "2026-02-11": 5.0, "2026-02-12": 4.0, "2026-02-13": 8.0, "2026-02-14": 4.0, "2026-02-15": 0, "2026-02-16": 4.0, "2026-02-17": 5.0, "2026-02-18": 4.0, "2026-02-19": 6.0, "2026-02-20": 4.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 6.0, "2026-02-24": 5.0, "2026-02-25": 6.0, "2026-02-26": 4.0, "2026-02-27": 10.0, "2026-02-28": 8.0, "2026-03-01": 0, "2026-03-02": 4.0, "2026-03-03": 6.0, "2026-03-04": 7.0, "2026-03-05": 3.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "MICROFAST STAPHYLOCCOCUS AUREUS COUNT PLATE - 25UND", "costBox": 136.68, "costUnit": 5.4672, "total": 195.0, "totalCost": 1066.1, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 4.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 4.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 1.0, "2025-12-30": 2.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 1.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 2.0, "2026-01-07": 1.0, "2026-01-08": 3.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 5.0, "2026-01-14": 1.0, "2026-01-15": 1.0, "2026-01-16": 3.0, "2026-01-17": 1.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 5.0, "2026-01-21": 2.0, "2026-01-22": 3.0, "2026-01-23": 3.0, "2026-01-24": 2.0, "2026-01-25": 0.0, "2026-01-26": 4.0, "2026-01-27": 5.0, "2026-01-28": 3.0, "2026-01-29": 7.0, "2026-01-30": 3.0, "2026-01-31": 5.0, "2026-02-01": 0, "2026-02-02": 5.0, "2026-02-03": 6.0, "2026-02-04": 6.0, "2026-02-05": 6.0, "2026-02-06": 4.0, "2026-02-07": 3.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 3.0, "2026-02-11": 5.0, "2026-02-12": 4.0, "2026-02-13": 8.0, "2026-02-14": 4.0, "2026-02-15": 0, "2026-02-16": 4.0, "2026-02-17": 5.0, "2026-02-18": 4.0, "2026-02-19": 6.0, "2026-02-20": 1.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 6.0, "2026-02-24": 5.0, "2026-02-25": 6.0, "2026-02-26": 4.0, "2026-02-27": 8.0, "2026-02-28": 5.0, "2026-03-01": 0, "2026-03-02": 4.0, "2026-03-03": 5.0, "2026-03-04": 4.0, "2026-03-05": 3.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "MICROFAST YEAST & MOLD COUNT PLATE -25UND", "costBox": 86.98, "costUnit": 3.4792, "total": 213.0, "totalCost": 741.07, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 4.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 4.0, "2025-12-27": 6.0, "2025-12-28": 0, "2025-12-29": 1.0, "2025-12-30": 2.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 3.0, "2026-01-03": 1.0, "2026-01-04": 0, "2026-01-05": 1.0, "2026-01-06": 2.0, "2026-01-07": 1.0, "2026-01-08": 3.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 5.0, "2026-01-14": 1.0, "2026-01-15": 1.0, "2026-01-16": 3.0, "2026-01-17": 1.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 5.0, "2026-01-21": 2.0, "2026-01-22": 3.0, "2026-01-23": 3.0, "2026-01-24": 2.0, "2026-01-25": 0.0, "2026-01-26": 4.0, "2026-01-27": 5.0, "2026-01-28": 3.0, "2026-01-29": 9.0, "2026-01-30": 3.0, "2026-01-31": 5.0, "2026-02-01": 0, "2026-02-02": 5.0, "2026-02-03": 3.0, "2026-02-04": 6.0, "2026-02-05": 6.0, "2026-02-06": 4.0, "2026-02-07": 3.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 3.0, "2026-02-11": 5.0, "2026-02-12": 4.0, "2026-02-13": 8.0, "2026-02-14": 4.0, "2026-02-15": 0, "2026-02-16": 4.0, "2026-02-17": 5.0, "2026-02-18": 4.0, "2026-02-19": 6.0, "2026-02-20": 4.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 6.0, "2026-02-24": 5.0, "2026-02-25": 6.0, "2026-02-26": 4.0, "2026-02-27": 10.0, "2026-02-28": 8.0, "2026-03-01": 0, "2026-03-02": 4.0, "2026-03-03": 6.0, "2026-03-04": 4.0, "2026-03-05": 3.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "MICROFAST ENVIROMENTAL LISTERIA COUNT PLATE CAJA X 50 UND", "costBox": 784.0, "costUnit": 15.68, "total": 92.0, "totalCost": 1442.56, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 17.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 16.0, "2026-01-04": 0, "2026-01-05": 3.0, "2026-01-06": 3.0, "2026-01-07": 3.0, "2026-01-08": 0.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.0, "2026-01-14": 0.0, "2026-01-15": 0.0, "2026-01-16": 0.0, "2026-01-17": 0.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.0, "2026-01-21": 0.0, "2026-01-22": 0.0, "2026-01-23": 0.0, "2026-01-24": 0.0, "2026-01-25": 0.0, "2026-01-26": 0.0, "2026-01-27": 0.0, "2026-01-28": 0.0, "2026-01-29": 0.0, "2026-01-30": 0.0, "2026-01-31": 0.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 0.0, "2026-02-04": 0.0, "2026-02-05": 0.0, "2026-02-06": 0.0, "2026-02-07": 14.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 0.0, "2026-02-11": 14.0, "2026-02-12": 0.0, "2026-02-13": 1.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 1.0, "2026-02-17": 0.0, "2026-02-18": 0.0, "2026-02-19": 0.0, "2026-02-20": 20.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.0, "2026-02-24": 0.0, "2026-02-25": 0.0, "2026-02-26": 0.0, "2026-02-27": 0.0, "2026-02-28": 0.0, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 0.0, "2026-03-04": 0.0, "2026-03-05": 0.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "AQUATESTE COLI ONPG/MUG CALDO CX10", "costBox": 84.0, "costUnit": 8.4, "total": 3.0, "totalCost": 25.2, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 0.0, "2026-01-08": 0.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.0, "2026-01-14": 0.0, "2026-01-15": 0.0, "2026-01-16": 0.0, "2026-01-17": 0.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.0, "2026-01-21": 0.0, "2026-01-22": 0.0, "2026-01-23": 0.0, "2026-01-24": 0.0, "2026-01-25": 0.0, "2026-01-26": 0.0, "2026-01-27": 0.0, "2026-01-28": 0.0, "2026-01-29": 0.0, "2026-01-30": 0.0, "2026-01-31": 0.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 3.0, "2026-02-04": 0.0, "2026-02-05": 0.0, "2026-02-06": 0.0, "2026-02-07": 0.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 0.0, "2026-02-11": 0.0, "2026-02-12": 0.0, "2026-02-13": 0.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 0.0, "2026-02-17": 0.0, "2026-02-18": 0.0, "2026-02-19": 0.0, "2026-02-20": 0.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.0, "2026-02-24": 0.0, "2026-02-25": 0.0, "2026-02-26": 0.0, "2026-02-27": 0.0, "2026-02-28": 0.0, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 0.0, "2026-03-04": 0.0, "2026-03-05": 0.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "CAPISWAB LETHEEN BROTH 10MLX100 UND", "costBox": 507.2, "costUnit": 5.072, "total": 83.0, "totalCost": 420.98, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 17.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 16.0, "2026-01-04": 0, "2026-01-05": 3.0, "2026-01-06": 3.0, "2026-01-07": 3.0, "2026-01-08": 0.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.0, "2026-01-14": 0.0, "2026-01-15": 0.0, "2026-01-16": 0.0, "2026-01-17": 0.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.0, "2026-01-21": 0.0, "2026-01-22": 0.0, "2026-01-23": 0.0, "2026-01-24": 0.0, "2026-01-25": 0.0, "2026-01-26": 0.0, "2026-01-27": 0.0, "2026-01-28": 0.0, "2026-01-29": 2.0, "2026-01-30": 0.0, "2026-01-31": 0.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 0.0, "2026-02-04": 0.0, "2026-02-05": 0.0, "2026-02-06": 0.0, "2026-02-07": 14.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 0.0, "2026-02-11": 8.0, "2026-02-12": 0.0, "2026-02-13": 0.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 1.0, "2026-02-17": 0.0, "2026-02-18": 0.0, "2026-02-19": 0.0, "2026-02-20": 15.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.0, "2026-02-24": 0.0, "2026-02-25": 0.0, "2026-02-26": 0.0, "2026-02-27": 0.0, "2026-02-28": 0.0, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 1.0, "2026-03-04": 0.0, "2026-03-05": 0.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "CAPISPONGE NEUTRALIZING BUFFER SPONGE STICK PQT X 25 UND", "costBox": 24.0, "costUnit": 0.96, "total": 14.0, "totalCost": 13.44, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 0.0, "2026-01-08": 0.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.0, "2026-01-14": 0.0, "2026-01-15": 0.0, "2026-01-16": 0.0, "2026-01-17": 0.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.0, "2026-01-21": 0.0, "2026-01-22": 0.0, "2026-01-23": 0.0, "2026-01-24": 0.0, "2026-01-25": 0.0, "2026-01-26": 0.0, "2026-01-27": 0.0, "2026-01-28": 0.0, "2026-01-29": 0.0, "2026-01-30": 0.0, "2026-01-31": 0.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 0.0, "2026-02-04": 0.0, "2026-02-05": 0.0, "2026-02-06": 0.0, "2026-02-07": 0.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 0.0, "2026-02-11": 6.0, "2026-02-12": 0.0, "2026-02-13": 0.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 0.0, "2026-02-17": 0.0, "2026-02-18": 0.0, "2026-02-19": 0.0, "2026-02-20": 5.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.0, "2026-02-24": 0.0, "2026-02-25": 0.0, "2026-02-26": 0.0, "2026-02-27": 0.0, "2026-02-28": 3.0, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 0.0, "2026-03-04": 0.0, "2026-03-05": 0.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "FRASCOS ESTERILES 100ML CON TIOSULFATO BY LABORCLIN PAQ X10 UND", "costBox": 53.0, "costUnit": 5.3, "total": 3.0, "totalCost": 15.9, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 0.0, "2026-01-08": 0.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.0, "2026-01-14": 0.0, "2026-01-15": 0.0, "2026-01-16": 0.0, "2026-01-17": 0.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.0, "2026-01-21": 0.0, "2026-01-22": 0.0, "2026-01-23": 0.0, "2026-01-24": 0.0, "2026-01-25": 0.0, "2026-01-26": 0.0, "2026-01-27": 0.0, "2026-01-28": 0.0, "2026-01-29": 0.0, "2026-01-30": 0.0, "2026-01-31": 0.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 3.0, "2026-02-04": 0.0, "2026-02-05": 0.0, "2026-02-06": 0.0, "2026-02-07": 0.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 0.0, "2026-02-11": 0.0, "2026-02-12": 0.0, "2026-02-13": 0.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 0.0, "2026-02-17": 0.0, "2026-02-18": 0.0, "2026-02-19": 0.0, "2026-02-20": 0.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.0, "2026-02-24": 0.0, "2026-02-25": 0.0, "2026-02-26": 0.0, "2026-02-27": 0.0, "2026-02-28": 0.0, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 0.0, "2026-03-04": 0.0, "2026-03-05": 0.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "ATP QUICK SAWB YL0001 ATP", "costBox": 1032.5, "costUnit": 10.325, "total": 183.0, "totalCost": 1889.47, "daily": {"2025-12-12": 3.0, "2025-12-13": 4.0, "2025-12-14": 0.0, "2025-12-15": 5.0, "2025-12-16": 15.0, "2025-12-17": 5.0, "2025-12-18": 7.0, "2025-12-19": 8.0, "2025-12-20": 6.0, "2025-12-21": 6.0, "2025-12-22": 6.0, "2025-12-23": 4.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 3.0, "2025-12-28": 3.0, "2025-12-29": 0.0, "2025-12-30": 2.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 1.0, "2026-01-08": 0.0, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 2.0, "2026-01-14": 0.0, "2026-01-15": 2.0, "2026-01-16": 0.0, "2026-01-17": 2.0, "2026-01-18": 0, "2026-01-19": 2.0, "2026-01-20": 0.0, "2026-01-21": 2.0, "2026-01-22": 0.0, "2026-01-23": 2.0, "2026-01-24": 0.0, "2026-01-25": 1.0, "2026-01-26": 5.0, "2026-01-27": 0.0, "2026-01-28": 3.0, "2026-01-29": 2.0, "2026-01-30": 4.0, "2026-01-31": 9.0, "2026-02-01": 0, "2026-02-02": 3.0, "2026-02-03": 6.0, "2026-02-04": 5.0, "2026-02-05": 4.0, "2026-02-06": 0.0, "2026-02-07": 0.0, "2026-02-08": 0, "2026-02-09": 7.0, "2026-02-10": 7.0, "2026-02-11": 7.0, "2026-02-12": 0.0, "2026-02-13": 7.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 8.0, "2026-02-17": 6.0, "2026-02-18": 6.0, "2026-02-19": 3.0, "2026-02-20": 0, "2026-02-21": 0, "2026-02-22": 0, "2026-02-23": 0, "2026-02-24": 0, "2026-02-25": 0, "2026-02-26": 0, "2026-02-27": 0, "2026-02-28": 0, "2026-03-01": 0, "2026-03-02": 0, "2026-03-03": 0, "2026-03-04": 0, "2026-03-05": 0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "SIMUL SALMONELLA X 96 PRUEBAS", "costBox": 4185.0, "costUnit": 43.59375, "total": 80.0, "totalCost": 3487.5, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 0.0, "2026-01-08": 0.0, "2026-01-09": 6.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.0, "2026-01-14": 4.0, "2026-01-15": 2.0, "2026-01-16": 0.0, "2026-01-17": 3.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.0, "2026-01-21": 7.0, "2026-01-22": 3.0, "2026-01-23": 4.0, "2026-01-24": 2.0, "2026-01-25": 0.0, "2026-01-26": 0.0, "2026-01-27": 5.0, "2026-01-28": 2.0, "2026-01-29": 1.0, "2026-01-30": 2.0, "2026-01-31": 1.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 3.0, "2026-02-04": 1.0, "2026-02-05": 3.0, "2026-02-06": 2.0, "2026-02-07": 0.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 1.0, "2026-02-11": 1.0, "2026-02-12": 2.0, "2026-02-13": 2.0, "2026-02-14": 1.0, "2026-02-15": 0, "2026-02-16": 1.0, "2026-02-17": 1.0, "2026-02-18": 1.0, "2026-02-19": 2.0, "2026-02-20": 1.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.0, "2026-02-24": 3.0, "2026-02-25": 1.0, "2026-02-26": 2.0, "2026-02-27": 1.0, "2026-02-28": 4.0, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 3.0, "2026-03-04": 1.0, "2026-03-05": 1.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "SIMUL LISTERIA DUO (ESPECIES Y MONOCYTOGENES) X 96 PRUEBAS", "costBox": 4250.0, "costUnit": 44.270833, "total": 80.0, "totalCost": 3541.67, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 0.0, "2026-01-08": 0.0, "2026-01-09": 6.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.0, "2026-01-14": 4.0, "2026-01-15": 2.0, "2026-01-16": 0.0, "2026-01-17": 3.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.0, "2026-01-21": 7.0, "2026-01-22": 3.0, "2026-01-23": 4.0, "2026-01-24": 2.0, "2026-01-25": 0.0, "2026-01-26": 0.0, "2026-01-27": 5.0, "2026-01-28": 2.0, "2026-01-29": 1.0, "2026-01-30": 2.0, "2026-01-31": 1.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 3.0, "2026-02-04": 1.0, "2026-02-05": 3.0, "2026-02-06": 2.0, "2026-02-07": 0.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 1.0, "2026-02-11": 1.0, "2026-02-12": 2.0, "2026-02-13": 2.0, "2026-02-14": 1.0, "2026-02-15": 0, "2026-02-16": 1.0, "2026-02-17": 1.0, "2026-02-18": 1.0, "2026-02-19": 2.0, "2026-02-20": 1.0, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.0, "2026-02-24": 3.0, "2026-02-25": 1.0, "2026-02-26": 2.0, "2026-02-27": 1.0, "2026-02-28": 4.0, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 3.0, "2026-03-04": 1.0, "2026-03-05": 1.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "AGUA PEPTONADA BUFFERADA (BPW) DEHYDRATED MEDIA (1KG)", "costBox": 265.2, "costUnit": 265.2, "total": 2.47, "totalCost": 655.04, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.04, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 0.02, "2026-01-08": 0.02, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.02, "2026-01-14": 0.0, "2026-01-15": 0.02, "2026-01-16": 0.0, "2026-01-17": 0.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.04, "2026-01-21": 0, "2026-01-22": 0.0, "2026-01-23": 0.02, "2026-01-24": 0.0, "2026-01-25": 0.0, "2026-01-26": 0.2, "2026-01-27": 0.0, "2026-01-28": 0.2, "2026-01-29": 0.3, "2026-01-30": 0.4, "2026-01-31": 0.0, "2026-02-01": 0, "2026-02-02": 0.1, "2026-02-03": 0.3, "2026-02-04": 0.03, "2026-02-05": 0.02, "2026-02-06": 0.03, "2026-02-07": 0.03, "2026-02-08": 0, "2026-02-09": 0.03, "2026-02-10": 0.0, "2026-02-11": 0.0, "2026-02-12": 0.0, "2026-02-13": 0.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 0.0, "2026-02-17": 0.02, "2026-02-18": 0.03, "2026-02-19": 0.03, "2026-02-20": 0.02, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.05, "2026-02-24": 0.0, "2026-02-25": 0.04, "2026-02-26": 0.02, "2026-02-27": 0.05, "2026-02-28": 0.02, "2026-03-01": 0, "2026-03-02": 0.03, "2026-03-03": 0.04, "2026-03-04": 0.3, "2026-03-05": 0.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}, {"name": "MEDIO DE CULTIVO PARA LISTERIA LREB", "costBox": 812.0, "costUnit": 812.0, "total": 2.2199999999999993, "totalCost": 1802.64, "daily": {"2025-12-12": 0.0, "2025-12-13": 0.0, "2025-12-14": 0.0, "2025-12-15": 0.0, "2025-12-16": 0.0, "2025-12-17": 0.0, "2025-12-18": 0.0, "2025-12-19": 0.0, "2025-12-20": 0.0, "2025-12-21": 0, "2025-12-22": 0.0, "2025-12-23": 0.0, "2025-12-24": 0, "2025-12-25": 0, "2025-12-26": 0.0, "2025-12-27": 0.0, "2025-12-28": 0, "2025-12-29": 0.0, "2025-12-30": 0.0, "2025-12-31": 0, "2026-01-01": 0, "2026-01-02": 0.0, "2026-01-03": 0.0, "2026-01-04": 0, "2026-01-05": 0.0, "2026-01-06": 0.0, "2026-01-07": 0.074, "2026-01-08": 0.037, "2026-01-09": 0.0, "2026-01-10": 0.0, "2026-01-11": 0, "2026-01-12": 0.0, "2026-01-13": 0.037, "2026-01-14": 0.0, "2026-01-15": 0.037, "2026-01-16": 0.0, "2026-01-17": 0.0, "2026-01-18": 0, "2026-01-19": 0.0, "2026-01-20": 0.074, "2026-01-21": 0, "2026-01-22": 0.0, "2026-01-23": 0.037, "2026-01-24": 0.0, "2026-01-25": 0.0, "2026-01-26": 0.37, "2026-01-27": 0.0, "2026-01-28": 0.37, "2026-01-29": 0.0, "2026-01-30": 0.37, "2026-01-31": 0.0, "2026-02-01": 0, "2026-02-02": 0.0, "2026-02-03": 0.37, "2026-02-04": 0.0, "2026-02-05": 0.0, "2026-02-06": 0.037, "2026-02-07": 0.0, "2026-02-08": 0, "2026-02-09": 0.0, "2026-02-10": 0.0, "2026-02-11": 0.0, "2026-02-12": 0.0, "2026-02-13": 0.0, "2026-02-14": 0.0, "2026-02-15": 0, "2026-02-16": 0.0, "2026-02-17": 0.037, "2026-02-18": 0.037, "2026-02-19": 0.037, "2026-02-20": 0.037, "2026-02-21": 0.0, "2026-02-22": 0, "2026-02-23": 0.037, "2026-02-24": 0.0, "2026-02-25": 0.037, "2026-02-26": 0.037, "2026-02-27": 0.074, "2026-02-28": 0.037, "2026-03-01": 0, "2026-03-02": 0.0, "2026-03-03": 0.037, "2026-03-04": 0.0, "2026-03-05": 0.0, "2026-03-06": 0, "2026-03-07": 0, "2026-03-08": 0, "2026-03-09": 0}}], "totalCost": 15289.179266666664};
+
+const PRODUCTS = RAW_DATA.products;
+const ALL_DATES = RAW_DATA.dates.filter(d=>d.date).map(d=>d.date);
+const COLORS = ['#00D4FF','#EF4444','#FBBC04','#22C55E','#C084FC','#FB923C','#3B82F6','#EC4899','#14B8A6','#8B5CF6','#F97316','#06B6D4','#84CC16','#E11D48'];
+const SHORT_NAMES = PRODUCTS.map(p=>{
+  let n=p.name.replace(/\s*-\s*25\s*UND$/i,'').replace(/\s*CAJA\s*X\s*\d+\s*UND$/i,'').replace(/\s*PQT\s*X\s*\d+\s*UND$/i,'').replace(/\s*PAQ\s*X\s*\d+\s*UND$/i,'').replace(/\s*CX\d+$/i,'').replace(/\s*X\s*96\s*PRUEBAS$/i,'');
+  if(n.length>30) n=n.substring(0,28)+'..';
+  return n;
+});
+
+/* ═══════ UNIT OF MEASURE ═══════ */
+const PRODUCT_UNITS = PRODUCTS.map(p=>{
+  const n=p.name.toUpperCase();
+  if(n.includes('AGUA PEPTONADA')||n.includes('MEDIO DE CULTIVO')||n.includes('LREB')) return 'KG';
+  if(n.includes('CAPISPONGE')||n.includes('CAPISWAB')||n.includes('MICROFAST')||n.includes('AQUATESTE')||n.includes('FRASCOS')||n.includes('ATP QUICK')||n.includes('SIMUL')||n.includes('ISOPO')) return 'UND';
+  if(n.includes('BUFFER')||n.includes('CLEANING')||n.includes('STORAGE')||n.includes('REACTIVO')||n.includes('SOLUCI')) return 'LT';
+  return 'UND';
+});
+const UNIT_COLORS = {UND:'#00D4FF',KG:'#C084FC',LT:'#FB923C'};
+const UNIT_ICONS = {UND:'\uD83D\uDD35',KG:'\uD83D\uDFE3',LT:'\uD83D\uDFE0'};
+
+/* ═══════ STATE ═══════ */
+let activeMonths = new Set(['dic','ene','feb','mar']);
+let activeProducts = new Set(PRODUCTS.map((_,i)=>i));
+let currentView = 'day';
+let currentMetric = 'cost';
+let chartType = 'bar';
+let heatMetric = 'cost';
+let dailyViewMode = 'cost';
+let sortCol = 4, sortAsc = false;
+
+/* ═══════ HELPERS ═══════ */
+const fmt = n => n>=1000?'S/ '+(n/1000).toFixed(1)+'k':'S/ '+n.toFixed(2);
+const fmtFull = n => 'S/ '+n.toLocaleString('es-PE',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmtN = n => {
+  if(n===0) return '0';
+  if(Number.isInteger(n)) return n.toString();
+  // Round to 4 decimals to avoid floating point noise
+  const rounded = Math.round(n * 10000) / 10000;
+  if(Number.isInteger(rounded)) return rounded.toString();
+  // Remove trailing zeros
+  const s = rounded.toFixed(4).replace(/0+$/,'').replace(/\.$/,'');
+  return s;
+};
+
+function dateMonth(d){
+  const m=parseInt(d.split('-')[1]),y=parseInt(d.split('-')[0]);
+  if(y===2025&&m===12) return 'dic';
+  if(y===2026&&m===1) return 'ene';
+  if(y===2026&&m===2) return 'feb';
+  if(y===2026&&m===3) return 'mar';
+  return '';
+}
+function getFilteredDates(){return ALL_DATES.filter(d=>activeMonths.has(dateMonth(d)))}
+function dayLabel(d){const p=d.split('-');return p[2]+'/'+p[1]}
+function weekLabel(d){const dt=new Date(d);const day=dt.getDay();const diff=dt.getDate()-day+(day===0?-6:1);const mon=new Date(dt.setDate(diff));return mon.toISOString().split('T')[0]}
+
+function getDailyCost(date){
+  let total=0;
+  PRODUCTS.forEach((p,i)=>{if(activeProducts.has(i)) total+=(p.daily[date]||0)*p.costUnit});
+  return total;
+}
+function getDailyQty(date){
+  let total=0;
+  PRODUCTS.forEach((p,i)=>{if(activeProducts.has(i)) total+=(p.daily[date]||0)});
+  return total;
+}
+function getProductDailyCost(pi,date){return (PRODUCTS[pi].daily[date]||0)*PRODUCTS[pi].costUnit}
+
+/* ═══════ THEME ═══════ */
+function toggleTheme(){
+  const h=document.documentElement;
+  const dark=h.getAttribute('data-theme')==='dark';
+  h.setAttribute('data-theme',dark?'light':'dark');
+  document.getElementById('themeIcon').textContent=dark?'\u{1F319}':'☀️';
+  document.getElementById('themeText').textContent=dark?'Modo oscuro':'Modo claro';
+  localStorage.setItem('theme',dark?'light':'dark');
+  updateAll();
+}
+(function(){const t=localStorage.getItem('theme');if(t){document.documentElement.setAttribute('data-theme',t);if(t==='light'){document.getElementById('themeIcon').textContent='\u{1F319}';document.getElementById('themeText').textContent='Modo oscuro'}}})();
+
+/* ═══════ FILTERS ═══════ */
+function toggleMonth(m){
+  if(m==='all'){
+    const allOn=activeMonths.size===4;
+    activeMonths=allOn?new Set():new Set(['dic','ene','feb','mar']);
+  } else {
+    if(activeMonths.has(m)) activeMonths.delete(m); else activeMonths.add(m);
+  }
+  document.querySelectorAll('.mpill').forEach(b=>{
+    const bm=b.dataset.m;
+    if(bm==='all') b.classList.toggle('on',activeMonths.size===4);
+    else b.classList.toggle('on',activeMonths.has(bm));
+  });
+  updateAll();
+}
+function setView(v){currentView=v;document.querySelectorAll('#viewDay,#viewWeek,#viewMonth').forEach(b=>b.classList.remove('on'));document.getElementById('view'+v.charAt(0).toUpperCase()+v.slice(1)).classList.add('on');updateAll()}
+function setMetric(m){currentMetric=m;document.querySelectorAll('#metCost,#metQty').forEach(b=>b.classList.remove('on'));document.getElementById(m==='cost'?'metCost':'metQty').classList.add('on');updateAll()}
+function setChartType(t){chartType=t;document.querySelectorAll('#btnBar,#btnLine,#btnArea').forEach(b=>b.classList.remove('on'));document.getElementById('btn'+t.charAt(0).toUpperCase()+t.slice(1)).classList.add('on');buildTimeline()}
+function setHeatMetric(m){heatMetric=m;document.querySelectorAll('#hmCost,#hmQty').forEach(b=>b.classList.remove('on'));document.getElementById(m==='cost'?'hmCost':'hmQty').classList.add('on');buildHeatmap()}
+function setDailyView(v){dailyViewMode=v;document.querySelectorAll('#dailyCost,#dailyQty').forEach(b=>b.classList.remove('on'));document.getElementById(v==='cost'?'dailyCost':'dailyQty').classList.add('on');buildDailyTable()}
+
+function toggleProduct(i){
+  if(activeProducts.has(i)) activeProducts.delete(i); else activeProducts.add(i);
+  if(activeProducts.size===0) PRODUCTS.forEach((_,j)=>activeProducts.add(j));
+  renderProdChips();updateAll();
+}
+function selectAllProducts(){activeProducts=new Set(PRODUCTS.map((_,i)=>i));renderProdChips();updateAll()}
+function filterByUnit(unit){activeProducts=new Set(PRODUCTS.map((_,i)=>i).filter(i=>PRODUCT_UNITS[i]===unit));renderProdChips();updateAll()}
+
+function renderProdChips(){
+  const wrap=document.getElementById('prodChips');
+  const undCount=PRODUCT_UNITS.filter(u=>u==='UND').length;
+  const kgCount=PRODUCT_UNITS.filter(u=>u==='KG').length;
+  const ltCount=PRODUCT_UNITS.filter(u=>u==='LT').length;
+  let h='<button class="pchip'+(activeProducts.size===PRODUCTS.length?' on':'')+'" onclick="selectAllProducts()" style="border-color:var(--tm)">Todos ('+PRODUCTS.length+')</button>';
+  h+='<span style="font-size:9px;color:var(--ts);padding:0 4px">|</span>';
+  h+='<button class="pchip" onclick="filterByUnit(\'UND\')" style="color:#00D4FF;border-color:#00D4FF44;font-size:9px">UND ('+undCount+')</button>';
+  h+='<button class="pchip" onclick="filterByUnit(\'KG\')" style="color:#C084FC;border-color:#C084FC44;font-size:9px">KG ('+kgCount+')</button>';
+  h+='<button class="pchip" onclick="filterByUnit(\'LT\')" style="color:#FB923C;border-color:#FB923C44;font-size:9px">LT ('+ltCount+')</button>';
+  h+='<span style="font-size:9px;color:var(--ts);padding:0 4px">|</span>';
+  PRODUCTS.forEach((p,i)=>{
+    const uColor=UNIT_COLORS[PRODUCT_UNITS[i]];
+    h+='<button class="pchip'+(activeProducts.has(i)?' on':'')+'" onclick="toggleProduct('+i+')" style="color:'+COLORS[i%COLORS.length]+';'+(activeProducts.has(i)?'border-color:'+COLORS[i%COLORS.length]:'')+'">'+SHORT_NAMES[i]+' <span style="font-size:8px;color:'+uColor+';margin-left:2px">'+PRODUCT_UNITS[i]+'</span></button>';
+  });
+  wrap.innerHTML=h;
+}
+
+/* ═══════ KPIs ═══════ */
+function updateKPIs(){
+  const dates=getFilteredDates();
+  let totalCost=0,totalQty=0,maxCost=0,maxDate='',activeDays=0;
+  const prodCosts=PRODUCTS.map(()=>0);
+  dates.forEach(d=>{
+    let dc=0,dq=0;
+    PRODUCTS.forEach((p,i)=>{
+      if(!activeProducts.has(i)) return;
+      const v=p.daily[d]||0;
+      const c=v*p.costUnit;
+      dc+=c;dq+=v;prodCosts[i]+=c;
+    });
+    totalCost+=dc;totalQty+=dq;
+    if(dc>0) activeDays++;
+    if(dc>maxCost){maxCost=dc;maxDate=d}
+  });
+  const avgCost=activeDays>0?totalCost/activeDays:0;
+  let topProd=0;prodCosts.forEach((c,i)=>{if(c>prodCosts[topProd]) topProd=i});
+
+  document.getElementById('kv1').textContent=fmtFull(totalCost);
+  document.getElementById('ks1').textContent=activeProducts.size+' productos / '+dates.length+' dias';
+  document.getElementById('kv2').textContent=fmtFull(avgCost);
+  document.getElementById('ks2').textContent='Sobre '+activeDays+' dias activos';
+  document.getElementById('kv3').textContent=fmtFull(maxCost);
+  document.getElementById('ks3').textContent=maxDate?dayLabel(maxDate)+' ('+new Date(maxDate).toLocaleDateString('es-PE',{weekday:'short'})+')':'Sin datos';
+  document.getElementById('kv4').textContent=fmtN(totalQty);
+  document.getElementById('ks4').textContent='Unidades consumidas';
+  document.getElementById('kv5').textContent=SHORT_NAMES[topProd].substring(0,18);
+  document.getElementById('kv5').style.fontSize=SHORT_NAMES[topProd].length>14?'16px':'22px';
+  document.getElementById('ks5').textContent=fmtFull(prodCosts[topProd])+' ('+((prodCosts[topProd]/totalCost)*100).toFixed(1)+'%)';
+  document.getElementById('kv6').textContent=activeDays;
+  document.getElementById('ks6').textContent='de '+dates.length+' dias del periodo';
+  document.getElementById('filterBadge').textContent=activeProducts.size+' productos / '+dates.length+' dias';
+  document.getElementById('timelineBadge').textContent=fmtFull(totalCost);
+}
+
+/* ═══════ CHARTS ═══════ */
+let chartTimeline,chartDonut,chartRank,chartWeek;
+const isDark=()=>document.documentElement.getAttribute('data-theme')==='dark';
+const gridColor=()=>isDark()?'rgba(255,255,255,.06)':'rgba(0,0,0,.06)';
+const textColor=()=>isDark()?'#94A3B8':'#64748B';
+
+function buildTimeline(){
+  const dates=getFilteredDates();
+  let labels,dataArr;
+  if(currentView==='day'){
+    labels=dates.map(dayLabel);
+    dataArr=dates.map(d=>currentMetric==='cost'?getDailyCost(d):getDailyQty(d));
+  } else if(currentView==='week'){
+    const weeks={};
+    dates.forEach(d=>{const w=weekLabel(d);if(!weeks[w]) weeks[w]=0;weeks[w]+=(currentMetric==='cost'?getDailyCost(d):getDailyQty(d))});
+    labels=Object.keys(weeks).sort().map(w=>{const p=w.split('-');return p[2]+'/'+p[1]});
+    dataArr=Object.keys(weeks).sort().map(w=>weeks[w]);
+  } else {
+    const months={};
+    dates.forEach(d=>{const m=d.substring(0,7);if(!months[m]) months[m]=0;months[m]+=(currentMetric==='cost'?getDailyCost(d):getDailyQty(d))});
+    const mNames={'2025-12':'Dic 25','2026-01':'Ene 26','2026-02':'Feb 26','2026-03':'Mar 26'};
+    labels=Object.keys(months).sort().map(m=>mNames[m]||m);
+    dataArr=Object.keys(months).sort().map(m=>months[m]);
+  }
+  const avg=dataArr.length>0?dataArr.reduce((a,b)=>a+b,0)/dataArr.filter(v=>v>0).length:0;
+
+  if(chartTimeline) chartTimeline.destroy();
+  const ctx=document.getElementById('cTimeline').getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,0,300);
+  grad.addColorStop(0,'rgba(0,212,255,.35)');grad.addColorStop(1,'rgba(0,212,255,.02)');
+
+  const isLine=chartType==='line'||chartType==='area';
+  chartTimeline=new Chart(ctx,{
+    type:isLine?'line':'bar',
+    data:{labels,datasets:[{
+      data:dataArr,
+      backgroundColor:isLine?(chartType==='area'?grad:'transparent'):dataArr.map(v=>v>avg*1.5?'rgba(239,68,68,.7)':v>avg?'rgba(251,188,4,.6)':'rgba(0,212,255,.5)'),
+      borderColor:isLine?'#00D4FF':undefined,
+      borderWidth:isLine?2.5:0,
+      pointRadius:isLine?2:0,
+      pointHoverRadius:isLine?5:0,
+      fill:chartType==='area',
+      tension:.3,
+      borderRadius:isLine?0:4,
+      barPercentage:.8,
+    },{
+      type:'line',data:Array(labels.length).fill(avg),borderColor:'rgba(255,255,255,.3)',borderDash:[5,4],borderWidth:1.5,pointRadius:0,fill:false,
+    }]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{display:false},tooltip:{
+        callbacks:{
+          title:t=>t[0].label,
+          label:t=>t.datasetIndex===1?'Promedio: '+(currentMetric==='cost'?fmtFull(t.raw):fmtN(t.raw)):(currentMetric==='cost'?fmtFull(t.raw):fmtN(t.raw)+' und')
+        }
+      }},
+      scales:{
+        x:{ticks:{color:textColor(),font:{size:currentView==='day'?8:10},maxRotation:45},grid:{display:false}},
+        y:{ticks:{color:textColor(),callback:v=>currentMetric==='cost'?fmt(v):v},grid:{color:gridColor()},beginAtZero:true}
+      },
+      onClick:(e,el)=>{if(el.length&&el[0].datasetIndex===0){
+        const idx=el[0].index;
+        if(currentView==='day'){showDayDetail(getFilteredDates()[idx])}
+      }}
+    },
+    plugins:[ChartDataLabels]
+  });
+  document.getElementById('timelineWrap').style.width=currentView==='day'&&labels.length>40?Math.max(labels.length*18,800)+'px':'100%';
+}
+
+function buildDonut(){
+  const dates=getFilteredDates();
+  const costs=PRODUCTS.map((p,i)=>{
+    if(!activeProducts.has(i)) return 0;
+    return dates.reduce((s,d)=>s+(p.daily[d]||0)*p.costUnit,0);
+  });
+  const indexed=costs.map((c,i)=>({c,i})).sort((a,b)=>b.c-a.c).filter(x=>x.c>0).slice(0,10);
+
+  if(chartDonut) chartDonut.destroy();
+  chartDonut=new Chart(document.getElementById('cDonut'),{
+    type:'doughnut',
+    data:{
+      labels:indexed.map(x=>SHORT_NAMES[x.i]),
+      datasets:[{data:indexed.map(x=>x.c),backgroundColor:indexed.map(x=>COLORS[x.i%COLORS.length]),borderWidth:0,hoverOffset:8}]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,cutout:'62%',
+      plugins:{
+        legend:{position:'right',labels:{color:textColor(),font:{size:10},boxWidth:12,padding:6,usePointStyle:true}},
+        datalabels:{color:'#fff',font:{size:9,weight:700},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);return ((v/t)*100).toFixed(1)+'%'},display:ctx=>ctx.dataset.data[ctx.dataIndex]/ctx.dataset.data.reduce((a,b)=>a+b,0)>.04},
+        tooltip:{callbacks:{label:c=>SHORT_NAMES[indexed[c.dataIndex].i]+': '+fmtFull(c.raw)}}
+      },
+      onClick:(e,el)=>{if(el.length){const pi=indexed[el[0].index].i;showProductDetail(pi)}}
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function buildRank(){
+  const dates=getFilteredDates();
+  const costs=PRODUCTS.map((p,i)=>{
+    if(!activeProducts.has(i)) return{c:0,i};
+    return{c:dates.reduce((s,d)=>s+(p.daily[d]||0)*p.costUnit,0),i};
+  }).filter(x=>x.c>0).sort((a,b)=>b.c-a.c);
+
+  if(chartRank) chartRank.destroy();
+  const h=Math.max(costs.length*30,200);
+  document.getElementById('rankWrap').style.height=h+'px';
+  chartRank=new Chart(document.getElementById('cRank'),{
+    type:'bar',
+    data:{
+      labels:costs.map(x=>SHORT_NAMES[x.i]),
+      datasets:[{data:costs.map(x=>x.c),backgroundColor:costs.map(x=>COLORS[x.i%COLORS.length]+'CC'),borderRadius:4,barPercentage:.7}]
+    },
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{anchor:'end',align:'end',color:textColor(),font:{size:9,weight:700},formatter:v=>fmt(v),display:ctx=>ctx.dataset.data[ctx.dataIndex]>0},
+        tooltip:{callbacks:{label:c=>fmtFull(c.raw)}}},
+      scales:{x:{ticks:{color:textColor(),callback:v=>fmt(v)},grid:{color:gridColor()},beginAtZero:true},y:{ticks:{color:textColor(),font:{size:9}},grid:{display:false}}},
+      onClick:(e,el)=>{if(el.length) showProductDetail(costs[el[0].index].i)}
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function buildWeekChart(){
+  const dates=getFilteredDates();
+  const weeks={};
+  dates.forEach(d=>{
+    const w=weekLabel(d);
+    if(!weeks[w]) weeks[w]={cost:0,qty:0};
+    weeks[w].cost+=getDailyCost(d);
+    weeks[w].qty+=getDailyQty(d);
+  });
+  const wKeys=Object.keys(weeks).sort();
+  const labels=wKeys.map(w=>{const p=w.split('-');return 'Sem '+p[2]+'/'+p[1]});
+  const data=wKeys.map(w=>currentMetric==='cost'?weeks[w].cost:weeks[w].qty);
+
+  if(chartWeek) chartWeek.destroy();
+  const ctx=document.getElementById('cWeek').getContext('2d');
+  const grad=ctx.createLinearGradient(0,0,0,380);
+  grad.addColorStop(0,'rgba(192,132,252,.3)');grad.addColorStop(1,'rgba(192,132,252,.02)');
+
+  chartWeek=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{data,backgroundColor:grad,borderColor:'#C084FC',borderWidth:2.5,pointRadius:4,pointBackgroundColor:'#C084FC',pointHoverRadius:6,fill:true,tension:.35}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},datalabels:{anchor:'top',align:'top',color:'#C084FC',font:{size:9,weight:700},formatter:v=>currentMetric==='cost'?fmt(v):fmtN(v),display:ctx=>true},
+        tooltip:{callbacks:{label:c=>currentMetric==='cost'?fmtFull(c.raw):fmtN(c.raw)+' und'}}},
+      scales:{x:{ticks:{color:textColor(),font:{size:9},maxRotation:45},grid:{display:false}},y:{ticks:{color:textColor(),callback:v=>currentMetric==='cost'?fmt(v):v},grid:{color:gridColor()},beginAtZero:true}}
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+/* ═══════ HEATMAP ═══════ */
+function buildHeatmap(){
+  const dates=getFilteredDates();
+  const prods=PRODUCTS.map((_,i)=>i).filter(i=>activeProducts.has(i));
+  if(!dates.length||!prods.length){document.getElementById('heatmapWrap').innerHTML='<p style="color:var(--ts);text-align:center;padding:30px">Sin datos para el filtro seleccionado</p>';return}
+
+  let maxVal=0;
+  prods.forEach(pi=>{
+    dates.forEach(d=>{
+      const v=heatMetric==='cost'?(PRODUCTS[pi].daily[d]||0)*PRODUCTS[pi].costUnit:(PRODUCTS[pi].daily[d]||0);
+      if(v>maxVal) maxVal=v;
+    });
+  });
+
+  const cols=dates.length+1;
+  let html='<div class="heatmap" style="grid-template-columns:180px repeat('+dates.length+',1fr)">';
+  // Header row
+  html+='<div class="hm-header"></div>';
+  dates.forEach(d=>html+='<div class="hm-header" style="writing-mode:vertical-lr;transform:rotate(180deg);font-size:7px;height:45px">'+dayLabel(d)+'</div>');
+  // Data rows
+  prods.forEach(pi=>{
+    html+='<div style="font-size:9px;font-weight:600;color:'+COLORS[pi%COLORS.length]+';padding:3px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:22px" title="'+PRODUCTS[pi].name+'">'+SHORT_NAMES[pi].substring(0,22)+'</div>';
+    dates.forEach(d=>{
+      const raw=PRODUCTS[pi].daily[d]||0;
+      const v=heatMetric==='cost'?raw*PRODUCTS[pi].costUnit:raw;
+      const intensity=maxVal>0?v/maxVal:0;
+      let bg,fg;
+      if(v===0){bg='rgba(255,255,255,.02)';fg='transparent'}
+      else if(intensity<.25){bg='rgba(0,212,255,.15)';fg='rgba(0,212,255,.9)'}
+      else if(intensity<.5){bg='rgba(251,188,4,.25)';fg='rgba(251,188,4,.95)'}
+      else if(intensity<.75){bg='rgba(249,115,22,.35)';fg='#F97316'}
+      else{bg='rgba(239,68,68,.45)';fg='#EF4444'}
+      const display=v===0?'':heatMetric==='cost'?v.toFixed(0):fmtN(raw);
+      html+='<div class="hm-cell" style="background:'+bg+';color:'+fg+'" title="'+PRODUCTS[pi].name+' | '+dayLabel(d)+' | '+(heatMetric==='cost'?fmtFull(v):fmtN(raw)+' und')+'" onclick="showCellDetail('+pi+',\''+d+'\')">'+display+'</div>';
+    });
+  });
+  html+='</div>';
+  document.getElementById('heatmapWrap').innerHTML=html;
+  document.getElementById('heatBadge').textContent=prods.length+' productos x '+dates.length+' dias';
+
+  document.getElementById('heatLegend').innerHTML=
+    '<span>Intensidad:</span>'+
+    '<div class="hm-legend-box" style="background:rgba(255,255,255,.02);border:1px solid var(--cb)"></div><span>0</span>'+
+    '<div class="hm-legend-box" style="background:rgba(0,212,255,.15)"></div><span>Bajo</span>'+
+    '<div class="hm-legend-box" style="background:rgba(251,188,4,.25)"></div><span>Medio</span>'+
+    '<div class="hm-legend-box" style="background:rgba(249,115,22,.35)"></div><span>Alto</span>'+
+    '<div class="hm-legend-box" style="background:rgba(239,68,68,.45)"></div><span>Muy alto</span>';
+}
+
+/* ═══════ DETAIL PANEL ═══════ */
+function showDayDetail(date){
+  const dp=document.getElementById('dpContent');
+  const dpe=document.getElementById('dpEmpty');
+  dpe.style.display='none';dp.style.display='block';
+  const dt=new Date(date);
+  const dayName=dt.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  let totalC=0,totalQ=0,items=[];
+  PRODUCTS.forEach((p,i)=>{
+    if(!activeProducts.has(i)) return;
+    const v=p.daily[date]||0;
+    const c=v*p.costUnit;
+    totalC+=c;totalQ+=v;
+    if(v>0) items.push({name:SHORT_NAMES[i],qty:v,cost:c,color:COLORS[i%COLORS.length],unit:PRODUCT_UNITS[i]});
+  });
+  items.sort((a,b)=>b.cost-a.cost);
+  let h='<div class="dp-title">'+dayName+'</div>';
+  h+='<div class="dp-cost" style="color:#00D4FF">'+fmtFull(totalC)+'</div>';
+  h+='<div class="dp-grid"><div class="dp-item"><div class="dp-item-lbl">Unidades</div><div class="dp-item-val">'+fmtN(totalQ)+'</div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Productos</div><div class="dp-item-val">'+items.length+'</div></div></div>';
+  h+='<div style="margin-top:10px;max-height:200px;overflow-y:auto">';
+  items.forEach(it=>{
+    const pct=totalC>0?((it.cost/totalC)*100).toFixed(1):0;
+    h+='<div style="display:flex;align-items:center;gap:6px;padding:5px 0;border-bottom:1px solid var(--cb);font-size:11px">';
+    h+='<span style="width:6px;height:6px;border-radius:50%;background:'+it.color+';flex-shrink:0"></span>';
+    h+='<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="'+it.name+'">'+it.name+'</span>';
+    h+='<span style="font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;background:'+UNIT_COLORS[it.unit]+'22;color:'+UNIT_COLORS[it.unit]+'">'+it.unit+'</span>';
+    h+='<span style="font-weight:700;color:var(--tm)">'+fmtN(it.qty)+'</span>';
+    h+='<span style="font-weight:700;min-width:65px;text-align:right">'+fmtFull(it.cost)+'</span>';
+    h+='<span style="font-size:9px;color:var(--ts);min-width:35px;text-align:right">'+pct+'%</span>';
+    h+='</div>';
+  });
+  h+='</div>';
+  dp.innerHTML=h;
+}
+
+let detailSparkChart=null;
+function showProductDetail(pi){
+  const dp=document.getElementById('dpContent');
+  const dpe=document.getElementById('dpEmpty');
+  dpe.style.display='none';dp.style.display='block';
+  const p=PRODUCTS[pi];const dates=getFilteredDates();
+  const unit=PRODUCT_UNITS[pi];const uColor=UNIT_COLORS[unit];
+  let totalC=0,totalQ=0,maxQ=0,maxDate='',daysActive=0;
+  dates.forEach(d=>{
+    const v=p.daily[d]||0;const c=v*p.costUnit;
+    totalC+=c;totalQ+=v;
+    if(v>0) daysActive++;
+    if(v>maxQ){maxQ=v;maxDate=d}
+  });
+  const avgQ=daysActive>0?totalQ/daysActive:0;
+  let h='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
+  h+='<div class="dp-title" style="color:'+COLORS[pi%COLORS.length]+';flex:1">'+SHORT_NAMES[pi]+'</div>';
+  h+='<span style="font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;background:'+uColor+'22;color:'+uColor+';border:1px solid '+uColor+'44">'+unit+'</span>';
+  h+='</div>';
+  h+='<div style="font-size:10px;color:var(--ts);margin-bottom:8px">'+p.name+'</div>';
+  h+='<div class="dp-cost" style="color:'+COLORS[pi%COLORS.length]+'">'+fmtFull(totalC)+'</div>';
+  h+='<div class="dp-grid">';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Costo Unitario</div><div class="dp-item-val">'+fmtFull(p.costUnit)+'</div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Total Consumido</div><div class="dp-item-val">'+fmtN(totalQ)+' <span style="font-size:10px;color:'+uColor+'">'+unit+'</span></div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Promedio/Dia</div><div class="dp-item-val">'+avgQ.toFixed(1)+' <span style="font-size:10px;color:'+uColor+'">'+unit+'</span></div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Max en un dia</div><div class="dp-item-val">'+fmtN(maxQ)+' <span style="font-size:10px;color:'+uColor+'">'+unit+'</span></div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Dias activos</div><div class="dp-item-val">'+daysActive+'/'+dates.length+'</div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Dia pico</div><div class="dp-item-val" style="font-size:12px">'+dayLabel(maxDate)+'</div></div>';
+  h+='</div>';
+  h+='<div style="margin-top:10px;position:relative;height:120px"><canvas id="detailSpark"></canvas></div>';
+  dp.innerHTML=h;
+  // Interactive Chart.js sparkline with tooltips
+  if(detailSparkChart) detailSparkChart.destroy();
+  const ctx=document.getElementById('detailSpark').getContext('2d');
+  const labels=dates.map(dayLabel);
+  const vals=dates.map(d=>p.daily[d]||0);
+  const costs=dates.map(d=>(p.daily[d]||0)*p.costUnit);
+  const color=COLORS[pi%COLORS.length];
+  const grad=ctx.createLinearGradient(0,0,0,120);
+  grad.addColorStop(0,color+'55');grad.addColorStop(1,color+'05');
+  detailSparkChart=new Chart(ctx,{
+    type:'line',
+    data:{labels,datasets:[{
+      data:vals,backgroundColor:grad,borderColor:color,borderWidth:2,
+      pointRadius:2,pointHoverRadius:6,pointBackgroundColor:color,
+      pointHoverBackgroundColor:'#fff',pointHoverBorderColor:color,pointHoverBorderWidth:2,
+      fill:true,tension:.3
+    }]},
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},datalabels:{display:false},
+        tooltip:{
+          backgroundColor:isDark()?'rgba(15,23,42,.95)':'rgba(255,255,255,.95)',
+          titleColor:isDark()?'#E2E8F0':'#1E293B',
+          bodyColor:isDark()?'#94A3B8':'#475569',
+          borderColor:isDark()?'rgba(255,255,255,.15)':'rgba(0,0,0,.1)',
+          borderWidth:1,
+          padding:10,
+          cornerRadius:8,
+          displayColors:false,
+          titleFont:{size:11,weight:700},
+          bodyFont:{size:11},
+          callbacks:{
+            title:t=>{const idx=t[0].dataIndex;return dates[idx]?new Date(dates[idx]).toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short'}):''},
+            label:t=>{
+              const qty=vals[t.dataIndex];
+              const cost=costs[t.dataIndex];
+              return [
+                'Cantidad: '+fmtN(qty)+' '+unit,
+                'Costo: '+fmtFull(cost)
+              ];
+            },
+            afterLabel:t=>{
+              const qty=vals[t.dataIndex];
+              if(qty===0) return 'Sin consumo este dia';
+              if(qty>=maxQ) return 'DIA PICO';
+              if(qty>=avgQ*1.5) return 'Consumo alto';
+              return '';
+            }
+          }
+        }
+      },
+      scales:{
+        x:{display:false},
+        y:{display:false,beginAtZero:true}
+      }
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function showCellDetail(pi,date){
+  const dp=document.getElementById('dpContent');
+  const dpe=document.getElementById('dpEmpty');
+  dpe.style.display='none';dp.style.display='block';
+  const p=PRODUCTS[pi];const v=p.daily[date]||0;const c=v*p.costUnit;
+  const unit=PRODUCT_UNITS[pi];const uColor=UNIT_COLORS[unit];
+  const dt=new Date(date);
+  let h='<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">';
+  h+='<div class="dp-title" style="color:'+COLORS[pi%COLORS.length]+';flex:1">'+SHORT_NAMES[pi]+'</div>';
+  h+='<span style="font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;background:'+uColor+'22;color:'+uColor+';border:1px solid '+uColor+'44">'+unit+'</span>';
+  h+='</div>';
+  h+='<div style="font-size:11px;color:var(--tm);margin-bottom:6px">'+dt.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'})+'</div>';
+  h+='<div class="dp-cost" style="color:'+(c>0?COLORS[pi%COLORS.length]:'var(--ts)')+'">'+fmtFull(c)+'</div>';
+  h+='<div class="dp-grid">';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Cantidad</div><div class="dp-item-val">'+fmtN(v)+' <span style="font-size:10px;color:'+uColor+'">'+unit+'</span></div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Costo Unitario</div><div class="dp-item-val">'+fmtFull(p.costUnit)+'</div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">Costo Caja</div><div class="dp-item-val">'+fmtFull(p.costBox)+'</div></div>';
+  h+='<div class="dp-item"><div class="dp-item-lbl">% del dia</div><div class="dp-item-val">'+(getDailyCost(date)>0?((c/getDailyCost(date))*100).toFixed(1):0)+'%</div></div>';
+  h+='</div>';
+  dp.innerHTML=h;
+}
+
+/* ═══════ TABLE ═══════ */
+function renderTable(){
+  const dates=getFilteredDates();
+  const search=(document.getElementById('tblSearch').value||'').toLowerCase();
+  const totalCostAll=PRODUCTS.reduce((s,p,i)=>{
+    if(!activeProducts.has(i)) return s;
+    return s+dates.reduce((ss,d)=>ss+(p.daily[d]||0)*p.costUnit,0);
+  },0);
+
+  let rows=PRODUCTS.map((p,i)=>{
+    const totalQ=dates.reduce((s,d)=>s+(p.daily[d]||0),0);
+    const totalC=dates.reduce((s,d)=>s+(p.daily[d]||0)*p.costUnit,0);
+    const activeDays=dates.filter(d=>(p.daily[d]||0)>0).length;
+    const avg=activeDays>0?totalQ/activeDays:0;
+    const maxD=dates.reduce((m,d)=>(p.daily[d]||0)>m?(p.daily[d]||0):m,0);
+    const pct=totalCostAll>0?(totalC/totalCostAll)*100:0;
+    return {i,name:p.name,shortName:SHORT_NAMES[i],costUnit:p.costUnit,totalQ,totalC,avg,maxD,pct,color:COLORS[i%COLORS.length],daily:dates.map(d=>p.daily[d]||0),unit:PRODUCT_UNITS[i]};
+  }).filter(r=>activeProducts.has(r.i));
+
+  if(search) rows=rows.filter(r=>r.name.toLowerCase().includes(search)||r.shortName.toLowerCase().includes(search));
+
+  // Sort
+  const key=['i','name','unit','costUnit','totalQ','totalC','avg','maxD','pct'][sortCol]||'totalC';
+  rows.sort((a,b)=>{const va=a[key],vb=b[key];if(typeof va==='string') return sortAsc?va.localeCompare(vb):vb.localeCompare(va);return sortAsc?va-vb:vb-va});
+
+  const maxCost=Math.max(...rows.map(r=>r.totalC),1);
+  let html='';
+  rows.forEach((r,idx)=>{
+    const costClass=r.pct>20?'cost-high':r.pct>10?'cost-med':'cost-low';
+    const uColor=UNIT_COLORS[r.unit];
+    html+='<tr onclick="showProductDetail('+r.i+')" style="cursor:pointer">';
+    html+='<td>'+(idx+1)+'</td>';
+    html+='<td><span style="color:'+r.color+';font-weight:600">'+r.shortName+'</span></td>';
+    html+='<td><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:'+uColor+'18;color:'+uColor+';border:1px solid '+uColor+'33">'+r.unit+'</span></td>';
+    html+='<td class="cost-cell">'+fmtFull(r.costUnit)+'</td>';
+    html+='<td>'+fmtN(r.totalQ)+'</td>';
+    html+='<td class="cost-cell '+costClass+'">'+fmtFull(r.totalC)+' <span class="bar-mini" style="background:'+r.color+';width:'+((r.totalC/maxCost)*60)+'px"></span></td>';
+    html+='<td>'+r.avg.toFixed(1)+'</td>';
+    html+='<td>'+fmtN(r.maxD)+'</td>';
+    html+='<td class="cost-cell">'+r.pct.toFixed(1)+'%</td>';
+    html+='<td><canvas width="80" height="20" class="spark" data-vals="'+r.daily.join(',')+'" data-color="'+r.color+'"></canvas></td>';
+    html+='</tr>';
+  });
+  document.getElementById('tBody').innerHTML=html;
+  document.getElementById('tblBadge').textContent=rows.length+' productos';
+
+  // Draw sparklines
+  document.querySelectorAll('.spark').forEach(canvas=>{
+    const vals=canvas.dataset.vals.split(',').map(Number);
+    const color=canvas.dataset.color;
+    const ctx=canvas.getContext('2d');
+    const w=canvas.width,h=canvas.height;
+    const max=Math.max(...vals,1);
+    ctx.clearRect(0,0,w,h);
+    ctx.beginPath();
+    vals.forEach((v,i)=>{
+      const x=(i/(vals.length-1))*w;
+      const y=h-(v/max)*(h-2)-1;
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.strokeStyle=color;ctx.lineWidth=1;ctx.stroke();
+  });
+}
+
+function sortTbl(col){if(sortCol===col) sortAsc=!sortAsc; else{sortCol=col;sortAsc=col<=1}renderTable()}
+
+/* ═══════ DAILY TABLE ═══════ */
+function buildDailyTable(){
+  const dates=getFilteredDates();
+  const prods=PRODUCTS.map((_,i)=>i).filter(i=>activeProducts.has(i));
+  let html='<table><thead><tr><th style="position:sticky;left:0;z-index:2;background:var(--bg);min-width:50px">Fecha</th>';
+  prods.forEach(pi=>html+='<th style="font-size:8px;max-width:80px;overflow:hidden;text-overflow:ellipsis;color:'+COLORS[pi%COLORS.length]+'">'+SHORT_NAMES[pi].substring(0,15)+'</th>');
+  html+='<th style="color:#00D4FF;font-weight:800">TOTAL</th></tr></thead><tbody>';
+  let grandTotal=0;
+  dates.forEach(d=>{
+    let dayTotal=0;
+    html+='<tr><td style="position:sticky;left:0;background:var(--bg);font-weight:600;font-size:10px;z-index:1">'+dayLabel(d)+'</td>';
+    prods.forEach(pi=>{
+      const raw=PRODUCTS[pi].daily[d]||0;
+      const val=dailyViewMode==='cost'?raw*PRODUCTS[pi].costUnit:raw;
+      dayTotal+=dailyViewMode==='cost'?raw*PRODUCTS[pi].costUnit:raw;
+      const display=val===0?'<span style="color:var(--ts)">-</span>':dailyViewMode==='cost'?val.toFixed(2):'<b>'+fmtN(raw)+'</b>';
+      html+='<td style="font-size:10px;text-align:center;'+(val>0?'color:'+COLORS[pi%COLORS.length]:'')+'">'+display+'</td>';
+    });
+    grandTotal+=dayTotal;
+    html+='<td style="font-weight:800;text-align:center;color:#00D4FF;font-size:10px">'+(dailyViewMode==='cost'?dayTotal.toFixed(2):fmtN(dayTotal))+'</td></tr>';
+  });
+  html+='<tr style="border-top:2px solid var(--cb)"><td style="position:sticky;left:0;background:var(--bg);font-weight:800;z-index:1">TOTAL</td>';
+  prods.forEach(pi=>{
+    const total=dates.reduce((s,d)=>{
+      const raw=PRODUCTS[pi].daily[d]||0;
+      return s+(dailyViewMode==='cost'?raw*PRODUCTS[pi].costUnit:raw);
+    },0);
+    html+='<td style="font-weight:800;text-align:center;color:'+COLORS[pi%COLORS.length]+';font-size:10px">'+(dailyViewMode==='cost'?total.toFixed(2):fmtN(total))+'</td>';
+  });
+  html+='<td style="font-weight:900;text-align:center;color:#00D4FF;font-size:11px">'+(dailyViewMode==='cost'?grandTotal.toFixed(2):fmtN(grandTotal))+'</td></tr>';
+  html+='</tbody></table>';
+  document.getElementById('dailyTableWrap').innerHTML=html;
+  document.getElementById('dailyBadge').textContent=dates.length+' fechas x '+prods.length+' productos';
+}
+
+/* ═══════ EXPORT ═══════ */
+function exportCSV(){
+  const dates=getFilteredDates();
+  const prods=PRODUCTS.map((_,i)=>i).filter(i=>activeProducts.has(i));
+  let csv='Fecha,'+prods.map(pi=>'"'+PRODUCTS[pi].name+'"').join(',')+',Total Costo\n';
+  dates.forEach(d=>{
+    let line=d;
+    let total=0;
+    prods.forEach(pi=>{
+      const v=(PRODUCTS[pi].daily[d]||0)*PRODUCTS[pi].costUnit;
+      total+=v;line+=','+v.toFixed(4);
+    });
+    line+=','+total.toFixed(4);
+    csv+=line+'\n';
+  });
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='consumo_diario_microbiologia.csv';
+  a.click();
+}
+
+/* ═══════ UPDATE ALL ═══════ */
+function updateAll(){
+  updateKPIs();buildTimeline();buildDonut();buildRank();buildWeekChart();buildHeatmap();renderTable();buildDailyTable();
+}
+
+/* ═══════ INIT ═══════ */
+renderProdChips();
+updateAll();
+</script>
+</body>
+</html>

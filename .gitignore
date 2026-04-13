@@ -1,0 +1,7 @@
+node_modules/
+*.local.*
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
+scripts/config_reportes.json
+assets/video/*.mp4

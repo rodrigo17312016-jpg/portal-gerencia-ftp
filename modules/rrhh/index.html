@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sistema RRHH — Frutos Tropicales Peru Export S.A.C.</title>
+<link rel="icon" href="/assets/images/logo.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ════════════ SIDEBAR ════════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <img src="/assets/images/logo.png" alt="Logo">
+        <div class="brand">Frutos Tropicales<small>Sistema RRHH</small></div>
+    </div>
+    <div class="nav-section">General</div>
+    <div class="nav-item active" onclick="showPanel('dashboard',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Dashboard
+    </div>
+    <div class="nav-section">Personal</div>
+    <div class="nav-item" onclick="showPanel('empleados',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+        Empleados <span class="badge-count" id="empCount">0</span>
+    </div>
+    <div class="nav-section">Asistencia</div>
+    <div class="nav-item" onclick="showPanel('asistencia',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Control Asistencia
+    </div>
+    <div class="nav-section">Remuneraciones</div>
+    <div class="nav-item" onclick="showPanel('planilla',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+        Planilla Mensual
+    </div>
+    <div class="nav-item" onclick="showPanel('planillaSemanal',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="18"/></svg>
+        Planilla Semanal
+    </div>
+    <div class="nav-item" onclick="showPanel('boletas',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Boletas de Pago
+    </div>
+    <div class="nav-section">Beneficios</div>
+    <div class="nav-item" onclick="showPanel('cts',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+        CTS
+    </div>
+    <div class="nav-item" onclick="showPanel('gratificaciones',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5" rx="1"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+        Gratificaciones
+    </div>
+    <div class="nav-item" onclick="showPanel('vacaciones',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Vacaciones
+    </div>
+    <div class="nav-section">Liquidaciones</div>
+    <div class="nav-item" onclick="showPanel('liquidaciones',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Liquidaciones
+    </div>
+    <div class="nav-section">Control</div>
+    <div class="nav-item" onclick="showPanel('prestamos',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+        Pr&eacute;stamos
+    </div>
+    <div class="nav-item" onclick="showPanel('reportes',this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Reportes
+    </div>
+    <div class="sidebar-footer">
+        <a href="../portal-gerencia.html">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+            Volver al Portal
+        </a>
+    </div>
+</aside>
+
+<!-- ════════════ TOPBAR ════════════ -->
+<div class="topbar">
+    <div class="topbar-left">
+        <div><div class="topbar-title" id="topTitle">Dashboard RRHH</div><div class="topbar-sub">Control Integral de Recursos Humanos</div></div>
+    </div>
+    <div class="topbar-right">
+        <div class="topbar-date" id="topDate">—</div>
+        <button class="btn-theme" id="themeToggle" title="Cambiar tema"><span id="themeIcon">&#9790;</span></button>
+        <div class="topbar-user">
+            <div class="avatar">RG</div>
+            <div><div class="uname">Rodrigo Garcia</div><div class="urole">Systems Analyst</div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════════ MAIN CONTENT ════════════ -->
+<main class="main">
+
+<!-- ============ DASHBOARD ============ -->
+<div class="panel active" id="panel-dashboard">
+    <div class="kpi-row" id="dashKpis"></div>
+    <div class="charts-grid" id="dashCharts"></div>
+    <div class="sec-title"><div class="icon">&#128203;</div><h2>Resumen R&aacute;pido</h2><div class="line"></div></div>
+    <div class="detail-grid" id="dashSummary"></div>
+</div>
+
+<!-- ============ EMPLEADOS ============ -->
+<div class="panel" id="panel-empleados">
+    <div class="btn-group" style="margin-bottom:16px">
+        <button class="btn btn-primary" onclick="openEmpModal()">+ Nuevo Empleado</button>
+        <button class="btn btn-secondary" onclick="exportEmpleadosCSV()">&#128196; Exportar CSV</button>
+        <button class="btn btn-warning" onclick="loadSampleData()">&#9889; Cargar Datos Demo</button>
+    </div>
+    <div class="filter-bar">
+        <input class="f-input" id="empSearch" placeholder="Buscar por nombre, DNI, cargo..." oninput="renderEmpleados()">
+        <select class="f-select" id="empFilterPlanta" onchange="renderEmpleados()"><option value="">Todas las Plantas</option><option>PLANTA HUAURA</option><option>PLANTA PIURA</option></select>
+        <select class="f-select" id="empFilterRegimen" onchange="renderEmpleados()"><option value="">Todos los Reg&iacute;menes</option><option value="GENERAL">R&eacute;gimen General</option><option value="AGRARIO">R&eacute;gimen Agrario</option></select>
+        <select class="f-select" id="empFilterArea" onchange="renderEmpleados()"><option value="">Todas las &Aacute;reas</option><option>Producci&oacute;n</option><option>Calidad</option><option>Almac&eacute;n</option><option>Mantenimiento</option><option>Administraci&oacute;n</option><option>Sanidad</option></select>
+        <select class="f-select" id="empFilterEstado" onchange="renderEmpleados()"><option value="">Todos</option><option value="ACTIVO">Activos</option><option value="CESADO">Cesados</option></select>
+    </div>
+    <div class="tbl-card">
+        <div class="tbl-wrap"><table class="tbl" id="tblEmpleados"><thead><tr>
+            <th>C&oacute;digo</th><th>DNI</th><th>Nombre Completo</th><th>Planta</th><th>Turno</th><th>R&eacute;gimen</th><th>&Aacute;rea</th><th>Cargo</th><th>Sueldo</th><th>Sistema Pensiones</th><th>Estado</th><th>Acciones</th>
+        </tr></thead><tbody id="empBody"></tbody></table></div>
+        <div class="tbl-footer"><span id="empFooter">0 empleados</span></div>
+    </div>
+</div>
+
+<!-- ============ ASISTENCIA ============ -->
+<div class="panel" id="panel-asistencia">
+    <div class="filter-bar">
+        <input type="date" class="f-input" id="attDate" style="max-width:200px" onchange="renderAsistencia()">
+        <select class="f-select" id="attPlanta" onchange="renderAsistencia()"><option value="">Todas las Plantas</option><option>PLANTA HUAURA</option><option>PLANTA PIURA</option></select>
+        <select class="f-select" id="attTurno" onchange="renderAsistencia()"><option value="">Todos los Turnos</option><option value="DIA">D&iacute;a</option><option value="NOCHE">Noche</option></select>
+        <button class="btn btn-primary" onclick="saveAsistencia()">&#128190; Guardar Asistencia</button>
+    </div>
+    <div class="kpi-row" id="attKpis"></div>
+    <div class="att-grid" id="attGrid"></div>
+</div>
+
+<!-- ============ PLANILLA ============ -->
+<div class="panel" id="panel-planilla">
+    <div class="filter-bar">
+        <input type="month" class="f-input" id="planPeriodo" style="max-width:200px">
+        <button class="btn btn-primary" onclick="generarPlanilla()">&#9881; Generar Planilla</button>
+        <button class="btn btn-secondary" onclick="exportPlanillaCSV()">&#128196; Exportar CSV</button>
+    </div>
+    <div class="kpi-row" id="planKpis"></div>
+    <div class="tbl-card">
+        <div class="tbl-wrap"><table class="tbl"><thead><tr>
+            <th>Empleado</th><th>R&eacute;gimen</th><th>D&iacute;as</th><th>Sueldo</th><th>Asig.Fam.</th><th>HH.EE.</th><th>Total Ingr.</th><th>ONP/AFP</th><th>IR 5ta</th><th>Pr&eacute;st.</th><th>Tot.Desc.</th><th>EsSalud</th><th>Neto</th>
+        </tr></thead><tbody id="planBody"></tbody></table></div>
+        <div class="tbl-footer"><span id="planFooter">Seleccione un per&iacute;odo</span><span>Total Neto: <span class="hl" id="planTotal">S/ 0.00</span></span></div>
+    </div>
+</div>
+
+<!-- ============ PLANILLA SEMANAL (AGRARIO) ============ -->
+<div class="panel" id="panel-planillaSemanal">
+    <div class="sec-title" style="margin-bottom:16px"><div class="icon">&#128197;</div><h2>Planilla Semanal &mdash; R&eacute;gimen Agrario (Ley 31110)</h2><div class="line"></div></div>
+    <div class="detail-grid" id="rdaInfo" style="margin-bottom:20px"></div>
+    <div class="filter-bar">
+        <input type="month" class="f-input" id="planSemMes" style="max-width:200px">
+        <select class="f-select" id="planSemWeek" style="min-width:280px"><option value="">Seleccione semana...</option></select>
+        <button class="btn btn-primary" onclick="generarPlanillaSemanal()">&#9881; Generar Planilla Semanal</button>
+        <button class="btn btn-secondary" onclick="exportPlanillaSemanalCSV()">&#128196; Exportar CSV</button>
+    </div>
+    <div class="kpi-row" id="planSemKpis"></div>
+    <div class="tbl-card">
+        <div class="tbl-wrap"><table class="tbl"><thead><tr>
+            <th>Empleado</th><th>D&iacute;as</th><th>B&aacute;sico</th><th>Asig.Fam.</th><th>Dominical</th><th>Gratif.</th><th>Bono Ley</th><th>CTS</th><th>HH.EE.</th><th>Tot.Rem.</th><th>ONP/AFP</th><th>IR 5ta</th><th>Pr&eacute;st.</th><th>EsSalud</th><th>Neto</th>
+        </tr></thead><tbody id="planSemBody"></tbody></table></div>
+        <div class="tbl-footer"><span id="planSemFooter">Seleccione un per&iacute;odo</span><span>Total Neto: <span class="hl" id="planSemTotal">S/ 0.00</span></span></div>
+    </div>
+</div>
+
+<!-- ============ BOLETAS ============ -->
+<div class="panel" id="panel-boletas">
+    <div class="filter-bar">
+        <select class="f-select" id="bolTipo" style="max-width:200px" onchange="toggleBoletaTipo()">
+            <option value="MENSUAL">Boleta Mensual</option>
+            <option value="SEMANAL">Boleta Semanal</option>
+        </select>
+        <select class="f-select" id="bolEmp" style="min-width:250px"><option value="">Seleccione empleado...</option></select>
+        <input type="month" class="f-input" id="bolPeriodo" style="max-width:200px">
+        <select class="f-select" id="bolSemana" style="min-width:250px;display:none"><option value="">Seleccione semana...</option></select>
+        <button class="btn btn-primary" onclick="generarBoleta()">&#128196; Generar Boleta</button>
+        <button class="btn btn-secondary" onclick="window.print()">&#128424; Imprimir</button>
+    </div>
+    <div id="boletaContainer"></div>
+</div>
+
+<!-- ============ CTS ============ -->
+<div class="panel" id="panel-cts">
+    <div class="filter-bar">
+        <select class="f-select" id="ctsPeriodo"><option value="MAYO">Dep&oacute;sito Mayo (Nov-Abr)</option><option value="NOVIEMBRE">Dep&oacute;sito Noviembre (May-Oct)</option></select>
+        <input type="number" class="f-input" id="ctsAnio" value="2026" style="max-width:120px" min="2020" max="2030">
+        <button class="btn btn-primary" onclick="calcularCTS()">Calcular CTS</button>
+        <button class="btn btn-secondary" onclick="exportCTSCSV()">&#128196; CSV</button>
+    </div>
+    <div class="kpi-row" id="ctsKpis"></div>
+    <div class="tbl-card"><div class="tbl-wrap"><table class="tbl"><thead><tr>
+        <th>Empleado</th><th>R&eacute;gimen</th><th>Sueldo</th><th>1/6 Gratif.</th><th>Remun. Comp.</th><th>Meses</th><th>D&iacute;as</th><th>CTS a Depositar</th>
+    </tr></thead><tbody id="ctsBody"></tbody></table></div>
+    <div class="tbl-footer"><span id="ctsFooter">0 registros</span><span>Total CTS: <span class="hl" id="ctsTotal">S/ 0.00</span></span></div></div>
+</div>
+
+<!-- ============ GRATIFICACIONES ============ -->
+<div class="panel" id="panel-gratificaciones">
+    <div class="filter-bar">
+        <select class="f-select" id="gratPeriodo"><option value="JULIO">Julio (Fiestas Patrias)</option><option value="DICIEMBRE">Diciembre (Navidad)</option></select>
+        <input type="number" class="f-input" id="gratAnio" value="2026" style="max-width:120px">
+        <button class="btn btn-primary" onclick="calcularGratificacion()">Calcular Gratificaci&oacute;n</button>
+    </div>
+    <div class="kpi-row" id="gratKpis"></div>
+    <div class="tbl-card"><div class="tbl-wrap"><table class="tbl"><thead><tr>
+        <th>Empleado</th><th>R&eacute;gimen</th><th>Sueldo B&aacute;sico</th><th>Asig.Fam.</th><th>Meses</th><th>Gratificaci&oacute;n</th><th>Bonif. Ext. 9%</th><th>Total</th>
+    </tr></thead><tbody id="gratBody"></tbody></table></div>
+    <div class="tbl-footer"><span id="gratFooter">0 registros</span><span>Total: <span class="hl" id="gratTotal">S/ 0.00</span></span></div></div>
+</div>
+
+<!-- ============ VACACIONES ============ -->
+<div class="panel" id="panel-vacaciones">
+    <div class="filter-bar">
+        <input class="f-input" id="vacSearch" placeholder="Buscar empleado..." oninput="renderVacaciones()">
+        <button class="btn btn-primary" onclick="openVacModal()">+ Registrar Vacaciones</button>
+    </div>
+    <div class="tbl-card"><div class="tbl-wrap"><table class="tbl"><thead><tr>
+        <th>Empleado</th><th>Fecha Ingreso</th><th>A&ntilde;os Trabajados</th><th>D&iacute;as Derecho</th><th>D&iacute;as Tomados</th><th>Saldo</th><th>Estado</th>
+    </tr></thead><tbody id="vacBody"></tbody></table></div></div>
+</div>
+
+<!-- ============ LIQUIDACIONES ============ -->
+<div class="panel" id="panel-liquidaciones">
+    <div class="filter-bar">
+        <select class="f-select" id="liqEmp" style="min-width:250px"><option value="">Seleccione empleado...</option></select>
+        <input type="date" class="f-input" id="liqFechaCese" style="max-width:200px">
+        <select class="f-select" id="liqMotivo"><option value="RENUNCIA">Renuncia Voluntaria</option><option value="DESPIDO">Despido</option><option value="MUTUO">Mutuo Acuerdo</option><option value="TERMINO">T&eacute;rmino de Contrato</option></select>
+        <button class="btn btn-primary" onclick="calcularLiquidacion()">Calcular Liquidaci&oacute;n</button>
+    </div>
+    <div id="liqResult"></div>
+</div>
+
+<!-- ============ PRESTAMOS ============ -->
+<div class="panel" id="panel-prestamos">
+    <div class="btn-group" style="margin-bottom:16px">
+        <button class="btn btn-primary" onclick="openLoanModal()">+ Nuevo Pr&eacute;stamo</button>
+    </div>
+    <div class="kpi-row" id="loanKpis"></div>
+    <div class="tbl-card"><div class="tbl-wrap"><table class="tbl"><thead><tr>
+        <th>Empleado</th><th>Tipo</th><th>Monto</th><th>Cuotas</th><th>Cuota Mensual</th><th>Pagado</th><th>Saldo</th><th>Estado</th><th>Acciones</th>
+    </tr></thead><tbody id="loanBody"></tbody></table></div></div>
+</div>
+
+<!-- ============ REPORTES ============ -->
+<div class="panel" id="panel-reportes">
+    <div class="sec-title"><div class="icon">&#128202;</div><h2>Reportes Disponibles</h2><div class="line"></div></div>
+    <div class="kpi-row">
+        <div class="kpi" style="cursor:pointer" onclick="genReporte('headcount')"><div class="kpi-icon">&#128101;</div><div class="kpi-label">Headcount</div><div class="kpi-val" style="font-size:18px">Reporte Personal</div><div class="kpi-sub">Empleados activos por planta, r&eacute;gimen, &aacute;rea</div></div>
+        <div class="kpi" style="cursor:pointer" onclick="genReporte('planilla')"><div class="kpi-icon">&#128176;</div><div class="kpi-label">Planilla PLAME</div><div class="kpi-val" style="font-size:18px">Planilla Mensual</div><div class="kpi-sub">Formato para declaraci&oacute;n SUNAT</div></div>
+        <div class="kpi" style="cursor:pointer" onclick="genReporte('asistencia')"><div class="kpi-icon">&#128340;</div><div class="kpi-label">Asistencia</div><div class="kpi-val" style="font-size:18px">Control Mensual</div><div class="kpi-sub">Resumen de asistencia por empleado</div></div>
+        <div class="kpi" style="cursor:pointer" onclick="genReporte('prestamos')"><div class="kpi-icon">&#128178;</div><div class="kpi-label">Pr&eacute;stamos</div><div class="kpi-val" style="font-size:18px">Cartera Activa</div><div class="kpi-sub">Saldos pendientes y cronogramas</div></div>
+        <div class="kpi" style="cursor:pointer" onclick="genReporte('costos')"><div class="kpi-icon">&#128200;</div><div class="kpi-label">Costos Laborales</div><div class="kpi-val" style="font-size:18px">An&aacute;lisis de Costos</div><div class="kpi-sub">Costo total empleador por trabajador</div></div>
+        <div class="kpi" style="cursor:pointer" onclick="genReporte('tregistro')"><div class="kpi-icon">&#128221;</div><div class="kpi-label">T-Registro</div><div class="kpi-val" style="font-size:18px">SUNAT</div><div class="kpi-sub">Formato T-Registro para SUNAT</div></div>
+    </div>
+    <div id="reporteResult"></div>
+</div>
+
+</main>
+
+<!-- ════════════ MODALS ════════════ -->
+<div class="modal-overlay" id="empModal">
+    <div class="modal">
+        <div class="modal-header"><h3 id="empModalTitle">Nuevo Empleado</h3><button class="modal-close" onclick="closeModal('empModal')">&#10005;</button></div>
+        <form id="empForm" onsubmit="saveEmpleado(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>C&oacute;digo</label><input id="fEmpCodigo" required></div>
+                <div class="form-group"><label>DNI</label><input id="fEmpDni" maxlength="8" pattern="\d{8}" required></div>
+                <div class="form-group"><label>Nombres</label><input id="fEmpNombres" required></div>
+                <div class="form-group"><label>Apellidos</label><input id="fEmpApellidos" required></div>
+                <div class="form-group"><label>Fecha Nacimiento</label><input type="date" id="fEmpFechaNac"></div>
+                <div class="form-group"><label>Fecha Ingreso</label><input type="date" id="fEmpFechaIng" required></div>
+                <div class="form-group"><label>Planta</label><select id="fEmpPlanta"><option>PLANTA HUAURA</option><option>PLANTA PIURA</option></select></div>
+                <div class="form-group"><label>Turno</label><select id="fEmpTurno"><option value="DIA">D&iacute;a</option><option value="NOCHE">Noche</option></select></div>
+                <div class="form-group"><label>R&eacute;gimen</label><select id="fEmpRegimen"><option value="AGRARIO">R&eacute;gimen Agrario</option><option value="GENERAL">R&eacute;gimen General</option></select></div>
+                <div class="form-group"><label>&Aacute;rea</label><select id="fEmpArea"><option>Producci&oacute;n</option><option>Calidad</option><option>Almac&eacute;n</option><option>Mantenimiento</option><option>Administraci&oacute;n</option><option>Sanidad</option></select></div>
+                <div class="form-group"><label>Cargo</label><input id="fEmpCargo" required></div>
+                <div class="form-group"><label>Sueldo B&aacute;sico (S/)</label><input type="number" id="fEmpSueldo" step="0.01" min="0" required></div>
+                <div class="form-group"><label>Asignaci&oacute;n Familiar</label><select id="fEmpAsigFam"><option value="false">No</option><option value="true">S&iacute;</option></select></div>
+                <div class="form-group"><label>Sistema de Pensiones</label><select id="fEmpPensiones"><option value="ONP">ONP</option><option value="AFP_INTEGRA">AFP Integra</option><option value="AFP_PRIMA">AFP Prima</option><option value="AFP_PROFUTURO">AFP Profuturo</option><option value="AFP_HABITAT">AFP H&aacute;bitat</option></select></div>
+                <div class="form-group"><label>Tipo Contrato</label><select id="fEmpContrato"><option value="INDETERMINADO">Indeterminado</option><option value="PLAZO_FIJO">Plazo Fijo</option><option value="TEMPORAL">Temporal</option></select></div>
+                <div class="form-group"><label>Estado</label><select id="fEmpEstado"><option value="ACTIVO">Activo</option><option value="CESADO">Cesado</option></select></div>
+                <div class="form-group"><label>Tel&eacute;fono</label><input id="fEmpTelefono"></div>
+                <div class="form-group full"><label>Direcci&oacute;n</label><input id="fEmpDireccion"></div>
+            </div>
+            <input type="hidden" id="fEmpId">
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('empModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="loanModal">
+    <div class="modal" style="max-width:500px">
+        <div class="modal-header"><h3>Nuevo Pr&eacute;stamo / Adelanto</h3><button class="modal-close" onclick="closeModal('loanModal')">&#10005;</button></div>
+        <form onsubmit="saveLoan(event)">
+            <div class="form-grid">
+                <div class="form-group full"><label>Empleado</label><select id="fLoanEmp" required></select></div>
+                <div class="form-group"><label>Tipo</label><select id="fLoanTipo"><option value="PRESTAMO">Pr&eacute;stamo</option><option value="ADELANTO">Adelanto</option></select></div>
+                <div class="form-group"><label>Monto (S/)</label><input type="number" id="fLoanMonto" step="0.01" min="1" required></div>
+                <div class="form-group"><label>N&ordm; Cuotas</label><input type="number" id="fLoanCuotas" min="1" max="24" value="1" required></div>
+                <div class="form-group"><label>Fecha Inicio</label><input type="date" id="fLoanFecha" required></div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('loanModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="vacModal">
+    <div class="modal" style="max-width:500px">
+        <div class="modal-header"><h3>Registrar Vacaciones</h3><button class="modal-close" onclick="closeModal('vacModal')">&#10005;</button></div>
+        <form onsubmit="saveVacacion(event)">
+            <div class="form-grid">
+                <div class="form-group full"><label>Empleado</label><select id="fVacEmp" required></select></div>
+                <div class="form-group"><label>Fecha Inicio</label><input type="date" id="fVacInicio" required></div>
+                <div class="form-group"><label>Fecha Fin</label><input type="date" id="fVacFin" required></div>
+                <div class="form-group full"><label>Observaci&oacute;n</label><input id="fVacObs"></div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('vacModal')">Cancelar</button>
+                <button type="submit" class="btn btn-primary">Registrar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ════════════ SCRIPTS (modular) ════════════ -->
+<script src="config.js"></script>
+<script src="toast.js"></script>
+<script src="dashboard.js"></script>
+<script src="empleados.js"></script>
+<script src="asistencia.js"></script>
+<script src="planilla.js"></script>
+<script src="beneficios.js"></script>
+<script src="liquidaciones.js"></script>
+<script src="prestamos.js"></script>
+<script src="reportes.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

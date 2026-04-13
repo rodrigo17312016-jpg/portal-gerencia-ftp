@@ -1,0 +1,24 @@
+<!-- Panel: Programa de Produccion -->
+<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
+  <div>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">📅 Programa de <span style="color:var(--verde)">Produccion</span></h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Planificacion y seguimiento semanal de produccion</p>
+  </div>
+</div>
+
+<div class="kpi-grid">
+  <div class="kpi-card"><div class="kpi-label">Programado Semana</div><div class="kpi-value" id="progProgramado">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Ejecutado</div><div class="kpi-value" id="progEjecutado">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
+  <div class="kpi-card"><div class="kpi-label">Cumplimiento %</div><div class="kpi-value" id="progCumplimiento">—</div></div>
+  <div class="kpi-card"><div class="kpi-label">Dias Restantes</div><div class="kpi-value" id="progDiasRest">—</div></div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">📋 Programa Semanal por Fruta</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Fecha</th><th>Fruta</th><th>Consumo MP (kg)</th><th>PT (kg)</th><th>Rendimiento</th><th>Turno</th><th>Estado</th></tr></thead>
+      <tbody id="progTabla"></tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<!-- Panel: Monitoreo de Temperaturas -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">🌡️ Estado de temperaturas por area — hoy</div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <span class="badge badge-verde">Supabase Live</span>
+      <button id="btn-refresh-temp" class="btn btn-sm btn-secondary">↻ Actualizar</button>
+    </div>
+  </div>
+  <div class="kpi-grid" id="tempCards" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr))">
+    <div class="loading-spinner" style="grid-column:1/-1"></div>
+  </div>
+</div>
+
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div class="card-title">📋 Todos los registros de hoy</div>
+    <a href="../dashboards/temperaturas.html" target="_blank" class="btn btn-sm btn-primary">
+      ➕ Ir a la app de registro
+    </a>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Hora</th><th>Area</th><th>Temperatura</th><th>Estado</th><th>Turno</th><th>Inspector</th><th>Observacion</th></tr></thead>
+      <tbody id="tablaTemp"></tbody>
+    </table>
+  </div>
+</div>

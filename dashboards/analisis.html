@@ -1,0 +1,1375 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Costos de Análisis de Laboratorio — Frutos Tropicales Peru Export S.A.C.</title>
+<link rel="icon" href="LOGO.png" type="image/png">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+  --bg: #0a0d14;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --bg4: #222b3d;
+  --card-bg: rgba(17,24,39,0.82);
+  --border: rgba(255,255,255,0.06);
+  --border-bright: rgba(255,255,255,0.12);
+  --text: #e8eaf0;
+  --text2: #9099b0;
+  --text3: #556080;
+  --accent: #c8f542;
+  --accent2: #42d9f5;
+  --accent3: #f5a442;
+  --red: #f55a42;
+  --purple: #9b6dff;
+  --teal: #2dd4a8;
+  --green: #22c55e;
+  --gold: #d4af37;
+  --header-bg: linear-gradient(135deg, #0d1f14 0%, #0f2d1a 40%, #0a1a0e 100%);
+  --font-main: 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --radius: 16px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="light"] {
+  --bg: #f0f4f8;
+  --bg2: #e4eaf3;
+  --bg3: #d8e2f0;
+  --bg4: #ccd6e8;
+  --card-bg: rgba(255,255,255,0.85);
+  --border: rgba(0,0,0,0.06);
+  --border-bright: rgba(0,0,0,0.12);
+  --text: #1a2340;
+  --text2: #4a5578;
+  --text3: #7a88a8;
+  --shadow: 0 8px 32px rgba(0,0,0,0.10);
+}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+html { scroll-behavior:smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-main);
+  font-size: 14px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+}
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(34,197,94,0.05) 0%, transparent 60%),
+              radial-gradient(ellipse 50% 40% at 90% 80%, rgba(66,217,245,0.03) 0%, transparent 50%),
+              radial-gradient(ellipse 40% 30% at 10% 60%, rgba(155,109,255,0.02) 0%, transparent 40%);
+  pointer-events:none; z-index:0;
+}
+
+/* KEYFRAMES */
+@keyframes fadeSlideUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+@keyframes logoFloat { 0%,100%{transform:translateY(0) rotate(0deg)} 25%{transform:translateY(-4px) rotate(-0.5deg)} 75%{transform:translateY(4px) rotate(0.5deg)} }
+@keyframes sigShimmer { 0%{background-position:200% center} 100%{background-position:-200% center} }
+@keyframes sigBorderGlow { 0%,100%{border-color:rgba(212,175,55,0.3);box-shadow:0 0 8px rgba(212,175,55,0.1)} 50%{border-color:rgba(212,175,55,0.6);box-shadow:0 0 18px rgba(212,175,55,0.25)} }
+@keyframes pulseGreen { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0)} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0.12)} }
+@keyframes gradBorder { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
+@keyframes shimmerLoad { 0%{left:-100%} 100%{left:200%} }
+@keyframes countUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+@keyframes ringPulse { 0%,100%{stroke-dashoffset:var(--ring-offset)} 50%{stroke-dashoffset:calc(var(--ring-offset) - 8)} }
+
+/* HEADER */
+.header {
+  position:sticky; top:0; z-index:100;
+  background: var(--header-bg);
+  border-bottom: 1px solid rgba(34,197,94,0.15);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  padding: 0 32px;
+  display:flex; align-items:center; justify-content:space-between;
+  min-height:80px;
+  animation: fadeSlideUp 0.5s ease both;
+}
+[data-theme="light"] .header { background: linear-gradient(135deg,#0d1f14 0%,#0f2d1a 40%,#0a1a0e 100%); }
+.header-left { display:flex; align-items:center; gap:16px; }
+.header-logo { height:52px; animation:logoFloat 4s ease-in-out infinite; filter:drop-shadow(0 4px 12px rgba(34,197,94,0.3)); flex-shrink:0; }
+.header-titles h1 { font-size:20px; font-weight:800; color:#fff; line-height:1.2; text-shadow:0 0 20px rgba(34,197,94,0.3); }
+.header-titles .subtitle { font-size:11px; color:rgba(34,197,94,0.8); font-weight:500; letter-spacing:0.5px; margin-top:2px; }
+.header-titles .last-update { font-size:9px; color:rgba(255,255,255,0.35); font-weight:400; margin-top:1px; }
+.header-right { display:flex; align-items:center; gap:12px; }
+
+.sig-badge {
+  display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:8px 22px; border-radius:20px;
+  background:linear-gradient(145deg,rgba(10,18,32,.85),rgba(20,30,48,.9),rgba(15,25,40,.85));
+  border:1px solid rgba(212,175,55,.3);
+  position:relative; overflow:hidden; backdrop-filter:blur(16px);
+  animation: sigBorderGlow 4s ease infinite;
+  box-shadow:0 0 20px rgba(212,175,55,.08),inset 0 1px 0 rgba(255,255,255,.06);
+  cursor:default;
+}
+.sig-badge::before { content:''; position:absolute; top:0; left:-100%; width:50%; height:100%; background:linear-gradient(90deg,transparent,rgba(212,175,55,.08),rgba(255,255,255,.05),transparent); animation:shimmerLoad 5s ease-in-out infinite; pointer-events:none; }
+.sig-badge > * { position:relative; z-index:1; }
+.sig-dev { font-size:7px; color:rgba(212,175,55,.7); text-transform:uppercase; letter-spacing:2px; font-weight:800; }
+.sig-name { background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%); background-size:300%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:sigShimmer 4s ease infinite; font-size:14px; font-weight:900; white-space:nowrap; }
+.sig-role { color:#22c55e; font-size:9px; font-weight:700; white-space:nowrap; }
+
+.btn-back { display:flex; align-items:center; gap:7px; padding:9px 16px; background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); border-radius:10px; color:#22c55e; font-size:12px; font-weight:700; cursor:pointer; text-decoration:none; font-family:var(--font-main); transition:all var(--transition); white-space:nowrap; }
+.btn-back:hover { background:rgba(34,197,94,0.2); border-color:rgba(34,197,94,0.6); box-shadow:0 0 16px rgba(34,197,94,0.2); transform:translateX(-2px); }
+.toggle-theme { width:42px; height:42px; border-radius:12px; background:rgba(255,255,255,0.06); border:1px solid var(--border-bright); color:var(--text); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all var(--transition); }
+.toggle-theme:hover { background:rgba(255,255,255,0.12); transform:scale(1.08); }
+
+/* FILTROS */
+.filters-bar {
+  position:sticky; top:80px; z-index:90;
+  background: rgba(10,13,20,0.92);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border);
+  padding:12px 32px;
+  display:flex; align-items:center; gap:24px; flex-wrap:wrap;
+  animation: fadeSlideUp 0.5s 0.05s ease both;
+  transition: background var(--transition);
+}
+[data-theme="light"] .filters-bar { background: rgba(230,238,252,0.95); }
+.filter-group { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.filter-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; white-space:nowrap; }
+.pill { padding:5px 13px; border-radius:20px; border:1px solid var(--border-bright); background:transparent; color:var(--text2); font-size:12px; font-weight:600; cursor:pointer; font-family:var(--font-main); transition:all var(--transition); white-space:nowrap; }
+.pill:hover { background:rgba(255,255,255,0.07); color:var(--text); }
+.pill.active { background:rgba(200,245,66,0.15); border-color:rgba(200,245,66,0.5); color:#c8f542; }
+.pill.active-lab-groen { background:rgba(66,217,245,0.15); border-color:rgba(66,217,245,0.5); color:#42d9f5; }
+.pill.active-lab-agq { background:rgba(200,245,66,0.15); border-color:rgba(200,245,66,0.5); color:#c8f542; }
+.pill.active-lab-nsf { background:rgba(245,164,66,0.15); border-color:rgba(245,164,66,0.5); color:#f5a442; }
+.pill.active-lab-sgs { background:rgba(155,109,255,0.15); border-color:rgba(155,109,255,0.5); color:#9b6dff; }
+.pill.active-lab-merieux { background:rgba(245,90,66,0.15); border-color:rgba(245,90,66,0.5); color:#f55a42; }
+.filter-sep { width:1px; height:20px; background:var(--border); }
+
+/* MAIN */
+.main { max-width:1600px; margin:0 auto; padding:32px 32px 48px; display:flex; flex-direction:column; gap:24px; position:relative; z-index:1; }
+
+/* CARD */
+.card {
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: all var(--transition);
+  animation: fadeSlideUp 0.5s ease both;
+  position:relative;
+  overflow:hidden;
+}
+.card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg, transparent, rgba(200,245,66,0.15), rgba(66,217,245,0.1), transparent);
+  opacity:0; transition:opacity var(--transition);
+}
+.card:hover::before { opacity:1; }
+.card:hover { border-color:var(--border-bright); box-shadow:var(--shadow), 0 0 0 1px rgba(200,245,66,0.04); }
+.card-header { padding:20px 24px 0; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.card-title { font-size:13px; font-weight:700; color:var(--text2); text-transform:uppercase; letter-spacing:1px; display:flex; align-items:center; gap:8px; }
+.card-title-dot { width:8px; height:8px; border-radius:50%; background:var(--accent); animation:pulseGreen 2s infinite; }
+.card-body { padding:20px 24px 24px; }
+
+/* KPI GRID */
+.kpi-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; }
+@media (max-width:1200px) { .kpi-grid { grid-template-columns:repeat(3,1fr); } }
+@media (max-width:800px) { .kpi-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:500px) { .kpi-grid { grid-template-columns:1fr; } }
+
+.kpi-card {
+  background: var(--card-bg);
+  backdrop-filter:blur(20px);
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+  padding:20px 20px 16px;
+  display:flex; flex-direction:column; gap:6px;
+  position:relative; overflow:hidden;
+  transition: all var(--transition);
+  animation: fadeSlideUp 0.5s ease both;
+}
+.kpi-card:hover { transform:translateY(-3px); border-color:var(--border-bright); box-shadow:var(--shadow), 0 0 24px rgba(200,245,66,0.06); }
+.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--kpi-accent, var(--accent)); border-radius:var(--radius) var(--radius) 0 0; }
+.kpi-card::after { content:''; position:absolute; top:0; right:0; width:80px; height:80px; background:radial-gradient(circle, var(--kpi-accent, var(--accent)), transparent); opacity:0.04; border-radius:50%; transform:translate(20px,-20px); }
+.kpi-icon { font-size:26px; line-height:1; }
+.kpi-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1.2px; }
+.kpi-value { font-size:26px; font-weight:800; color:var(--text); line-height:1; letter-spacing:-0.5px; animation:countUp 0.5s ease both; }
+.kpi-value.accent { color:var(--accent); }
+.kpi-sub { font-size:11px; color:var(--text3); font-weight:500; }
+
+/* INSIGHT CARDS ROW */
+.insight-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+@media (max-width:1200px) { .insight-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:500px) { .insight-grid { grid-template-columns:1fr; } }
+.insight-card {
+  background:var(--card-bg); backdrop-filter:blur(20px);
+  border-radius:14px; border:1px solid var(--border);
+  padding:16px 18px; display:flex; align-items:center; gap:14px;
+  transition:all var(--transition); animation:fadeSlideUp 0.5s ease both;
+  position:relative; overflow:hidden;
+}
+.insight-card:hover { border-color:var(--border-bright); transform:translateY(-2px); }
+.insight-ring { position:relative; width:52px; height:52px; flex-shrink:0; }
+.insight-ring svg { width:52px; height:52px; transform:rotate(-90deg); }
+.insight-ring circle { fill:none; stroke-width:4; stroke-linecap:round; }
+.insight-ring .ring-bg { stroke:rgba(255,255,255,0.06); }
+.insight-ring .ring-fg { transition:stroke-dashoffset 1s ease; }
+.insight-ring .ring-val { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; transform:rotate(0deg); }
+.insight-info { flex:1; min-width:0; }
+.insight-info .i-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:0.8px; }
+.insight-info .i-value { font-size:16px; font-weight:800; color:var(--text); margin-top:2px; }
+.insight-info .i-sub { font-size:10px; color:var(--text3); margin-top:1px; }
+
+/* CHARTS GRID */
+.charts-grid { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+@media (max-width:1000px) { .charts-grid { grid-template-columns:1fr; } }
+.charts-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; }
+@media (max-width:1200px) { .charts-grid-3 { grid-template-columns:1fr 1fr; } }
+@media (max-width:700px) { .charts-grid-3 { grid-template-columns:1fr; } }
+.chart-container { position:relative; padding:8px 0; }
+.chart-container canvas { max-height:320px; }
+.chart-full { grid-column:1/-1; }
+
+/* TABLA */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+thead tr { border-bottom:2px solid var(--border-bright); }
+thead th { padding:10px 14px; text-align:left; font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1px; cursor:pointer; user-select:none; transition:color var(--transition); white-space:nowrap; }
+thead th:hover { color:var(--accent); }
+thead th.sort-asc::after { content:' ▲'; color:var(--accent); }
+thead th.sort-desc::after { content:' ▼'; color:var(--accent); }
+tbody tr { border-bottom:1px solid var(--border); transition:background var(--transition); }
+tbody tr:hover { background:rgba(255,255,255,0.04); }
+tbody tr.total-row { border-top:2px solid var(--border-bright); background:rgba(200,245,66,0.04); font-weight:700; }
+tbody td { padding:11px 14px; vertical-align:middle; }
+.lab-badge { display:inline-flex; align-items:center; gap:6px; font-weight:700; font-size:13px; }
+.lab-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
+.bar-cell { min-width:100px; }
+.bar-track { height:6px; border-radius:3px; background:rgba(255,255,255,0.06); overflow:hidden; }
+.bar-fill { height:100%; border-radius:3px; transition:width 0.8s cubic-bezier(0.4,0,0.2,1); }
+
+/* COMPARATIVO */
+.compare-table table td, .compare-table table th { padding:13px 18px; }
+.compare-table thead th { font-size:11px; font-weight:800; color:var(--text2); }
+.compare-table .col-2425 { color:#42d9f5; }
+.compare-table .col-2526 { color:#c8f542; }
+.compare-delta { font-weight:800; font-size:13px; }
+.delta-pos { color:#22c55e; }
+.delta-neg { color:#f55a42; }
+.delta-neutral { color:var(--text3); }
+
+/* EXPORT */
+.btn-export { display:inline-flex; align-items:center; gap:7px; padding:8px 16px; background:rgba(200,245,66,0.08); border:1px solid rgba(200,245,66,0.25); border-radius:10px; color:#c8f542; font-size:12px; font-weight:700; cursor:pointer; font-family:var(--font-main); transition:all var(--transition); }
+.btn-export:hover { background:rgba(200,245,66,0.16); border-color:rgba(200,245,66,0.5); box-shadow:0 0 14px rgba(200,245,66,0.15); }
+
+/* SECTION LABEL */
+.section-label { font-size:10px; font-weight:700; color:var(--text3); text-transform:uppercase; letter-spacing:1.5px; display:flex; align-items:center; gap:8px; padding:6px 0 0; }
+.section-label::before { content:''; display:inline-block; width:18px; height:2px; background:var(--accent); border-radius:1px; }
+
+/* FOOTER */
+.footer { text-align:center; padding:32px; border-top:1px solid var(--border); color:var(--text3); font-size:12px; position:relative; z-index:1; animation:fadeSlideUp 0.5s 0.3s ease both; }
+.footer span { color:var(--text2); font-weight:500; }
+.footer .footer-sig { margin-top:6px; font-size:11px; }
+.footer .footer-sig em { background:linear-gradient(135deg,#d4af37,#f5e6a3,#d4af37); background-size:200%; -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; animation:sigShimmer 4s ease infinite; font-style:normal; font-weight:700; }
+
+/* RESPONSIVE */
+@media (max-width:768px) {
+  .header { padding:0 16px; min-height:64px; flex-wrap:wrap; gap:10px; padding-top:10px; padding-bottom:10px; }
+  .header-titles h1 { font-size:15px; }
+  .main { padding:20px 16px 40px; gap:16px; }
+  .filters-bar { padding:10px 16px; gap:12px; }
+  .sig-badge { display:none; }
+}
+
+/* SCROLL ANIMATION */
+.reveal { opacity:0; transform:translateY(20px); transition:opacity 0.6s ease, transform 0.6s ease; }
+.reveal.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-left">
+    <img src="LOGO.png" alt="Frutos Tropicales" class="header-logo">
+    <div class="header-titles">
+      <h1>Costos de Análisis de Laboratorio</h1>
+      <div class="subtitle">Dashboard de Gestión &nbsp;·&nbsp; Frutos Tropicales Peru Export S.A.C.</div>
+      <div class="last-update">Actualizado: Abril 2026 &nbsp;·&nbsp; Fuente: COSTOS ANALISIS EXTERNOS.xlsx</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="sig-badge">
+      <span class="sig-dev">Desarrollado por:</span>
+      <span class="sig-name">Rodrigo Garcia</span>
+      <span class="sig-role">Systems Analyst &amp; Developer-QA</span>
+    </div>
+    <a href="portal-gerencia.html" class="btn-back">← Regresar al Portal</a>
+    <button class="toggle-theme" id="btnTheme" title="Cambiar tema" onclick="toggleTheme()">🌙</button>
+  </div>
+</header>
+
+<div class="filters-bar" id="filtersBar">
+  <div class="filter-group">
+    <span class="filter-label">Campaña</span>
+    <button class="pill active" id="pillAll" onclick="setCamp('all')">Ambas Campañas</button>
+    <button class="pill" id="pill2425" onclick="setCamp('c2425')">2024–2025</button>
+    <button class="pill" id="pill2526" onclick="setCamp('c2526')">2025–2026</button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <span class="filter-label">Laboratorio</span>
+    <button class="pill active" id="labAll" onclick="setLab('all')">Todos</button>
+    <button class="pill" id="labGROEN" onclick="setLab('GROEN')">GROEN</button>
+    <button class="pill" id="labAGQ" onclick="setLab('AGQ')">AGQ</button>
+    <button class="pill" id="labNSF" onclick="setLab('NSF')">NSF</button>
+    <button class="pill" id="labSGS" onclick="setLab('SGS')">SGS</button>
+    <button class="pill" id="labMERIEUX" onclick="setLab('MERIEUX')">MERIEUX</button>
+  </div>
+  <div class="filter-sep"></div>
+  <div class="filter-group">
+    <span class="filter-label">Cultivo</span>
+    <button class="pill active" id="cultAll" onclick="setCult('all')">Todos</button>
+    <button class="pill" id="cultMango" onclick="setCult('Mango')">Mango</button>
+    <button class="pill" id="cultFresa" onclick="setCult('Fresa')">Fresa</button>
+    <button class="pill" id="cultArándano" onclick="setCult('Arándano')">Arándano</button>
+    <button class="pill" id="cultPalta" onclick="setCult('Palta')">Palta</button>
+    <button class="pill" id="cultGranada" onclick="setCult('Granada')">Granada</button>
+  </div>
+</div>
+
+<main class="main">
+
+  <!-- KPIs -->
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card" style="--kpi-accent:#c8f542; animation-delay:0.05s;">
+      <div class="kpi-icon">💰</div>
+      <div class="kpi-label">Costo Total</div>
+      <div class="kpi-value accent" id="kpiTotal">S/ 0</div>
+      <div class="kpi-sub">Ambas campañas</div>
+    </div>
+    <div class="kpi-card" style="--kpi-accent:#42d9f5; animation-delay:0.10s;">
+      <div class="kpi-icon">🧪</div>
+      <div class="kpi-label">Muestras Analizadas</div>
+      <div class="kpi-value" style="color:#42d9f5" id="kpiMuestras">0</div>
+      <div class="kpi-sub" id="kpiMuestrasSub">Total de muestras</div>
+    </div>
+    <div class="kpi-card" style="--kpi-accent:#f5a442; animation-delay:0.15s;">
+      <div class="kpi-icon">📊</div>
+      <div class="kpi-label">Costo Prom / Muestra</div>
+      <div class="kpi-value" style="color:#f5a442" id="kpiProm">S/ 0</div>
+      <div class="kpi-sub">Promedio ponderado</div>
+    </div>
+    <div class="kpi-card" style="--kpi-accent:#9b6dff; animation-delay:0.20s;">
+      <div class="kpi-icon">🏆</div>
+      <div class="kpi-label">Lab Líder</div>
+      <div class="kpi-value" style="color:#9b6dff; font-size:22px;" id="kpiLabLider">—</div>
+      <div class="kpi-sub" id="kpiLabSub">Mayor gasto</div>
+    </div>
+    <div class="kpi-card" style="--kpi-accent:#f55a42; animation-delay:0.25s;">
+      <div class="kpi-icon">🔬</div>
+      <div class="kpi-label">Proceso Top</div>
+      <div class="kpi-value" style="color:#f55a42; font-size:17px; line-height:1.2;" id="kpiProcTop">—</div>
+      <div class="kpi-sub" id="kpiProcSub">Mayor costo</div>
+    </div>
+  </div>
+
+  <!-- Insight Cards -->
+  <div class="insight-grid">
+    <div class="insight-card" style="animation-delay:0.12s;">
+      <div class="insight-ring">
+        <svg viewBox="0 0 52 52"><circle class="ring-bg" cx="26" cy="26" r="22"/><circle class="ring-fg" id="ringMaquila" cx="26" cy="26" r="22" stroke="#22c55e" stroke-dasharray="138.23" stroke-dashoffset="138.23"/></svg>
+        <div class="ring-val" style="color:#22c55e" id="ringMaqVal">0%</div>
+      </div>
+      <div class="insight-info">
+        <div class="i-label">Origen: Maquila</div>
+        <div class="i-value" id="insMaqCost">S/ 0</div>
+        <div class="i-sub" id="insMaqN">0 muestras</div>
+      </div>
+    </div>
+    <div class="insight-card" style="animation-delay:0.16s;">
+      <div class="insight-ring">
+        <svg viewBox="0 0 52 52"><circle class="ring-bg" cx="26" cy="26" r="22"/><circle class="ring-fg" id="ringPlanta" cx="26" cy="26" r="22" stroke="#9b6dff" stroke-dasharray="138.23" stroke-dashoffset="138.23"/></svg>
+        <div class="ring-val" style="color:#9b6dff" id="ringPlaVal">0%</div>
+      </div>
+      <div class="insight-info">
+        <div class="i-label">Origen: Planta Propia</div>
+        <div class="i-value" id="insPlaCost">S/ 0</div>
+        <div class="i-sub" id="insPlaN">0 muestras</div>
+      </div>
+    </div>
+    <div class="insight-card" style="animation-delay:0.20s;">
+      <div class="insight-ring">
+        <svg viewBox="0 0 52 52"><circle class="ring-bg" cx="26" cy="26" r="22"/><circle class="ring-fg" id="ringMP" cx="26" cy="26" r="22" stroke="#42d9f5" stroke-dasharray="138.23" stroke-dashoffset="138.23"/></svg>
+        <div class="ring-val" style="color:#42d9f5" id="ringMPVal">0%</div>
+      </div>
+      <div class="insight-info">
+        <div class="i-label">Materia Prima</div>
+        <div class="i-value" id="insMPCost">S/ 0</div>
+        <div class="i-sub" id="insMPN">0 muestras</div>
+      </div>
+    </div>
+    <div class="insight-card" style="animation-delay:0.24s;">
+      <div class="insight-ring">
+        <svg viewBox="0 0 52 52"><circle class="ring-bg" cx="26" cy="26" r="22"/><circle class="ring-fg" id="ringPT" cx="26" cy="26" r="22" stroke="#f5a442" stroke-dasharray="138.23" stroke-dashoffset="138.23"/></svg>
+        <div class="ring-val" style="color:#f5a442" id="ringPTVal">0%</div>
+      </div>
+      <div class="insight-info">
+        <div class="i-label">Producto Terminado</div>
+        <div class="i-value" id="insPTCost">S/ 0</div>
+        <div class="i-sub" id="insPTN">0 muestras</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico Evolución Mensual -->
+  <div class="card chart-full" style="animation-delay:0.10s;">
+    <div class="card-header">
+      <div class="card-title"><span class="card-title-dot"></span> Evolución Mensual del Gasto</div>
+      <span style="font-size:11px; color:var(--text3);">S/ por mes</span>
+    </div>
+    <div class="card-body">
+      <div class="chart-container" style="height:280px;"><canvas id="chartLinea"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Comparativo Campañas Superpuesto -->
+  <div class="card chart-full reveal" style="animation-delay:0.12s;">
+    <div class="card-header">
+      <div class="card-title"><span class="card-title-dot" style="background:#d4af37;"></span> Superposición de Campañas — Mes a Mes</div>
+      <span style="font-size:11px; color:var(--text3);">Mes 1 = inicio de cada campaña</span>
+    </div>
+    <div class="card-body">
+      <div class="chart-container" style="height:280px;"><canvas id="chartOverlay"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Grid: Doughnut + Top Procesos -->
+  <div class="charts-grid">
+    <div class="card" style="animation-delay:0.15s;">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot" style="background:#42d9f5;"></span> Distribución por Laboratorio</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:280px;"><canvas id="chartDoughnut"></canvas></div>
+      </div>
+    </div>
+    <div class="card" style="animation-delay:0.20s;">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot" style="background:#f55a42;"></span> Top Procesos de Análisis</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:280px;"><canvas id="chartProcs"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Grid: Origen donut + Radar labs -->
+  <div class="charts-grid reveal">
+    <div class="card" style="animation-delay:0.18s;">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot" style="background:#22c55e;"></span> Distribución por Origen</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:280px;"><canvas id="chartOrigen"></canvas></div>
+      </div>
+    </div>
+    <div class="card" style="animation-delay:0.22s;">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-dot" style="background:#9b6dff;"></span> Comparación Multidimensional de Labs</div>
+      </div>
+      <div class="card-body">
+        <div class="chart-container" style="height:280px;"><canvas id="chartRadar"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cultivos Micro vs Residuos -->
+  <div class="card reveal" style="animation-delay:0.25s;">
+    <div class="card-header">
+      <div class="card-title"><span class="card-title-dot" style="background:#22c55e;"></span> Costo por Cultivo — Microbiológico vs Residuos de Pesticidas</div>
+    </div>
+    <div class="card-body">
+      <div class="chart-container" style="height:300px;"><canvas id="chartCultivos"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Tabla laboratorios -->
+  <div class="card reveal" style="animation-delay:0.30s;">
+    <div class="card-header">
+      <div class="card-title"><span class="card-title-dot" style="background:#f5a442;"></span> Detalle por Laboratorio</div>
+      <button class="btn-export" onclick="exportCSV()">⬇ Exportar CSV</button>
+    </div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table id="labTable">
+          <thead><tr>
+            <th onclick="sortTable(0)">Laboratorio</th>
+            <th onclick="sortTable(1)">Muestras</th>
+            <th onclick="sortTable(2)">Gasto Total (S/.)</th>
+            <th onclick="sortTable(3)">% del Total</th>
+            <th onclick="sortTable(4)">Costo Prom/Muestra</th>
+            <th>Participación</th>
+          </tr></thead>
+          <tbody id="labTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comparativo campañas MEJORADO -->
+  <div class="card compare-table reveal" style="animation-delay:0.35s;">
+    <div class="card-header">
+      <div class="card-title"><span class="card-title-dot" style="background:#d4af37;"></span> Comparativo entre Campañas</div>
+    </div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>Métrica</th>
+            <th class="col-2425">Campaña 2024–2025</th>
+            <th class="col-2526">Campaña 2025–2026</th>
+            <th>Δ Variación</th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td style="font-weight:600;">Gasto Total</td>
+              <td class="col-2425" style="font-weight:700;">S/ 126,049</td>
+              <td class="col-2526" style="font-weight:700;">S/ 80,712</td>
+              <td><span class="compare-delta delta-pos">▼ -36.0%</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Muestras Analizadas</td>
+              <td class="col-2425" style="font-weight:700;">1,852</td>
+              <td class="col-2526" style="font-weight:700;">1,096</td>
+              <td><span class="compare-delta delta-pos">▼ -40.8%</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Costo Prom / Muestra</td>
+              <td class="col-2425" style="font-weight:700;">S/ 68.06</td>
+              <td class="col-2526" style="font-weight:700;">S/ 73.64</td>
+              <td><span class="compare-delta delta-neg">▲ +8.2%</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Lab Líder (Gasto)</td>
+              <td class="col-2425" style="font-weight:700;">AGQ — S/ 68,372</td>
+              <td class="col-2526" style="font-weight:700;">GROEN — S/ 52,519</td>
+              <td><span class="compare-delta delta-neutral">Cambio de líder</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Proceso Principal</td>
+              <td class="col-2425" style="font-weight:700;">Pesticidas — S/ 57,632</td>
+              <td class="col-2526" style="font-weight:700;">Pesticidas — S/ 42,352</td>
+              <td><span class="compare-delta delta-pos">▼ -26.5%</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Labs Activos</td>
+              <td class="col-2425" style="font-weight:700;">3 (AGQ, GROEN, MERIEUX)</td>
+              <td class="col-2526" style="font-weight:700;">5 (todos)</td>
+              <td><span class="compare-delta delta-neg">▲ +67%</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Origen Planta Propia</td>
+              <td class="col-2425" style="font-weight:700;">0%</td>
+              <td class="col-2526" style="font-weight:700;">26.6% (S/ 21,493)</td>
+              <td><span class="compare-delta" style="color:#9b6dff;">Nuevo</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Ratio MP / PT</td>
+              <td class="col-2425" style="font-weight:700;">38.2% / 61.8%</td>
+              <td class="col-2526" style="font-weight:700;">54.8% / 43.1%</td>
+              <td><span class="compare-delta delta-neutral">Inversión MP↑</span></td>
+            </tr>
+            <tr>
+              <td style="font-weight:600;">Meses de Campaña</td>
+              <td class="col-2425" style="font-weight:700;">13 meses</td>
+              <td class="col-2526" style="font-weight:700;">12 meses</td>
+              <td><span class="compare-delta delta-neutral">—</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla Top Packs -->
+  <div class="card reveal" style="animation-delay:0.38s;">
+    <div class="card-header">
+      <div class="card-title"><span class="card-title-dot" style="background:#2dd4a8;"></span> Detalle por Tipo de Análisis (Packs)</div>
+    </div>
+    <div class="card-body">
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th>#</th>
+            <th>Pack / Análisis</th>
+            <th>Muestras</th>
+            <th>Costo Total (S/.)</th>
+            <th>% del Total</th>
+            <th>Costo/Muestra</th>
+            <th>Participación</th>
+          </tr></thead>
+          <tbody id="packsTbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer class="footer">
+  <div><span>Frutos Tropicales Peru Export S.A.C.</span> — Sistema de Gestión Integral</div>
+  <div class="footer-sig">Desarrollado por <em>Rodrigo Garcia</em> &nbsp;·&nbsp; Systems Analyst &amp; Developer-QA</div>
+</footer>
+
+<script>
+/* ==============================
+   DATA — Updated from COSTOS ANALISIS EXTERNOS.xlsx (Abril 2026)
+============================== */
+const D = {
+  all: {
+    monthly: {
+      labels:["Jun'24","Jul'24","Ago'24","Set'24","Oct'24","Nov'24","Dic'24","Ene'25","Feb'25","Mar'25","Abr'25","May'25","Jun'25","Jul'25","Ago'25","Set'25","Oct'25","Nov'25","Dic'25","Ene'26","Feb'26","Mar'26"],
+      data:[1626,2328,7912,15023,20016,18384,16569,16624,18047,7019,1850,1870,291,5370,5871,8806,14605,7438,9235,12180,11502,4197]
+    },
+    labs:{ AGQ:85806, GROEN:110041, NSF:6035, SGS:2546, MERIEUX:2333 },
+    labMuestras:{ AGQ:1176, GROEN:1658, NSF:69, SGS:15, MERIEUX:30 },
+    cultivos:{ Mango:{micro:19007,residuos:79568}, Fresa:{micro:11609,residuos:60114}, "Arándano":{micro:8397,residuos:19440}, Palta:{micro:1226,residuos:4352}, Granada:{micro:830,residuos:560}, Otros:{micro:1658,residuos:0} },
+    procs:[
+      {name:'Pesticidas',val:99984,color:'#f55a42'},{name:'Pack 2',val:20647,color:'#c8f542'},
+      {name:'Metales Pesados',val:16749,color:'#42d9f5'},{name:'Fosetil',val:13970,color:'#9b6dff'},
+      {name:'Glifosato',val:13826,color:'#f5a442'},{name:'Cloratos+Perc.',val:13492,color:'#2dd4a8'},
+      {name:'Pack 6',val:4680,color:'#d4af37'},{name:'Norovirus/HAV',val:4022,color:'#f55a42'},
+      {name:'Pack 10',val:2565,color:'#c8f542'},{name:'Cloratos',val:2376,color:'#42d9f5'}
+    ],
+    packs:[
+      {name:'Pesticidas',n:1157,cost:99984},{name:'Pack 2',n:229,cost:20647},
+      {name:'Metales Pesados',n:628,cost:16749},{name:'Fosetil',n:195,cost:13970},
+      {name:'Glifosato',n:193,cost:13826},{name:'Cloratos y Percloratos',n:189,cost:13492},
+      {name:'Pack 6',n:36,cost:4680},{name:'Norovirus y Hepatitis A',n:11,cost:4022},
+      {name:'Pack 10',n:19,cost:2565},{name:'Cloratos',n:66,cost:2376},
+      {name:'Percloratos',n:66,cost:2376},{name:'Pack 13',n:17,cost:2025},
+      {name:'Pack 2 + Bacillus',n:15,cost:1826},{name:'Pack 1',n:24,cost:1800},
+      {name:'Etefón',n:18,cost:1260}
+    ],
+    origen:{ Maquila:{cost:185268,n:2650}, 'Planta Propia':{cost:21493,n:298} },
+    detalle:{ MP:{cost:92339,n:1436}, PT:{cost:112764,n:1511}, 'Análisis Rutina':{cost:1658,n:1} },
+    total:206761, muestras:2948, promedio:70.14
+  },
+  c2425: {
+    monthly:{
+      labels:["Jun'24","Jul'24","Ago'24","Set'24","Oct'24","Nov'24","Dic'24","Ene'25","Feb'25","Mar'25","Abr'25","May'25","Jun'25"],
+      data:[1626,2328,7912,15023,20016,18384,16569,16624,18047,7019,1760,657,86]
+    },
+    labs:{ AGQ:68372, GROEN:57523, NSF:0, SGS:0, MERIEUX:154 },
+    labMuestras:{ AGQ:945, GROEN:905, NSF:0, SGS:0, MERIEUX:2 },
+    cultivos:{ Mango:{micro:16744,residuos:50601}, Fresa:{micro:7099,residuos:30855}, "Arándano":{micro:3630,residuos:11776}, Palta:{micro:866,residuos:3204}, Granada:{micro:830,residuos:445} },
+    procs:[
+      {name:'Pesticidas',val:57632,color:'#f55a42'},{name:'Pack 2',val:15480,color:'#c8f542'},
+      {name:'Metales Pesados',val:11315,color:'#42d9f5'},{name:'Fosetil',val:8366,color:'#9b6dff'},
+      {name:'Glifosato',val:8294,color:'#f5a442'},{name:'Cloratos+Perc.',val:6522,color:'#2dd4a8'},
+      {name:'Pack 6',val:4680,color:'#d4af37'},{name:'Norovirus/HAV',val:2625,color:'#f55a42'},
+      {name:'Pack 10',val:2565,color:'#c8f542'},{name:'Cloratos',val:2376,color:'#42d9f5'}
+    ],
+    packs:[
+      {name:'Pesticidas',n:668,cost:57632},{name:'Pack 2',n:172,cost:15480},
+      {name:'Metales Pesados',n:436,cost:11315},{name:'Fosetil',n:117,cost:8366},
+      {name:'Glifosato',n:116,cost:8294},{name:'Cloratos y Percloratos',n:92,cost:6522},
+      {name:'Pack 6',n:36,cost:4680},{name:'Norovirus y Hepatitis A',n:7,cost:2625},
+      {name:'Pack 10',n:19,cost:2565},{name:'Cloratos',n:66,cost:2376},
+      {name:'Percloratos',n:66,cost:2376},{name:'Pack 1',n:24,cost:1800}
+    ],
+    origen:{ Maquila:{cost:126049,n:1852}, 'Planta Propia':{cost:0,n:0} },
+    detalle:{ MP:{cost:48120,n:844}, PT:{cost:77929,n:1008}, 'Análisis Rutina':{cost:0,n:0} },
+    total:126049, muestras:1852, promedio:68.06
+  },
+  c2526: {
+    monthly:{
+      labels:["Abr'25","May'25","Jun'25","Jul'25","Ago'25","Set'25","Oct'25","Nov'25","Dic'25","Ene'26","Feb'26","Mar'26"],
+      data:[90,1214,205,5370,5871,8806,14605,7438,9235,12180,11502,4197]
+    },
+    labs:{ AGQ:17434, GROEN:52519, NSF:6035, SGS:2546, MERIEUX:2179 },
+    labMuestras:{ AGQ:231, GROEN:753, NSF:69, SGS:15, MERIEUX:28 },
+    cultivos:{ Mango:{micro:2264,residuos:28967}, Fresa:{micro:4510,residuos:29259}, "Arándano":{micro:4767,residuos:7664}, Palta:{micro:360,residuos:1148}, Granada:{micro:0,residuos:115}, Otros:{micro:1658,residuos:0} },
+    procs:[
+      {name:'Pesticidas',val:42352,color:'#f55a42'},{name:'Cloratos+Perc.',val:6970,color:'#2dd4a8'},
+      {name:'Fosetil',val:5604,color:'#9b6dff'},{name:'Glifosato',val:5532,color:'#f5a442'},
+      {name:'Metales Pesados',val:5435,color:'#42d9f5'},{name:'Pack 2',val:5167,color:'#c8f542'},
+      {name:'Pack 2+Bacillus',val:1826,color:'#d4af37'},{name:'Anexo I,II,III',val:1658,color:'#f55a42'},
+      {name:'Norovirus/HAV',val:1397,color:'#c8f542'},{name:'Pack 13',val:1385,color:'#42d9f5'}
+    ],
+    packs:[
+      {name:'Pesticidas',n:489,cost:42352},{name:'Cloratos y Percloratos',n:97,cost:6970},
+      {name:'Fosetil',n:78,cost:5604},{name:'Glifosato',n:77,cost:5532},
+      {name:'Metales Pesados',n:192,cost:5435},{name:'Pack 2',n:57,cost:5167},
+      {name:'Pack 2 + Bacillus',n:15,cost:1826},{name:'Anexo I,II y III',n:1,cost:1658},
+      {name:'Norovirus y Hepatitis A',n:4,cost:1397},{name:'Pack 13',n:13,cost:1385}
+    ],
+    origen:{ Maquila:{cost:59220,n:798}, 'Planta Propia':{cost:21493,n:298} },
+    detalle:{ MP:{cost:44219,n:592}, PT:{cost:34835,n:503}, 'Análisis Rutina':{cost:1658,n:1} },
+    total:80712, muestras:1096, promedio:73.64
+  }
+};
+
+const LAB_COLORS = { AGQ:'#c8f542', GROEN:'#42d9f5', NSF:'#f5a442', SGS:'#9b6dff', MERIEUX:'#f55a42' };
+const LAB_ORDER = ['GROEN','AGQ','NSF','SGS','MERIEUX'];
+const CIRC = 2 * Math.PI * 22; // ~138.23
+
+/* ==============================
+   STATE
+============================== */
+let currentCamp = 'all';
+let currentLab  = 'all';
+let currentCult = 'all';
+let sortDir     = {};
+
+/* ==============================
+   THEME
+============================== */
+(function(){
+  const t = localStorage.getItem('dashTheme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  document.getElementById('btnTheme').textContent = t === 'dark' ? '🌙' : '☀️';
+})();
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('dashTheme', next);
+  document.getElementById('btnTheme').textContent = next === 'dark' ? '🌙' : '☀️';
+  updateChartsTheme();
+}
+
+/* ==============================
+   FORMAT
+============================== */
+function fmtS(n){ return 'S/ ' + n.toLocaleString('es-PE',{minimumFractionDigits:0,maximumFractionDigits:2}); }
+function fmtN(n){ return n.toLocaleString('es-PE'); }
+
+/* ==============================
+   ANIMATE NUMBER
+============================== */
+function animateNum(el, target, prefix='', suffix='', isFloat=false){
+  if(!el) return;
+  const finalVal = prefix + (isFloat ? target.toFixed(2) : target.toLocaleString('es-PE')) + suffix;
+  setTimeout(() => { el.textContent = finalVal; }, 1100);
+  const duration = 900;
+  const startTime = performance.now();
+  function step(now){
+    const elapsed = Math.min(now - startTime, duration);
+    const ease = 1 - Math.pow(1 - elapsed/duration, 3);
+    const current = target * ease;
+    el.textContent = prefix + (isFloat ? current.toFixed(2) : Math.round(current).toLocaleString('es-PE')) + suffix;
+    if(elapsed < duration) requestAnimationFrame(step);
+    else el.textContent = finalVal;
+  }
+  requestAnimationFrame(step);
+}
+
+function setRing(id, pct, valId, label){
+  const ring = document.getElementById(id);
+  const val = document.getElementById(valId);
+  if(!ring) return;
+  const offset = CIRC - (CIRC * Math.min(pct,100) / 100);
+  ring.style.strokeDashoffset = offset;
+  if(val) val.textContent = pct.toFixed(0) + '%';
+}
+
+/* ==============================
+   FILTERS
+============================== */
+function setCamp(camp){
+  currentCamp = camp;
+  ['pillAll','pill2425','pill2526'].forEach(id => document.getElementById(id).classList.remove('active'));
+  const map = {all:'pillAll', c2425:'pill2425', c2526:'pill2526'};
+  document.getElementById(map[camp]).classList.add('active');
+  updateAll();
+}
+function setLab(lab){
+  currentLab = lab;
+  ['labAll','labGROEN','labAGQ','labNSF','labSGS','labMERIEUX'].forEach(id => { document.getElementById(id).className = 'pill'; });
+  if(lab === 'all') document.getElementById('labAll').classList.add('active');
+  else document.getElementById('lab'+lab).classList.add('active-lab-'+lab.toLowerCase());
+  updateKPIs(); updateInsights(); updateDoughnut(); updateLabTable();
+}
+function setCult(cult){
+  currentCult = cult;
+  ['cultAll','cultMango','cultFresa','cultArándano','cultPalta','cultGranada'].forEach(id => { document.getElementById(id).classList.remove('active'); });
+  const activeId = cult === 'all' ? 'cultAll' : 'cult' + cult;
+  document.getElementById(activeId).classList.add('active');
+  updateKPIs(); updateCultivos();
+}
+
+/* ==============================
+   GET DATA
+============================== */
+function getData(){ return D[currentCamp]; }
+
+/* ==============================
+   KPIs
+============================== */
+function updateKPIs(){
+  const d = getData();
+  let total = d.total, muestras = d.muestras, prom = d.promedio;
+  if(currentLab !== 'all'){
+    total = d.labs[currentLab] || 0;
+    muestras = d.labMuestras[currentLab] || 0;
+    prom = muestras > 0 ? parseFloat((total/muestras).toFixed(2)) : 0;
+  }
+  if(currentCult !== 'all' && currentLab === 'all'){
+    const c = d.cultivos[currentCult];
+    if(c) total = (c.micro||0) + (c.residuos||0);
+  }
+  animateNum(document.getElementById('kpiTotal'), total, 'S/ ');
+  animateNum(document.getElementById('kpiMuestras'), muestras);
+  animateNum(document.getElementById('kpiProm'), prom, 'S/ ', '', true);
+
+  const labs = d.labs;
+  const labLider = LAB_ORDER.reduce((a,b) => (labs[a]||0) > (labs[b]||0) ? a : b);
+  document.getElementById('kpiLabLider').textContent = labLider;
+  document.getElementById('kpiLabSub').textContent = fmtS(labs[labLider]);
+
+  const top = d.procs.reduce((a,b) => a.val > b.val ? a : b);
+  document.getElementById('kpiProcTop').textContent = top.name;
+  document.getElementById('kpiProcSub').textContent = fmtS(top.val);
+}
+
+/* ==============================
+   INSIGHT CARDS
+============================== */
+function updateInsights(){
+  const d = getData();
+  const t = d.total || 1;
+  const o = d.origen;
+  const det = d.detalle;
+
+  // Maquila
+  const maqPct = (o.Maquila.cost / t) * 100;
+  setRing('ringMaquila', maqPct, 'ringMaqVal');
+  document.getElementById('insMaqCost').textContent = fmtS(o.Maquila.cost);
+  document.getElementById('insMaqN').textContent = fmtN(o.Maquila.n) + ' muestras';
+
+  // Planta Propia
+  const plaPct = (o['Planta Propia'].cost / t) * 100;
+  setRing('ringPlanta', plaPct, 'ringPlaVal');
+  document.getElementById('insPlaCost').textContent = fmtS(o['Planta Propia'].cost);
+  document.getElementById('insPlaN').textContent = fmtN(o['Planta Propia'].n) + ' muestras';
+
+  // MP
+  const mpPct = (det.MP.cost / t) * 100;
+  setRing('ringMP', mpPct, 'ringMPVal');
+  document.getElementById('insMPCost').textContent = fmtS(det.MP.cost);
+  document.getElementById('insMPN').textContent = fmtN(det.MP.n) + ' muestras';
+
+  // PT
+  const ptPct = (det.PT.cost / t) * 100;
+  setRing('ringPT', ptPct, 'ringPTVal');
+  document.getElementById('insPTCost').textContent = fmtS(det.PT.cost);
+  document.getElementById('insPTN').textContent = fmtN(det.PT.n) + ' muestras';
+}
+
+/* ==============================
+   CHART.JS
+============================== */
+Chart.register(ChartDataLabels);
+let chartLinea, chartDoughnut, chartProcs, chartCultivos, chartOverlay, chartOrigen, chartRadar;
+
+function getGridColor(){ return document.documentElement.getAttribute('data-theme') === 'light' ? 'rgba(0,0,0,0.07)' : 'rgba(255,255,255,0.06)'; }
+function getTickColor(){ return document.documentElement.getAttribute('data-theme') === 'light' ? '#4a5578' : '#9099b0'; }
+
+/* — Line chart — */
+function initLinea(){
+  const d = getData();
+  const ctx = document.getElementById('chartLinea').getContext('2d');
+  const grad = ctx.createLinearGradient(0,0,0,280);
+  grad.addColorStop(0,'rgba(200,245,66,0.25)');
+  grad.addColorStop(1,'rgba(200,245,66,0)');
+  chartLinea = new Chart(ctx, {
+    type:'line', plugins:[ChartDataLabels],
+    data:{ labels:d.monthly.labels, datasets:[{
+      label:'Gasto mensual (S/)', data:d.monthly.data,
+      borderColor:'#c8f542', backgroundColor:grad, borderWidth:2.5, fill:true, tension:0.4,
+      pointBackgroundColor:'#c8f542', pointBorderColor:'#0a0d14', pointBorderWidth:2, pointRadius:4, pointHoverRadius:7
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{ backgroundColor:'rgba(10,13,20,0.95)', borderColor:'rgba(200,245,66,0.3)', borderWidth:1, titleColor:'#c8f542', bodyColor:'#e8eaf0', padding:12,
+          callbacks:{ label:ctx=>' S/ '+ctx.parsed.y.toLocaleString('es-PE') }
+        },
+        datalabels:{
+          display:ctx=>{ const v=ctx.dataset.data; return ctx.dataset.data[ctx.dataIndex]>=Math.max(...v)*0.7; },
+          color:'#c8f542', font:{size:10,weight:'700'}, anchor:'end', align:'top', offset:4,
+          formatter:v=>'S/ '+v.toLocaleString('es-PE')
+        }
+      },
+      scales:{
+        x:{ grid:{color:getGridColor()}, ticks:{color:getTickColor(),font:{size:11}} },
+        y:{ grid:{color:getGridColor()}, ticks:{color:getTickColor(),font:{size:11}, callback:v=>'S/ '+(v>=1000?(v/1000).toFixed(0)+'k':v)} }
+      }
+    }
+  });
+}
+
+/* — Campaign Overlay — */
+function initOverlay(){
+  const c1 = D.c2425.monthly.data;
+  const c2 = D.c2526.monthly.data;
+  const maxLen = Math.max(c1.length, c2.length);
+  const labels = Array.from({length:maxLen}, (_,i) => 'Mes '+(i+1));
+  const ctx = document.getElementById('chartOverlay').getContext('2d');
+  const grad1 = ctx.createLinearGradient(0,0,0,280);
+  grad1.addColorStop(0,'rgba(66,217,245,0.15)'); grad1.addColorStop(1,'rgba(66,217,245,0)');
+  const grad2 = ctx.createLinearGradient(0,0,0,280);
+  grad2.addColorStop(0,'rgba(200,245,66,0.15)'); grad2.addColorStop(1,'rgba(200,245,66,0)');
+  chartOverlay = new Chart(ctx, {
+    type:'line', plugins:[ChartDataLabels],
+    data:{ labels, datasets:[
+      { label:'2024–2025', data:c1, borderColor:'#42d9f5', backgroundColor:grad1, borderWidth:2.5, fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#42d9f5', pointBorderColor:'#0a0d14', pointBorderWidth:2 },
+      { label:'2025–2026', data:c2.concat(Array(Math.max(0,maxLen-c2.length)).fill(null)), borderColor:'#c8f542', backgroundColor:grad2, borderWidth:2.5, fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#c8f542', pointBorderColor:'#0a0d14', pointBorderWidth:2 }
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'top', labels:{color:getTickColor(),padding:16,font:{size:12},usePointStyle:true} },
+        tooltip:{ backgroundColor:'rgba(10,13,20,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e8eaf0', bodyColor:'#9099b0', padding:12,
+          callbacks:{ label:ctx=>' '+ctx.dataset.label+': S/ '+(ctx.parsed.y||0).toLocaleString('es-PE') }
+        },
+        datalabels:{ display:false }
+      },
+      scales:{
+        x:{ grid:{color:getGridColor()}, ticks:{color:getTickColor(),font:{size:11}} },
+        y:{ grid:{color:getGridColor()}, ticks:{color:getTickColor(),font:{size:11}, callback:v=>'S/ '+(v>=1000?(v/1000).toFixed(0)+'k':v)} }
+      }
+    }
+  });
+}
+
+/* — Doughnut — */
+function initDoughnut(){
+  const d = getData();
+  const labsData = LAB_ORDER.map(l => d.labs[l] || 0);
+  const ctx = document.getElementById('chartDoughnut').getContext('2d');
+  chartDoughnut = new Chart(ctx, {
+    type:'doughnut', plugins:[ChartDataLabels],
+    data:{ labels:LAB_ORDER, datasets:[{
+      data:labsData,
+      backgroundColor:LAB_ORDER.map(l=>LAB_COLORS[l]+'cc'),
+      borderColor:LAB_ORDER.map(l=>LAB_COLORS[l]),
+      borderWidth:2, hoverOffset:8
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{
+        legend:{ position:'right', labels:{color:getTickColor(),padding:16,font:{size:12},usePointStyle:true,pointStyleWidth:10} },
+        tooltip:{ backgroundColor:'rgba(10,13,20,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e8eaf0', bodyColor:'#9099b0', padding:12,
+          callbacks:{ label:ctx=>' S/ '+ctx.parsed.toLocaleString('es-PE')+'  ('+((ctx.parsed/d.total)*100).toFixed(1)+'%)' }
+        },
+        datalabels:{ display:ctx=>((ctx.dataset.data[ctx.dataIndex]/d.total)*100)>4, color:'#fff', font:{size:11,weight:'700'}, formatter:(v)=>((v/d.total)*100).toFixed(1)+'%' }
+      },
+      onClick:(e,els)=>{ if(els.length>0){ const lab=LAB_ORDER[els[0].index]; setLab(currentLab===lab?'all':lab); } }
+    },
+    plugins:[{
+      id:'centerText',
+      beforeDraw(chart){
+        const {width,height,ctx}=chart; ctx.save();
+        const dd=getData();
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        const cx=width/2-(chart.legend.width||0)/2+(chart.legend.left||0);
+        const cy=height/2;
+        ctx.font='bold 10px Plus Jakarta Sans'; ctx.fillStyle=getTickColor();
+        ctx.fillText('TOTAL',cx,cy-12);
+        ctx.font='bold 15px Plus Jakarta Sans'; ctx.fillStyle='#c8f542';
+        ctx.fillText('S/ '+dd.total.toLocaleString('es-PE'),cx,cy+9);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+/* — Bar top procesos — */
+function initProcs(){
+  const d = getData();
+  const ctx = document.getElementById('chartProcs').getContext('2d');
+  chartProcs = new Chart(ctx, {
+    type:'bar', plugins:[ChartDataLabels],
+    data:{ labels:d.procs.map(p=>p.name), datasets:[{
+      label:'Costo (S/)', data:d.procs.map(p=>p.val),
+      backgroundColor:d.procs.map(p=>p.color+'bb'), borderColor:d.procs.map(p=>p.color),
+      borderWidth:1.5, borderRadius:6, borderSkipped:false
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{ backgroundColor:'rgba(10,13,20,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e8eaf0', bodyColor:'#9099b0', padding:12,
+          callbacks:{ label:ctx=>' S/ '+ctx.parsed.y.toLocaleString('es-PE') }
+        },
+        datalabels:{ color:'#e8eaf0', font:{size:9,weight:'700'}, anchor:'end', align:'top', offset:2,
+          formatter:v=>'S/ '+(v>=1000?(v/1000).toFixed(0)+'k':v)
+        }
+      },
+      scales:{
+        x:{ grid:{display:false}, ticks:{color:getTickColor(),font:{size:9},maxRotation:40} },
+        y:{ grid:{color:getGridColor()}, ticks:{color:getTickColor(),font:{size:10}, callback:v=>'S/ '+(v>=1000?(v/1000).toFixed(0)+'k':v)} }
+      }
+    }
+  });
+}
+
+/* — Origen Donut — */
+function initOrigen(){
+  const d = getData();
+  const orLabels = Object.keys(d.origen);
+  const orData = orLabels.map(k => d.origen[k].cost);
+  const orColors = ['#22c55e','#9b6dff'];
+  const ctx = document.getElementById('chartOrigen').getContext('2d');
+  chartOrigen = new Chart(ctx, {
+    type:'doughnut', plugins:[ChartDataLabels],
+    data:{ labels:orLabels, datasets:[{
+      data:orData, backgroundColor:orColors.map(c=>c+'cc'), borderColor:orColors, borderWidth:2, hoverOffset:8
+    }]},
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins:{
+        legend:{ position:'bottom', labels:{color:getTickColor(),padding:16,font:{size:12},usePointStyle:true} },
+        tooltip:{ backgroundColor:'rgba(10,13,20,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e8eaf0', bodyColor:'#9099b0', padding:12,
+          callbacks:{ label:ctx=>' S/ '+ctx.parsed.toLocaleString('es-PE') }
+        },
+        datalabels:{ color:'#fff', font:{size:12,weight:'700'},
+          formatter:(v,ctx2)=>{ const t=ctx2.dataset.data.reduce((a,b)=>a+b,0); return ((v/t)*100).toFixed(1)+'%'; }
+        }
+      }
+    },
+    plugins:[{
+      id:'origenCenter',
+      beforeDraw(chart){
+        const {width,height,ctx}=chart; ctx.save();
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        const cy=height/2-16;
+        ctx.font='bold 10px Plus Jakarta Sans'; ctx.fillStyle=getTickColor();
+        ctx.fillText('ORIGEN',width/2,cy-10);
+        ctx.font='bold 14px Plus Jakarta Sans'; ctx.fillStyle='#22c55e';
+        const dd=getData();
+        ctx.fillText(fmtN(dd.muestras)+' muestras',width/2,cy+9);
+        ctx.restore();
+      }
+    }]
+  });
+}
+
+/* — Radar Labs — */
+function initRadar(){
+  const d = getData();
+  const metrics = ['Costo Total','Muestras','Costo/Muestra','% del Total'];
+  const maxCost = Math.max(...LAB_ORDER.map(l=>d.labs[l]||0)) || 1;
+  const maxM = Math.max(...LAB_ORDER.map(l=>d.labMuestras[l]||0)) || 1;
+  const maxProm = Math.max(...LAB_ORDER.map(l=>{ const c=d.labs[l]||0; const m=d.labMuestras[l]||1; return c/m; })) || 1;
+
+  const datasets = LAB_ORDER.filter(l=>(d.labs[l]||0)>0).map(l=>{
+    const cost = d.labs[l]||0;
+    const muestras = d.labMuestras[l]||0;
+    const prom = muestras>0 ? cost/muestras : 0;
+    const pct = d.total>0 ? (cost/d.total)*100 : 0;
+    return {
+      label:l,
+      data:[ (cost/maxCost)*100, (muestras/maxM)*100, (prom/maxProm)*100, pct ],
+      borderColor:LAB_COLORS[l], backgroundColor:LAB_COLORS[l]+'33',
+      borderWidth:2, pointRadius:3, pointBackgroundColor:LAB_COLORS[l]
+    };
+  });
+
+  const ctx = document.getElementById('chartRadar').getContext('2d');
+  chartRadar = new Chart(ctx, {
+    type:'radar', plugins:[ChartDataLabels],
+    data:{ labels:metrics, datasets },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'bottom', labels:{color:getTickColor(),padding:12,font:{size:11},usePointStyle:true} },
+        tooltip:{ backgroundColor:'rgba(10,13,20,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e8eaf0', bodyColor:'#9099b0', padding:12 },
+        datalabels:{ display:false }
+      },
+      scales:{
+        r:{
+          beginAtZero:true,
+          grid:{ color:getGridColor() },
+          angleLines:{ color:getGridColor() },
+          pointLabels:{ color:getTickColor(), font:{size:11,weight:'600'} },
+          ticks:{ display:false }
+        }
+      }
+    }
+  });
+}
+
+/* — Cultivos horizontal bar — */
+function initCultivos(){
+  const d = getData();
+  const cults = Object.keys(d.cultivos);
+  const ctx = document.getElementById('chartCultivos').getContext('2d');
+  chartCultivos = new Chart(ctx, {
+    type:'bar', plugins:[ChartDataLabels],
+    data:{ labels:cults, datasets:[
+      { label:'Microbiológico', data:cults.map(c=>d.cultivos[c].micro), backgroundColor:'rgba(34,197,94,0.75)', borderColor:'#22c55e', borderWidth:1.5, borderRadius:4 },
+      { label:'Residuos de Pesticidas', data:cults.map(c=>d.cultivos[c].residuos), backgroundColor:'rgba(245,90,66,0.75)', borderColor:'#f55a42', borderWidth:1.5, borderRadius:4 }
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins:{
+        legend:{ position:'top', labels:{color:getTickColor(),padding:16,font:{size:12},usePointStyle:true} },
+        tooltip:{ backgroundColor:'rgba(10,13,20,0.95)', borderColor:'rgba(255,255,255,0.1)', borderWidth:1, titleColor:'#e8eaf0', bodyColor:'#9099b0', padding:12,
+          callbacks:{ label:ctx=>' '+ctx.dataset.label+': S/ '+ctx.parsed.x.toLocaleString('es-PE') }
+        },
+        datalabels:{ color:'#fff', font:{size:10,weight:'600'}, anchor:'end', align:'end',
+          formatter:v=>v>0?'S/ '+(v>=1000?(v/1000).toFixed(0)+'k':v):''
+        }
+      },
+      scales:{
+        x:{ grid:{color:getGridColor()}, ticks:{color:getTickColor(),font:{size:10}, callback:v=>'S/ '+(v>=1000?(v/1000).toFixed(0)+'k':v)} },
+        y:{ grid:{display:false}, ticks:{color:getTickColor(),font:{size:12,weight:'600'}} }
+      }
+    }
+  });
+}
+
+/* ==============================
+   UPDATE CHARTS
+============================== */
+function updateLinea(){
+  const d = getData();
+  chartLinea.data.labels = d.monthly.labels;
+  chartLinea.data.datasets[0].data = d.monthly.data;
+  chartLinea.update();
+}
+function updateDoughnut(){
+  const d = getData();
+  let labsData;
+  if(currentLab==='all') labsData = LAB_ORDER.map(l=>d.labs[l]||0);
+  else labsData = LAB_ORDER.map(l=>l===currentLab?(d.labs[l]||0):0);
+  chartDoughnut.data.datasets[0].data = labsData;
+  chartDoughnut.data.datasets[0].backgroundColor = LAB_ORDER.map((l)=>{
+    if(currentLab==='all') return LAB_COLORS[l]+'cc';
+    return l===currentLab ? LAB_COLORS[l]+'ff' : LAB_COLORS[l]+'22';
+  });
+  chartDoughnut.update();
+}
+function updateProcs(){
+  const d = getData();
+  chartProcs.data.labels = d.procs.map(p=>p.name);
+  chartProcs.data.datasets[0].data = d.procs.map(p=>p.val);
+  chartProcs.data.datasets[0].backgroundColor = d.procs.map(p=>p.color+'bb');
+  chartProcs.data.datasets[0].borderColor = d.procs.map(p=>p.color);
+  chartProcs.update();
+}
+function updateOrigen(){
+  const d = getData();
+  const orLabels = Object.keys(d.origen);
+  const orData = orLabels.map(k=>d.origen[k].cost);
+  chartOrigen.data.labels = orLabels;
+  chartOrigen.data.datasets[0].data = orData;
+  chartOrigen.update();
+}
+function updateRadar(){
+  const d = getData();
+  const maxCost = Math.max(...LAB_ORDER.map(l=>d.labs[l]||0)) || 1;
+  const maxM = Math.max(...LAB_ORDER.map(l=>d.labMuestras[l]||0)) || 1;
+  const maxProm = Math.max(...LAB_ORDER.map(l=>{ const c=d.labs[l]||0; const m=d.labMuestras[l]||1; return c/m; })) || 1;
+  const activeLabs = LAB_ORDER.filter(l=>(d.labs[l]||0)>0);
+  chartRadar.data.datasets = activeLabs.map(l=>{
+    const cost=d.labs[l]||0; const muestras=d.labMuestras[l]||0;
+    const prom=muestras>0?cost/muestras:0; const pct=d.total>0?(cost/d.total)*100:0;
+    return { label:l, data:[(cost/maxCost)*100,(muestras/maxM)*100,(prom/maxProm)*100,pct], borderColor:LAB_COLORS[l], backgroundColor:LAB_COLORS[l]+'33', borderWidth:2, pointRadius:3, pointBackgroundColor:LAB_COLORS[l] };
+  });
+  chartRadar.update();
+}
+function updateCultivos(){
+  const d = getData();
+  let cults;
+  if(currentCult==='all') cults = Object.keys(d.cultivos);
+  else cults = d.cultivos[currentCult] ? [currentCult] : [];
+  chartCultivos.data.labels = cults;
+  chartCultivos.data.datasets[0].data = cults.map(c=>d.cultivos[c].micro);
+  chartCultivos.data.datasets[1].data = cults.map(c=>d.cultivos[c].residuos);
+  chartCultivos.update();
+}
+function updateChartsTheme(){
+  [chartLinea,chartDoughnut,chartProcs,chartCultivos,chartOverlay,chartOrigen,chartRadar].forEach(chart=>{
+    if(!chart) return;
+    if(chart.options.scales){
+      Object.values(chart.options.scales).forEach(scale=>{
+        if(scale.grid) scale.grid.color = getGridColor();
+        if(scale.ticks) scale.ticks.color = getTickColor();
+        if(scale.angleLines) scale.angleLines.color = getGridColor();
+        if(scale.pointLabels) scale.pointLabels.color = getTickColor();
+      });
+    }
+    if(chart.options.plugins?.legend?.labels) chart.options.plugins.legend.labels.color = getTickColor();
+    chart.update();
+  });
+}
+
+/* ==============================
+   TABLA LABORATORIOS
+============================== */
+function updateLabTable(){
+  const d = getData();
+  const tbody = document.getElementById('labTbody');
+  tbody.innerHTML = '';
+  let totalGasto=0, totalMuestras=0;
+  const labs = currentLab==='all' ? LAB_ORDER : [currentLab];
+  const fullTotal = d.total;
+  const rows = labs.map(lab=>{
+    const gasto=d.labs[lab]||0; const muestras=d.labMuestras[lab]||0;
+    const pct=fullTotal>0?((gasto/fullTotal)*100):0;
+    const prom=muestras>0?(gasto/muestras):0;
+    totalGasto+=gasto; totalMuestras+=muestras;
+    return {lab,gasto,muestras,pct,prom};
+  });
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="lab-badge"><span class="lab-dot" style="background:${LAB_COLORS[r.lab]};"></span>${r.lab}</span></td>
+      <td>${fmtN(r.muestras)}</td>
+      <td style="font-weight:700;">${fmtS(r.gasto)}</td>
+      <td>${r.pct.toFixed(1)}%</td>
+      <td>${r.prom>0?fmtS(parseFloat(r.prom.toFixed(2))):'—'}</td>
+      <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:${r.pct}%;background:${LAB_COLORS[r.lab]};"></div></div></td>`;
+    tbody.appendChild(tr);
+  });
+  const trTotal = document.createElement('tr');
+  trTotal.className = 'total-row';
+  const totalPct = currentLab==='all' ? 100 : rows.reduce((a,r)=>a+r.pct,0);
+  trTotal.innerHTML = `
+    <td><strong>TOTAL</strong></td>
+    <td><strong>${fmtN(totalMuestras)}</strong></td>
+    <td><strong>${fmtS(totalGasto)}</strong></td>
+    <td><strong>${totalPct.toFixed(1)}%</strong></td>
+    <td><strong>${totalMuestras>0?fmtS(parseFloat((totalGasto/totalMuestras).toFixed(2))):'—'}</strong></td>
+    <td></td>`;
+  tbody.appendChild(trTotal);
+}
+
+/* ==============================
+   TABLA PACKS
+============================== */
+function updatePacksTable(){
+  const d = getData();
+  const tbody = document.getElementById('packsTbody');
+  tbody.innerHTML = '';
+  const packs = d.packs || [];
+  const total = packs.reduce((a,p)=>a+p.cost,0) || 1;
+  const maxCost = packs.length>0 ? packs[0].cost : 1;
+  const colors = ['#f55a42','#c8f542','#42d9f5','#9b6dff','#f5a442','#2dd4a8','#d4af37','#f55a42','#c8f542','#42d9f5','#9b6dff','#f5a442','#2dd4a8','#d4af37','#22c55e'];
+  packs.forEach((p,i)=>{
+    const pct = (p.cost/total)*100;
+    const prom = p.n>0 ? (p.cost/p.n) : 0;
+    const barW = (p.cost/maxCost)*100;
+    const color = colors[i % colors.length];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-weight:700;color:${color};">${i+1}</td>
+      <td style="font-weight:600;">${p.name}</td>
+      <td>${fmtN(p.n)}</td>
+      <td style="font-weight:700;">${fmtS(p.cost)}</td>
+      <td>${pct.toFixed(1)}%</td>
+      <td>${fmtS(parseFloat(prom.toFixed(2)))}</td>
+      <td class="bar-cell"><div class="bar-track"><div class="bar-fill" style="width:${barW}%;background:${color};"></div></div></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+/* ==============================
+   SORT TABLE
+============================== */
+function sortTable(col){
+  const tbody = document.getElementById('labTbody');
+  const rows = Array.from(tbody.querySelectorAll('tr:not(.total-row)'));
+  const dir = (sortDir[col]==='asc') ? 'desc' : 'asc';
+  sortDir = {}; sortDir[col] = dir;
+  document.querySelectorAll('#labTable thead th').forEach((th,i)=>{
+    th.classList.remove('sort-asc','sort-desc');
+    if(i===col) th.classList.add(dir==='asc'?'sort-asc':'sort-desc');
+  });
+  rows.sort((a,b)=>{
+    const cellA = a.querySelectorAll('td')[col].textContent.trim().replace(/[S\/\s,]/g,'');
+    const cellB = b.querySelectorAll('td')[col].textContent.trim().replace(/[S\/\s,]/g,'');
+    const numA = parseFloat(cellA) || cellA;
+    const numB = parseFloat(cellB) || cellB;
+    let cmp = 0;
+    if(typeof numA==='number' && typeof numB==='number') cmp = numA - numB;
+    else cmp = String(numA).localeCompare(String(numB));
+    return dir==='asc' ? cmp : -cmp;
+  });
+  const total = tbody.querySelector('.total-row');
+  tbody.innerHTML = '';
+  rows.forEach(r=>tbody.appendChild(r));
+  if(total) tbody.appendChild(total);
+}
+
+/* ==============================
+   EXPORT CSV
+============================== */
+function exportCSV(){
+  const d = getData();
+  const campLabel = {all:'Ambas_Campanas', c2425:'2024-2025', c2526:'2025-2026'}[currentCamp];
+  let csv = 'Laboratorio,Muestras,Gasto Total (S/),% del Total,Costo Prom/Muestra\n';
+  LAB_ORDER.forEach(lab=>{
+    const gasto=d.labs[lab]||0; const m=d.labMuestras[lab]||0;
+    const pct=d.total>0?((gasto/d.total)*100).toFixed(1):'0';
+    const prom=m>0?(gasto/m).toFixed(2):'0';
+    csv += `${lab},${m},${gasto},${pct}%,${prom}\n`;
+  });
+  csv += `TOTAL,${d.muestras},${d.total},100%,${d.promedio}\n`;
+  const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=`Analisis_Lab_${campLabel}.csv`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+/* ==============================
+   UPDATE ALL
+============================== */
+function updateAll(){
+  updateKPIs();
+  updateInsights();
+  updateLinea();
+  updateDoughnut();
+  updateProcs();
+  updateOrigen();
+  updateRadar();
+  updateCultivos();
+  updateLabTable();
+  updatePacksTable();
+}
+
+/* ==============================
+   SCROLL REVEAL
+============================== */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); } });
+}, {threshold:0.1});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+/* ==============================
+   INIT
+============================== */
+window.addEventListener('DOMContentLoaded', ()=>{
+  initLinea();
+  initOverlay();
+  initDoughnut();
+  initProcs();
+  initOrigen();
+  initRadar();
+  initCultivos();
+  updateKPIs();
+  updateInsights();
+  updateLabTable();
+  updatePacksTable();
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+});
+</script>
+</body>
+</html>

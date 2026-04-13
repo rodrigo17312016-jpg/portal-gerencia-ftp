@@ -2,9 +2,9 @@
    PRODUCCION DEL DIA - Datos en tiempo real
    ════════════════════════════════════════════════════════ */
 
-import { supabase } from '/assets/js/config/supabase.js';
-import { fmt, fmtPct, today, fmtDateLong } from '/assets/js/utils/formatters.js';
-import { createChart, getColors, getDefaultOptions } from '/assets/js/utils/chart-helpers.js';
+import { supabase } from '../../assets/js/config/supabase.js';
+import { fmt, fmtPct, today, fmtDateLong } from '../../assets/js/utils/formatters.js';
+import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 
 export async function init(container) {
   const fechaEl = container.querySelector('#pdFechaHoy');

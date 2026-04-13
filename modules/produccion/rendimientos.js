@@ -1,7 +1,7 @@
 /* Rendimientos */
-import { supabase } from '/assets/js/config/supabase.js';
-import { fmt, fmtPct } from '/assets/js/utils/formatters.js';
-import { createChart, getColors, getDefaultOptions } from '/assets/js/utils/chart-helpers.js';
+import { supabase } from '../../assets/js/config/supabase.js';
+import { fmt, fmtPct } from '../../assets/js/utils/formatters.js';
+import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 
 export async function init(container) { await loadData(container); }
 

@@ -2,9 +2,9 @@
    INDICADORES DE PRODUCCION
    ════════════════════════════════════════════════════════ */
 
-import { supabase } from '/assets/js/config/supabase.js';
-import { fmt, fmtPct, today } from '/assets/js/utils/formatters.js';
-import { createChart, getColors, getDefaultOptions } from '/assets/js/utils/chart-helpers.js';
+import { supabase } from '../../assets/js/config/supabase.js';
+import { fmt, fmtPct, today } from '../../assets/js/utils/formatters.js';
+import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 
 let charts = [];
 

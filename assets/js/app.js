@@ -155,6 +155,23 @@ function updateUserUI(user) {
   if (els.topbarName) els.topbarName.textContent = user.name;
   if (els.topbarRole) els.topbarRole.textContent = user.roleLabel;
   if (els.topbarAvatar) els.topbarAvatar.textContent = user.initials;
+
+  // Titulo del portal segun rol
+  const portalTitles = {
+    'admin': 'Portal de Gerencia',
+    'produccion': 'Portal de Produccion',
+    'calidad': 'Portal de Calidad'
+  };
+  const portalTitle = portalTitles[user.role] || 'Portal de Gerencia';
+
+  const sidebarTitle = document.querySelector('.sidebar-title strong');
+  if (sidebarTitle) sidebarTitle.textContent = portalTitle;
+
+  const topbarTitle = document.querySelector('.topbar-title');
+  if (topbarTitle) topbarTitle.textContent = portalTitle;
+
+  // Actualizar titulo de la pagina
+  document.title = portalTitle + ' — Frutos Tropicales Peru Export S.A.C.';
 }
 
 // ── Estado de Conexion Supabase ──

@@ -11,14 +11,14 @@ async function loadData(container) {
 
     const [{ data: persData }, { data: costData }] = await Promise.all([
       supabase.from('registro_personal').select('fecha, num_personal, area').gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' })).order('fecha', { ascending: false }),
-      supabase.from('config_costos').select('fecha, costo_almuerzo').gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' })).order('fecha', { ascending: false })
+      supabase.from('config_costos').select('fecha, tarifa_almuerzo_soles, tarifa_almuerzo_usd').gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' })).order('fecha', { ascending: false })
     ]);
 
     const pers = persData || [];
     const costs = costData || [];
     const todayPers = pers.filter(r => r.fecha === hoy);
     const totalPersonalHoy = todayPers.reduce((s, r) => s + (r.num_personal || 0), 0);
-    const costoAlm = costs.find(c => c.fecha === hoy)?.costo_almuerzo || 0;
+    const costoAlm = costs.find(c => c.fecha === hoy)?.tarifa_almuerzo_soles || 0;
     const costoTotalHoy = totalPersonalHoy * costoAlm;
     const costoPP = totalPersonalHoy > 0 ? costoTotalHoy / totalPersonalHoy : 0;
 
@@ -38,7 +38,7 @@ async function loadData(container) {
       tbody.innerHTML = fechas.map(f => {
         const dayPers = pers.filter(r => r.fecha === f);
         const cantidad = dayPers.reduce((s, r) => s + (r.num_personal || 0), 0);
-        const costoU = costs.find(c => c.fecha === f)?.costo_almuerzo || 0;
+        const costoU = costs.find(c => c.fecha === f)?.tarifa_almuerzo_soles || 0;
         const costoT = cantidad * costoU;
         const areas = [...new Set(dayPers.map(r => r.area).filter(Boolean))].join(', ') || '—';
         return `<tr>

@@ -58,7 +58,7 @@ async function loadKPIs(container) {
     // Temperaturas (proyecto calidad)
     const { data: tempData } = await supabaseCalidad
       .from('registros_temperatura')
-      .select('temperatura, zona')
+      .select('temperatura, area')
       .order('created_at', { ascending: false })
       .limit(10);
 

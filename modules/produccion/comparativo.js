@@ -9,7 +9,7 @@ async function loadData(container) {
   try {
     const since = new Date(); since.setDate(since.getDate() - 30);
     const { data } = await supabase.from('registro_produccion')
-      .select('fecha, producto_terminado, turno')
+      .select('fecha, pt_aprox_kg, turno')
       .gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' }))
       .order('fecha');
 
@@ -17,8 +17,8 @@ async function loadData(container) {
     if (recs.length === 0) return;
 
     const isDia = r => r.turno === 'DIA' || r.turno === 'TURNO DIA';
-    const totalDia = recs.filter(isDia).reduce((s, r) => s + (r.producto_terminado || 0), 0);
-    const totalNoche = recs.filter(r => !isDia(r)).reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const totalDia = recs.filter(isDia).reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
+    const totalNoche = recs.filter(r => !isDia(r)).reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     const diff = totalDia > 0 ? ((totalDia - totalNoche) / totalDia * 100) : 0;
     const mejor = totalDia >= totalNoche ? 'DIA' : 'NOCHE';
 
@@ -30,8 +30,8 @@ async function loadData(container) {
     // Chart
     const colors = getColors();
     const fechas = [...new Set(recs.map(r => r.fecha))].sort().slice(-14);
-    const diaPorFecha = fechas.map(f => recs.filter(r => r.fecha === f && isDia(r)).reduce((s, r) => s + (r.producto_terminado || 0), 0));
-    const nochePorFecha = fechas.map(f => recs.filter(r => r.fecha === f && !isDia(r)).reduce((s, r) => s + (r.producto_terminado || 0), 0));
+    const diaPorFecha = fechas.map(f => recs.filter(r => r.fecha === f && isDia(r)).reduce((s, r) => s + (r.pt_aprox_kg || 0), 0));
+    const nochePorFecha = fechas.map(f => recs.filter(r => r.fecha === f && !isDia(r)).reduce((s, r) => s + (r.pt_aprox_kg || 0), 0));
 
     createChart('chartCompTurnos', {
       type: 'bar',

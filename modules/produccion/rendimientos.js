@@ -24,7 +24,7 @@ async function loadData(container) {
 
     const { data, error } = await supabase
       .from('registro_produccion')
-      .select('fecha, fruta, consumo_mp, producto_terminado, turno, lote, proveedor, variedad')
+      .select('fecha, fruta, consumo_kg, pt_aprox_kg, turno, lote, proveedor, variedad')
       .gte('fecha', sinceStr)
       .order('fecha', { ascending: false });
 
@@ -52,8 +52,8 @@ function updateKPIs(container, data) {
   data.forEach(r => {
     const f = (r.fruta || 'mango').toLowerCase();
     if (!byFruta[f]) byFruta[f] = { mp: 0, pt: 0 };
-    byFruta[f].mp += r.consumo_mp || 0;
-    byFruta[f].pt += r.producto_terminado || 0;
+    byFruta[f].mp += r.consumo_kg || 0;
+    byFruta[f].pt += r.pt_aprox_kg || 0;
   });
 
   // Rend per fruit + comparison vs objective
@@ -76,8 +76,8 @@ function updateKPIs(container, data) {
   });
 
   // Promedio planta
-  const totalMP = data.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-  const totalPT = data.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const totalMP = data.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+  const totalPT = data.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   const promedio = totalMP > 0 ? (totalPT / totalMP * 100) : 0;
   setVal(container, 'rendPromedio', fmtPct(promedio));
 
@@ -93,10 +93,10 @@ function updateKPIs(container, data) {
     const recentData = data.filter(r => r.fecha >= weekStr);
     const prevData = data.filter(r => r.fecha >= twoWeekStr && r.fecha < weekStr);
 
-    const recentMP = recentData.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const recentPT = recentData.reduce((s, r) => s + (r.producto_terminado || 0), 0);
-    const prevMP = prevData.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const prevPT = prevData.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const recentMP = recentData.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const recentPT = recentData.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
+    const prevMP = prevData.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const prevPT = prevData.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
 
     const recentRend = recentMP > 0 ? (recentPT / recentMP * 100) : 0;
     const prevRend = prevMP > 0 ? (prevPT / prevMP * 100) : 0;
@@ -131,8 +131,8 @@ function buildCharts(container, data) {
     const fc = frutaColorMap[fruta] || { border: colors.cyan.border, bg: colors.cyan.bg };
     const rendPorFecha = fechas.map(f => {
       const recs = data.filter(r => r.fecha === f && (r.fruta || 'mango').toLowerCase() === fruta);
-      const mp = recs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-      const pt = recs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+      const mp = recs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+      const pt = recs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
       return mp > 0 ? +(pt / mp * 100).toFixed(1) : null;
     });
     return {
@@ -171,8 +171,8 @@ function buildCharts(container, data) {
       (r.fruta || 'mango').toLowerCase() === fruta &&
       (r.turno === 'DIA' || r.turno === 'TURNO DIA')
     );
-    const mp = recs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const pt = recs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const mp = recs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const pt = recs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     return mp > 0 ? +(pt / mp * 100).toFixed(1) : 0;
   });
 
@@ -181,8 +181,8 @@ function buildCharts(container, data) {
       (r.fruta || 'mango').toLowerCase() === fruta &&
       (r.turno !== 'DIA' && r.turno !== 'TURNO DIA')
     );
-    const mp = recs.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const pt = recs.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const mp = recs.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const pt = recs.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     return mp > 0 ? +(pt / mp * 100).toFixed(1) : 0;
   });
 
@@ -244,8 +244,8 @@ function buildTable(container, data) {
         pt: 0
       };
     }
-    byLote[key].mp += r.consumo_mp || 0;
-    byLote[key].pt += r.producto_terminado || 0;
+    byLote[key].mp += r.consumo_kg || 0;
+    byLote[key].pt += r.pt_aprox_kg || 0;
   });
 
   const rows = Object.values(byLote)

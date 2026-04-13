@@ -67,8 +67,8 @@ async function loadData(container) {
 }
 
 function updateKPIs(container) {
-  const totalMP = prodData.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-  const totalPT = prodData.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+  const totalMP = prodData.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+  const totalPT = prodData.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
   const rend = totalMP > 0 ? (totalPT / totalMP * 100) : 0;
   const totalPers = persData.reduce((s, r) => s + (r.num_personal || r.total_personal || 0), 0);
   const kgHr = prodData.length > 0 ? totalMP / prodData.length : 0;
@@ -82,8 +82,8 @@ function updateKPIs(container) {
   setVal(container, 'pdRegistros', prodData.length.toString());
 
   // Desglose por fruta en KPIs
-  buildKpiFrutasInline(container, 'pdKpiConsumoFrutas', prodData, 'consumo_mp');
-  buildKpiFrutasInline(container, 'pdKpiPTFrutas', prodData, 'producto_terminado');
+  buildKpiFrutasInline(container, 'pdKpiConsumoFrutas', prodData, 'consumo_kg');
+  buildKpiFrutasInline(container, 'pdKpiPTFrutas', prodData, 'pt_aprox_kg');
   buildKpiRendFrutas(container);
 
   // Proyeccion
@@ -118,8 +118,8 @@ function buildKpiRendFrutas(container) {
   prodData.forEach(r => {
     const f = (r.fruta || 'MANGO').toUpperCase();
     if (!byFruta[f]) byFruta[f] = { mp: 0, pt: 0 };
-    byFruta[f].mp += r.consumo_mp || 0;
-    byFruta[f].pt += r.producto_terminado || 0;
+    byFruta[f].mp += r.consumo_kg || 0;
+    byFruta[f].pt += r.pt_aprox_kg || 0;
   });
   if (Object.keys(byFruta).length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = Object.entries(byFruta).map(([f, v]) => {
@@ -139,8 +139,8 @@ function buildAvanceFrutas(container) {
   prodData.forEach(r => {
     const f = (r.fruta || 'MANGO').toUpperCase();
     if (!byFruta[f]) byFruta[f] = { mp: 0, pt: 0, proy: r.proyectado_tn || 0 };
-    byFruta[f].mp += r.consumo_mp || 0;
-    byFruta[f].pt += r.producto_terminado || 0;
+    byFruta[f].mp += r.consumo_kg || 0;
+    byFruta[f].pt += r.pt_aprox_kg || 0;
     if (r.proyectado_tn) byFruta[f].proy = r.proyectado_tn;
   });
   if (Object.keys(byFruta).length === 0) { el.innerHTML = ''; return; }
@@ -184,8 +184,8 @@ function buildTable(container) {
   // Turno Dia rows
   dia.forEach(r => { rows += buildRow(r); });
   if (dia.length > 0) {
-    const diaMP = dia.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const diaPT = dia.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const diaMP = dia.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const diaPT = dia.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     const diaRend = diaMP > 0 ? (diaPT / diaMP * 100).toFixed(1) : 0;
     rows += `<tr style="background:rgba(251,191,36,0.08);font-weight:700">
       <td colspan="4" style="color:var(--amber)">☀️ SUBTOTAL DIA (${dia.length} hrs)</td>
@@ -197,8 +197,8 @@ function buildTable(container) {
   // Noche rows
   noche.forEach(r => { rows += buildRow(r); });
   if (noche.length > 0) {
-    const nocheMP = noche.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const nochePT = noche.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const nocheMP = noche.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const nochePT = noche.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     const nocheRend = nocheMP > 0 ? (nochePT / nocheMP * 100).toFixed(1) : 0;
     rows += `<tr style="background:rgba(59,130,246,0.08);font-weight:700">
       <td colspan="4" style="color:var(--azul)">🌙 SUBTOTAL NOCHE (${noche.length} hrs)</td>
@@ -211,8 +211,8 @@ function buildTable(container) {
 
   // Footer total
   if (tfoot) {
-    const totalMP = prodData.reduce((s, r) => s + (r.consumo_mp || 0), 0);
-    const totalPT = prodData.reduce((s, r) => s + (r.producto_terminado || 0), 0);
+    const totalMP = prodData.reduce((s, r) => s + (r.consumo_kg || 0), 0);
+    const totalPT = prodData.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     const totalRend = totalMP > 0 ? (totalPT / totalMP * 100).toFixed(1) : 0;
     const totalPers = prodData.reduce((s, r) => s + (r.personal || 0), 0);
     tfoot.innerHTML = `<tr style="font-weight:800;background:var(--verde-bg);border-top:2px solid var(--verde)">
@@ -226,7 +226,7 @@ function buildTable(container) {
 }
 
 function buildRow(r) {
-  const rend = r.consumo_mp > 0 ? (r.producto_terminado / r.consumo_mp * 100).toFixed(1) : '—';
+  const rend = r.consumo_kg > 0 ? (r.pt_aprox_kg / r.consumo_kg * 100).toFixed(1) : '—';
   const fc = FRUTA_COLORS[(r.fruta || '').toUpperCase()] || { color: '#64748b', emoji: '' };
   const turnoColor = (r.turno || '').toUpperCase().includes('DIA') ? 'var(--amber)' : 'var(--azul)';
   const turnoLabel = (r.turno || '').toUpperCase().includes('DIA') ? 'DIA' : 'NOCHE';
@@ -235,8 +235,8 @@ function buildRow(r) {
     <td><span style="color:${turnoColor};font-weight:700;font-size:11px">${turnoLabel}</span></td>
     <td style="font-size:12px">${fc.emoji} ${r.fruta || '—'}</td>
     <td style="font-size:12px">${r.linea || 'L1'}</td>
-    <td style="font-family:monospace;font-weight:600">${fmt(r.consumo_mp)}</td>
-    <td style="font-family:monospace;font-weight:700">${fmt(r.producto_terminado)}</td>
+    <td style="font-family:monospace;font-weight:600">${fmt(r.consumo_kg)}</td>
+    <td style="font-family:monospace;font-weight:700">${fmt(r.pt_aprox_kg)}</td>
     <td style="font-weight:700;color:${parseFloat(rend) >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend}%</td>
     <td>${r.personal || '—'}</td>
     <td style="font-size:11px">${r.supervisor || '—'}</td>
@@ -265,8 +265,8 @@ function updateCharts(container) {
   const horas = [...new Set(filtered.map(r => r.hora?.slice(0, 5)))].sort();
 
   // Chart 1: Consumo vs PT
-  const mpPorHora = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.consumo_mp || 0), 0));
-  const ptPorHora = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.producto_terminado || 0), 0));
+  const mpPorHora = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.consumo_kg || 0), 0));
+  const ptPorHora = horas.map(h => filtered.filter(r => r.hora?.startsWith(h)).reduce((s, r) => s + (r.pt_aprox_kg || 0), 0));
 
   createChart('chartPdHora', {
     type: 'bar',
@@ -329,14 +329,14 @@ async function buildTurnosChart(container) {
   try {
     const since = new Date(); since.setDate(since.getDate() - 7);
     const { data } = await supabase.from('registro_produccion')
-      .select('fecha, consumo_mp, turno')
+      .select('fecha, consumo_kg, turno')
       .gte('fecha', since.toLocaleDateString('en-CA', { timeZone: 'America/Lima' }))
       .order('fecha');
 
     if (!data || data.length === 0) return;
     const fechas = [...new Set(data.map(r => r.fecha))].sort();
-    const diaData = fechas.map(f => data.filter(r => r.fecha === f && (r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_mp || 0), 0));
-    const nocheData = fechas.map(f => data.filter(r => r.fecha === f && !(r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_mp || 0), 0));
+    const diaData = fechas.map(f => data.filter(r => r.fecha === f && (r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_kg || 0), 0));
+    const nocheData = fechas.map(f => data.filter(r => r.fecha === f && !(r.turno || '').toUpperCase().includes('DIA')).reduce((s, r) => s + (r.consumo_kg || 0), 0));
 
     const labels = fechas.map(f => {
       const d = new Date(f + 'T00:00:00');

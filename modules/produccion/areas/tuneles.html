@@ -1,24 +1,100 @@
-<!-- Panel: Tuneles IQF -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">❄️ Tuneles <span style="color:var(--azul)">IQF</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Monitoreo de ciclos de congelamiento IQF</p>
+<!-- Panel: Tuneles IQF - Version Completa -->
+<div style="background:linear-gradient(135deg,rgba(37,99,235,0.08),rgba(37,99,235,0.02));border:1px solid rgba(37,99,235,0.15);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <div style="width:52px;height:52px;border-radius:14px;background:rgba(37,99,235,0.12);display:flex;align-items:center;justify-content:center;font-size:26px">&#10052;&#65039;</div>
+  <div style="flex:1">
+    <h2 style="font-size:20px;font-weight:900;color:var(--texto);margin:0">Tuneles IQF</h2>
+    <p style="font-size:12px;color:var(--muted);margin:2px 0 0">Congelamiento individual rapido &middot; 3 tuneles estaticos</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="badge badge-azul"><span class="status-dot online" style="width:6px;height:6px"></span> En vivo</div>
+    <a href="apps/registro-tuneles/index.html" target="_blank" class="btn btn-sm btn-primary">&#10052;&#65039; Registro Tuneles</a>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Ciclos Hoy</div><div class="kpi-value" id="tunCiclos">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Temp Promedio</div><div class="kpi-value" id="tunTemp">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Kg Congelados</div><div class="kpi-value" id="tunKg">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Eficiencia</div><div class="kpi-value" id="tunEficiencia">—</div></div>
+<!-- 6 KPIs -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">&#128260;</div><div class="kpi-label" style="font-size:9px;margin:0">CICLOS HOY</div></div>
+    <div class="kpi-value" style="font-size:22px" id="tunKpiCiclos">0</div>
+    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="tunProgressCiclos" style="width:0%;background:var(--azul)"></div></div>
+    <div style="font-size:10px;color:var(--muted)" id="tunKpiCiclosMeta">Meta: 12 ciclos</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--cyan)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">&#127777;&#65039;</div><div class="kpi-label" style="font-size:9px;margin:0">TEMP PROMEDIO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="tunKpiTemp">--<span style="font-size:11px;font-weight:500">&deg;C</span></div>
+    <div style="font-size:10px;color:var(--muted)">Temperatura de salida</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">&#9878;&#65039;</div><div class="kpi-label" style="font-size:9px;margin:0">KG CONGELADOS</div></div>
+    <div class="kpi-value" style="font-size:22px" id="tunKpiKg">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="tunKpiKgTn">0 TN</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">&#127919;</div><div class="kpi-label" style="font-size:9px;margin:0">EFICIENCIA</div></div>
+    <div class="kpi-value" style="font-size:22px" id="tunKpiEficiencia">0<span style="font-size:11px;font-weight:500">%</span></div>
+    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="tunProgressEfi" style="width:0%;background:var(--naranja)"></div></div>
+    <div style="font-size:10px;color:var(--muted)">vs capacidad instalada</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">&#128666;</div><div class="kpi-label" style="font-size:9px;margin:0">COCHES EN PROCESO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="tunKpiCoches">0</div>
+    <div style="font-size:10px;color:var(--muted)">Coches activos ahora</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">&#9201;</div><div class="kpi-label" style="font-size:9px;margin:0">T. CICLO PROMEDIO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="tunKpiTCiclo">--<span style="font-size:11px;font-weight:500">min</span></div>
+    <div style="font-size:10px;color:var(--muted)">Duracion media ciclo</div>
+  </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Ciclos de Congelamiento</div></div>
+<!-- Estado de los 3 Tuneles -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:20px">
+  <div class="card" id="tunCard1" style="padding:16px;border-left:4px solid var(--azul)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-weight:800;font-size:14px">&#10052;&#65039; Tunel 1</span>
+      <span class="badge badge-verde" id="tunStatus1">DISPONIBLE</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Temperatura</span><span style="font-weight:700;font-family:monospace" id="tunTemp1">--&deg;C</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Coches</span><span style="font-weight:700" id="tunCoches1">0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Fruta</span><span style="font-weight:700" id="tunFruta1">--</span></div>
+  </div>
+  <div class="card" id="tunCard2" style="padding:16px;border-left:4px solid var(--cyan)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-weight:800;font-size:14px">&#10052;&#65039; Tunel 2</span>
+      <span class="badge badge-verde" id="tunStatus2">DISPONIBLE</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Temperatura</span><span style="font-weight:700;font-family:monospace" id="tunTemp2">--&deg;C</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Coches</span><span style="font-weight:700" id="tunCoches2">0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Fruta</span><span style="font-weight:700" id="tunFruta2">--</span></div>
+  </div>
+  <div class="card" id="tunCard3" style="padding:16px;border-left:4px solid var(--purple)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <span style="font-weight:800;font-size:14px">&#10052;&#65039; Tunel 3</span>
+      <span class="badge badge-verde" id="tunStatus3">DISPONIBLE</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Temperatura</span><span style="font-weight:700;font-family:monospace" id="tunTemp3">--&deg;C</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--muted)">Coches</span><span style="font-weight:700" id="tunCoches3">0</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:12px"><span style="color:var(--muted)">Fruta</span><span style="font-weight:700" id="tunFruta3">--</span></div>
+  </div>
+</div>
+
+<!-- Tabla Registro de Ciclos -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header">
+    <div class="card-title">&#128203; Registro de Ciclos &mdash; <span id="tunTableDate">Hoy</span></div>
+    <div class="badge badge-azul"><span class="status-dot online" style="width:6px;height:6px"></span> Live</div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Tunel</th><th>Fruta</th><th>Hora Inicio</th><th>Hora Fin</th><th>Temp (°C)</th><th>Kg</th><th>Estado</th></tr></thead>
-      <tbody id="tunTabla"></tbody>
+      <thead><tr><th>Tunel</th><th>Fruta</th><th>Coches</th><th>Kg Aprox</th><th>Hora Inicio</th><th>Hora Fin</th><th>Temp Ingreso</th><th>Temp Final</th><th>Estado</th></tr></thead>
+      <tbody id="tunLiveBody"><tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">Cargando datos...</td></tr></tbody>
+      <tfoot id="tunLiveFoot"></tfoot>
     </table>
   </div>
+</div>
+
+<!-- 2 Charts -->
+<div class="charts-grid charts-grid-2">
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#128202; Ciclos por Tunel</div></div><div class="chart-wrapper"><canvas id="chartTunCiclos"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#127777;&#65039; Temperatura por Ciclo</div></div><div class="chart-wrapper"><canvas id="chartTunTemp"></canvas></div></div>
 </div>

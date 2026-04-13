@@ -1,24 +1,82 @@
-<!-- Panel: Area de Empaque -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">📦 Area de <span style="color:var(--verde)">Empaque</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Control de empaque y despacho de producto congelado</p>
+<!-- Panel: Area de Empaque - Version Completa -->
+<div style="background:linear-gradient(135deg,rgba(22,163,74,0.08),rgba(22,163,74,0.02));border:1px solid rgba(22,163,74,0.15);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+  <div style="width:52px;height:52px;border-radius:14px;background:rgba(22,163,74,0.12);display:flex;align-items:center;justify-content:center;font-size:26px">&#128230;</div>
+  <div style="flex:1">
+    <h2 style="font-size:20px;font-weight:900;color:var(--texto);margin:0">Empaque</h2>
+    <p style="font-size:12px;color:var(--muted);margin:2px 0 0">Empaque y sellado de producto congelado &middot; Datos en tiempo real</p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> En vivo</div>
+    <a href="apps/empaque-congelado/index.html" target="_blank" class="btn btn-sm btn-primary">&#128230; Registro Empaque</a>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Cajas Producidas</div><div class="kpi-value" id="empCajas">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Cajas/Hora</div><div class="kpi-value" id="empCajasHr">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Kg Empacados</div><div class="kpi-value" id="empKg">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Operarios</div><div class="kpi-value" id="empOperarios">—</div></div>
+<!-- Filtros -->
+<div class="filter-bar" style="margin-bottom:16px">
+  <div class="filter-chip active" data-filter="turno" data-value="DIA">Turno Dia</div>
+  <div class="filter-chip" data-filter="turno" data-value="NOCHE">Turno Noche</div>
+  <div class="filter-chip" data-filter="turno" data-value="AMBOS">Ambos Turnos</div>
+  <input type="date" id="empFilterDate" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600">
+  <select id="empFilterFruta" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px">
+    <option value="TODAS">Todas las frutas</option>
+    <option value="MANGO">&#129389; Mango</option><option value="ARANDANO">&#129744; Arandano</option>
+    <option value="GRANADA">&#127822; Granada</option><option value="PALTA">&#129361; Palta</option>
+    <option value="FRESA">&#127827; Fresa</option><option value="PI&Ntilde;A">&#127821; Pi&ntilde;a</option>
+  </select>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Registro de Empaque</div></div>
+<!-- 6 KPIs -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">&#128230;</div><div class="kpi-label" style="font-size:9px;margin:0">CAJAS PRODUCIDAS HOY</div></div>
+    <div class="kpi-value" style="font-size:22px" id="empKpiCajas">0</div>
+    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="empProgressCajas" style="width:0%"></div></div>
+    <div style="font-size:10px;color:var(--muted)" id="empKpiCajasMeta">Meta: -- cajas</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">&#9889;</div><div class="kpi-label" style="font-size:9px;margin:0">CAJAS / HORA</div></div>
+    <div class="kpi-value" style="font-size:22px" id="empKpiCajasHr">0 <span style="font-size:11px;font-weight:500">cj/hr</span></div>
+    <div style="font-size:10px;color:var(--muted)">Promedio turno</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">&#9201;</div><div class="kpi-label" style="font-size:9px;margin:0">HRS EFECTIVAS</div></div>
+    <div class="kpi-value" style="font-size:22px" id="empKpiHrsEfectivas">0 <span style="font-size:11px;font-weight:500">hrs</span></div>
+    <div style="font-size:10px;color:var(--muted)">Horas con produccion</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">&#9878;&#65039;</div><div class="kpi-label" style="font-size:9px;margin:0">KG EMPACADOS</div></div>
+    <div class="kpi-value" style="font-size:22px" id="empKpiKg">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="empKpiKgTn">0 TN</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">&#128101;</div><div class="kpi-label" style="font-size:9px;margin:0">OPERARIOS</div></div>
+    <div class="kpi-value" style="font-size:22px" id="empKpiOperarios">0 <span style="font-size:11px;font-weight:500">op.</span></div>
+    <div style="font-size:10px;color:var(--muted)">Personal activo</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--cyan)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">&#128200;</div><div class="kpi-label" style="font-size:9px;margin:0">CJ/HR POR OPERARIO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="empKpiCjHrOp">0 <span style="font-size:11px;font-weight:500">cj/hr*op</span></div>
+    <div style="font-size:10px;color:var(--muted)">Productividad individual</div>
+  </div>
+</div>
+
+<!-- Tabla Hora a Hora -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header">
+    <div class="card-title">&#128203; Produccion Empaque Hora a Hora &mdash; <span id="empTableDate">Hoy</span></div>
+    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> Live</div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Hora</th><th>Fruta</th><th>Cajas</th><th>Peso Neto (kg)</th><th>Presentacion</th><th>Contenedor</th></tr></thead>
-      <tbody id="empTabla"></tbody>
+      <thead><tr><th>Hora</th><th>Producto</th><th>Tipo</th><th>Cajas</th><th>KG PT</th><th>CJ/HR</th><th>Operarios</th></tr></thead>
+      <tbody id="empLiveBody"><tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Cargando datos...</td></tr></tbody>
+      <tfoot id="empLiveFoot"></tfoot>
     </table>
   </div>
+</div>
+
+<!-- 2 Charts -->
+<div class="charts-grid charts-grid-2">
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#128202; Cajas por Hora</div></div><div class="chart-wrapper"><canvas id="chartEmpCajas"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#128200; Productividad CJ/HR*OP</div></div><div class="chart-wrapper"><canvas id="chartEmpProductividad"></canvas></div></div>
 </div>

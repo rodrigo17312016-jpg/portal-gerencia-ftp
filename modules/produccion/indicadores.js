@@ -43,7 +43,7 @@ async function loadData(container) {
 
     const { data, error } = await supabase
       .from('registro_produccion')
-      .select('fecha, fruta, consumo_kg, pt_aprox_kg, personal, turno')
+      .select('fecha, fruta, consumo_kg, pt_aprox_kg, turno')
       .gte('fecha', sinceStr)
       .order('fecha', { ascending: false });
 

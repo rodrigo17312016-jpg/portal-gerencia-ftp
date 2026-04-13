@@ -51,7 +51,7 @@ async function loadData(container) {
 
     const [{ data: prodData, error: e1 }, { data: costData, error: e2 }] = await Promise.all([
       supabase.from('registro_produccion')
-        .select('fecha, hora, pt_aprox_kg, personal, consumo_kg')
+        .select('fecha, hora, pt_aprox_kg, consumo_kg')
         .gte('fecha', sinceStr)
         .order('fecha')
         .order('hora'),

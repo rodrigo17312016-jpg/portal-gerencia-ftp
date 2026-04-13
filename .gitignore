@@ -4,4 +4,3 @@ node_modules/
 .DS_Store
 Thumbs.db
 scripts/config_reportes.json
-assets/video/*.mp4

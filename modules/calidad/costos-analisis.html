@@ -2,41 +2,87 @@
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
   <div>
     <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🧮 Costos de <span style="color:var(--amber)">Analisis</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Gastos en analisis de laboratorio por cultivo y tipo</p>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Gastos en analisis de laboratorio por campana, tipo y cultivo</p>
   </div>
-  <a href="dashboards/analisis.html" target="_blank" class="btn btn-sm btn-primary">📊 Ver Dashboard Completo de Analisis</a>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <button class="btn btn-sm btn-outline" id="caExportCSV">📥 Exportar CSV</button>
+    <a href="dashboards/analisis.html" target="_blank" class="btn btn-sm btn-primary">📊 Ver Dashboard Completo de Analisis</a>
+  </div>
 </div>
+
+<!-- KPI Cards -->
 <div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Gasto Total</div><div class="kpi-value">S/ 28,450</div></div>
-  <div class="kpi-card"><div class="kpi-label">Muestras Analizadas</div><div class="kpi-value">342</div></div>
-  <div class="kpi-card"><div class="kpi-label">Costo/Muestra</div><div class="kpi-value">S/ 83.2</div></div>
-  <div class="kpi-card"><div class="kpi-label">Labs Activos</div><div class="kpi-value">3</div></div>
+  <div class="kpi-card" style="border-top:3px solid var(--amber)">
+    <div class="kpi-label">Gasto Total Campana</div>
+    <div class="kpi-value" style="color:var(--amber)" id="caKpiGasto">S/. 80,196</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--azul)">
+    <div class="kpi-label">Muestras Analizadas</div>
+    <div class="kpi-value" style="color:var(--azul)" id="caKpiMuestras">1,180</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--purple)">
+    <div class="kpi-label">Costo Prom/Muestra</div>
+    <div class="kpi-value" style="color:var(--purple)" id="caKpiPromedio">S/. 67.96</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--verde)">
+    <div class="kpi-label">Laboratorios Activos</div>
+    <div class="kpi-value" style="color:var(--verde)" id="caKpiLabs">5</div>
+  </div>
 </div>
+
+<!-- Table 1: Gastos por Laboratorio -->
 <div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Gastos por Laboratorio</div></div>
+  <div class="card-header"><div class="card-title">🏢 Gastos por Laboratorio</div></div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Laboratorio</th><th>Muestras</th><th>Gasto (S/.)</th><th>% Total</th><th>Prom/Muestra</th></tr></thead>
-      <tbody>
-        <tr><td style="font-weight:700">SGS Peru</td><td>156</td><td>S/ 14,200</td><td>49.9%</td><td>S/ 91.0</td></tr>
-        <tr><td style="font-weight:700">NSF International</td><td>108</td><td>S/ 8,640</td><td>30.4%</td><td>S/ 80.0</td></tr>
-        <tr><td style="font-weight:700">Lab Interno FTP</td><td>78</td><td>S/ 5,610</td><td>19.7%</td><td>S/ 71.9</td></tr>
-      </tbody>
-      <tfoot><tr style="font-weight:800;background:var(--surface2)"><td>TOTAL</td><td>342</td><td>S/ 28,450</td><td>100%</td><td>S/ 83.2</td></tr></tfoot>
+      <thead>
+        <tr>
+          <th>Laboratorio</th>
+          <th style="text-align:right">Muestras</th>
+          <th style="text-align:right">Gasto (S/.)</th>
+          <th style="text-align:right">%</th>
+          <th style="text-align:right">Prom/Muestra</th>
+        </tr>
+      </thead>
+      <tbody id="caTablaLabs"></tbody>
+      <tfoot id="caTablaLabsFoot"></tfoot>
     </table>
   </div>
 </div>
+
+<!-- Table 2: Gasto por Tipo de Analisis -->
 <div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">🧬 Gastos por Tipo de Analisis</div></div>
+  <div class="card-header"><div class="card-title">🧬 Gasto por Tipo de Analisis</div></div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Tipo</th><th>Gasto (S/.)</th><th>% Total</th></tr></thead>
-      <tbody>
-        <tr><td>Microbiologia</td><td>S/ 12,800</td><td>45.0%</td></tr>
-        <tr><td>Residuos Pesticidas</td><td>S/ 8,200</td><td>28.8%</td></tr>
-        <tr><td>Fisicoquimico</td><td>S/ 4,100</td><td>14.4%</td></tr>
-        <tr><td>Metales Pesados</td><td>S/ 3,350</td><td>11.8%</td></tr>
-      </tbody>
+      <thead>
+        <tr>
+          <th>Tipo de Analisis</th>
+          <th style="text-align:right">Gasto (S/.)</th>
+          <th style="text-align:right">%</th>
+          <th style="min-width:200px">Distribucion</th>
+        </tr>
+      </thead>
+      <tbody id="caTablaTipos"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Table 3: Gasto por Cultivo -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header"><div class="card-title">🌱 Gasto por Cultivo &mdash; Campana</div></div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Cultivo</th>
+          <th style="text-align:right">Muestras</th>
+          <th style="text-align:right">Gasto (S/.)</th>
+          <th style="text-align:right">Total</th>
+        </tr>
+      </thead>
+      <tbody id="caTablaCultivos"></tbody>
+      <tfoot id="caTablaCultivosFoot"></tfoot>
     </table>
   </div>
 </div>

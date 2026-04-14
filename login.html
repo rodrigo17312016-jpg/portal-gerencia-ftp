@@ -88,14 +88,6 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 @keyframes borderRotate{to{--angle:360deg}}
 @property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
 
-/* Inner shimmer */
-.login-card::after{
-  content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
-  background:conic-gradient(from 0deg,transparent 0%,rgba(255,255,255,0.02) 25%,transparent 50%);
-  animation:cardShimmer 10s linear infinite;pointer-events:none;
-}
-@keyframes cardShimmer{to{transform:rotate(360deg)}}
-
 /* ── LOGO ── */
 @keyframes logoFadeIn{
   0%{opacity:0;transform:translateY(-10px)}
@@ -128,7 +120,7 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   background-size:300% 100%;
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:silverShimmer 5s ease infinite, fadeUp 0.8s ease 0.3s both;
+  animation:fadeUp 0.8s ease 0.3s both, silverShimmer 6s ease 1.2s infinite;
   filter:drop-shadow(0 0 6px rgba(192,192,192,0.35));
   position:relative;z-index:1;
 }
@@ -142,7 +134,7 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   background-size:400% 100%;
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:fadeUp 0.8s ease 0.5s both, goldShimmer 4s ease 1.5s infinite;
+  animation:fadeUp 0.8s ease 0.5s both, goldShimmer 6s ease 1.2s infinite;
 }
 
 /* ── DIVIDER animated ── */

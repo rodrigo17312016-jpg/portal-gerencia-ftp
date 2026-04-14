@@ -127,17 +127,22 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   position:relative;z-index:1;
 }
 
-@keyframes subtitleGlow{
-  0%,100%{text-shadow:0 0 4px rgba(74,222,128,0.2),0 0 8px rgba(212,175,55,0.1)}
-  50%{text-shadow:0 0 12px rgba(74,222,128,0.4),0 0 20px rgba(212,175,55,0.2)}
+@keyframes silverShimmer{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
 }
 .login-subtitle{
-  font-size:10px;
-  color:rgba(255,255,255,0.65);
-  letter-spacing:2.5px;text-transform:uppercase;
-  margin-bottom:20px;font-weight:700;
+  font-size:12px;
+  letter-spacing:2px;text-transform:uppercase;
+  margin-bottom:20px;font-weight:800;
   position:relative;z-index:1;
-  animation:fadeUp 0.8s ease 0.5s both, subtitleGlow 3s ease 1.5s infinite;
+  background:linear-gradient(135deg,#c0c0c0 0%,#ffffff 20%,#a8a8a8 40%,#ffffff 60%,#c0c0c0 80%,#e8e8e8 100%);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:fadeUp 0.8s ease 0.5s both, silverShimmer 5s ease 1.5s infinite;
+  filter:drop-shadow(0 0 6px rgba(192,192,192,0.3));
 }
 
 /* ── DIVIDER animated ── */
@@ -289,7 +294,7 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
     <!-- Badge INSIDE card -->
     <div class="login-badge">
       <div class="login-badge-dot"></div>
-      <span class="login-badge-text">FRUTOS TROPICALES PERU EXPORT S.A.C. — SISTEMA SEGURO</span>
+      <span class="login-badge-text">🔒 CONEXION SEGURA · ENCRIPTADO SSL · <span id="badgeTime"></span></span>
     </div>
   </div>
 </div>
@@ -341,12 +346,16 @@ passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogi
 userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
 userInput.focus();
 
-// Live clock
+// Live clock + badge time
 function updateClock() {
+  const now = new Date();
   const el = document.getElementById('loginClock');
   if (el) {
-    const now = new Date();
     el.textContent = now.toLocaleString('es-PE', { timeZone: 'America/Lima', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+  const bt = document.getElementById('badgeTime');
+  if (bt) {
+    bt.textContent = now.toLocaleTimeString('es-PE', { timeZone: 'America/Lima', hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 }
 updateClock();

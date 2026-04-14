@@ -79,15 +79,6 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   box-shadow:0 40px 100px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.1),inset 0 1px 0 rgba(255,255,255,0.15),0 0 60px rgba(22,163,74,0.08);
 }
 
-/* Rotating border glow */
-.login-card::before{
-  content:'';position:absolute;inset:-2px;border-radius:26px;z-index:-1;
-  background:conic-gradient(from var(--angle,0deg),transparent 0%,rgba(74,222,128,0.15) 10%,transparent 20%,rgba(212,175,55,0.1) 30%,transparent 40%);
-  animation:borderRotate 6s linear infinite;
-}
-@keyframes borderRotate{to{--angle:360deg}}
-@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
-
 /* ── LOGO ── */
 @keyframes logoFadeIn{
   0%{opacity:0;transform:translateY(-10px)}

@@ -23,6 +23,25 @@ const TUNEL_COLORS = {
   '3': { main: '#6d28d9', bg: 'rgba(109,40,217,0.08)' }
 };
 
+// ─── Derive real status from record ───
+function isEnProceso(r) {
+  const est = (r.estado || '').toUpperCase();
+  if (est === 'COMPLETADO' || est === 'TERMINADO' || est === 'FINALIZADO') return false;
+  // Si tiene hora_fin, ya terminó
+  if (r.hora_fin) return false;
+  // Si tiene estado explicito de proceso
+  if (est.includes('PROCESO') || est === 'CONGELANDO') return true;
+  // Si tiene hora_inicio pero no fin, está en proceso
+  if (r.hora_inicio && !r.hora_fin) return true;
+  return false;
+}
+
+function getEstadoLabel(r) {
+  if (isEnProceso(r)) return 'CONGELANDO';
+  if (r.hora_fin) return 'COMPLETADO';
+  return (r.estado || 'PENDIENTE').toUpperCase();
+}
+
 export async function init(container) {
   // Fecha inicial
   const dateInput = container.querySelector('#tunFilterDate');
@@ -109,9 +128,8 @@ function renderFiltered(container) {
   }
   if (activeFilters.estado !== 'TODOS') {
     tableRecs = tableRecs.filter(r => {
-      const est = (r.estado || '').toUpperCase();
-      if (activeFilters.estado === 'PROCESO') return est.includes('PROCESO') || est === 'CONGELANDO';
-      if (activeFilters.estado === 'COMPLETADO') return est === 'COMPLETADO';
+      if (activeFilters.estado === 'PROCESO') return isEnProceso(r);
+      if (activeFilters.estado === 'COMPLETADO') return !isEnProceso(r);
       return true;
     });
   }
@@ -158,10 +176,7 @@ function updateKPIs(container, recs) {
   if (barEfi) barEfi.style.width = Math.min(100, eficiencia) + '%';
 
   // Coches activos
-  const enProceso = recs.filter(r => {
-    const est = (r.estado || '').toUpperCase();
-    return est.includes('PROCESO') || est === 'CONGELANDO';
-  });
+  const enProceso = recs.filter(isEnProceso);
   const cochesActivos = enProceso.reduce((s, r) => s + (r.coches || r.num_coches || 0), 0);
   setVal(container, 'tunKpiCoches', cochesActivos.toString());
   setVal(container, 'tunKpiCochesSub', enProceso.length ? `${enProceso.length} tunel(es) activo(s)` : 'Sin procesos activos');
@@ -182,10 +197,9 @@ function updateTunnelCards(container, recs) {
       return t === String(i);
     });
 
-    const enProceso = tunelRecs.find(r => {
-      const est = (r.estado || '').toUpperCase();
-      return est.includes('PROCESO') || est === 'CONGELANDO';
-    });
+    const enProceso = tunelRecs.find(isEnProceso);
+    // Para el "ultimo" preferir los completados (ordenados por fecha desc)
+    const lastCompleted = tunelRecs.find(r => !isEnProceso(r));
 
     const card = container.querySelector('#tunCard' + i);
     const statusEl = container.querySelector('#tunStatus' + i);
@@ -212,7 +226,7 @@ function updateTunnelCards(container, recs) {
     } else {
       if (statusEl) { statusEl.textContent = '● DISPONIBLE'; statusEl.className = 'tun-status-badge tun-status-disponible'; }
       if (card) card.classList.remove('tun-card-active');
-      const last = tunelRecs[0];
+      const last = lastCompleted || tunelRecs[0];
       if (tempEl) tempEl.textContent = last ? (last.temp_final ?? last.temperatura ?? '--') + '°C' : '--°C';
       if (cochesEl) cochesEl.textContent = '0';
       if (frutaEl) frutaEl.textContent = last?.fruta || '—';
@@ -256,12 +270,15 @@ function buildTable(container, recs) {
   }
 
   tbody.innerHTML = recs.map(r => {
-    const estado = (r.estado || 'PROCESO').toUpperCase();
-    let badgeStyle = 'background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2)';
-    let estadoLabel = '✓ ' + estado;
-    if (estado.includes('PROCESO') || estado === 'CONGELANDO') {
+    const enProceso = isEnProceso(r);
+    const estado = getEstadoLabel(r);
+    let badgeStyle, estadoLabel;
+    if (enProceso) {
       badgeStyle = 'background:rgba(234,88,12,0.1);color:var(--naranja);border:1px solid rgba(234,88,12,0.25)';
-      estadoLabel = '🔥 ' + estado;
+      estadoLabel = '🔥 CONGELANDO';
+    } else {
+      badgeStyle = 'background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2)';
+      estadoLabel = '✓ ' + estado;
     }
 
     const kgVal = r.kg_congelado || r.kg_aprox || r.peso || 0;
@@ -288,7 +305,7 @@ function buildTable(container, recs) {
   if (tfoot) {
     const totalKg = recs.reduce((s, r) => s + (r.kg_congelado || r.kg_aprox || r.peso || 0), 0);
     const totalCoches = recs.reduce((s, r) => s + (r.coches || r.num_coches || 0), 0);
-    const completados = recs.filter(r => (r.estado || '').toUpperCase() === 'COMPLETADO').length;
+    const completados = recs.filter(r => !isEnProceso(r)).length;
     const duraciones = recs.map(r => calcDuracion(r.hora_inicio, r.hora_fin)).filter(v => v > 0);
     const tProm = duraciones.length ? Math.round(duraciones.reduce((s, v) => s + v, 0) / duraciones.length) : 0;
     tfoot.innerHTML = `<tr style="font-weight:800;background:var(--azul-bg);border-top:2px solid var(--azul)">

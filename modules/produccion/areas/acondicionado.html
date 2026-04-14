@@ -1,37 +1,52 @@
-<!-- Panel: Area de Acondicionado - Version Completa -->
-<div style="background:linear-gradient(135deg,rgba(22,163,74,0.08),rgba(22,163,74,0.02));border:1px solid rgba(22,163,74,0.15);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-  <div style="width:52px;height:52px;border-radius:14px;background:rgba(22,163,74,0.12);display:flex;align-items:center;justify-content:center;font-size:26px">🔪</div>
-  <div style="flex:1">
-    <h2 style="font-size:20px;font-weight:900;color:var(--texto);margin:0">Acondicionado</h2>
-    <p style="font-size:12px;color:var(--muted);margin:2px 0 0">Pelado, corte, seleccion y preparacion de fruta · Datos en tiempo real</p>
+<!-- Panel: Area de Acondicionado - Version Ejecutiva v4 -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(14,124,58,0.08) 0%,rgba(14,124,58,0.02) 100%);border:1px solid rgba(14,124,58,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(14,124,58,0.12);border:1px solid rgba(14,124,58,0.12)">🥗</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Acondicionado</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Pelado, corte, seleccion y preparacion de fruta · <span id="acoLastUpdate" style="color:var(--verde);font-weight:700">Sincronizando…</span></p>
   </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <div class="badge badge-verde" style="background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px"><span class="status-dot online" style="width:7px;height:7px;background:var(--verde);border-radius:50%"></span> EN VIVO</div>
+    <a href="dashboards/consumos.html" target="_blank" class="btn btn-sm" style="background:var(--verde);color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(14,124,58,0.25)">📊 Dashboard Completo</a>
+    <a href="apps/registro-produccion/index.html" target="_blank" class="btn btn-sm" style="background:#fff;color:var(--texto);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;border:1px solid var(--border);display:inline-flex;align-items:center;gap:6px">📋 Registrar</a>
+  </div>
+</div>
+
+<!-- Filtros principales -->
+<div class="card" style="padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border)">
+  <div style="display:flex;gap:6px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Turno:</span>
+    <button class="filter-chip active" data-filter="turno" data-value="DIA">☀️ Dia</button>
+    <button class="filter-chip" data-filter="turno" data-value="NOCHE">🌙 Noche</button>
+    <button class="filter-chip" data-filter="turno" data-value="AMBOS">Ambos</button>
+  </div>
+  <span style="width:1px;height:22px;background:var(--border)"></span>
   <div style="display:flex;gap:8px;align-items:center">
-    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> En vivo</div>
-    <a href="apps/registro-produccion/index.html" target="_blank" class="btn btn-sm btn-primary">📋 Registro Produccion</a>
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Fecha:</span>
+    <input type="date" id="acoFilterDate" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600;font-family:inherit">
+  </div>
+  <span style="width:1px;height:22px;background:var(--border)"></span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Fruta:</span>
+    <select id="acoFilterFruta" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600">
+      <option value="TODAS">Todas las frutas</option>
+      <option value="MANGO">🥭 Mango</option><option value="ARANDANO">🫐 Arandano</option>
+      <option value="GRANADA">🍎 Granada</option><option value="PALTA">🥑 Palta</option>
+      <option value="FRESA">🍓 Fresa</option><option value="PIÑA">🍍 Piña</option>
+    </select>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button id="acoToggleCosto" class="btn-ghost" style="padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:5px"><span id="acoCostoIcon">🔒</span> <span id="acoCostoText">Mostrar Costos</span></button>
+    <button id="acoRefreshBtn" class="btn-ghost" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700" title="Actualizar datos">↻</button>
   </div>
 </div>
 
-<!-- Filtros -->
-<div class="filter-bar" style="margin-bottom:16px">
-  <div class="filter-chip active" data-filter="turno" data-value="DIA">Turno Dia</div>
-  <div class="filter-chip" data-filter="turno" data-value="NOCHE">Turno Noche</div>
-  <div class="filter-chip" data-filter="turno" data-value="AMBOS">Ambos Turnos</div>
-  <input type="date" id="acoFilterDate" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600">
-  <select id="acoFilterFruta" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px">
-    <option value="TODAS">Todas las frutas</option>
-    <option value="MANGO">🥭 Mango</option><option value="ARANDANO">🫐 Arandano</option>
-    <option value="GRANADA">🍎 Granada</option><option value="PALTA">🥑 Palta</option>
-    <option value="FRESA">🍓 Fresa</option><option value="PIÑA">🍍 Piña</option>
-  </select>
-  <button id="acoToggleCosto" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.1);color:#f87171;cursor:pointer;font-size:12px;font-weight:600">🔒 Mostrar Costos</button>
-</div>
-
-<!-- 6 KPIs con iconos y desglose por fruta -->
-<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));margin-bottom:20px">
+<!-- 6 KPIs con desglose por fruta -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(165px,1fr));margin-bottom:20px">
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">🏭</div><div class="kpi-label" style="font-size:9px;margin:0">CONSUMO MP HOY</div></div>
     <div class="kpi-value" style="font-size:22px" id="acoKpiConsumo">0 <span style="font-size:11px;font-weight:500">kg</span></div>
-    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="acoProgressBar" style="width:0%"></div></div>
+    <div class="progress-bar" style="height:5px;margin:6px 0;background:var(--surface3);border-radius:4px;overflow:hidden"><div class="progress-fill" id="acoProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg,var(--verde),var(--verde2));transition:width .6s ease"></div></div>
     <div style="font-size:10px;color:var(--muted)" id="acoKpiMeta">Proyectado: — TN</div>
     <div id="acoKpiConsumoFrutas" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px"></div>
   </div>
@@ -44,7 +59,7 @@
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">🎯</div><div class="kpi-label" style="font-size:9px;margin:0">RENDIMIENTO</div></div>
     <div class="kpi-value" style="font-size:22px" id="acoKpiRend">0<span style="font-size:11px;font-weight:500">%</span></div>
-    <div style="font-size:10px" id="acoKpiRendDiff"></div>
+    <div style="font-size:10px;font-weight:700" id="acoKpiRendDiff"></div>
     <div id="acoKpiRendFrutas" style="margin-top:6px;border-top:1px dashed var(--border);padding-top:6px"></div>
   </div>
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
@@ -53,14 +68,19 @@
     <div style="font-size:10px;color:var(--muted)">Consumo promedio</div>
   </div>
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--amber)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">👥</div><div class="kpi-label" style="font-size:9px;margin:0">PERSONAL ACTIVO</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">👥</div><div class="kpi-label" style="font-size:9px;margin:0">PERSONAL</div></div>
     <div class="kpi-value" style="font-size:22px" id="acoKpiPersonal">0 <span style="font-size:11px;font-weight:500">op.</span></div>
-    <div style="font-size:10px;color:var(--muted)">Sin registros</div>
+    <div style="font-size:10px;color:var(--muted)" id="acoKpiPersonalSub">Ultimo registro</div>
   </div>
-  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--cyan)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">⚡</div><div class="kpi-label" style="font-size:9px;margin:0">REGISTROS HOY</div></div>
+  <div class="kpi-card acoKpiCostoCard" style="padding:14px;border-top:3px solid var(--cyan);display:none">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">💰</div><div class="kpi-label" style="font-size:9px;margin:0">COSTO PROMEDIO</div></div>
+    <div class="kpi-value" style="font-size:22px" id="acoKpiCosto">S/ 0 <span style="font-size:11px;font-weight:500">/ kg</span></div>
+    <div style="font-size:10px;color:var(--muted)">Costo por kg MP</div>
+  </div>
+  <div class="kpi-card acoKpiRegCard" style="padding:14px;border-top:3px solid var(--cyan)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">📝</div><div class="kpi-label" style="font-size:9px;margin:0">REGISTROS</div></div>
     <div class="kpi-value" style="font-size:22px" id="acoKpiRegistros">0</div>
-    <div style="font-size:10px;color:var(--muted)">Horas registradas</div>
+    <div style="font-size:10px;color:var(--muted)" id="acoKpiRegistrosSub">Horas registradas</div>
   </div>
 </div>
 
@@ -71,12 +91,17 @@
 <div class="card" style="margin-bottom:20px">
   <div class="card-header">
     <div class="card-title">📋 Produccion Hora a Hora — <span id="acoTableDate">Hoy</span></div>
-    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> Live</div>
+    <div class="badge badge-verde" style="background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:5px"><span class="status-dot online" style="width:6px;height:6px;background:var(--verde);border-radius:50%"></span> Live</div>
   </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Hora</th><th>Turno</th><th>Fruta</th><th>Linea</th><th>Consumo (kg)</th><th>P. Terminado (kg)</th><th>Rend %</th><th>N° Personal</th><th>Supervisor</th></tr></thead>
-      <tbody id="acoLiveBody"><tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted)">Cargando datos...</td></tr></tbody>
+      <thead><tr>
+        <th>Hora</th><th>Turno</th><th>Fruta</th><th>Linea</th>
+        <th>Consumo (kg)</th><th>P. Terminado (kg)</th><th>Rend %</th>
+        <th>N° Personal</th><th>Supervisor</th>
+        <th class="aco-costo-col" style="display:none">Costo/Kg</th>
+      </tr></thead>
+      <tbody id="acoLiveBody"><tr><td colspan="9" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando datos...</td></tr></tbody>
       <tfoot id="acoLiveFoot"></tfoot>
     </table>
   </div>
@@ -85,12 +110,11 @@
 <!-- Filtros de Graficos -->
 <div class="card" style="padding:10px 14px;margin-bottom:10px">
   <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
-    <span style="font-size:11px;font-weight:800;color:var(--muted)">TURNO:</span>
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">GRAFICOS:</span>
     <button class="filter-chip active" data-cfilter="turno" data-value="AMBOS">Ambos</button>
     <button class="filter-chip" data-cfilter="turno" data-value="DIA">☀️ Dia</button>
     <button class="filter-chip" data-cfilter="turno" data-value="NOCHE">🌙 Noche</button>
     <span style="width:1px;height:18px;background:var(--border);margin:0 4px"></span>
-    <span style="font-size:11px;font-weight:800;color:var(--muted)">FRUTA:</span>
     <button class="filter-chip active" data-cfilter="fruta" data-value="TODAS">Todas</button>
     <button class="filter-chip" data-cfilter="fruta" data-value="MANGO">🥭</button>
     <button class="filter-chip" data-cfilter="fruta" data-value="FRESA">🍓</button>
@@ -103,10 +127,10 @@
 
 <!-- 4 Charts -->
 <div class="charts-grid charts-grid-2" style="margin-bottom:16px">
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">📊 Consumo vs P. Terminado por Hora — Hoy</div></div><div class="chart-wrapper"><canvas id="chartAcoHora"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">📊 Consumo vs P. Terminado por Hora</div></div><div class="chart-wrapper"><canvas id="chartAcoHora"></canvas></div></div>
   <div class="chart-container"><div class="chart-header"><div class="chart-title">🎯 Rendimiento % por Hora</div></div><div class="chart-wrapper"><canvas id="chartAcoRend"></canvas></div></div>
 </div>
 <div class="charts-grid charts-grid-2">
   <div class="chart-container"><div class="chart-header"><div class="chart-title">📈 Produccion Acumulada por Hora</div></div><div class="chart-wrapper"><canvas id="chartAcoAcumulado"></canvas></div></div>
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">🔀 Comparativo Turnos Dia vs Noche</div></div><div class="chart-wrapper"><canvas id="chartAcoTurnos"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">🔀 Comparativo Turnos (7 dias)</div></div><div class="chart-wrapper"><canvas id="chartAcoTurnos"></canvas></div></div>
 </div>

@@ -16,23 +16,23 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   position:fixed;inset:0;z-index:0;
   background:url('assets/images/login-bg.jpg') center/cover no-repeat;
   animation:bgZoom 30s ease-in-out infinite alternate;
+  filter:brightness(1.15) saturate(1.2);
 }
 @keyframes bgZoom{0%{transform:scale(1)}100%{transform:scale(1.08)}}
 
-/* Dark overlay with gradient */
+/* Light overlay - imagen nitida e iluminada */
 .login-overlay{
   position:fixed;inset:0;z-index:1;
   background:
-    linear-gradient(135deg,rgba(6,26,11,0.75) 0%,rgba(13,61,21,0.55) 30%,rgba(0,0,0,0.4) 60%,rgba(10,15,26,0.7) 100%);
+    linear-gradient(90deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.03) 40%,rgba(0,0,0,0.15) 100%);
 }
 
 /* Animated mesh gradient */
 .login-mesh{
   position:fixed;inset:0;z-index:2;pointer-events:none;
   background:
-    radial-gradient(ellipse 50% 40% at 20% 80%,rgba(22,163,74,0.15),transparent),
-    radial-gradient(ellipse 40% 50% at 80% 20%,rgba(234,88,12,0.1),transparent),
-    radial-gradient(ellipse 60% 40% at 50% 50%,rgba(255,193,7,0.05),transparent);
+    radial-gradient(ellipse 50% 40% at 20% 80%,rgba(22,163,74,0.06),transparent),
+    radial-gradient(ellipse 40% 50% at 80% 20%,rgba(234,88,12,0.04),transparent);
   animation:meshMove 12s ease-in-out infinite alternate;
 }
 @keyframes meshMove{0%{opacity:.6;transform:scale(1)}100%{opacity:1;transform:scale(1.05)}}
@@ -49,8 +49,8 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 /* ── LAYOUT ── */
 .login-container{
   position:relative;z-index:10;
-  display:flex;align-items:center;justify-content:center;
-  min-height:100vh;padding:20px;
+  display:flex;align-items:center;justify-content:flex-end;
+  min-height:100vh;padding:20px 60px 20px 20px;
 }
 
 /* ── GLASS CARD ── */
@@ -188,30 +188,14 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .login-badge-text{font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;letter-spacing:1px}
 
-/* ── DEV SIGNATURE ── */
-@keyframes sigGlow{0%,100%{border-color:rgba(212,175,55,0.15)}50%{border-color:rgba(212,175,55,0.4)}}
-.dev-sig{
-  position:fixed;top:20px;right:20px;z-index:20;
-  padding:10px 20px;border-radius:16px;
-  background:rgba(10,15,26,0.5);backdrop-filter:blur(20px);
-  border:1px solid rgba(212,175,55,0.2);
-  animation:sigGlow 4s ease infinite;text-align:center;
-}
-.dev-sig-label{font-size:7px;color:rgba(212,175,55,0.6);text-transform:uppercase;letter-spacing:2px;font-weight:800}
-.dev-sig-name{
-  font-size:13px;font-weight:900;
-  background:linear-gradient(135deg,#d4af37,#fff8dc,#c0c0c0,#fff8dc,#d4af37);
-  background-size:300% 100%;-webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;animation:goldShimmer 4s ease infinite;
-}
-.dev-sig-role{font-size:9px;color:#22c55e;font-weight:700;letter-spacing:0.5px}
-
 /* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .login-container{justify-content:center;padding:20px}
+}
 @media(max-width:480px){
   .login-card{padding:36px 24px;border-radius:22px}
   .login-logo{height:90px}
   .login-title{font-size:13px;letter-spacing:4px}
-  .dev-sig{display:none}
 }
 </style>
 </head>
@@ -263,13 +247,6 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 <div class="login-badge">
   <div class="login-badge-dot"></div>
   <span class="login-badge-text">FRUTOS TROPICALES PERU EXPORT S.A.C. — SISTEMA SEGURO</span>
-</div>
-
-<!-- Developer Signature -->
-<div class="dev-sig">
-  <div class="dev-sig-label">DESARROLLADO POR</div>
-  <div class="dev-sig-name">Rodrigo Garcia</div>
-  <div class="dev-sig-role">Systems Analyst & Developer-QA</div>
 </div>
 
 <script type="module">

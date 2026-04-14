@@ -53,8 +53,8 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
 /* ── GLASS CARD - 25% mas pequeno ── */
 @keyframes cardEntrance{
-  0%{opacity:0;transform:translateY(60px) scale(0.85);filter:blur(10px)}
-  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
+  0%{opacity:0;transform:translateY(15px)}
+  100%{opacity:1;transform:translateY(0)}
 }
 
 .login-card{
@@ -97,10 +97,9 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 @keyframes cardShimmer{to{transform:rotate(360deg)}}
 
 /* ── LOGO ── */
-@keyframes logoReveal{
-  0%{opacity:0;transform:scale(0.5) rotateY(90deg);filter:brightness(2)}
-  60%{opacity:1;transform:scale(1.1) rotateY(-10deg)}
-  100%{transform:scale(1) rotateY(0)}
+@keyframes logoFadeIn{
+  0%{opacity:0;transform:translateY(-10px)}
+  100%{opacity:1;transform:translateY(0)}
 }
 @keyframes logoFloat{
   0%,100%{transform:translateY(0);filter:drop-shadow(0 4px 15px rgba(212,175,55,0.3))}
@@ -108,13 +107,13 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 }
 .login-logo{
   height:90px;width:auto;margin:0 auto 8px;display:block;
-  animation:logoReveal 1s cubic-bezier(0.16,1,0.3,1) both, logoFloat 4s ease-in-out 1s infinite;
+  animation:logoFadeIn 0.8s ease both, logoFloat 4s ease-in-out 1.2s infinite;
   position:relative;z-index:1;
 }
 
 /* ── TITLE ── */
 @keyframes goldShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-@keyframes titleEntrance{0%{opacity:0;transform:translateY(15px);letter-spacing:12px}100%{opacity:1;transform:translateY(0);letter-spacing:5px}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
 
 .login-title{
   font-family:'Playfair Display',serif;
@@ -124,16 +123,21 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   background-size:400% 100%;
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:goldShimmer 4s ease infinite, titleEntrance 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s both;
+  animation:goldShimmer 4s ease infinite, fadeUp 0.8s ease 0.3s both;
   position:relative;z-index:1;
 }
 
+@keyframes subtitleGlow{
+  0%,100%{text-shadow:0 0 4px rgba(74,222,128,0.2),0 0 8px rgba(212,175,55,0.1)}
+  50%{text-shadow:0 0 12px rgba(74,222,128,0.4),0 0 20px rgba(212,175,55,0.2)}
+}
 .login-subtitle{
-  font-size:9px;color:rgba(255,255,255,0.3);
+  font-size:10px;
+  color:rgba(255,255,255,0.65);
   letter-spacing:2.5px;text-transform:uppercase;
-  margin-bottom:20px;font-weight:600;
+  margin-bottom:20px;font-weight:700;
   position:relative;z-index:1;
-  animation:titleEntrance 1s ease 0.5s both;
+  animation:fadeUp 0.8s ease 0.5s both, subtitleGlow 3s ease 1.5s infinite;
 }
 
 /* ── DIVIDER animated ── */
@@ -145,11 +149,11 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 }
 
 /* ── FORM with stagger ── */
-@keyframes fieldSlideIn{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
+@keyframes fieldFadeIn{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
 
 .login-field{text-align:left;margin-bottom:14px;position:relative;z-index:1}
-.login-field:nth-child(1){animation:fieldSlideIn 0.6s ease 0.8s both}
-.login-field:nth-child(2){animation:fieldSlideIn 0.6s ease 1s both}
+.login-field:nth-child(1){animation:fieldFadeIn 0.6s ease 0.7s both}
+.login-field:nth-child(2){animation:fieldFadeIn 0.6s ease 0.9s both}
 
 .login-field label{
   font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);
@@ -211,9 +215,10 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   margin-top:16px;
   display:flex;align-items:center;justify-content:center;gap:8px;
   padding:8px 16px;border-radius:50px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.06);
+  background:transparent;
+  border:none;
   position:relative;z-index:1;
+  animation:fadeUp 0.6s ease 1.4s both;
 }
 .login-badge-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse 2s ease infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 4px #22c55e}50%{opacity:.4;box-shadow:0 0 0 transparent}}

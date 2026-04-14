@@ -1,33 +1,73 @@
 <!-- Panel: Laboratorio Microbiologia -->
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
   <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🔬 <span style="color:var(--purple)">Laboratorio</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Stock de insumos microbiologicos y control de inventario</p>
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🔬 <span style="color:var(--purple)">Laboratorio</span> Microbiologia</h2>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Stock de insumos microbiologicos &mdash; control de inventario y semaforo de reposicion</p>
   </div>
-  <a href="dashboards/laboratorio.html" target="_blank" class="btn btn-sm btn-primary">📊 Dashboard Completo</a>
+  <a href="dashboards/laboratorio.html" target="_blank" class="btn btn-sm btn-primary">📊 Ver dashboard completo</a>
 </div>
+
+<!-- KPI Cards -->
 <div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Total Items</div><div class="kpi-value" id="lmKpiTotal">30</div></div>
-  <div class="kpi-card" style="border-top:3px solid var(--danger)"><div class="kpi-label">Critico</div><div class="kpi-value" style="color:var(--danger)" id="lmKpiCritico">4</div></div>
-  <div class="kpi-card" style="border-top:3px solid var(--warn)"><div class="kpi-label">Bajo</div><div class="kpi-value" style="color:var(--warn)" id="lmKpiBajo">8</div></div>
-  <div class="kpi-card" style="border-top:3px solid var(--verde)"><div class="kpi-label">OK</div><div class="kpi-value" style="color:var(--verde)" id="lmKpiOk">18</div></div>
+  <div class="kpi-card" style="border-top:3px solid var(--azul)">
+    <div class="kpi-label">Productos en Seguimiento</div>
+    <div class="kpi-value" style="color:var(--azul)" id="lmKpiTotal">30</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--danger)">
+    <div class="kpi-label">Critico &lt;7d</div>
+    <div class="kpi-value" style="color:var(--danger)" id="lmKpiCritico">-</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--warn)">
+    <div class="kpi-label">Bajo 7-15d</div>
+    <div class="kpi-value" style="color:var(--warn)" id="lmKpiBajo">-</div>
+  </div>
+  <div class="kpi-card" style="border-top:3px solid var(--verde)">
+    <div class="kpi-label">OK &gt;15d</div>
+    <div class="kpi-value" style="color:var(--verde)" id="lmKpiOk">-</div>
+  </div>
 </div>
+
+<!-- Semaforo Chart -->
 <div class="chart-container" style="margin-top:20px">
-  <div class="chart-header"><div class="chart-title">📊 Semaforo de Stock</div></div>
-  <div class="chart-wrapper"><canvas id="lmChartSemaforo"></canvas></div>
+  <div class="chart-header">
+    <div class="chart-title">📊 Semaforo de Stock &mdash; Dias de Stock Disponibles</div>
+    <div id="lmFilterUnits" style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-outline lm-unit-btn active" data-unit="ALL">Todos <span class="badge badge-muted" id="lmCountAll">30</span></button>
+      <button class="btn btn-sm btn-outline lm-unit-btn" data-unit="UND">UND <span class="badge badge-muted" id="lmCountUND">-</span></button>
+      <button class="btn btn-sm btn-outline lm-unit-btn" data-unit="KG">KG <span class="badge badge-muted" id="lmCountKG">-</span></button>
+      <button class="btn btn-sm btn-outline lm-unit-btn" data-unit="LT">LT <span class="badge badge-muted" id="lmCountLT">-</span></button>
+    </div>
+  </div>
+  <div class="chart-wrapper" style="height:520px"><canvas id="lmChartSemaforo"></canvas></div>
 </div>
+
+<!-- Full Table -->
 <div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Inventario de Laboratorio</div></div>
+  <div class="card-header">
+    <div class="card-title">📋 Inventario Completo de Laboratorio</div>
+    <div id="lmFilterEstado" style="display:flex;gap:6px;flex-wrap:wrap">
+      <button class="btn btn-sm btn-outline lm-estado-btn active" data-estado="ALL">Todos</button>
+      <button class="btn btn-sm btn-outline lm-estado-btn" data-estado="CRITICO" style="color:var(--danger)">Critico</button>
+      <button class="btn btn-sm btn-outline lm-estado-btn" data-estado="BAJO" style="color:var(--warn)">Bajo</button>
+      <button class="btn btn-sm btn-outline lm-estado-btn" data-estado="MODERADO" style="color:var(--amber)">Moderado</button>
+      <button class="btn btn-sm btn-outline lm-estado-btn" data-estado="OK" style="color:var(--verde)">OK</button>
+    </div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>#</th><th>Producto</th><th>Und</th><th>Stock</th><th>Gasto Mes</th><th>Dias</th><th>Estado</th></tr></thead>
-      <tbody id="lmTabla">
-        <tr><td>1</td><td>Placas Petrifilm Aerobios</td><td>UND</td><td>45</td><td>60</td><td style="color:var(--danger);font-weight:700">23</td><td><span class="badge badge-danger">🚨 Critico</span></td></tr>
-        <tr><td>2</td><td>Placas Petrifilm E.Coli</td><td>UND</td><td>30</td><td>40</td><td style="color:var(--danger);font-weight:700">23</td><td><span class="badge badge-danger">🚨 Critico</span></td></tr>
-        <tr><td>3</td><td>Agua Peptonada</td><td>KG</td><td>2.5</td><td>1.8</td><td style="color:var(--warn);font-weight:700">42</td><td><span class="badge badge-warn">⚠ Bajo</span></td></tr>
-        <tr><td>4</td><td>Alcohol 96</td><td>LT</td><td>15</td><td>8</td><td style="color:var(--verde);font-weight:700">56</td><td><span class="badge badge-verde">✓ OK</span></td></tr>
-        <tr><td>5</td><td>Hisopo Esteril</td><td>UND</td><td>200</td><td>80</td><td style="color:var(--verde);font-weight:700">75</td><td><span class="badge badge-verde">✓ OK</span></td></tr>
-      </tbody>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Producto</th>
+          <th>Unidad</th>
+          <th>Stock</th>
+          <th>Gasto/Mes</th>
+          <th>Dias</th>
+          <th>Total Consumo</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="lmTabla"></tbody>
     </table>
   </div>
 </div>

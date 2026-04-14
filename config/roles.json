@@ -25,9 +25,9 @@
   "calidad": {
     "modules": ["calidad", "almacen"],
     "panels": [
-      "temperaturas", "inspecciones", "consumos", "laboratorio",
+      "temperaturas", "inspecciones", "consumos-calidad", "laboratorio",
       "costos-analisis", "reclamos",
-      "materiales", "stock-general"
+      "materiales", "stock-general", "contenedores"
     ],
     "apps": [],
     "dashboards": [

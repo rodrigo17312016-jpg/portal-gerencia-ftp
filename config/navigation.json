@@ -43,7 +43,7 @@
       "items": [
         { "id": "temperaturas", "label": "Temperaturas", "icon": "\uD83C\uDF21\uFE0F", "module": "calidad/temperaturas" },
         { "id": "inspecciones", "label": "Inspecciones", "icon": "\uD83D\uDD0D", "module": "calidad/inspecciones" },
-        { "id": "consumos-calidad", "label": "Consumos", "icon": "\uD83E\uDDEA", "module": "calidad/consumos" },
+        { "id": "consumos-calidad", "label": "Consumo Calidad", "icon": "\uD83E\uDDEA", "module": "calidad/consumos" },
         { "id": "laboratorio", "label": "Laboratorio", "icon": "\uD83D\uDD2C", "module": "calidad/laboratorio" },
         { "id": "costos-analisis", "label": "Costos Analisis", "icon": "\uD83E\uDDEE", "module": "calidad/costos-analisis" },
         { "id": "reclamos", "label": "Reclamos", "icon": "\u26A0\uFE0F", "module": "calidad/reclamos" }

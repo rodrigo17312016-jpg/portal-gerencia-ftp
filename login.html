@@ -11,213 +11,254 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
-/* ── FULL SCREEN BACKGROUND ── */
+/* ── BACKGROUND - super vivido ── */
 .login-bg{
   position:fixed;inset:0;z-index:0;
   background:url('assets/images/login-bg.jpg') center/cover no-repeat;
-  animation:bgZoom 30s ease-in-out infinite alternate;
-  filter:brightness(1.15) saturate(1.2);
+  animation:bgZoom 25s ease-in-out infinite alternate;
+  filter:brightness(1.2) saturate(1.3) contrast(1.05);
 }
-@keyframes bgZoom{0%{transform:scale(1)}100%{transform:scale(1.08)}}
+@keyframes bgZoom{0%{transform:scale(1)}100%{transform:scale(1.06)}}
 
-/* Light overlay - imagen nitida e iluminada */
+/* Overlay minimo - solo suaviza bordes */
 .login-overlay{
   position:fixed;inset:0;z-index:1;
-  background:
-    linear-gradient(90deg,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0.03) 40%,rgba(0,0,0,0.15) 100%);
+  background:radial-gradient(ellipse at center,rgba(0,0,0,0.02),rgba(0,0,0,0.1));
 }
 
-/* Animated mesh gradient */
-.login-mesh{
+/* ── PARTICLES brillantes ── */
+.particles{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
+.particle{position:absolute;border-radius:50%;animation:floatP ease-in-out infinite}
+.particle.bright{background:rgba(255,255,255,0.25);box-shadow:0 0 6px rgba(255,255,255,0.3)}
+.particle.gold{background:rgba(255,215,0,0.2);box-shadow:0 0 8px rgba(255,215,0,0.3)}
+.particle.green{background:rgba(74,222,128,0.15);box-shadow:0 0 6px rgba(74,222,128,0.3)}
+@keyframes floatP{0%,100%{transform:translateY(0) scale(1);opacity:.2}50%{transform:translateY(-30px) scale(1.3);opacity:.6}}
+
+/* ── LIGHT RAYS from top ── */
+.light-rays{
   position:fixed;inset:0;z-index:2;pointer-events:none;
   background:
-    radial-gradient(ellipse 50% 40% at 20% 80%,rgba(22,163,74,0.06),transparent),
-    radial-gradient(ellipse 40% 50% at 80% 20%,rgba(234,88,12,0.04),transparent);
-  animation:meshMove 12s ease-in-out infinite alternate;
+    linear-gradient(160deg,rgba(255,255,255,0.08) 0%,transparent 40%),
+    linear-gradient(200deg,rgba(255,215,0,0.03) 0%,transparent 35%);
+  animation:raysShift 8s ease-in-out infinite alternate;
 }
-@keyframes meshMove{0%{opacity:.6;transform:scale(1)}100%{opacity:1;transform:scale(1.05)}}
+@keyframes raysShift{0%{opacity:.6}100%{opacity:1}}
 
-/* ── PARTICLES ── */
-.particles{position:fixed;inset:0;z-index:3;pointer-events:none;overflow:hidden}
-.particle{
-  position:absolute;border-radius:50%;
-  background:rgba(255,255,255,0.08);
-  animation:floatP 8s ease-in-out infinite;
-}
-@keyframes floatP{0%,100%{transform:translateY(0) rotate(0deg);opacity:.15}50%{transform:translateY(-25px) rotate(180deg);opacity:.4}}
-
-/* ── LAYOUT ── */
+/* ── LAYOUT centrado ── */
 .login-container{
   position:relative;z-index:10;
-  display:flex;align-items:center;justify-content:flex-end;
-  min-height:100vh;padding:20px 60px 20px 20px;
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;
 }
 
-/* ── GLASS CARD ── */
+/* ── GLASS CARD - 25% mas pequeno ── */
 @keyframes cardEntrance{
-  from{opacity:0;transform:translateY(50px) scale(0.92)}
-  to{opacity:1;transform:translateY(0) scale(1)}
+  0%{opacity:0;transform:translateY(60px) scale(0.85);filter:blur(10px)}
+  100%{opacity:1;transform:translateY(0) scale(1);filter:blur(0)}
 }
 
 .login-card{
-  background:rgba(10,30,18,0.65);
-  backdrop-filter:blur(40px) saturate(1.8);
-  -webkit-backdrop-filter:blur(40px) saturate(1.8);
-  border-radius:28px;
-  padding:48px 44px;
-  width:100%;max-width:440px;
+  background:rgba(8,25,14,0.55);
+  backdrop-filter:blur(30px) saturate(1.6);
+  -webkit-backdrop-filter:blur(30px) saturate(1.6);
+  border-radius:24px;
+  padding:32px 34px;
+  width:100%;max-width:340px;
   text-align:center;
   box-shadow:
-    0 40px 100px rgba(0,0,0,0.5),
-    0 0 0 1px rgba(255,255,255,0.06),
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    inset 0 -1px 0 rgba(0,0,0,0.2);
-  animation:cardEntrance 1s cubic-bezier(0.16,1,0.3,1) both;
+    0 30px 80px rgba(0,0,0,0.4),
+    0 0 0 1px rgba(255,255,255,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.12);
+  animation:cardEntrance 1.2s cubic-bezier(0.16,1,0.3,1) both;
   position:relative;overflow:hidden;
+  transition:transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-/* Shimmer effect on card */
+.login-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 40px 100px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.1),inset 0 1px 0 rgba(255,255,255,0.15),0 0 60px rgba(22,163,74,0.08);
+}
+
+/* Rotating border glow */
 .login-card::before{
+  content:'';position:absolute;inset:-2px;border-radius:26px;z-index:-1;
+  background:conic-gradient(from var(--angle,0deg),transparent 0%,rgba(74,222,128,0.15) 10%,transparent 20%,rgba(212,175,55,0.1) 30%,transparent 40%);
+  animation:borderRotate 6s linear infinite;
+}
+@keyframes borderRotate{to{--angle:360deg}}
+@property --angle{syntax:'<angle>';initial-value:0deg;inherits:false}
+
+/* Inner shimmer */
+.login-card::after{
   content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;
-  background:conic-gradient(from 0deg,transparent 0%,rgba(255,255,255,0.03) 25%,transparent 50%);
-  animation:cardShimmer 8s linear infinite;pointer-events:none;
+  background:conic-gradient(from 0deg,transparent 0%,rgba(255,255,255,0.02) 25%,transparent 50%);
+  animation:cardShimmer 10s linear infinite;pointer-events:none;
 }
 @keyframes cardShimmer{to{transform:rotate(360deg)}}
 
 /* ── LOGO ── */
+@keyframes logoReveal{
+  0%{opacity:0;transform:scale(0.5) rotateY(90deg);filter:brightness(2)}
+  60%{opacity:1;transform:scale(1.1) rotateY(-10deg)}
+  100%{transform:scale(1) rotateY(0)}
+}
 @keyframes logoFloat{
-  0%,100%{transform:translateY(0);filter:drop-shadow(0 6px 20px rgba(212,175,55,0.25))}
-  50%{transform:translateY(-6px);filter:drop-shadow(0 12px 30px rgba(212,175,55,0.4))}
+  0%,100%{transform:translateY(0);filter:drop-shadow(0 4px 15px rgba(212,175,55,0.3))}
+  50%{transform:translateY(-5px);filter:drop-shadow(0 10px 25px rgba(212,175,55,0.5))}
 }
 .login-logo{
-  height:120px;width:auto;margin:0 auto 12px;display:block;
-  animation:logoFloat 4s ease-in-out infinite;
+  height:90px;width:auto;margin:0 auto 8px;display:block;
+  animation:logoReveal 1s cubic-bezier(0.16,1,0.3,1) both, logoFloat 4s ease-in-out 1s infinite;
   position:relative;z-index:1;
 }
 
 /* ── TITLE ── */
 @keyframes goldShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes titleEntrance{0%{opacity:0;transform:translateY(15px);letter-spacing:12px}100%{opacity:1;transform:translateY(0);letter-spacing:5px}}
 
 .login-title{
   font-family:'Playfair Display',serif;
-  font-size:17px;text-transform:uppercase;letter-spacing:6px;
-  font-weight:900;margin-bottom:6px;padding:8px 0;
+  font-size:14px;text-transform:uppercase;letter-spacing:5px;
+  font-weight:900;margin-bottom:4px;padding:6px 0;
   background:linear-gradient(135deg,#d4af37 0%,#fff8dc 15%,#e8e8e8 30%,#fff8dc 50%,#d4af37 65%,#c0c0c0 80%,#d4af37 100%);
   background-size:400% 100%;
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:goldShimmer 4s ease infinite;
+  animation:goldShimmer 4s ease infinite, titleEntrance 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s both;
   position:relative;z-index:1;
 }
 
 .login-subtitle{
-  font-size:11px;color:rgba(255,255,255,0.35);
-  letter-spacing:3px;text-transform:uppercase;
-  margin-bottom:28px;font-weight:600;
+  font-size:9px;color:rgba(255,255,255,0.3);
+  letter-spacing:2.5px;text-transform:uppercase;
+  margin-bottom:20px;font-weight:600;
   position:relative;z-index:1;
+  animation:titleEntrance 1s ease 0.5s both;
 }
 
-/* ── DIVIDER ── */
+/* ── DIVIDER animated ── */
+@keyframes dividerExpand{0%{width:0;opacity:0}100%{width:50px;opacity:1}}
 .login-divider{
-  height:1px;margin:0 auto 28px;width:60px;
-  background:linear-gradient(90deg,transparent,rgba(212,175,55,0.5),transparent);
+  height:1px;margin:0 auto 20px;width:50px;
+  background:linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent);
+  animation:dividerExpand 1s ease 0.7s both;
 }
 
-/* ── FORM ── */
-.login-field{text-align:left;margin-bottom:18px;position:relative;z-index:1}
+/* ── FORM with stagger ── */
+@keyframes fieldSlideIn{0%{opacity:0;transform:translateX(-20px)}100%{opacity:1;transform:translateX(0)}}
+
+.login-field{text-align:left;margin-bottom:14px;position:relative;z-index:1}
+.login-field:nth-child(1){animation:fieldSlideIn 0.6s ease 0.8s both}
+.login-field:nth-child(2){animation:fieldSlideIn 0.6s ease 1s both}
+
 .login-field label{
-  font-size:10px;font-weight:700;color:rgba(255,255,255,0.4);
-  text-transform:uppercase;letter-spacing:1.5px;display:block;margin-bottom:7px;
+  font-size:9px;font-weight:700;color:rgba(255,255,255,0.35);
+  text-transform:uppercase;letter-spacing:1.5px;display:block;margin-bottom:5px;
 }
 .login-field input{
-  width:100%;padding:15px 20px;
-  border:2px solid rgba(255,255,255,0.08);
-  border-radius:16px;
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;
+  width:100%;padding:12px 16px;
+  border:1.5px solid rgba(255,255,255,0.1);
+  border-radius:14px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;
   color:#fff;outline:none;
   transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
-  background:rgba(255,255,255,0.06);
-  backdrop-filter:blur(10px);
+  background:rgba(255,255,255,0.07);
+  backdrop-filter:blur(8px);
 }
 .login-field input:focus{
-  border-color:rgba(74,222,128,0.5);
-  background:rgba(255,255,255,0.1);
-  box-shadow:0 0 0 4px rgba(74,222,128,0.1),0 8px 24px rgba(0,0,0,0.2);
+  border-color:rgba(74,222,128,0.6);
+  background:rgba(255,255,255,0.12);
+  box-shadow:0 0 0 3px rgba(74,222,128,0.12),0 4px 16px rgba(0,0,0,0.2);
+  transform:scale(1.01);
 }
-.login-field input::placeholder{color:rgba(255,255,255,0.25)}
+.login-field input::placeholder{color:rgba(255,255,255,0.2)}
 
-/* ── BUTTON ── */
+/* ── BUTTON with pulse ── */
+@keyframes btnEntrance{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes btnPulse{0%,100%{box-shadow:0 6px 20px rgba(22,163,74,0.3)}50%{box-shadow:0 6px 30px rgba(22,163,74,0.5)}}
+
 .login-btn{
-  width:100%;padding:16px;
+  width:100%;padding:13px;
   background:linear-gradient(135deg,#16a34a 0%,#15803d 50%,#166534 100%);
-  color:#fff;border:none;border-radius:16px;
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;
-  cursor:pointer;margin-top:6px;letter-spacing:0.5px;
+  color:#fff;border:none;border-radius:14px;
+  font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;
+  cursor:pointer;margin-top:4px;letter-spacing:0.5px;
   position:relative;z-index:1;overflow:hidden;
   transition:all 0.3s;
-  box-shadow:0 8px 24px rgba(22,163,74,0.3),inset 0 1px 0 rgba(255,255,255,0.15);
+  animation:btnEntrance 0.6s ease 1.2s both, btnPulse 3s ease 2s infinite;
 }
 .login-btn::after{
   content:'';position:absolute;inset:0;
-  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);
   transform:translateX(-100%);transition:transform 0.6s;
 }
 .login-btn:hover{
-  transform:translateY(-2px);
-  box-shadow:0 12px 36px rgba(22,163,74,0.45),inset 0 1px 0 rgba(255,255,255,0.2);
+  transform:translateY(-2px) scale(1.02);
+  box-shadow:0 10px 30px rgba(22,163,74,0.5),inset 0 1px 0 rgba(255,255,255,0.2);
 }
 .login-btn:hover::after{transform:translateX(100%)}
-.login-btn:active{transform:translateY(0)}
+.login-btn:active{transform:scale(0.98)}
 
 /* ── ERROR & HINT ── */
-.login-error{color:#f87171;font-size:13px;margin-top:10px;min-height:18px;font-weight:600;position:relative;z-index:1}
+.login-error{color:#f87171;font-size:12px;margin-top:8px;min-height:16px;font-weight:600;position:relative;z-index:1}
 .login-hint{
-  font-size:10px;color:rgba(255,255,255,0.2);margin-top:20px;
+  font-size:9px;color:rgba(255,255,255,0.18);margin-top:14px;
   letter-spacing:0.5px;position:relative;z-index:1;
 }
 
-/* ── COMPANY BADGE ── */
+/* ── COMPANY BADGE inside card ── */
 .login-badge{
-  position:fixed;bottom:20px;left:50%;transform:translateX(-50%);z-index:20;
-  display:flex;align-items:center;gap:10px;
-  padding:10px 24px;border-radius:50px;
-  background:rgba(10,15,26,0.6);backdrop-filter:blur(20px);
+  margin-top:16px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  padding:8px 16px;border-radius:50px;
+  background:rgba(255,255,255,0.04);
   border:1px solid rgba(255,255,255,0.06);
+  position:relative;z-index:1;
 }
-.login-badge-dot{width:6px;height:6px;border-radius:50%;background:#22c55e;animation:pulse 2s ease infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.login-badge-text{font-size:10px;color:rgba(255,255,255,0.4);font-weight:600;letter-spacing:1px}
+.login-badge-dot{width:5px;height:5px;border-radius:50%;background:#22c55e;animation:pulse 2s ease infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 4px #22c55e}50%{opacity:.4;box-shadow:0 0 0 transparent}}
+.login-badge-text{font-size:8px;color:rgba(255,255,255,0.3);font-weight:600;letter-spacing:0.8px}
+
+/* ── CLOCK overlay ── */
+.login-clock{
+  position:fixed;bottom:20px;right:30px;z-index:20;
+  font-size:11px;color:rgba(255,255,255,0.25);font-weight:600;
+  letter-spacing:1px;text-shadow:0 1px 3px rgba(0,0,0,0.3);
+}
 
 /* ── RESPONSIVE ── */
-@media(max-width:768px){
-  .login-container{justify-content:center;padding:20px}
-}
 @media(max-width:480px){
-  .login-card{padding:36px 24px;border-radius:22px}
-  .login-logo{height:90px}
-  .login-title{font-size:13px;letter-spacing:4px}
+  .login-card{padding:28px 22px;max-width:300px;border-radius:20px}
+  .login-logo{height:70px}
+  .login-title{font-size:12px;letter-spacing:3px}
+  .login-clock{display:none}
 }
+
+/* ── SHAKE ── */
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px) rotate(-1deg)}30%{transform:translateX(8px) rotate(1deg)}45%{transform:translateX(-5px)}60%{transform:translateX(5px)}75%{transform:translateX(-2px)}90%{transform:translateX(2px)}}
 </style>
 </head>
 <body>
 
-<!-- Background photo -->
+<!-- Background -->
 <div class="login-bg"></div>
 <div class="login-overlay"></div>
-<div class="login-mesh"></div>
+<div class="light-rays"></div>
 
-<!-- Floating particles -->
+<!-- Particles - mix of bright, gold, green -->
 <div class="particles">
-  <div class="particle" style="width:4px;height:4px;top:15%;left:10%;animation-delay:0s;animation-duration:7s"></div>
-  <div class="particle" style="width:6px;height:6px;top:25%;left:80%;animation-delay:1s;animation-duration:9s"></div>
-  <div class="particle" style="width:3px;height:3px;top:60%;left:20%;animation-delay:2s;animation-duration:6s"></div>
-  <div class="particle" style="width:5px;height:5px;top:70%;left:70%;animation-delay:0.5s;animation-duration:8s"></div>
-  <div class="particle" style="width:4px;height:4px;top:40%;left:50%;animation-delay:3s;animation-duration:10s"></div>
-  <div class="particle" style="width:3px;height:3px;top:85%;left:35%;animation-delay:1.5s;animation-duration:7s"></div>
-  <div class="particle" style="width:5px;height:5px;top:10%;left:60%;animation-delay:2.5s;animation-duration:9s"></div>
-  <div class="particle" style="width:4px;height:4px;top:50%;left:90%;animation-delay:4s;animation-duration:8s"></div>
-  <div class="particle" style="width:3px;height:3px;top:30%;left:40%;animation-delay:3.5s;animation-duration:11s"></div>
-  <div class="particle" style="width:2px;height:2px;top:75%;left:55%;animation-delay:2s;animation-duration:6.5s"></div>
+  <div class="particle bright" style="width:3px;height:3px;top:12%;left:8%;animation-duration:7s"></div>
+  <div class="particle gold" style="width:4px;height:4px;top:22%;left:75%;animation-delay:1s;animation-duration:8s"></div>
+  <div class="particle green" style="width:3px;height:3px;top:55%;left:15%;animation-delay:2s;animation-duration:6s"></div>
+  <div class="particle bright" style="width:5px;height:5px;top:65%;left:65%;animation-delay:.5s;animation-duration:9s"></div>
+  <div class="particle gold" style="width:3px;height:3px;top:35%;left:45%;animation-delay:3s;animation-duration:10s"></div>
+  <div class="particle green" style="width:4px;height:4px;top:80%;left:30%;animation-delay:1.5s;animation-duration:7s"></div>
+  <div class="particle bright" style="width:2px;height:2px;top:8%;left:55%;animation-delay:2.5s;animation-duration:8s"></div>
+  <div class="particle gold" style="width:3px;height:3px;top:45%;left:85%;animation-delay:4s;animation-duration:9s"></div>
+  <div class="particle green" style="width:4px;height:4px;top:90%;left:50%;animation-delay:1s;animation-duration:6s"></div>
+  <div class="particle bright" style="width:2px;height:2px;top:70%;left:10%;animation-delay:3.5s;animation-duration:11s"></div>
+  <div class="particle gold" style="width:3px;height:3px;top:15%;left:35%;animation-delay:2s;animation-duration:7s"></div>
+  <div class="particle green" style="width:2px;height:2px;top:50%;left:92%;animation-delay:0s;animation-duration:8s"></div>
 </div>
 
 <!-- Login Card -->
@@ -239,15 +280,17 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
     <button class="login-btn" id="loginBtn">Ingresar al Portal</button>
     <div class="login-error" id="loginError"></div>
-    <div class="login-hint">Sistema de gestion integral de operaciones</div>
+
+    <!-- Badge INSIDE card -->
+    <div class="login-badge">
+      <div class="login-badge-dot"></div>
+      <span class="login-badge-text">FRUTOS TROPICALES PERU EXPORT S.A.C. — SISTEMA SEGURO</span>
+    </div>
   </div>
 </div>
 
-<!-- Company Badge -->
-<div class="login-badge">
-  <div class="login-badge-dot"></div>
-  <span class="login-badge-text">FRUTOS TROPICALES PERU EXPORT S.A.C. — SISTEMA SEGURO</span>
-</div>
+<!-- Clock -->
+<div class="login-clock" id="loginClock"></div>
 
 <script type="module">
 import { doLogin, getSession } from './assets/js/core/auth.js';
@@ -262,28 +305,48 @@ const errorEl = document.getElementById('loginError');
 
 function handleLogin() {
   errorEl.textContent = '';
-  const result = doLogin(userInput.value, passInput.value);
-  if (result.success) {
-    document.querySelector('.login-card').style.cssText = 'opacity:0;transform:translateY(-30px) scale(0.95);transition:all 0.5s ease';
-    document.querySelector('.login-bg').style.cssText = 'transform:scale(1.15);filter:blur(10px);transition:all 0.8s ease';
-    setTimeout(() => { window.location.href = 'portal.html'; }, 400);
-  } else {
-    errorEl.textContent = result.error;
-    passInput.value = '';
-    passInput.focus();
-    const card = document.querySelector('.login-card');
-    card.style.animation = 'none';
-    card.offsetHeight;
-    card.style.animation = 'shake 0.5s ease';
-  }
+  loginBtn.textContent = 'Verificando...';
+  loginBtn.style.pointerEvents = 'none';
+
+  setTimeout(() => {
+    const result = doLogin(userInput.value, passInput.value);
+    if (result.success) {
+      loginBtn.textContent = '✓ Bienvenido';
+      loginBtn.style.background = '#059669';
+      document.querySelector('.login-card').style.cssText = 'opacity:0;transform:scale(0.9) translateY(-30px);transition:all 0.6s ease;filter:blur(5px)';
+      document.querySelector('.login-bg').style.cssText = 'transform:scale(1.15);filter:brightness(1.4) saturate(1.5) blur(8px);transition:all 1s ease';
+      document.querySelectorAll('.particle').forEach(p => p.style.cssText += ';opacity:0;transition:opacity 0.5s');
+      setTimeout(() => { window.location.href = 'portal.html'; }, 600);
+    } else {
+      loginBtn.textContent = 'Ingresar al Portal';
+      loginBtn.style.pointerEvents = '';
+      errorEl.textContent = result.error;
+      passInput.value = '';
+      passInput.focus();
+      const card = document.querySelector('.login-card');
+      card.style.animation = 'none';
+      card.offsetHeight;
+      card.style.animation = 'shake 0.5s ease';
+    }
+  }, 400);
 }
 
 loginBtn.addEventListener('click', handleLogin);
 passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
 userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
 userInput.focus();
+
+// Live clock
+function updateClock() {
+  const el = document.getElementById('loginClock');
+  if (el) {
+    const now = new Date();
+    el.textContent = now.toLocaleString('es-PE', { timeZone: 'America/Lima', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+}
+updateClock();
+setInterval(updateClock, 1000);
 </script>
-<style>@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}</style>
 
 </body>
 </html>

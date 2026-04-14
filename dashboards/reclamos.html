@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Control de Reclamos — Calidad | Frutos Tropicales Peru Export S.A.C.</title>
+<link rel="icon" href="LOGO.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+/* =========================================================
+   VARIABLES & RESET
+   ========================================================= */
+:root {
+  --bg-primary: #0f1117;
+  --bg-secondary: #161b27;
+  --bg-card: rgba(255,255,255,0.04);
+  --bg-card-hover: rgba(255,255,255,0.07);
+  --verde: #22c55e;
+  --verde-dark: #16a34a;
+  --verde-glow: rgba(34,197,94,0.18);
+  --gold: #d4af37;
+  --gold-light: #f5e6a3;
+  --gold-glow: rgba(212,175,55,0.18);
+  --rojo: #ef4444;
+  --rojo-glow: rgba(239,68,68,0.18);
+  --naranja: #f97316;
+  --azul: #3b82f6;
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border: rgba(255,255,255,0.08);
+  --border-hover: rgba(255,255,255,0.15);
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.1);
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.5);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+[data-theme="light"] {
+  --bg-primary: #f4f7fa;
+  --bg-secondary: #e8edf5;
+  --bg-card: rgba(255,255,255,0.85);
+  --bg-card-hover: rgba(255,255,255,0.95);
+  --verde-glow: rgba(34,197,94,0.12);
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --border: rgba(0,0,0,0.08);
+  --border-hover: rgba(0,0,0,0.15);
+  --glass: rgba(255,255,255,0.7);
+  --glass-border: rgba(0,0,0,0.1);
+  --shadow: 0 8px 32px rgba(0,0,0,0.1);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.15);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Plus Jakarta Sans',Inter,sans-serif;
+  background:var(--bg-primary);
+  color:var(--text-primary);
+  min-height:100vh;
+  overflow-x:hidden;
+  transition:background 0.4s, color 0.4s;
+}
+
+/* =========================================================
+   ANIMATIONS
+   ========================================================= */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes float{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 20px var(--verde-glow)}50%{box-shadow:0 0 40px var(--verde-glow), 0 0 60px rgba(34,197,94,0.1)}}
+@keyframes shimmerBg{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes sigShimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes sigBorderGlow{0%,100%{box-shadow:0 0 16px rgba(212,175,55,0.12)}50%{box-shadow:0 0 28px rgba(212,175,55,0.25)}}
+@keyframes rotate-border{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes countUp{from{opacity:0;transform:scale(0.8)}to{opacity:1;transform:scale(1)}}
+@keyframes alertPulse{0%,100%{border-color:rgba(239,68,68,0.4)}50%{border-color:rgba(239,68,68,0.9)}}
+@keyframes headerGlow{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes slideIn{from{opacity:0;transform:translateX(-20px)}to{opacity:1;transform:translateX(0)}}
+
+/* =========================================================
+   SCROLLBAR
+   ========================================================= */
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--verde-dark);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--verde)}
+
+/* =========================================================
+   BACKGROUND MESH
+   ========================================================= */
+.bg-mesh{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 10%, rgba(34,197,94,0.06) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 20%, rgba(212,175,55,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 50% 90%, rgba(34,197,94,0.04) 0%, transparent 60%);
+}
+[data-theme="light"] .bg-mesh{
+  background:
+    radial-gradient(ellipse 60% 40% at 10% 10%, rgba(34,197,94,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 90% 20%, rgba(212,175,55,0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 50% 90%, rgba(34,197,94,0.05) 0%, transparent 60%);
+}
+
+/* =========================================================
+   LAYOUT WRAPPER
+   ========================================================= */
+.page-wrapper{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:0 24px 60px}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+.header{
+  position:sticky;top:0;z-index:100;
+  padding:14px 32px;
+  background:rgba(15,17,23,0.85);
+  backdrop-filter:blur(24px);
+  -webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  margin-bottom:32px;
+  animation:fadeInUp 0.6s ease both;
+}
+[data-theme="light"] .header{background:rgba(244,247,250,0.9)}
+
+.header::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--verde),var(--gold),var(--verde),transparent);
+  opacity:0.5;
+}
+
+.header-left{display:flex;align-items:center;gap:16px}
+.logo-wrap{
+  position:relative;
+  animation:float 4s ease-in-out infinite;
+  flex-shrink:0;
+}
+.logo-wrap img{
+  width:52px;height:52px;
+  border-radius:12px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 12px rgba(34,197,94,0.5));
+}
+.logo-fallback{
+  width:52px;height:52px;
+  border-radius:12px;
+  background:linear-gradient(135deg,#16a34a,#22c55e);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:#fff;
+  box-shadow:0 0 20px rgba(34,197,94,0.4);
+}
+.header-titles{}
+.header-brand{
+  font-size:13px;font-weight:600;
+  letter-spacing:2px;text-transform:uppercase;
+  color:var(--verde);opacity:0.85;
+}
+.header-title{
+  font-size:19px;font-weight:800;line-height:1.2;
+  color:var(--text-primary);
+}
+.header-subtitle{
+  font-size:11px;color:var(--text-muted);
+  letter-spacing:1px;text-transform:uppercase;margin-top:2px;
+}
+
+.header-right{display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+
+/* FIRMA PREMIUM */
+.signature-block{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 22px; border-radius:20px;
+  background:linear-gradient(145deg,rgba(245,240,225,.85),rgba(255,250,240,.9),rgba(245,240,225,.85));
+  border:1px solid rgba(212,175,55,.3);
+  position:relative;overflow:hidden;backdrop-filter:blur(16px);
+  animation:sigBorderGlow 3s ease-in-out infinite;
+  box-shadow:0 0 20px rgba(212,175,55,.08),inset 0 1px 0 rgba(255,255,255,.06);
+}
+.signature-block::before{content:'';position:absolute;top:0;left:-100%;width:50%;height:100%;background:linear-gradient(90deg,transparent,rgba(212,175,55,.08),rgba(255,255,255,.05),transparent);animation:firmaShine 5s ease-in-out infinite;pointer-events:none}
+@keyframes firmaShine{0%{left:-100%}50%,100%{left:200%}}
+.signature-block>*{position:relative;z-index:1}
+[data-theme="dark"] .signature-block{background:linear-gradient(145deg,rgba(10,18,32,.85),rgba(20,30,48,.9),rgba(15,25,40,.85))}
+.sig-label{
+  font-size:7px;font-weight:800;letter-spacing:2px;text-transform:uppercase;
+  color:rgba(139,105,20,.8);line-height:1.2;
+}
+[data-theme="dark"] .sig-label{color:rgba(212,175,55,.7)}
+.sig-name{
+  font-size:13px;font-weight:900;
+  background:linear-gradient(135deg,#8B6914 0%,#b8941f 25%,#6b5b3a 50%,#b8941f 75%,#8B6914 100%);
+  background-size:300%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  animation:sigShimmer 4s ease infinite;line-height:1.3;white-space:nowrap;
+}
+[data-theme="dark"] .sig-name{background:linear-gradient(135deg,#d4af37 0%,#f5e6a3 25%,#c0c0c0 50%,#f5e6a3 75%,#d4af37 100%);background-size:300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sig-role{font-size:9px;font-weight:700;color:#15803d;letter-spacing:0.5px}
+[data-theme="dark"] .sig-role{color:#22c55e}
+
+.btn-back{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 18px;border-radius:10px;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  color:var(--text-secondary);
+  font-size:13px;font-weight:600;
+  cursor:pointer;text-decoration:none;
+  transition:var(--transition);
+  backdrop-filter:blur(10px);
+  white-space:nowrap;
+}
+.btn-back:hover{background:var(--verde-glow);border-color:var(--verde);color:var(--verde)}
+
+.theme-toggle{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:var(--transition);
+  font-size:18px;flex-shrink:0;
+}
+.theme-toggle:hover{background:var(--verde-glow);border-color:var(--verde);transform:rotate(20deg)}
+
+/* =========================================================
+   SECTION TITLES
+   ========================================================= */
+.section-title{
+  font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
+  color:var(--verde);margin-bottom:16px;
+  display:flex;align-items:center;gap:8px;
+}
+.section-title::before{
+  content:'';display:block;width:3px;height:16px;
+  background:linear-gradient(180deg,var(--verde),var(--gold));
+  border-radius:2px;
+}
+
+/* =========================================================
+   KPI CARDS
+   ========================================================= */
+.kpi-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:16px;
+  margin-bottom:28px;
+}
+@media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+
+.kpi-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px 20px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  transition:var(--transition);
+  cursor:default;
+  animation:fadeInUp 0.6s ease both;
+  position:relative;overflow:hidden;
+}
+.kpi-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,var(--accent-color,rgba(34,197,94,0.05)) 0%, transparent 60%);
+  pointer-events:none;
+}
+.kpi-card:hover{transform:translateY(-3px);border-color:var(--border-hover);box-shadow:var(--shadow)}
+.kpi-card:nth-child(1){--accent-color:rgba(34,197,94,0.08); animation-delay:0.05s}
+.kpi-card:nth-child(2){--accent-color:rgba(239,68,68,0.08); animation-delay:0.1s}
+.kpi-card:nth-child(3){--accent-color:rgba(34,197,94,0.08); animation-delay:0.15s}
+.kpi-card:nth-child(4){--accent-color:rgba(249,115,22,0.08); animation-delay:0.2s}
+.kpi-card:nth-child(5){--accent-color:rgba(212,175,55,0.08); animation-delay:0.25s}
+
+.kpi-icon{
+  width:40px;height:40px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;margin-bottom:12px;
+}
+.kpi-icon.green{background:rgba(34,197,94,0.15);box-shadow:0 0 16px rgba(34,197,94,0.2)}
+.kpi-icon.red{background:rgba(239,68,68,0.15);box-shadow:0 0 16px rgba(239,68,68,0.2)}
+.kpi-icon.orange{background:rgba(249,115,22,0.15);box-shadow:0 0 16px rgba(249,115,22,0.2)}
+.kpi-icon.gold{background:rgba(212,175,55,0.15);box-shadow:0 0 16px rgba(212,175,55,0.2)}
+
+.kpi-label{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.kpi-value{font-size:36px;font-weight:800;line-height:1;margin-bottom:6px;font-variant-numeric:tabular-nums}
+.kpi-value.green{color:var(--verde)}
+.kpi-value.red{color:var(--rojo)}
+.kpi-value.orange{color:var(--naranja)}
+.kpi-value.gold{color:var(--gold)}
+.kpi-value.white{color:var(--text-primary)}
+.kpi-desc{font-size:11px;color:var(--text-muted);line-height:1.4}
+.kpi-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:99px;font-size:10px;font-weight:700;
+  margin-top:6px;
+}
+.kpi-badge.warn{background:rgba(239,68,68,0.15);color:var(--rojo);border:1px solid rgba(239,68,68,0.3)}
+.kpi-badge.good{background:rgba(34,197,94,0.15);color:var(--verde);border:1px solid rgba(34,197,94,0.3)}
+
+/* =========================================================
+   ALERTA PRINCIPAL
+   ========================================================= */
+.alert-card{
+  background:rgba(239,68,68,0.05);
+  border:1px solid rgba(239,68,68,0.3);
+  border-radius:var(--radius);
+  padding:24px 28px;
+  margin-bottom:28px;
+  display:flex;align-items:flex-start;gap:20px;
+  animation:alertPulse 3s ease-in-out infinite, fadeInUp 0.7s ease both 0.3s;
+  backdrop-filter:blur(20px);
+  position:relative;overflow:hidden;
+}
+.alert-card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--rojo),transparent);
+  animation:shimmerBg 3s linear infinite;
+  background-size:200%;
+}
+.alert-icon{
+  font-size:32px;flex-shrink:0;
+  animation:float 2s ease-in-out infinite;
+}
+.alert-content{}
+.alert-title{
+  font-size:16px;font-weight:800;color:var(--rojo);margin-bottom:6px;
+  display:flex;align-items:center;gap:8px;
+}
+.alert-title .badge-count{
+  background:var(--rojo);color:#fff;
+  padding:2px 10px;border-radius:99px;font-size:13px;
+}
+.alert-desc{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:10px}
+.alert-actions{display:flex;flex-wrap:wrap;gap:8px}
+.alert-action-tag{
+  padding:4px 12px;border-radius:99px;font-size:11px;font-weight:600;
+  background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);
+  color:var(--rojo);
+}
+
+/* =========================================================
+   FILTERS PANEL
+   ========================================================= */
+.filters-panel{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px 24px;
+  margin-bottom:28px;
+  backdrop-filter:blur(20px);
+  animation:fadeInUp 0.6s ease both 0.2s;
+}
+.filters-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+  gap:12px;
+  align-items:end;
+}
+.filter-group{display:flex;flex-direction:column;gap:6px}
+.filter-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
+.filter-select,.filter-input{
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:var(--text-primary);
+  padding:8px 12px;
+  font-size:12px;font-family:inherit;
+  transition:var(--transition);
+  appearance:none;
+  -webkit-appearance:none;
+  cursor:pointer;
+}
+[data-theme="light"] .filter-select,[data-theme="light"] .filter-input{background:rgba(0,0,0,0.04)}
+.filter-select:focus,.filter-input:focus{
+  outline:none;border-color:var(--verde);
+  box-shadow:0 0 0 3px rgba(34,197,94,0.12);
+}
+.filter-select:hover,.filter-input:hover{border-color:var(--border-hover)}
+.filter-input::placeholder{color:var(--text-muted)}
+.btn-clear{
+  padding:8px 18px;border-radius:8px;
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.25);
+  color:var(--rojo);
+  font-size:12px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:var(--transition);
+  white-space:nowrap;
+}
+.btn-clear:hover{background:rgba(239,68,68,0.2);border-color:var(--rojo)}
+
+/* Pills row */
+.filter-pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.filter-pill{
+  padding:5px 14px;border-radius:99px;
+  border:1px solid var(--border);
+  background:var(--glass);
+  font-size:11px;font-weight:600;
+  color:var(--text-secondary);
+  cursor:pointer;transition:var(--transition);
+}
+.filter-pill:hover{border-color:var(--verde);color:var(--verde)}
+.filter-pill.active{
+  background:rgba(34,197,94,0.12);
+  border-color:var(--verde);color:var(--verde);
+}
+
+/* =========================================================
+   CHARTS GRID
+   ========================================================= */
+.charts-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  margin-bottom:28px;
+}
+@media(max-width:900px){.charts-grid{grid-template-columns:1fr}}
+
+.chart-card{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:24px;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  animation:fadeInUp 0.6s ease both 0.3s;
+  transition:var(--transition);
+}
+.chart-card:hover{border-color:var(--border-hover)}
+.chart-card.full-width{grid-column:1/-1}
+.chart-title{
+  font-size:13px;font-weight:700;color:var(--text-primary);
+  margin-bottom:4px;
+}
+.chart-subtitle{font-size:11px;color:var(--text-muted);margin-bottom:20px}
+.chart-wrap{position:relative;height:280px}
+.chart-wrap.tall{height:340px}
+
+/* =========================================================
+   TABLE SECTION
+   ========================================================= */
+.table-section{
+  background:var(--bg-card);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  overflow:hidden;
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  animation:fadeInUp 0.6s ease both 0.4s;
+  margin-bottom:28px;
+}
+.table-header{
+  padding:20px 24px 16px;
+  border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+}
+.table-info{font-size:12px;color:var(--text-muted)}
+.table-info span{color:var(--verde);font-weight:700}
+.btn-export{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 16px;border-radius:8px;
+  background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.25);
+  color:var(--verde);font-size:12px;font-weight:600;font-family:inherit;
+  cursor:pointer;transition:var(--transition);
+}
+.btn-export:hover{background:rgba(34,197,94,0.2);border-color:var(--verde)}
+
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+thead tr{border-bottom:1px solid var(--border)}
+thead th{
+  padding:12px 14px;
+  text-align:left;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;
+  color:var(--text-muted);
+  cursor:pointer;user-select:none;
+  white-space:nowrap;
+  transition:var(--transition);
+}
+thead th:hover{color:var(--verde)}
+thead th .sort-icon{margin-left:4px;opacity:0.5;font-size:10px}
+thead th.sorted .sort-icon{opacity:1;color:var(--verde)}
+
+tbody tr{
+  border-bottom:1px solid rgba(255,255,255,0.04);
+  transition:var(--transition);
+  cursor:pointer;
+}
+[data-theme="light"] tbody tr{border-bottom-color:rgba(0,0,0,0.04)}
+tbody tr:hover{background:var(--bg-card-hover)}
+tbody tr.expanded{background:rgba(34,197,94,0.04)}
+tbody td{padding:11px 14px;color:var(--text-secondary);vertical-align:middle}
+tbody td.col-id{color:var(--text-muted);font-weight:600}
+tbody td.col-fecha{white-space:nowrap;font-variant-numeric:tabular-nums}
+tbody td.col-cultivo{font-weight:600;color:var(--text-primary)}
+tbody td.col-motivo{max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* DETAIL ROW */
+.detail-row{display:none}
+.detail-row.open{display:table-row}
+.detail-row td{
+  padding:0 14px 16px 44px;
+  background:rgba(34,197,94,0.03);
+  border-bottom:1px solid var(--border);
+}
+.detail-content{
+  background:rgba(34,197,94,0.06);
+  border:1px solid rgba(34,197,94,0.15);
+  border-radius:8px;
+  padding:12px 16px;
+  font-size:12px;color:var(--text-secondary);
+  line-height:1.6;
+  animation:slideIn 0.25s ease;
+}
+.detail-content strong{color:var(--verde)}
+
+/* STATUS BADGES */
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:4px 10px;border-radius:99px;
+  font-size:10px;font-weight:700;letter-spacing:0.5px;
+  white-space:nowrap;
+}
+.badge.procede{
+  background:rgba(239,68,68,0.12);
+  border:1px solid rgba(239,68,68,0.3);
+  color:var(--rojo);
+}
+.badge.no-procede{
+  background:rgba(34,197,94,0.12);
+  border:1px solid rgba(34,197,94,0.3);
+  color:var(--verde);
+}
+.badge::before{content:'●';font-size:6px}
+
+/* AREA TAG */
+.area-tag{
+  display:inline-block;padding:3px 8px;
+  border-radius:6px;font-size:10px;font-weight:600;
+  background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.2);
+  color:#60a5fa;
+}
+
+/* =========================================================
+   FOOTER STATS
+   ========================================================= */
+.footer-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:16px;margin-bottom:28px;
+}
+.stat-mini{
+  background:var(--bg-card);border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:16px 18px;
+  backdrop-filter:blur(20px);
+  animation:fadeInUp 0.6s ease both 0.5s;
+}
+.stat-mini-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px}
+.stat-mini-value{font-size:22px;font-weight:800;color:var(--text-primary);margin-bottom:4px}
+.stat-mini-sub{font-size:11px;color:var(--text-muted)}
+
+/* =========================================================
+   PAGE FOOTER
+   ========================================================= */
+.page-footer{
+  text-align:center;padding:20px;
+  font-size:11px;color:var(--text-muted);
+  border-top:1px solid var(--border);margin-top:20px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media(max-width:768px){
+  .header{padding:12px 16px;flex-wrap:wrap}
+  .page-wrapper{padding:0 12px 40px}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .charts-grid{grid-template-columns:1fr}
+  .alert-card{flex-direction:column;gap:12px}
+  .signature-block{display:none}
+}
+
+/* ANIMATE IN */
+.animate-in{animation:fadeInUp 0.6s ease both}
+</style>
+</head>
+<body>
+
+<div class="bg-mesh"></div>
+
+<!-- =========================================================
+     HEADER
+     ========================================================= -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo-wrap">
+      <img src="LOGO.png" alt="Frutos Tropicales" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
+      <div class="logo-fallback" style="display:none">FT</div>
+    </div>
+    <div class="header-titles">
+      <div class="header-brand">Frutos Tropicales Peru Export S.A.C.</div>
+      <div class="header-title">Control de Reclamos — Calidad</div>
+      <div class="header-subtitle">Dashboard de Gestión &amp; Seguimiento · Temporadas 2023–2026</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="signature-block">
+      <div class="sig-label">Desarrollado por:</div>
+      <div class="sig-name">Rodrigo Garcia</div>
+      <div class="sig-role">Systems Analyst &amp; Developer-QA</div>
+    </div>
+    <a href="../portal.html" class="btn-back">
+      <span>←</span> Regresar al Portal
+    </a>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Alternar tema" aria-label="Alternar modo claro/oscuro">🌙</button>
+  </div>
+</header>
+
+<!-- =========================================================
+     PAGE CONTENT
+     ========================================================= -->
+<div class="page-wrapper">
+
+  <!-- KPIs -->
+  <div class="section-title">Indicadores Clave</div>
+  <div class="kpi-grid" id="kpiGrid">
+    <div class="kpi-card">
+      <div class="kpi-icon green">📋</div>
+      <div class="kpi-label">Total Reclamos</div>
+      <div class="kpi-value white" id="kpiTotal">26</div>
+      <div class="kpi-desc">Registros totales analizados</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon red">⚠️</div>
+      <div class="kpi-label">Proceden</div>
+      <div class="kpi-value red" id="kpiProcede">19</div>
+      <div class="kpi-desc">Reclamos válidos confirmados</div>
+      <span class="kpi-badge warn">▲ Requiere acción</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon green">✅</div>
+      <div class="kpi-label">No Proceden</div>
+      <div class="kpi-value green" id="kpiNoProcede">7</div>
+      <div class="kpi-desc">Reclamos rechazados / sin evidencia</div>
+      <span class="kpi-badge good">✓ Conformes</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon orange">🏭</div>
+      <div class="kpi-label">Reclamos por Planta</div>
+      <div style="display:flex;flex-direction:column;gap:8px;margin:8px 0;">
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <span style="font-size:12px;font-weight:700;color:var(--text-sec,#94a3b8)">PRC</span>
+            <span style="font-size:13px;font-weight:800;color:#f97316;" id="kpiPRC">20 · 76.9%</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:20px;height:8px;overflow:hidden;">
+            <div id="barPRC" style="height:100%;background:linear-gradient(90deg,#f97316,#fb923c);border-radius:20px;width:76.9%;transition:width 0.6s ease;"></div>
+          </div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;">
+            <span style="font-size:12px;font-weight:700;color:var(--text-sec,#94a3b8)">AGROEMPAQUES</span>
+            <span style="font-size:13px;font-weight:800;color:#8b5cf6;" id="kpiAGRO">6 · 23.1%</span>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:20px;height:8px;overflow:hidden;">
+            <div id="barAGRO" style="height:100%;background:linear-gradient(90deg,#8b5cf6,#a78bfa);border-radius:20px;width:23.1%;transition:width 0.6s ease;"></div>
+          </div>
+        </div>
+      </div>
+      <span class="kpi-badge warn">⚡ Mayor incidencia: PRC</span>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-icon gold">🏆</div>
+      <div class="kpi-label">Motivo Frecuente</div>
+      <div class="kpi-value gold" style="font-size:22px;line-height:1.2" id="kpiMotivoTop">Plástico Blanco</div>
+      <div class="kpi-desc"><span id="kpiMotivoCnt">12</span> de 26 casos · 46% del total</div>
+    </div>
+  </div>
+
+  <!-- ALERTA PRINCIPAL -->
+  <div class="alert-card">
+    <div class="alert-icon">🚨</div>
+    <div class="alert-content">
+      <div class="alert-title">
+        Alerta Principal — Material Extraño: Plástico Blanco
+        <span class="badge-count">12 / 26 reclamos</span>
+      </div>
+      <div class="alert-desc">
+        El <strong>46.2%</strong> de todos los reclamos de calidad corresponden a presencia de <strong>material extraño tipo plástico blanco</strong>, proveniente principalmente de bandejas de drenado defectuosas en la línea de congelado. Este motivo es el <strong>principal riesgo de calidad</strong> e impacta a múltiples clientes internacionales (Legumex, HG Foods, Mazzoni, Asiago Food, entre otros). Se ha identificado que el origen es el fragmento de bandejas deterioradas en proceso.
+      </div>
+      <div class="alert-actions">
+        <span class="alert-action-tag">✓ Reemplazo de bandejas defectuosas</span>
+        <span class="alert-action-tag">✓ Compra de nuevas bandejas</span>
+        <span class="alert-action-tag">✓ Implementación faja azul de selección</span>
+        <span class="alert-action-tag">✓ Capacitación a personal</span>
+        <span class="alert-action-tag">✓ Procedimientos de control reforzados</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- FILTROS -->
+  <div class="filters-panel">
+    <div class="section-title" style="margin-bottom:14px">Filtros Interactivos</div>
+    <div class="filters-grid">
+      <div class="filter-group">
+        <label class="filter-label">Campaña</label>
+        <select class="filter-select" id="fCampana" onchange="applyFilters()">
+          <option value="">Todas</option>
+          <option value="2023-2024">2023-2024</option>
+          <option value="2024-2025">2024-2025</option>
+          <option value="2025-2026">2025-2026</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Cultivo</label>
+        <select class="filter-select" id="fCultivo" onchange="applyFilters()">
+          <option value="">Todos</option>
+          <option value="Arándano">Arándano</option>
+          <option value="Mango Kent">Mango Kent</option>
+          <option value="Fresa">Fresa</option>
+          <option value="Granada">Granada</option>
+          <option value="Palta">Palta</option>
+          <option value="Mango Edward">Mango Edward</option>
+          <option value="Mango">Mango</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Cliente</label>
+        <select class="filter-select" id="fCliente" onchange="applyFilters()">
+          <option value="">Todos</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Área</label>
+        <select class="filter-select" id="fArea" onchange="applyFilters()">
+          <option value="">Todas</option>
+          <option value="Empaque">Empaque</option>
+          <option value="Acondicionado">Acondicionado</option>
+          <option value="Despacho">Despacho</option>
+          <option value="Abastecimiento">Abastecimiento</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Estatus</label>
+        <select class="filter-select" id="fEstatus" onchange="applyFilters()">
+          <option value="">Todos</option>
+          <option value="PROCEDE">PROCEDE</option>
+          <option value="NO PROCEDE">NO PROCEDE</option>
+        </select>
+      </div>
+      <div class="filter-group">
+        <label class="filter-label">Buscar</label>
+        <input type="text" class="filter-input" id="fSearch" placeholder="Texto libre..." oninput="applyFilters()"/>
+      </div>
+      <div class="filter-group" style="justify-content:flex-end">
+        <label class="filter-label">&nbsp;</label>
+        <button class="btn-clear" onclick="clearFilters()">✕ Limpiar filtros</button>
+      </div>
+    </div>
+    <div class="filter-pills" id="pillsRow">
+      <span class="filter-pill active" data-filter="all" onclick="setPill(this,'')">Todos los cultivos</span>
+      <span class="filter-pill" data-filter="Arándano" onclick="setPill(this,'Arándano')">🫐 Arándano</span>
+      <span class="filter-pill" data-filter="Mango Kent" onclick="setPill(this,'Mango Kent')">🥭 Mango Kent</span>
+      <span class="filter-pill" data-filter="Fresa" onclick="setPill(this,'Fresa')">🍓 Fresa</span>
+      <span class="filter-pill" data-filter="Granada" onclick="setPill(this,'Granada')">🍎 Granada</span>
+      <span class="filter-pill" data-filter="Palta" onclick="setPill(this,'Palta')">🥑 Palta</span>
+      <span class="filter-pill" data-filter="Mango Edward" onclick="setPill(this,'Mango Edward')">🥭 Mango Edward</span>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-title">Distribución por Motivo de Reclamo</div>
+      <div class="chart-subtitle">Total de reclamos agrupados por causa raíz</div>
+      <div class="chart-wrap"><canvas id="chartMotivo"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Top Clientes por Reclamos</div>
+      <div class="chart-subtitle">Desglose PROCEDE vs NO PROCEDE por cliente</div>
+      <div class="chart-wrap"><canvas id="chartClientes"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Reclamos por Cultivo</div>
+      <div class="chart-subtitle">Número de reclamos según producto procesado</div>
+      <div class="chart-wrap"><canvas id="chartCultivo"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Tendencia Mensual de Reclamos</div>
+      <div class="chart-subtitle">Evolución Dic 2024 — Mar 2026</div>
+      <div class="chart-wrap"><canvas id="chartTendencia"></canvas></div>
+    </div>
+  </div>
+
+  <!-- TABLA DETALLE -->
+  <div class="table-section">
+    <div class="table-header">
+      <div>
+        <div class="section-title" style="margin-bottom:4px">Registro Detallado de Reclamos</div>
+        <div class="table-info">Mostrando <span id="countShown">26</span> de <span id="countTotal">26</span> reclamos · Haz clic en una fila para expandir el detalle</div>
+      </div>
+      <button class="btn-export" onclick="exportCSV()">⬇ Exportar CSV</button>
+    </div>
+    <div class="table-wrap">
+      <table id="reclamosTable">
+        <thead>
+          <tr>
+            <th onclick="sortTable('id')">#<span class="sort-icon" id="sort_id">↕</span></th>
+            <th onclick="sortTable('fecha')">Fecha<span class="sort-icon" id="sort_fecha">↕</span></th>
+            <th onclick="sortTable('campana')">Campaña<span class="sort-icon" id="sort_campana">↕</span></th>
+            <th onclick="sortTable('cultivo')">Cultivo<span class="sort-icon" id="sort_cultivo">↕</span></th>
+            <th onclick="sortTable('cliente')">Cliente<span class="sort-icon" id="sort_cliente">↕</span></th>
+            <th onclick="sortTable('destino')">Destino<span class="sort-icon" id="sort_destino">↕</span></th>
+            <th onclick="sortTable('maquila')">Planta<span class="sort-icon" id="sort_maquila">↕</span></th>
+            <th onclick="sortTable('area')">Área<span class="sort-icon" id="sort_area">↕</span></th>
+            <th onclick="sortTable('motivo')">Motivo<span class="sort-icon" id="sort_motivo">↕</span></th>
+            <th onclick="sortTable('estatus')">Estatus<span class="sort-icon" id="sort_estatus">↕</span></th>
+          </tr>
+        </thead>
+        <tbody id="tablebody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- FOOTER STATS -->
+  <div class="section-title">Resumen por Área</div>
+  <div class="footer-stats" id="footerStats"></div>
+
+  <div class="page-footer">
+    Dashboard de Control de Reclamos — Calidad | Frutos Tropicales Peru Export S.A.C. &copy; 2025–2026 |
+    Desarrollado por <strong style="color:var(--gold)">Rodrigo Garcia</strong> — Systems Analyst &amp; Developer-QA
+  </div>
+</div>
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+<script>
+/* ============================================================
+   DATOS MAESTROS
+   ============================================================ */
+const RECLAMOS = [
+  {id:1,cultivo:'Arándano',campana:'2024-2025',fecha:'2024-12-04',cliente:'Asiago Food',destino:'Génova, Italia',maquila:'PRC',area:'Despacho',motivo:'Mal Cubicaje',estatus:'PROCEDE',detalle:'Caída de 11 cajas al abrir FCL en destino. Acción correctiva: mejora de cubicaje.'},
+  {id:2,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2024-12-06',cliente:"Nature's Touch",destino:'Canadá',maquila:'PRC',area:'Acondicionado',motivo:'Material Extraño: Plástico Transparente',estatus:'NO PROCEDE',detalle:'Presencia de plástico transparente. No se encontró ese material en el proceso.'},
+  {id:3,cultivo:'Fresa',campana:'2024-2025',fecha:'2024-12-20',cliente:"Nature's Touch",destino:'Canadá',maquila:'Agroempaques',area:'Empaque',motivo:'Defectos de Calidad',estatus:'PROCEDE',detalle:'Se encontraron 25.74% de piezas <25 mm. Se indica trabajar con fresas de forma característica.'},
+  {id:4,cultivo:'Palta',campana:'2024-2025',fecha:'2024-12-24',cliente:'Makro (ARO)',destino:'Tailandia',maquila:'Agroempaques',area:'Acondicionado',motivo:'Defectos de Calidad',estatus:'NO PROCEDE',detalle:'Sabor y olor a fruta encurtido. Degustación de lotes sin desviaciones; sabor y olor característicos.'},
+  {id:5,cultivo:'Mango Edward',campana:'2023-2024',fecha:'2025-01-03',cliente:"Nature's Touch",destino:'Canadá',maquila:'PRC',area:'Abastecimiento',motivo:'Residuos de Pesticidas',estatus:'NO PROCEDE',detalle:'Pesticidas (Chlorpropham y Omethoate) fuera del límite para USA. Destino era Canadá y los LMR son conformes.'},
+  {id:6,cultivo:'Fresa',campana:'2024-2025',fecha:'2025-01-15',cliente:"Nature's Touch",destino:'Canadá',maquila:'Agroempaques',area:'Empaque',motivo:'Defectos de Calidad',estatus:'NO PROCEDE',detalle:'50-60% de fruta rota con apariencia de rodajas. Ficha técnica indica 100% daño mecánico permitido.'},
+  {id:7,cultivo:'Arándano',campana:'2024-2025',fecha:'2025-01-22',cliente:'Asiago Food',destino:'Génova, Italia',maquila:'PRC',area:'Despacho',motivo:'Mal Cubicaje',estatus:'PROCEDE',detalle:'8 cajas faltantes en la carga y caída de temperatura. Se capacitó al personal de despacho.'},
+  {id:8,cultivo:'Arándano',campana:'2024-2025',fecha:'2025-03-13',cliente:'Flag Food',destino:'Europa',maquila:'Agroempaques',area:'Despacho',motivo:'Residuos de Pesticidas',estatus:'PROCEDE',detalle:'Residualidad de Profenofos fuera de LMR. Se enviaron 86 cajas observadas por pesticidas.'},
+  {id:9,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-03-21',cliente:'Mazoni',destino:'Italia',maquila:'PRC',area:'Acondicionado',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de 3 cm. Posible pieza de bandeja de drenado antes del congelado. Se capacitó al personal.'},
+  {id:10,cultivo:'Arándano',campana:'2024-2025',fecha:'2025-04-12',cliente:'Lamex',destino:'Ecuador',maquila:'PRC',area:'Acondicionado',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco 3.8 cm y resto de mango. Posible pieza de bandeja de drenado. Se capacitó al personal.'},
+  {id:11,cultivo:'Mango Kent',campana:'2023-2024',fecha:'2025-04-10',cliente:"Nature's Touch",destino:'Canadá',maquila:'PRC',area:'Acondicionado',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco 3.5 cm. Posible pieza de bandeja de drenado. Se capacitó al personal.'},
+  {id:12,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-05-19',cliente:'Frosinn',destino:'Europa',maquila:'PRC',area:'Empaque',motivo:'Defectos de Calidad',estatus:'PROCEDE',detalle:'Unidades pegadas con apariencia mayor al 5% de tolerancia.'},
+  {id:13,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-06-11',cliente:'Mazzoni',destino:'Europa',maquila:'Agroempaques',area:'Abastecimiento',motivo:'Residuos de Pesticidas',estatus:'NO PROCEDE',detalle:'Presencia de Omethoate fuera de LMR. Se presentaron resultados conformes de contramuestra.'},
+  {id:14,cultivo:'Granada',campana:'2024-2025',fecha:'2025-06-24',cliente:"Nature's Touch",destino:'EE.UU.',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de bandeja de paletizado antes del congelado. Se evaluó compra de faja de selección color azul.'},
+  {id:15,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-06-24',cliente:'HG Foods',destino:'Europa',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de bandeja. Se reemplazaron bandejas defectuosas y se capacitó al personal.'},
+  {id:16,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-06-25',cliente:'Camerican',destino:'EE.UU.',maquila:'PRC',area:'Empaque',motivo:'Error de Etiquetado',estatus:'PROCEDE',detalle:'Etiquetas erradas: 52 cajas de mango rotuladas con etiqueta de granada.'},
+  {id:17,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-06-16',cliente:'Legumex',destino:'Guatemala',maquila:'PRC',area:'Acondicionado',motivo:'Material Extraño: Cabello',estatus:'PROCEDE',detalle:'Cabello en Mango Chunk. Se cambió de toca descartable a toca de tela y vincha en todo el personal.'},
+  {id:18,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-09-22',cliente:'Legumex',destino:'Guatemala',maquila:'PRC',area:'Acondicionado',motivo:'Material Extraño: Liga de Cabello',estatus:'PROCEDE',detalle:'Liga de cabello en Mango Chunk. Se reforzó cambio de toca y se agregó ítem en verificación de BPM.'},
+  {id:19,cultivo:'Mango Edward',campana:'2024-2025',fecha:'2025-11-11',cliente:'HG Foods',destino:'Europa',maquila:'PRC',area:'Acondicionado',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Color rosado en deshidratado y plástico blanco de bandeja. Se fortaleció selección de materia prima y se retiraron bandejas dañadas.'},
+  {id:20,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-10-31',cliente:'Legumex',destino:'Guatemala',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de bandeja. Se segregaron bandejas dañadas y se adquirieron nuevas unidades.'},
+  {id:21,cultivo:'Fresa',campana:'2024-2025',fecha:'2025-11-24',cliente:'Legumex',destino:'Guatemala',maquila:'Agroempaques',area:'Empaque',motivo:'Residuos de Pesticidas',estatus:'NO PROCEDE',detalle:'Pesticidas no permitidos según FDA (Haloxyfop-Methyl, Lufenuron, Chlorfenapyr). No se encontró evidencia en análisis propios.'},
+  {id:22,cultivo:'Mango Kent',campana:'2024-2025',fecha:'2025-11-26',cliente:'HG Foods',destino:'Europa',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de bandeja. Se detectó lote defectuoso y se eliminó todo el lote de planta.'},
+  {id:23,cultivo:'Arándano',campana:'2025-2026',fecha:'2025-10-11',cliente:'HG Foods',destino:'Europa',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de bandeja y aseguramiento inadecuado de carga. Se revisó procedimiento de carga de contenedores.'},
+  {id:24,cultivo:'Mango',campana:'2024-2025',fecha:'2025-11-15',cliente:'Legumex',destino:'Europa',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de bandeja. Se inspeccionaron todas las bandejas blancas y se reforzó procedimiento de control de plásticos duros.'},
+  {id:25,cultivo:'Arándano',campana:'2025-2026',fecha:'2026-01-16',cliente:'Mazzoni',destino:'Europa',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Presencia de hojas, fruta deshidratada y plástico blanco de bandeja. Se implementaron controles reforzados y se envió orden de compra de nuevas bandejas.'},
+  {id:26,cultivo:'Granada',campana:'2024-2025',fecha:'2025-11-17',cliente:"Nature's Touch",destino:'Canadá',maquila:'PRC',area:'Empaque',motivo:'Material Extraño: Plástico Blanco',estatus:'PROCEDE',detalle:'Plástico blanco de bandeja. Se implementó cambio de faja por una de color azul y se compró nuevas bandejas.'},
+];
+
+/* ============================================================
+   COLORES DE MOTIVOS
+   ============================================================ */
+const MOTIVO_COLORS = {
+  'Material Extraño: Plástico Blanco':'#ef4444',
+  'Defectos de Calidad':'#f97316',
+  'Residuos de Pesticidas':'#eab308',
+  'Mal Cubicaje':'#3b82f6',
+  'Material Extraño: Plástico Transparente':'#8b5cf6',
+  'Error de Etiquetado':'#ec4899',
+  'Material Extraño: Cabello':'#06b6d4',
+  'Material Extraño: Liga de Cabello':'#14b8a6',
+};
+
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
+let filteredData = [...RECLAMOS];
+let sortCol = 'id';
+let sortAsc = true;
+let charts = {};
+
+/* ============================================================
+   THEME TOGGLE
+   ============================================================ */
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.querySelector('.theme-toggle').textContent = isDark ? '🌞' : '🌙';
+  localStorage.setItem('ft_theme', isDark ? 'light' : 'dark');
+  updateChartsTheme();
+}
+(function initTheme(){
+  const saved = localStorage.getItem('ft_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.querySelector('.theme-toggle').textContent = saved === 'dark' ? '🌙' : '🌞';
+})();
+
+/* ============================================================
+   POPULATE CLIENT DROPDOWN
+   ============================================================ */
+(function populateClients(){
+  const sel = document.getElementById('fCliente');
+  const clients = [...new Set(RECLAMOS.map(r => r.cliente))].sort();
+  clients.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = c;
+    sel.appendChild(opt);
+  });
+})();
+
+/* ============================================================
+   FILTERS
+   ============================================================ */
+function applyFilters(){
+  const campana = document.getElementById('fCampana').value;
+  const cultivo = document.getElementById('fCultivo').value;
+  const cliente = document.getElementById('fCliente').value;
+  const area = document.getElementById('fArea').value;
+  const estatus = document.getElementById('fEstatus').value;
+  const search = document.getElementById('fSearch').value.toLowerCase().trim();
+
+  filteredData = RECLAMOS.filter(r => {
+    if(campana && r.campana !== campana) return false;
+    if(cultivo && r.cultivo !== cultivo) return false;
+    if(cliente && r.cliente !== cliente) return false;
+    if(area && r.area !== area) return false;
+    if(estatus && r.estatus !== estatus) return false;
+    if(search){
+      const haystack = [r.cultivo,r.cliente,r.destino,r.motivo,r.detalle,r.area,r.maquila,r.campana,r.estatus].join(' ').toLowerCase();
+      if(!haystack.includes(search)) return false;
+    }
+    return true;
+  });
+  renderTable();
+  updateKPIs();
+  updateCharts(filteredData);
+}
+
+function clearFilters(){
+  document.getElementById('fCampana').value = '';
+  document.getElementById('fCultivo').value = '';
+  document.getElementById('fCliente').value = '';
+  document.getElementById('fArea').value = '';
+  document.getElementById('fEstatus').value = '';
+  document.getElementById('fSearch').value = '';
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  document.querySelector('.filter-pill[data-filter="all"]').classList.add('active');
+  filteredData = [...RECLAMOS];
+  renderTable();
+  updateKPIs();
+  updateCharts(filteredData);
+}
+
+function setPill(el, cultivo){
+  document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('fCultivo').value = cultivo;
+  applyFilters();
+}
+
+/* ============================================================
+   KPIs DINÁMICOS
+   ============================================================ */
+function updateKPIs(){
+  const total = filteredData.length;
+  const procede = filteredData.filter(r => r.estatus === 'PROCEDE').length;
+  const noProcede = filteredData.filter(r => r.estatus === 'NO PROCEDE').length;
+  const tasa = total > 0 ? ((procede/total)*100).toFixed(1) : '0.0';
+
+  const motivos = {};
+  filteredData.forEach(r => { motivos[r.motivo] = (motivos[r.motivo]||0)+1; });
+  let topMotivo = '—', topCnt = 0;
+  Object.entries(motivos).forEach(([m,c]) => { if(c > topCnt){ topCnt = c; topMotivo = m.replace('Material Extraño: ',''); }});
+
+  // Planta breakdown
+  const prcCnt = filteredData.filter(r => r.maquila === 'PRC').length;
+  const agroCnt = filteredData.filter(r => r.maquila === 'Agroempaques').length;
+  const prcPct = total > 0 ? ((prcCnt/total)*100).toFixed(1) : '0.0';
+  const agroPct = total > 0 ? ((agroCnt/total)*100).toFixed(1) : '0.0';
+  const topPlanta = prcCnt >= agroCnt ? 'PRC' : 'AGROEMPAQUES';
+
+  animateNum('kpiTotal', total);
+  animateNum('kpiProcede', procede);
+  animateNum('kpiNoProcede', noProcede);
+  document.getElementById('kpiPRC').textContent = prcCnt + ' · ' + prcPct + '%';
+  document.getElementById('kpiAGRO').textContent = agroCnt + ' · ' + agroPct + '%';
+  document.getElementById('barPRC').style.width = prcPct + '%';
+  document.getElementById('barAGRO').style.width = agroPct + '%';
+  document.querySelector('[id="kpiPRC"]').closest('.kpi-card').querySelector('.kpi-badge').textContent = '⚡ Mayor incidencia: ' + topPlanta;
+  document.getElementById('kpiMotivoTop').textContent = topMotivo;
+  document.getElementById('kpiMotivoCnt').textContent = topCnt;
+}
+
+function animateNum(id, target){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const start = parseInt(el.textContent) || 0;
+  const diff = target - start;
+  const steps = 20;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    el.textContent = Math.round(start + diff * (step/steps));
+    if(step >= steps){ el.textContent = target; clearInterval(timer); }
+  }, 20);
+}
+
+/* ============================================================
+   TABLE RENDER
+   ============================================================ */
+function renderTable(){
+  const tbody = document.getElementById('tablebody');
+  tbody.innerHTML = '';
+
+  const sorted = [...filteredData].sort((a,b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if(sortCol === 'id'){ av = parseInt(av); bv = parseInt(bv); }
+    if(typeof av === 'string') av = av.toLowerCase();
+    if(typeof bv === 'string') bv = bv.toLowerCase();
+    if(av < bv) return sortAsc ? -1 : 1;
+    if(av > bv) return sortAsc ? 1 : -1;
+    return 0;
+  });
+
+  sorted.forEach((r,i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="col-id">${r.id}</td>
+      <td class="col-fecha">${formatDate(r.fecha)}</td>
+      <td>${r.campana}</td>
+      <td class="col-cultivo">${r.cultivo}</td>
+      <td>${escHtml(r.cliente)}</td>
+      <td>${r.destino}</td>
+      <td>${r.maquila}</td>
+      <td><span class="area-tag">${r.area}</span></td>
+      <td class="col-motivo" title="${escHtml(r.motivo)}">${escHtml(r.motivo)}</td>
+      <td><span class="badge ${r.estatus === 'PROCEDE' ? 'procede' : 'no-procede'}">${r.estatus}</span></td>
+    `;
+    tr.addEventListener('click', () => toggleDetail(r.id));
+    tbody.appendChild(tr);
+
+    const dr = document.createElement('tr');
+    dr.className = 'detail-row';
+    dr.id = 'detail_' + r.id;
+    dr.innerHTML = `<td colspan="10"><div class="detail-content"><strong>Detalle:</strong> ${escHtml(r.detalle)}</div></td>`;
+    tbody.appendChild(dr);
+  });
+
+  document.getElementById('countShown').textContent = filteredData.length;
+  document.getElementById('countTotal').textContent = RECLAMOS.length;
+}
+
+function toggleDetail(id){
+  const dr = document.getElementById('detail_' + id);
+  if(dr) dr.classList.toggle('open');
+}
+
+function formatDate(d){
+  const [y,m,day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function escHtml(str){
+  if(!str) return '';
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+/* ============================================================
+   SORT TABLE
+   ============================================================ */
+function sortTable(col){
+  if(sortCol === col) sortAsc = !sortAsc;
+  else { sortCol = col; sortAsc = true; }
+  document.querySelectorAll('.sort-icon').forEach(el => el.textContent = '↕');
+  const icon = document.getElementById('sort_' + col);
+  if(icon) icon.textContent = sortAsc ? '↑' : '↓';
+  document.querySelectorAll('thead th').forEach(th => th.classList.remove('sorted'));
+  const ths = document.querySelectorAll('thead th');
+  const cols = ['id','fecha','campana','cultivo','cliente','destino','maquila','area','motivo','estatus'];
+  const idx = cols.indexOf(col);
+  if(idx >= 0 && ths[idx]) ths[idx].classList.add('sorted');
+  renderTable();
+}
+
+/* ============================================================
+   EXPORT CSV
+   ============================================================ */
+function exportCSV(){
+  const headers = ['ID','Fecha','Campaña','Cultivo','Cliente','Destino','Planta','Área','Motivo','Estatus','Detalle'];
+  const rows = filteredData.map(r => [
+    r.id, r.fecha, r.campana, r.cultivo, `"${r.cliente}"`, r.destino,
+    r.maquila, r.area, `"${r.motivo}"`, r.estatus, `"${r.detalle.replace(/"/g,'""')}"`
+  ].join(','));
+  const csv = [headers.join(','), ...rows].join('\n');
+  const blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'Reclamos_Calidad_FrutosTropicales.csv';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+/* ============================================================
+   FOOTER STATS POR ÁREA
+   ============================================================ */
+function renderFooterStats(){
+  const areas = {};
+  RECLAMOS.forEach(r => { areas[r.area] = (areas[r.area]||0)+1; });
+  const container = document.getElementById('footerStats');
+  const areaEmojis = {Empaque:'📦',Acondicionado:'🔧',Despacho:'🚚',Abastecimiento:'🌱'};
+  Object.entries(areas).sort((a,b) => b[1]-a[1]).forEach(([area,cnt]) => {
+    const procCnt = RECLAMOS.filter(r => r.area===area && r.estatus==='PROCEDE').length;
+    const div = document.createElement('div');
+    div.className = 'stat-mini animate-in';
+    div.innerHTML = `
+      <div class="stat-mini-label">${areaEmojis[area]||'📌'} ${area}</div>
+      <div class="stat-mini-value">${cnt}</div>
+      <div class="stat-mini-sub">${procCnt} proceden · ${cnt-procCnt} no proceden</div>
+    `;
+    container.appendChild(div);
+  });
+}
+
+/* ============================================================
+   CHARTS
+   ============================================================ */
+function isDark(){
+  return document.documentElement.getAttribute('data-theme') !== 'light';
+}
+
+function chartColors(){
+  return {
+    textColor: isDark() ? 'rgba(241,245,249,0.7)' : 'rgba(30,41,59,0.7)',
+    gridColor: isDark() ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    tickColor: isDark() ? 'rgba(241,245,249,0.5)' : 'rgba(30,41,59,0.5)',
+  };
+}
+
+function buildCharts(){
+  // --- CHART 1: DOUGHNUT MOTIVOS ---
+  const motivoMap = {};
+  RECLAMOS.forEach(r => { motivoMap[r.motivo] = (motivoMap[r.motivo]||0)+1; });
+  const mLabels = Object.keys(motivoMap);
+  const mData = Object.values(motivoMap);
+  const mColors = mLabels.map(m => MOTIVO_COLORS[m] || '#94a3b8');
+
+  const ctx1 = document.getElementById('chartMotivo').getContext('2d');
+  charts.motivo = new Chart(ctx1, {
+    type:'doughnut',
+    data:{
+      labels: mLabels.map(l => l.length > 30 ? l.substring(0,28)+'…' : l),
+      datasets:[{
+        data: mData,
+        backgroundColor: mColors.map(c => c+'cc'),
+        borderColor: mColors,
+        borderWidth: 2,
+        hoverOffset: 8,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{
+          position:'right',
+          labels:{color:chartColors().textColor, font:{size:10}, padding:12, boxWidth:12}
+        },
+        datalabels:{
+          color:'#fff',
+          font:{size:11,weight:'bold'},
+          formatter:(v,ctx) => v > 1 ? v : '',
+        }
+      }
+    },
+    plugins:[ChartDataLabels]
+  });
+
+  // --- CHART 2: BAR STACKED CLIENTES ---
+  const clienteMap = {};
+  RECLAMOS.forEach(r => {
+    if(!clienteMap[r.cliente]) clienteMap[r.cliente] = {PROCEDE:0,'NO PROCEDE':0};
+    clienteMap[r.cliente][r.estatus]++;
+  });
+  const topClientes = Object.entries(clienteMap).sort((a,b) => (b[1].PROCEDE+b[1]['NO PROCEDE']) - (a[1].PROCEDE+a[1]['NO PROCEDE'])).slice(0,8);
+  const cLabels = topClientes.map(([c]) => c);
+  const cProcede = topClientes.map(([,v]) => v.PROCEDE);
+  const cNoProcede = topClientes.map(([,v]) => v['NO PROCEDE']);
+
+  const ctx2 = document.getElementById('chartClientes').getContext('2d');
+  charts.clientes = new Chart(ctx2, {
+    type:'bar',
+    data:{
+      labels: cLabels,
+      datasets:[
+        {label:'PROCEDE', data:cProcede, backgroundColor:'rgba(239,68,68,0.75)', borderColor:'#ef4444', borderWidth:1, borderRadius:4},
+        {label:'NO PROCEDE', data:cNoProcede, backgroundColor:'rgba(34,197,94,0.75)', borderColor:'#22c55e', borderWidth:1, borderRadius:4},
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      indexAxis:'y',
+      scales:{
+        x:{stacked:true, ticks:{color:chartColors().tickColor,font:{size:10}}, grid:{color:chartColors().gridColor}},
+        y:{stacked:true, ticks:{color:chartColors().tickColor,font:{size:10}}, grid:{display:false}}
+      },
+      plugins:{
+        legend:{labels:{color:chartColors().textColor,font:{size:10}}},
+        datalabels:{display:false}
+      }
+    },
+    plugins:[ChartDataLabels]
+  });
+
+  // --- CHART 3: BAR CULTIVO ---
+  const cultivoMap = {};
+  RECLAMOS.forEach(r => { cultivoMap[r.cultivo] = (cultivoMap[r.cultivo]||0)+1; });
+  const cultLabels = Object.keys(cultivoMap);
+  const cultData = Object.values(cultivoMap);
+  const cultivoColors = ['#22c55e','#f97316','#ef4444','#3b82f6','#8b5cf6','#ec4899','#06b6d4'];
+
+  const ctx3 = document.getElementById('chartCultivo').getContext('2d');
+  charts.cultivo = new Chart(ctx3, {
+    type:'bar',
+    data:{
+      labels: cultLabels,
+      datasets:[{
+        label:'Reclamos',
+        data: cultData,
+        backgroundColor: cultLabels.map((_,i) => cultivoColors[i%cultivoColors.length]+'aa'),
+        borderColor: cultLabels.map((_,i) => cultivoColors[i%cultivoColors.length]),
+        borderWidth:2,
+        borderRadius:6,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        x:{ticks:{color:chartColors().tickColor,font:{size:10}}, grid:{display:false}},
+        y:{ticks:{color:chartColors().tickColor,font:{size:10},stepSize:1}, grid:{color:chartColors().gridColor}}
+      },
+      plugins:{
+        legend:{display:false},
+        datalabels:{
+          color:chartColors().textColor,
+          anchor:'end', align:'top',
+          font:{size:11,weight:'bold'},
+          formatter:v => v
+        }
+      }
+    },
+    plugins:[ChartDataLabels]
+  });
+
+  // --- CHART 4: LINE TENDENCIA ---
+  const months = [
+    '12/2024','01/2025','02/2025','03/2025','04/2025','05/2025',
+    '06/2025','07/2025','08/2025','09/2025','10/2025','11/2025','12/2025','01/2026'
+  ];
+  const monthCounts = {};
+  months.forEach(m => monthCounts[m] = 0);
+  RECLAMOS.forEach(r => {
+    const d = r.fecha.split('-');
+    const key = d[1]+'/'+d[0];
+    if(monthCounts.hasOwnProperty(key)) monthCounts[key]++;
+  });
+  const tendData = months.map(m => monthCounts[m]||0);
+
+  const ctx4 = document.getElementById('chartTendencia').getContext('2d');
+  const gradient = ctx4.createLinearGradient(0,0,0,280);
+  gradient.addColorStop(0,'rgba(34,197,94,0.3)');
+  gradient.addColorStop(1,'rgba(34,197,94,0)');
+
+  charts.tendencia = new Chart(ctx4, {
+    type:'line',
+    data:{
+      labels: months,
+      datasets:[{
+        label:'Reclamos por mes',
+        data: tendData,
+        borderColor:'#22c55e',
+        backgroundColor: gradient,
+        borderWidth:2.5,
+        pointBackgroundColor:'#22c55e',
+        pointBorderColor:'#0f1117',
+        pointBorderWidth:2,
+        pointRadius:5,
+        pointHoverRadius:8,
+        fill:true,
+        tension:0.4,
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      scales:{
+        x:{ticks:{color:chartColors().tickColor,font:{size:9},maxRotation:45}, grid:{color:chartColors().gridColor}},
+        y:{ticks:{color:chartColors().tickColor,font:{size:10},stepSize:1}, grid:{color:chartColors().gridColor}, min:0}
+      },
+      plugins:{
+        legend:{labels:{color:chartColors().textColor,font:{size:10}}},
+        datalabels:{
+          color:chartColors().textColor,
+          anchor:'end', align:'top',
+          font:{size:10,weight:'bold'},
+          formatter:(v) => v > 0 ? v : '',
+        }
+      }
+    },
+    plugins:[ChartDataLabels]
+  });
+}
+
+function updateCharts(data){
+  const cultivoColors = ['#22c55e','#f97316','#ef4444','#3b82f6','#8b5cf6','#ec4899','#06b6d4'];
+
+  // --- CHART 1: DOUGHNUT MOTIVOS ---
+  if(charts.motivo){
+    const motivoMap = {};
+    data.forEach(r => { motivoMap[r.motivo] = (motivoMap[r.motivo]||0)+1; });
+    const mLabels = Object.keys(motivoMap);
+    const mData = Object.values(motivoMap);
+    const mColors = mLabels.map(m => MOTIVO_COLORS[m] || '#94a3b8');
+    charts.motivo.data.labels = mLabels.map(l => l.length > 30 ? l.substring(0,28)+'…' : l);
+    charts.motivo.data.datasets[0].data = mData;
+    charts.motivo.data.datasets[0].backgroundColor = mColors.map(c => c+'cc');
+    charts.motivo.data.datasets[0].borderColor = mColors;
+    charts.motivo.update();
+  }
+
+  // --- CHART 2: BAR STACKED CLIENTES ---
+  if(charts.clientes){
+    const clienteMap = {};
+    data.forEach(r => {
+      if(!clienteMap[r.cliente]) clienteMap[r.cliente] = {PROCEDE:0,'NO PROCEDE':0};
+      clienteMap[r.cliente][r.estatus]++;
+    });
+    const topClientes = Object.entries(clienteMap).sort((a,b) => (b[1].PROCEDE+b[1]['NO PROCEDE']) - (a[1].PROCEDE+a[1]['NO PROCEDE'])).slice(0,8);
+    charts.clientes.data.labels = topClientes.map(([c]) => c);
+    charts.clientes.data.datasets[0].data = topClientes.map(([,v]) => v.PROCEDE);
+    charts.clientes.data.datasets[1].data = topClientes.map(([,v]) => v['NO PROCEDE']);
+    charts.clientes.update();
+  }
+
+  // --- CHART 3: BAR CULTIVO ---
+  if(charts.cultivo){
+    const cultivoMap = {};
+    data.forEach(r => { cultivoMap[r.cultivo] = (cultivoMap[r.cultivo]||0)+1; });
+    const cultLabels = Object.keys(cultivoMap);
+    charts.cultivo.data.labels = cultLabels;
+    charts.cultivo.data.datasets[0].data = Object.values(cultivoMap);
+    charts.cultivo.data.datasets[0].backgroundColor = cultLabels.map((_,i) => cultivoColors[i%cultivoColors.length]+'aa');
+    charts.cultivo.data.datasets[0].borderColor = cultLabels.map((_,i) => cultivoColors[i%cultivoColors.length]);
+    charts.cultivo.update();
+  }
+
+  // --- CHART 4: LINE TENDENCIA ---
+  if(charts.tendencia){
+    const months = ['12/2024','01/2025','02/2025','03/2025','04/2025','05/2025','06/2025','07/2025','08/2025','09/2025','10/2025','11/2025','12/2025','01/2026'];
+    const monthCounts = {};
+    months.forEach(m => monthCounts[m] = 0);
+    data.forEach(r => {
+      const d = r.fecha.split('-');
+      const key = d[1]+'/'+d[0];
+      if(monthCounts.hasOwnProperty(key)) monthCounts[key]++;
+    });
+    charts.tendencia.data.datasets[0].data = months.map(m => monthCounts[m]||0);
+    charts.tendencia.update();
+  }
+}
+
+function updateChartsTheme(){
+  const cc = chartColors();
+  Object.values(charts).forEach(chart => {
+    if(!chart) return;
+    if(chart.options.plugins && chart.options.plugins.legend){
+      chart.options.plugins.legend.labels.color = cc.textColor;
+    }
+    const scales = chart.options.scales || {};
+    Object.values(scales).forEach(s => {
+      if(s.ticks) s.ticks.color = cc.tickColor;
+      if(s.grid) s.grid.color = cc.gridColor;
+    });
+    chart.update();
+  });
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init(){
+  renderTable();
+  renderFooterStats();
+  buildCharts();
+})();
+</script>
+</body>
+</html>

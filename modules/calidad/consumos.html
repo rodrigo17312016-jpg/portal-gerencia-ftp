@@ -1,18 +1,78 @@
-<!-- Panel: Consumos Calidad -->
+<!-- Panel: Consumo Calidad - Datos reales Supabase -->
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
   <div>
     <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🧪 Consumo <span style="color:var(--azul)">Calidad</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Seguimiento de consumo de insumos de laboratorio y calidad</p>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Seguimiento de consumo de insumos por centro de costo y subgrupo</p>
   </div>
-  <a href="dashboards/consumos.html" target="_blank" class="btn btn-sm btn-primary">📊 Dashboard Completo</a>
+  <a href="dashboards/consumos.html" target="_blank" class="btn btn-sm btn-primary">📊 Ver dashboard completo</a>
 </div>
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Total Consumido</div><div class="kpi-value" id="cKpiTotal">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Productos</div><div class="kpi-value" id="cKpiProductos">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Semanas</div><div class="kpi-value" id="cKpiSemanas">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Top Producto</div><div class="kpi-value" id="cKpiTop" style="font-size:16px">—</div></div>
+
+<!-- KPIs -->
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:20px">
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
+    <div class="kpi-label" style="font-size:9px">TOTAL CONSUMIDO</div>
+    <div class="kpi-value" style="font-size:22px" id="cKpiTotal">—</div>
+    <div style="font-size:10px;color:var(--muted)">unidades</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
+    <div class="kpi-label" style="font-size:9px">PRODUCTOS DISTINTOS</div>
+    <div class="kpi-value" style="font-size:22px" id="cKpiProductos">—</div>
+    <div style="font-size:10px;color:var(--muted)">insumos unicos</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
+    <div class="kpi-label" style="font-size:9px">SEMANAS REGISTRADAS</div>
+    <div class="kpi-value" style="font-size:22px" id="cKpiSemanas">—</div>
+    <div style="font-size:10px;color:var(--muted)" id="cKpiSemanasRange">—</div>
+  </div>
+  <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
+    <div class="kpi-label" style="font-size:9px">INSUMO TOP</div>
+    <div class="kpi-value" style="font-size:16px;line-height:1.2" id="cKpiTop">—</div>
+    <div style="font-size:10px;color:var(--muted)" id="cKpiTopQty">—</div>
+  </div>
 </div>
-<div class="charts-grid charts-grid-2" style="margin-top:20px">
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">📊 Consumo Semanal</div></div><div class="chart-wrapper"><canvas id="cChartSemana"></canvas></div></div>
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">🏆 Top 5 Insumos</div></div><div class="chart-wrapper"><canvas id="cChartTop"></canvas></div></div>
+
+<!-- Filtros -->
+<div class="card" style="padding:10px 14px;margin-bottom:14px">
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <select id="cFiltroSubgrupo" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--texto);font-size:12px">
+      <option value="">Todos los subgrupos</option>
+    </select>
+    <select id="cFiltroCentro" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--texto);font-size:12px">
+      <option value="">Todos los centros</option>
+    </select>
+    <select id="cFiltroSemana" style="padding:4px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface2);color:var(--texto);font-size:12px">
+      <option value="">Todas las semanas</option>
+    </select>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">📊 Consumo por semana</div></div>
+    <div class="chart-wrapper"><canvas id="cChartSemana"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🏆 Top 5 insumos</div></div>
+    <div class="chart-wrapper"><canvas id="cChartTop"></canvas></div>
+  </div>
+</div>
+
+<div class="chart-container" style="margin-bottom:20px">
+  <div class="chart-header"><div class="chart-title">📊 Consumo por centro de costo y subgrupo</div></div>
+  <div class="chart-wrapper" style="height:300px"><canvas id="cChartCentro"></canvas></div>
+</div>
+
+<!-- Tabla detalle -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Detalle de consumos</div>
+    <div class="badge badge-azul" id="cRowCount">0 registros</div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead><tr><th>Semana</th><th>Centro Costo</th><th>Subgrupo</th><th>Producto</th><th>Unidad</th><th>Cantidad</th></tr></thead>
+      <tbody id="cTabla"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted)">Cargando...</td></tr></tbody>
+    </table>
+  </div>
 </div>

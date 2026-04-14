@@ -115,34 +115,34 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 @keyframes goldShimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes fadeUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:translateY(0)}}
 
-.login-title{
-  font-family:'Playfair Display',serif;
-  font-size:14px;text-transform:uppercase;letter-spacing:5px;
-  font-weight:900;margin-bottom:4px;padding:6px 0;
-  background:linear-gradient(135deg,#d4af37 0%,#fff8dc 15%,#e8e8e8 30%,#fff8dc 50%,#d4af37 65%,#c0c0c0 80%,#d4af37 100%);
-  background-size:400% 100%;
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:goldShimmer 4s ease infinite, fadeUp 0.8s ease 0.3s both;
-  position:relative;z-index:1;
-}
-
 @keyframes silverShimmer{
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
-.login-subtitle{
-  font-size:12px;
-  letter-spacing:2px;text-transform:uppercase;
-  margin-bottom:20px;font-weight:800;
-  position:relative;z-index:1;
+.login-title{
+  font-family:'Playfair Display',serif;
+  font-size:15px;text-transform:uppercase;letter-spacing:2.5px;
+  font-weight:900;margin-bottom:4px;padding:6px 0;
   background:linear-gradient(135deg,#c0c0c0 0%,#ffffff 20%,#a8a8a8 40%,#ffffff 60%,#c0c0c0 80%,#e8e8e8 100%);
   background-size:300% 100%;
   -webkit-background-clip:text;background-clip:text;
   -webkit-text-fill-color:transparent;
-  animation:fadeUp 0.8s ease 0.5s both, silverShimmer 5s ease 1.5s infinite;
-  filter:drop-shadow(0 0 6px rgba(192,192,192,0.3));
+  animation:silverShimmer 5s ease infinite, fadeUp 0.8s ease 0.3s both;
+  filter:drop-shadow(0 0 6px rgba(192,192,192,0.35));
+  position:relative;z-index:1;
+}
+
+.login-subtitle{
+  font-size:11px;
+  letter-spacing:4px;text-transform:uppercase;
+  margin-bottom:20px;font-weight:800;
+  position:relative;z-index:1;
+  background:linear-gradient(135deg,#d4af37 0%,#fff8dc 15%,#e8e8e8 30%,#fff8dc 50%,#d4af37 65%,#c0c0c0 80%,#d4af37 100%);
+  background-size:400% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:fadeUp 0.8s ease 0.5s both, goldShimmer 4s ease 1.5s infinite;
 }
 
 /* ── DIVIDER animated ── */
@@ -240,7 +240,8 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 @media(max-width:480px){
   .login-card{padding:28px 22px;max-width:300px;border-radius:20px}
   .login-logo{height:70px}
-  .login-title{font-size:12px;letter-spacing:3px}
+  .login-title{font-size:12px;letter-spacing:1.5px}
+  .login-subtitle{font-size:10px;letter-spacing:3px}
   .login-clock{display:none}
 }
 
@@ -275,8 +276,8 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 <div class="login-container">
   <div class="login-card">
     <img class="login-logo" src="assets/images/logo.png" alt="Frutos Tropicales Peru Export S.A.C.">
-    <div class="login-title">Portal de Gestion Integral</div>
-    <div class="login-subtitle">Frutos Tropicales Peru Export S.A.C.</div>
+    <div class="login-title">Frutos Tropicales Peru Export S.A.C.</div>
+    <div class="login-subtitle">Portal de Gestion Integral</div>
     <div class="login-divider"></div>
 
     <div class="login-field">

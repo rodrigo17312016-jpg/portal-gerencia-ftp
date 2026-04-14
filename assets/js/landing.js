@@ -3,43 +3,24 @@
    Frutos Tropicales Peru Export S.A.C.
    ════════════════════════════════════════════════════════ */
 
-/* ── PRELOADER ── */
+/* ── PRELOADER EJECUTIVO (limpio, sin particulas) ── */
 !function(){
   var bar=document.getElementById('preloaderBar'),
       pct=document.getElementById('preloaderPercent'),
       preloader=document.getElementById('preloader'),
       pageContent=document.getElementById('pageContent'),
-      duration=5000, start=performance.now();
-
-  var plColors=['gold','green','orange','white'];
-  var plBg=preloader.querySelector('.preloader-bg');
-  for(var i=0;i<50;i++){
-    var p=document.createElement('div');
-    p.className='pl-particle '+plColors[Math.floor(Math.random()*plColors.length)];
-    var sz=Math.random()*4+1;
-    p.style.cssText='left:'+Math.random()*100+'%;animation-duration:'+(Math.random()*5+3)+'s;animation-delay:-'+Math.random()*6+'s;width:'+sz+'px;height:'+sz+'px';
-    plBg.appendChild(p);
-  }
-
-  for(var i=0;i<16;i++){
-    var s=document.createElement('div');
-    s.className='preloader-sparkle';
-    var angle=(i/16)*360, radius=200+Math.random()*80;
-    var cx=50+Math.cos(angle*Math.PI/180)*(radius/window.innerWidth*100);
-    var cy=50+Math.sin(angle*Math.PI/180)*(radius/window.innerHeight*100);
-    s.style.cssText='left:'+cx+'%;top:'+cy+'%;animation-delay:'+(Math.random()*2)+'s;animation-duration:'+(Math.random()*1.5+1.5)+'s;width:'+(Math.random()*3+2)+'px;height:'+(Math.random()*3+2)+'px';
-    preloader.appendChild(s);
-  }
+      duration=3500, start=performance.now();
 
   function tick(now){
     var elapsed=now-start;
     var eased=1-Math.pow(1-Math.min(elapsed/duration,1),3);
     var visual=Math.round(eased*100);
-    bar.style.width=visual+'%';
-    pct.textContent=visual+'%';
+    if(bar) bar.style.width=visual+'%';
+    if(pct) pct.textContent=visual+'%';
     if(elapsed<duration){ requestAnimationFrame(tick); }
     else{
-      bar.style.width='100%'; pct.textContent='100%';
+      if(bar) bar.style.width='100%';
+      if(pct) pct.textContent='100%';
       setTimeout(function(){
         preloader.classList.add('fade-out');
         document.body.classList.remove('loading');
@@ -49,8 +30,8 @@
           setTimeout(function(){
             document.querySelectorAll('.hero-content .reveal').forEach(function(el){el.classList.add('revealed')});
           },200);
-        },800);
-      },400);
+        },900);
+      },300);
     }
   }
   requestAnimationFrame(tick);

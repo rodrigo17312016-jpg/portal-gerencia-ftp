@@ -128,10 +128,11 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
 /* ── MINIMIZED STATE ── */
 .login-card.minimized{
-  opacity:0;
-  transform:scale(0.6) translateY(-60px);
-  filter:blur(30px);
-  pointer-events:none;
+  animation:none !important;
+  opacity:0 !important;
+  transform:scale(0.6) translateY(-60px) !important;
+  filter:blur(30px) !important;
+  pointer-events:none !important;
 }
 
 /* ── FLOATING PILL (when minimized) ── */

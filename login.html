@@ -58,9 +58,9 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 }
 
 .login-card{
-  background:rgba(8,25,14,0.55);
-  backdrop-filter:blur(30px) saturate(1.6);
-  -webkit-backdrop-filter:blur(30px) saturate(1.6);
+  background:rgba(8,25,14,0.41);
+  backdrop-filter:blur(26px) saturate(1.5);
+  -webkit-backdrop-filter:blur(26px) saturate(1.5);
   border-radius:24px;
   padding:32px 34px;
   width:100%;max-width:340px;
@@ -70,14 +70,157 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
     0 0 0 1px rgba(255,255,255,0.08),
     inset 0 1px 0 rgba(255,255,255,0.12);
   animation:cardEntrance 1.2s cubic-bezier(0.16,1,0.3,1) both;
-  position:relative;overflow:hidden;
-  transition:transform 0.3s ease, box-shadow 0.3s ease;
+  position:relative;overflow:visible;
+  transition:all 0.6s cubic-bezier(0.16,1,0.3,1);
 }
 
-.login-card:hover{
+.login-card:hover:not(.minimized){
   transform:translateY(-4px);
   box-shadow:0 40px 100px rgba(0,0,0,0.5),0 0 0 1px rgba(255,255,255,0.1),inset 0 1px 0 rgba(255,255,255,0.15),0 0 60px rgba(22,163,74,0.08);
 }
+
+/* ── MINIMIZE BUTTON (top-right of card) ── */
+.login-minimize-btn{
+  position:absolute;top:14px;right:14px;
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.7);
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  z-index:10;
+  transition:all 0.3s cubic-bezier(0.16,1,0.3,1);
+  backdrop-filter:blur(10px);
+  animation:minBtnPulse 3s ease-in-out infinite;
+  opacity:0;
+  animation:minBtnFadeIn 0.8s ease 1.8s both, minBtnPulse 3s ease-in-out 2.6s infinite;
+}
+.login-minimize-btn svg{width:14px;height:14px;transition:transform 0.3s ease}
+.login-minimize-btn:hover{
+  background:rgba(74,222,128,0.18);
+  border-color:rgba(74,222,128,0.45);
+  color:#86efac;
+  transform:scale(1.15) rotate(-8deg);
+  box-shadow:0 0 20px rgba(74,222,128,0.3);
+}
+.login-minimize-btn:hover svg{transform:scale(1.1)}
+.login-minimize-btn:active{transform:scale(0.92)}
+
+/* Tooltip on hover */
+.login-minimize-btn::before{
+  content:attr(data-tip);
+  position:absolute;top:50%;right:calc(100% + 10px);transform:translateY(-50%);
+  background:rgba(0,0,0,0.85);color:#fff;
+  padding:5px 10px;border-radius:6px;
+  font-size:10.5px;font-weight:700;letter-spacing:0.3px;
+  white-space:nowrap;pointer-events:none;
+  opacity:0;transition:all 0.25s ease;
+  border:1px solid rgba(74,222,128,0.3);
+  box-shadow:0 4px 14px rgba(0,0,0,0.4);
+}
+.login-minimize-btn:hover::before{opacity:1;transform:translateY(-50%) translateX(-4px)}
+
+@keyframes minBtnFadeIn{from{opacity:0;transform:scale(0) rotate(-180deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+@keyframes minBtnPulse{
+  0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}
+  50%{box-shadow:0 0 0 8px rgba(74,222,128,0.08)}
+}
+
+/* ── MINIMIZED STATE ── */
+.login-card.minimized{
+  opacity:0;
+  transform:scale(0.6) translateY(-60px);
+  filter:blur(30px);
+  pointer-events:none;
+}
+
+/* ── FLOATING PILL (when minimized) ── */
+.login-pill{
+  position:fixed;top:32px;left:50%;transform:translateX(-50%) translateY(-120%);
+  display:flex;align-items:center;gap:12px;
+  padding:9px 9px 9px 20px;
+  background:rgba(8,25,14,0.55);
+  backdrop-filter:blur(20px) saturate(1.6);
+  -webkit-backdrop-filter:blur(20px) saturate(1.6);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:50px;
+  box-shadow:0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.12);
+  cursor:pointer;
+  z-index:100;
+  opacity:0;
+  transition:all 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  font-family:'Plus Jakarta Sans','Inter',sans-serif;
+}
+.login-pill.visible{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+.login-pill:hover{
+  background:rgba(8,25,14,0.75);
+  border-color:rgba(74,222,128,0.4);
+  box-shadow:0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,222,128,0.2), 0 0 40px rgba(74,222,128,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform:translateX(-50%) translateY(-2px);
+}
+.login-pill-icon{
+  width:34px;height:34px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(22,163,74,0.3),rgba(74,222,128,0.2));
+  display:flex;align-items:center;justify-content:center;
+  border:1px solid rgba(74,222,128,0.3);
+  flex-shrink:0;
+}
+.login-pill-icon svg{width:14px;height:14px;color:#86efac}
+.login-pill-text{
+  display:flex;flex-direction:column;gap:1px;text-align:left;padding-right:4px;
+}
+.login-pill-label{
+  font-size:9px;font-weight:700;color:rgba(255,255,255,0.55);
+  text-transform:uppercase;letter-spacing:1.5px;line-height:1;
+}
+.login-pill-action{
+  font-size:13px;font-weight:700;color:#fff;letter-spacing:0.2px;line-height:1.2;
+}
+.login-pill-arrow{
+  width:28px;height:28px;border-radius:50%;
+  background:rgba(255,255,255,0.08);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;
+  transition:all 0.3s ease;
+}
+.login-pill:hover .login-pill-arrow{
+  background:#16a34a;
+  transform:rotate(-90deg);
+  color:#fff;
+  box-shadow:0 0 16px rgba(22,163,74,0.5);
+}
+.login-pill-arrow svg{width:12px;height:12px}
+
+/* Kbd hint at bottom when minimized */
+.login-kbd-hint{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:8px;
+  padding:8px 16px;border-radius:30px;
+  background:rgba(0,0,0,0.45);
+  backdrop-filter:blur(14px);
+  border:1px solid rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.6);
+  font-size:11px;font-weight:600;
+  opacity:0;pointer-events:none;
+  transition:opacity 0.5s ease 0.3s;
+  z-index:100;
+}
+.login-kbd-hint.visible{opacity:1}
+.login-kbd-hint kbd{
+  display:inline-block;padding:2px 7px;border-radius:4px;
+  background:rgba(255,255,255,0.1);
+  border:1px solid rgba(255,255,255,0.15);
+  font-family:monospace;font-size:10px;font-weight:700;
+  color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+
+/* When card is minimized, add a subtle vignette fade for drama */
+body.login-minimized .light-rays{opacity:0.25;transition:opacity 0.8s ease}
+body.login-minimized .login-overlay{background:linear-gradient(135deg,rgba(0,0,0,0.2) 0%,rgba(0,0,0,0.15) 100%);transition:background 0.8s ease}
 
 /* ── LOGO ── */
 @keyframes logoFadeIn{
@@ -271,7 +414,14 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
 <!-- Login Card -->
 <div class="login-container">
-  <div class="login-card">
+  <div class="login-card" id="loginCard">
+    <!-- Minimize button -->
+    <button class="login-minimize-btn" id="loginMinBtn" data-tip="Ver paisaje" title="Ver paisaje (Esc)" type="button" aria-label="Minimizar">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 3l6 6M9 3H3v6M21 3l-6 6M15 3h6v6M3 21l6-6M9 21H3v-6M21 21l-6-6M15 21h6v-6"/>
+      </svg>
+    </button>
+
     <img class="login-logo" src="assets/images/logo.png" alt="Frutos Tropicales Peru Export S.A.C.">
     <div class="login-title">Frutos Tropicales Peru Export S.A.C.</div>
     <div class="login-subtitle">Portal de Gestion Integral</div>
@@ -294,6 +444,30 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
       <span>Volver al sitio web</span>
     </a>
   </div>
+</div>
+
+<!-- Floating Pill (shown when card is minimized) -->
+<div class="login-pill" id="loginPill" role="button" tabindex="0" aria-label="Restaurar formulario de acceso">
+  <div class="login-pill-icon">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  </div>
+  <div class="login-pill-text">
+    <span class="login-pill-label">Portal FTP</span>
+    <span class="login-pill-action">Iniciar Sesion</span>
+  </div>
+  <div class="login-pill-arrow">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M5 12h14M13 5l7 7-7 7"/>
+    </svg>
+  </div>
+</div>
+
+<!-- Keyboard hint (shown when minimized) -->
+<div class="login-kbd-hint" id="loginKbdHint">
+  Presiona <kbd>Esc</kbd> o haz click en la pildora para volver
 </div>
 
 <!-- Clock -->
@@ -342,6 +516,61 @@ loginBtn.addEventListener('click', handleLogin);
 passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
 userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
 userInput.focus();
+
+// ═══════════════════════════════════════════
+// MINIMIZE / MAXIMIZE con animacion elegante
+// ═══════════════════════════════════════════
+const card = document.querySelector('.login-card');
+const minBtn = document.getElementById('loginMinBtn');
+const pill = document.getElementById('loginPill');
+const kbdHint = document.getElementById('loginKbdHint');
+let isMinimized = false;
+
+function minimizeCard() {
+  if (isMinimized) return;
+  isMinimized = true;
+  card.classList.add('minimized');
+  document.body.classList.add('login-minimized');
+  // Aparecer pill con ligero delay tras que el card empiece a desvanecer
+  setTimeout(() => {
+    pill.classList.add('visible');
+    kbdHint.classList.add('visible');
+  }, 250);
+}
+
+function restoreCard() {
+  if (!isMinimized) return;
+  isMinimized = false;
+  pill.classList.remove('visible');
+  kbdHint.classList.remove('visible');
+  setTimeout(() => {
+    card.classList.remove('minimized');
+    document.body.classList.remove('login-minimized');
+    // Refocus en el primer campo vacio
+    setTimeout(() => {
+      if (!userInput.value) userInput.focus();
+      else if (!passInput.value) passInput.focus();
+    }, 400);
+  }, 150);
+}
+
+function toggleCard() {
+  isMinimized ? restoreCard() : minimizeCard();
+}
+
+minBtn.addEventListener('click', minimizeCard);
+pill.addEventListener('click', restoreCard);
+pill.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); restoreCard(); }
+});
+
+// Keyboard shortcut: ESC toggles
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    e.preventDefault();
+    toggleCard();
+  }
+});
 
 // Live clock
 function updateClock() {

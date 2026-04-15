@@ -292,9 +292,12 @@ function buildTable(container, data) {
     const totalPT = r.t1pt + r.t2pt;
     const totalR = totalMP > 0 ? (totalPT / totalMP * 100).toFixed(1) : '-';
     const rendColor = totalR !== '-' && parseFloat(totalR) >= 50 ? 'var(--verde)' : 'var(--naranja)';
+    // Format date as DD/MM/YYYY
+    const fechaParts = (r.fecha || '').split('-');
+    const fechaFmt = fechaParts.length === 3 ? `${fechaParts[2]}/${fechaParts[1]}/${fechaParts[0]}` : r.fecha;
 
     return `<tr>
-      <td style="font-size:12px">${r.fecha}</td>
+      <td style="font-size:12px;white-space:nowrap;font-family:monospace;font-weight:600">${fechaFmt}</td>
       <td><span class="badge badge-${getFrutaBadge(r.fruta)}">${r.fruta}</span></td>
       <td style="font-family:monospace">${fmt(r.t1mp)}</td>
       <td style="font-family:monospace">${fmt(r.t1pt)}</td>

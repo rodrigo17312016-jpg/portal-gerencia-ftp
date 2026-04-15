@@ -171,35 +171,74 @@ function buildTable(container) {
     return;
   }
 
-  const sorted = [...weekData].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '') || (b.hora || '').localeCompare(a.hora || ''));
+  // Agrupar por FECHA (un dia por fila consolidado)
+  const byFecha = {};
+  weekData.forEach(r => {
+    const f = r.fecha;
+    if (!byFecha[f]) byFecha[f] = {
+      fecha: f,
+      frutas: new Set(),
+      turnos: new Set(),
+      lineas: new Set(),
+      mp: 0, pt: 0,
+      registros: 0,
+      ejecutado: false
+    };
+    const d = byFecha[f];
+    if (r.fruta) d.frutas.add(r.fruta.toUpperCase());
+    if (r.turno) d.turnos.add((r.turno || '').toUpperCase().includes('DIA') ? 'DIA' : 'NOCHE');
+    if (r.linea) d.lineas.add(r.linea);
+    d.mp += +(r.consumo_kg || 0);
+    d.pt += +(r.pt_aprox_kg || 0);
+    d.registros++;
+    if (r.pt_aprox_kg > 0) d.ejecutado = true;
+  });
 
-  tbody.innerHTML = sorted.slice(0, 60).map(r => {
-    const fruta = (r.fruta || '').toUpperCase();
-    const color = FRUTA_COLORS[fruta] || '#64748b';
-    const rend = r.rendimiento || (r.consumo_kg > 0 ? (r.pt_aprox_kg / r.consumo_kg * 100) : 0);
-    const isDia = (r.turno || '').toUpperCase().includes('DIA');
-    const estadoEjec = r.pt_aprox_kg > 0;
-    const fechaD = new Date(r.fecha + 'T00:00:00');
-    const fechaLbl = fechaD.toLocaleDateString('es-PE', { weekday: 'short', day: '2-digit' });
+  // Ordenar por fecha descendente
+  const dias = Object.values(byFecha).sort((a, b) => b.fecha.localeCompare(a.fecha));
+
+  tbody.innerHTML = dias.map(d => {
+    const rend = d.mp > 0 ? (d.pt / d.mp * 100) : 0;
+    const fechaD = new Date(d.fecha + 'T00:00:00');
+    const fechaLbl = fechaD.toLocaleDateString('es-PE', { weekday: 'long', day: '2-digit', month: '2-digit' });
+
+    // Frutas como chips
+    const frutasArr = [...d.frutas];
+    const frutasLbl = frutasArr.map(f => {
+      const c = FRUTA_COLORS[f] || '#64748b';
+      return `<span style="padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:${c}18;color:${c};border:1px solid ${c}40;margin-right:3px">${f}</span>`;
+    }).join('') || '—';
+
+    // Turnos
+    const turnosLbl = [...d.turnos].map(t => {
+      const isDia = t === 'DIA';
+      return `<span style="color:${isDia ? 'var(--amber)' : 'var(--azul)'};font-weight:700;font-size:11px;margin-right:4px">${isDia ? '☀️ DIA' : '🌙 NOCHE'}</span>`;
+    }).join('') || '—';
+
+    const lineasLbl = [...d.lineas].join(', ') || '—';
 
     return `<tr>
-      <td style="font-size:11.5px;font-family:monospace">${fechaLbl}</td>
-      <td style="font-weight:600;color:${color}">${r.fruta || '—'}</td>
-      <td><span style="color:${isDia ? 'var(--amber)' : 'var(--azul)'};font-weight:700;font-size:11px">${isDia ? '☀️ DIA' : '🌙 NOCHE'}</span></td>
-      <td style="font-size:12px">${r.linea || '—'}</td>
-      <td style="font-family:monospace;color:var(--naranja)">${fmt(r.consumo_kg)}</td>
-      <td style="font-family:monospace;font-weight:700;color:var(--verde)">${fmt(r.pt_aprox_kg)}</td>
-      <td style="font-weight:700;color:${+rend >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${fmt(rend, 1)}%</td>
-      <td><span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:${estadoEjec ? 'var(--verde-bg)' : 'var(--amber-bg)'};color:${estadoEjec ? 'var(--verde)' : 'var(--amber)'};border:1px solid ${estadoEjec ? 'rgba(14,124,58,0.2)' : 'rgba(180,83,9,0.2)'}">${estadoEjec ? '✓ Ejecutado' : '⏳ Pendiente'}</span></td>
+      <td style="font-size:12px;font-family:monospace;font-weight:600">${fechaLbl}</td>
+      <td>${frutasLbl}</td>
+      <td>${turnosLbl}</td>
+      <td style="font-size:11.5px;color:var(--muted)">${lineasLbl}</td>
+      <td style="font-family:monospace;font-weight:700;color:var(--naranja)">${fmt(d.mp)}</td>
+      <td style="font-family:monospace;font-weight:700;color:var(--verde)">${fmt(d.pt)}</td>
+      <td style="font-weight:800;color:${rend >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend.toFixed(1)}%</td>
+      <td><span style="padding:3px 8px;border-radius:6px;font-size:10px;font-weight:700;background:${d.ejecutado ? 'var(--verde-bg)' : 'var(--amber-bg)'};color:${d.ejecutado ? 'var(--verde)' : 'var(--amber)'};border:1px solid ${d.ejecutado ? 'rgba(14,124,58,0.2)' : 'rgba(180,83,9,0.2)'}">${d.ejecutado ? `✓ ${d.registros} reg` : '⏳ Pendiente'}</span></td>
     </tr>`;
   }).join('');
+
+  // Actualizar count label
+  const countLbl = container.querySelector('#progCountLabel');
+  if (countLbl) countLbl.textContent = `${dias.length} dias · ${weekData.length} registros`;
 
   if (tfoot) {
     const totMP = weekData.reduce((s, r) => s + (+(r.consumo_kg || 0)), 0);
     const totPT = weekData.reduce((s, r) => s + (+(r.pt_aprox_kg || 0)), 0);
     const avgRend = totMP > 0 ? (totPT / totMP * 100) : 0;
     tfoot.innerHTML = `<tr style="font-weight:800;background:var(--verde-bg);border-top:2px solid var(--verde)">
-      <td colspan="4" style="color:var(--verde)">📅 TOTAL SEMANA (${weekData.length} reg)</td>
+      <td colspan="4" style="color:var(--verde)">📅 TOTAL SEMANA (${dias.length} dias · ${weekData.length} reg)</td>
       <td style="font-family:monospace;color:var(--naranja)">${fmt(totMP)}</td>
       <td style="font-family:monospace;color:var(--verde)">${fmt(totPT)}</td>
       <td style="color:${avgRend >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${avgRend.toFixed(1)}%</td>

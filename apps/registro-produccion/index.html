@@ -722,7 +722,7 @@ body {
         </div>
         <div class="form-group">
           <label>Producto / Fruta</label>
-          <select id="fFruta">
+          <select id="fFruta" onchange="onFrutaChange()">
             <option value="MANGO" selected>MANGO</option>
             <option value="FRESA">FRESA</option>
             <option value="PALTA">PALTA</option>
@@ -774,12 +774,22 @@ body {
         </div>
         <div class="form-group">
           <label>Consumo MP (kg)</label>
-          <input type="number" id="fConsumo" placeholder="Ej: 2000" min="0" step="0.1" oninput="calcPreview()">
+          <input type="number" id="fConsumo" placeholder="Ej: 2000" min="0" step="0.1" oninput="onConsumoOrRendChange()">
         </div>
         <div class="form-group">
-          <label>P. Terminado Aprox (kg)</label>
-          <input type="number" id="fPT" placeholder="Ej: 900" min="0" step="0.1" oninput="calcPreview()">
-          <span class="tooltip-text">Peso antes de entrar al tunel IQF</span>
+          <label>Rendimiento % <span style="font-size:9px;color:var(--muted);font-weight:500">(editable)</span></label>
+          <input type="number" id="fRend" placeholder="Ej: 43" min="0" max="100" step="0.1" oninput="onConsumoOrRendChange()">
+          <span class="tooltip-text">Se pre-rellena según la fruta</span>
+        </div>
+        <div class="form-group">
+          <label>P. Terminado Aprox (kg) <span style="font-size:9px;color:var(--muted);font-weight:500">(auto)</span></label>
+          <input type="number" id="fPT" placeholder="Auto" min="0" step="0.1" oninput="onPTManualChange()">
+          <span class="tooltip-text">Calculado: Consumo × Rend ÷ 100</span>
+        </div>
+        <div class="form-group">
+          <label>N° Personas</label>
+          <input type="number" id="fPersonas" placeholder="Ej: 30" min="0" step="1" oninput="calcPreview()">
+          <span class="tooltip-text">Peladores/operarios en la hora</span>
         </div>
         <div class="form-group">
           <label>Observacion</label>
@@ -804,6 +814,10 @@ body {
         <div class="calc-item">
           <div class="calc-label">Rendimiento</div>
           <div class="calc-value" id="prevRend">—</div>
+        </div>
+        <div class="calc-item">
+          <div class="calc-label">Productividad</div>
+          <div class="calc-value" id="prevProd">—</div>
         </div>
       </div>
 
@@ -933,8 +947,8 @@ body {
       <div class="chart-wrap"><canvas id="chartBarras"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title">📈 Rendimiento % por Hora</div>
-      <div class="chart-wrap"><canvas id="chartRendimiento"></canvas></div>
+      <div class="card-title">👥 Productividad por Hora <span style="font-size:11px;color:var(--muted);font-weight:500">(kg consumidos / N° personas)</span></div>
+      <div class="chart-wrap"><canvas id="chartProductividad"></canvas></div>
     </div>
   </div>
 
@@ -968,6 +982,8 @@ body {
             <th style="text-align:right">Consumo (kg)</th>
             <th style="text-align:right">P. Terminado (kg)</th>
             <th style="text-align:right">Rend %</th>
+            <th style="text-align:right">N° Personal</th>
+            <th style="text-align:right">Productividad (kg/p)</th>
             <th>Supervisor</th>
             <th>Observacion</th>
             <th style="text-align:center">Acciones</th>
@@ -999,8 +1015,10 @@ body {
       <div class="form-group"><label>Hora</label><select id="mHora"><option value="00:00-01:00">00:00 - 01:00</option><option value="01:00-02:00">01:00 - 02:00</option><option value="02:00-03:00">02:00 - 03:00</option><option value="03:00-04:00">03:00 - 04:00</option><option value="04:00-05:00">04:00 - 05:00</option><option value="05:00-06:00">05:00 - 06:00</option><option value="06:00-07:00">06:00 - 07:00</option><option value="07:00-08:00">07:00 - 08:00</option><option value="08:00-09:00">08:00 - 09:00</option><option value="09:00-10:00">09:00 - 10:00</option><option value="10:00-11:00">10:00 - 11:00</option><option value="11:00-12:00">11:00 - 12:00</option><option value="12:00-13:00">12:00 - 13:00</option><option value="13:00-14:00">13:00 - 14:00</option><option value="14:00-15:00">14:00 - 15:00</option><option value="15:00-16:00">15:00 - 16:00</option><option value="16:00-17:00">16:00 - 17:00</option><option value="17:00-18:00">17:00 - 18:00</option><option value="18:00-19:00">18:00 - 19:00</option><option value="19:00-20:00">19:00 - 20:00</option><option value="20:00-21:00">20:00 - 21:00</option><option value="21:00-22:00">21:00 - 22:00</option><option value="22:00-23:00">22:00 - 23:00</option><option value="23:00-00:00">23:00 - 00:00</option></select></div>
       <div class="form-group"><label>Fruta</label><select id="mFruta"><option value="MANGO">MANGO</option><option value="FRESA">FRESA</option><option value="PALTA">PALTA</option><option value="ARANDANO">ARANDANO</option><option value="PIÑA">PIÑA</option><option value="GRANADA">GRANADA</option></select></div>
       <div class="form-group"><label>Linea</label><select id="mLinea"><option value="Linea 1">Linea 1</option><option value="Linea 2">Linea 2</option></select></div>
-      <div class="form-group"><label>Consumo MP (kg)</label><input type="number" id="mConsumo" min="0" step="0.1"></div>
-      <div class="form-group"><label>P. Terminado (kg)</label><input type="number" id="mPT" min="0" step="0.1"></div>
+      <div class="form-group"><label>Consumo MP (kg)</label><input type="number" id="mConsumo" min="0" step="0.1" oninput="mOnConsumoOrRendChange()"></div>
+      <div class="form-group"><label>Rendimiento %</label><input type="number" id="mRend" min="0" max="100" step="0.1" oninput="mOnConsumoOrRendChange()"></div>
+      <div class="form-group"><label>P. Terminado (kg)</label><input type="number" id="mPT" min="0" step="0.1" oninput="mPtOverride=true"></div>
+      <div class="form-group"><label>N° Personas</label><input type="number" id="mPersonas" min="0" step="1"></div>
       <div class="form-group"><label>Proyectado TN/dia</label><input type="number" id="mProyectado" min="0" step="0.1"></div>
       <div class="form-group"><label>Supervisor</label><select id="mSupervisor"><option value="">— Seleccionar —</option><option value="RAUL VITES">RAUL VITES</option><option value="ANTONY SANCHEZ">ANTONY SANCHEZ</option><option value="ISABEL CADILLO">ISABEL CADILLO</option><option value="EMERSON SOLIS">EMERSON SOLIS</option><option value="JUAN CALCIN">JUAN CALCIN</option><option value="JANA JACINTO">JANA JACINTO</option></select></div>
       <div class="form-group" style="grid-column:1/-1"><label>Observacion</label><input type="text" id="mObs"></div>
@@ -1016,7 +1034,7 @@ body {
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=3"></script>
+<script src="supabase-config.js"></script>
 <script>
 // ═══════════════ THEME ═══════════════
 function toggleTheme() {
@@ -1061,18 +1079,66 @@ function onTurnoChange() {
   if (typeof cargarHorarioGuardado === 'function') cargarHorarioGuardado();
 }
 
+// ═══════════════ REND DEFAULTS POR FRUTA ═══════════════
+const REND_DEFAULTS = {
+  'MANGO': 43, 'PALTA': 36, 'GRANADA': 33, 'PIÑA': 40, 'ARANDANO': 98, 'FRESA': 85
+};
+function getRendDefault(fruta) { return REND_DEFAULTS[fruta] != null ? REND_DEFAULTS[fruta] : 40; }
+
+// Flag: true cuando el usuario editó PT manualmente, false si es auto-calculado
+let ptManualOverride = false;
+
+// ═══════════════ FRUTA CHANGE → auto-rellenar rendimiento ═══════════════
+function onFrutaChange() {
+  const fruta = document.getElementById('fFruta').value;
+  const rendField = document.getElementById('fRend');
+  // Solo sobrescribir si está vacío o tenía el default de otra fruta
+  rendField.value = getRendDefault(fruta);
+  ptManualOverride = false; // reset override al cambiar fruta
+  onConsumoOrRendChange();
+}
+
+// ═══════════════ CONSUMO o REND cambió → recalcular PT ═══════════════
+function onConsumoOrRendChange() {
+  const consumo = parseFloat(document.getElementById('fConsumo').value) || 0;
+  const rend = parseFloat(document.getElementById('fRend').value) || 0;
+  if (!ptManualOverride && consumo > 0 && rend > 0) {
+    const pt = (consumo * rend / 100);
+    document.getElementById('fPT').value = pt.toFixed(1);
+  }
+  calcPreview();
+}
+
+// ═══════════════ Usuario editó PT manualmente → marcar override ═══════════════
+function onPTManualChange() {
+  ptManualOverride = true;
+  calcPreview();
+}
+
 // ═══════════════ CALC PREVIEW ═══════════════
 function calcPreview() {
   const consumo = parseFloat(document.getElementById('fConsumo').value) || 0;
   const pt = parseFloat(document.getElementById('fPT').value) || 0;
+  const rendInput = parseFloat(document.getElementById('fRend').value) || 0;
+  const personas = parseFloat((document.getElementById('fPersonas') || {}).value) || 0;
   const preview = document.getElementById('calcPreview');
 
   if (consumo > 0 || pt > 0) {
     preview.style.display = 'flex';
-    const rend = consumo > 0 ? (pt / consumo * 100) : 0;
+    const rend = rendInput > 0 ? rendInput : (consumo > 0 ? (pt / consumo * 100) : 0);
     const rendEl = document.getElementById('prevRend');
     rendEl.textContent = rend.toFixed(1) + '%';
     rendEl.className = 'calc-value ' + (rend >= 45 ? 'green' : rend >= 40 ? 'amber' : 'red');
+    // Productividad preview
+    const prodEl = document.getElementById('prevProd');
+    if (prodEl) {
+      if (personas > 0 && consumo > 0) {
+        prodEl.textContent = (consumo / personas).toFixed(1) + ' kg/p';
+        prodEl.className = 'calc-value';
+      } else {
+        prodEl.textContent = '—';
+      }
+    }
   } else {
     preview.style.display = 'none';
   }
@@ -1117,6 +1183,7 @@ async function syncLocalToSupabase() {
       proyectado_tn: r.proyectado_tn || 16,
       consumo_kg: r.consumo_kg,
       pt_aprox_kg: r.pt_aprox_kg,
+      personas: r.personas || 0,
       hora_inicio_turno: r.hora_inicio_turno || null,
       hora_fin_turno: r.hora_fin_turno || null,
       almuerzo_inicio: r.almuerzo_inicio || null,
@@ -1160,13 +1227,22 @@ async function registrarHora() {
     return;
   }
   const consumo = parseFloat(document.getElementById('fConsumo').value);
-  const pt = parseFloat(document.getElementById('fPT').value);
+  const rendInput = parseFloat(document.getElementById('fRend').value);
+  let pt = parseFloat(document.getElementById('fPT').value);
+  const personas = parseInt(document.getElementById('fPersonas').value) || 0;
   if (!consumo || isNaN(consumo) || consumo <= 0) { showToast('Ingresa el consumo de MP', true); return; }
-  if (!pt || isNaN(pt) || pt <= 0) { showToast('Ingresa el P. Terminado', true); return; }
+  if (!rendInput || isNaN(rendInput) || rendInput <= 0) { showToast('Ingresa el rendimiento %', true); return; }
+  // Si no hay PT, auto-calcular
+  if (!pt || isNaN(pt) || pt <= 0) {
+    pt = parseFloat((consumo * rendInput / 100).toFixed(1));
+    document.getElementById('fPT').value = pt;
+  }
 
   const supervisor = document.getElementById('fSupervisor').value.trim();
   if (supervisor) localStorage.setItem('prod_reg_supervisor', supervisor);
 
+  // El rendimiento REAL que se guarda debe coincidir con el DB (generado = pt/consumo*100)
+  // Así si el usuario override-ó PT, el rend local queda consistente con lo que Supabase calcule.
   const rend = (pt / consumo * 100).toFixed(1);
   const hora = document.getElementById('fHora').value;
   if (!hora || hora.trim() === '') { showToast('Selecciona la hora del registro', true); return; }
@@ -1185,6 +1261,7 @@ async function registrarHora() {
     consumo_kg: consumo,
     pt_aprox_kg: pt,
     rendimiento: parseFloat(rend),
+    personas: personas,
     hora_inicio_turno: (document.getElementById('fHoraInicio') || {}).value || null,
     hora_fin_turno: (document.getElementById('fHoraFin') || {}).value || null,
     almuerzo_inicio: (almGuardado && almGuardado.inicio) || '',
@@ -1211,6 +1288,7 @@ async function registrarHora() {
         proyectado_tn: record.proyectado_tn,
         consumo_kg: record.consumo_kg,
         pt_aprox_kg: record.pt_aprox_kg,
+        personas: record.personas || 0,
         hora_inicio_turno: record.hora_inicio_turno || null,
         hora_fin_turno: record.hora_fin_turno || null,
         almuerzo_inicio: record.almuerzo_inicio || null,
@@ -1240,9 +1318,14 @@ async function registrarHora() {
 function limpiarForm() {
   document.getElementById('fConsumo').value = '';
   document.getElementById('fPT').value = '';
+  document.getElementById('fPersonas').value = '';
   document.getElementById('fObs').value = '';
   document.getElementById('calcPreview').style.display = 'none';
   document.getElementById('prevRend').textContent = '—';
+  var pp = document.getElementById('prevProd'); if (pp) pp.textContent = '—';
+  ptManualOverride = false;
+  // Restaurar rendimiento por defecto según fruta actual
+  onFrutaChange();
 }
 
 // ═══════════════ AUTO-AVANZAR HORA ═══════════════
@@ -1544,12 +1627,22 @@ function cargarAlmuerzoGuardado() {
 
 // ═══════════════ EDIT MODAL ═══════════════
 let editingProdId = null;
+let mPtOverride = false;
+
+function mOnConsumoOrRendChange() {
+  const c = parseFloat(document.getElementById('mConsumo').value) || 0;
+  const rend = parseFloat(document.getElementById('mRend').value) || 0;
+  if (!mPtOverride && c > 0 && rend > 0) {
+    document.getElementById('mPT').value = (c * rend / 100).toFixed(1);
+  }
+}
 
 function openEditModal(id) {
   const records = getRecords();
   const r = records.find(rec => rec.id === id);
   if (!r) return;
   editingProdId = id;
+  mPtOverride = true; // al abrir, respetar PT que ya tiene
   document.getElementById('mFecha').value = r.fecha || '';
   document.getElementById('mTurno').value = r.turno || 'DIA';
   document.getElementById('mHora').value = r.hora || '';
@@ -1557,6 +1650,8 @@ function openEditModal(id) {
   document.getElementById('mLinea').value = r.linea || 'Linea 1';
   document.getElementById('mConsumo').value = r.consumo_kg || '';
   document.getElementById('mPT').value = r.pt_aprox_kg || '';
+  document.getElementById('mRend').value = r.rendimiento || getRendDefault(r.fruta || 'MANGO');
+  document.getElementById('mPersonas').value = r.personas || '';
   document.getElementById('mProyectado').value = r.proyectado_tn || 16;
   document.getElementById('mSupervisor').value = r.supervisor || '';
   document.getElementById('mObs').value = r.observacion || '';
@@ -1584,7 +1679,10 @@ async function guardarEdicion() {
   if (consumo <= 0) { showToast('Ingresa el consumo de MP', true); return; }
   const pt = parseFloat(document.getElementById('mPT').value) || 0;
   if (pt <= 0) { showToast('Ingresa el P. Terminado', true); return; }
+  // El rendimiento en DB es generado (pt/consumo*100). Guardamos el mismo valor
+  // en localStorage para mantener consistencia al volver a leer de Supabase.
   const rend = consumo > 0 ? parseFloat((pt / consumo * 100).toFixed(1)) : 0;
+  const personas = parseInt(document.getElementById('mPersonas').value) || 0;
   const proyectado = parseFloat(document.getElementById('mProyectado').value) || 16;
 
   records[idx] = {
@@ -1597,6 +1695,7 @@ async function guardarEdicion() {
     consumo_kg: consumo,
     pt_aprox_kg: pt,
     rendimiento: rend,
+    personas: personas,
     proyectado_tn: proyectado,
     supervisor: document.getElementById('mSupervisor').value.trim(),
     observacion: document.getElementById('mObs').value.trim()
@@ -1611,6 +1710,7 @@ async function guardarEdicion() {
       await supabaseClient.from('registro_produccion').upsert({
         fecha: r.fecha, hora: r.hora, turno: r.turno, fruta: r.fruta, linea: r.linea,
         proyectado_tn: r.proyectado_tn, consumo_kg: r.consumo_kg, pt_aprox_kg: r.pt_aprox_kg,
+        personas: r.personas || 0,
         supervisor: r.supervisor, observacion: r.observacion
       }, { onConflict: 'fecha,hora,linea' });
     } catch(e) { console.error('Supabase sync error', e); }
@@ -1697,6 +1797,7 @@ async function refreshAll() {
           consumo_kg: parseFloat(d.consumo_kg),
           pt_aprox_kg: parseFloat(d.pt_aprox_kg),
           rendimiento: parseFloat(d.rendimiento),
+          personas: parseInt(d.personas) || 0,
           proyectado_tn: parseFloat(d.proyectado_tn)
         }))];
         localStorage.setItem('prod_registros', JSON.stringify(merged));
@@ -1891,6 +1992,8 @@ function buildFruitSubRow(fruta, recsArr, colorRgb) {
   const fC = recsArr.reduce((s, r) => s + r.consumo_kg, 0);
   const fPT = recsArr.reduce((s, r) => s + r.pt_aprox_kg, 0);
   const fRend = fC > 0 ? (fPT / fC * 100).toFixed(1) : 0;
+  const fPers = recsArr.reduce((s, r) => s + (r.personas || 0), 0);
+  const fProdAvg = fPers > 0 ? (fC / fPers) : 0;
   const fc = getFrutaColor(fruta);
   const icon = FRUTA_ICONS[fruta] || '📦';
   return `<tr style="background:${fc.bg};border-top:1px dashed rgba(${colorRgb},0.3)">
@@ -1898,6 +2001,8 @@ function buildFruitSubRow(fruta, recsArr, colorRgb) {
     <td class="num" style="font-weight:700;color:${fc.main}">${formatNum(fC)}</td>
     <td class="num" style="font-weight:700;color:${fc.main}">${formatNum(fPT)}</td>
     <td style="font-weight:700;color:${fc.main}">${fRend}%</td>
+    <td class="num" style="font-weight:700;color:${fc.main}">${fPers || '—'}</td>
+    <td class="num" style="font-weight:700;color:${fc.main}">${fPers > 0 ? formatNum(fProdAvg) : '—'}</td>
     <td colspan="3"></td>
   </tr>`;
 }
@@ -1917,7 +2022,7 @@ function renderTurnoRows(sortedRecs, turnoLabel, almInicio, almFin, cenaData) {
       if (almInicio && almFin && !almRowInserted && horaStart >= almInicio) {
         rows += `<tr class="row-almuerzo">
           <td style="font-weight:700" colspan="3">🍽️ ALMUERZO (${almInicio} - ${almFin})</td>
-          <td colspan="6" style="color:var(--amber);font-weight:700;font-style:italic">Pausa de almuerzo</td>
+          <td colspan="8" style="color:var(--amber);font-weight:700;font-style:italic">Pausa de almuerzo</td>
           <td style="text-align:center;white-space:nowrap"><button onclick="abrirEditPausa('almuerzo')" title="Editar" style="background:rgba(245,158,11,0.12);color:#f59e0b;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center">✏️</button><button onclick="eliminarPausa('almuerzo')" title="Eliminar" style="background:rgba(239,68,68,0.12);color:#ef4444;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px">🗑️</button></td>
         </tr>`;
         almRowInserted = true;
@@ -1933,7 +2038,7 @@ function renderTurnoRows(sortedRecs, turnoLabel, almInicio, almFin, cenaData) {
         if (horaOrd >= cenaOrd) {
           rows += `<tr class="row-almuerzo" style="background:rgba(139,92,246,0.06)!important">
             <td style="font-weight:700;border-left:3px solid #8b5cf6" colspan="3">🌙 CENA (${cenaData.inicio} - ${cenaData.fin})</td>
-            <td colspan="6" style="color:#8b5cf6;font-weight:700;font-style:italic">Pausa de cena</td>
+            <td colspan="8" style="color:#8b5cf6;font-weight:700;font-style:italic">Pausa de cena</td>
             <td style="text-align:center;white-space:nowrap"><button onclick="abrirEditPausa('cena')" title="Editar" style="background:rgba(139,92,246,0.12);color:#8b5cf6;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center">✏️</button><button onclick="eliminarPausa('cena')" title="Eliminar" style="background:rgba(239,68,68,0.12);color:#ef4444;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px">🗑️</button></td>
           </tr>`;
           cenaRowInserted = true;
@@ -1942,6 +2047,8 @@ function renderTurnoRows(sortedRecs, turnoLabel, almInicio, almFin, cenaData) {
 
       const rendClass = r.rendimiento >= 45 ? 'badge-green' : r.rendimiento >= 40 ? 'badge-amber' : 'badge-red';
       const obs = r.observacion || '';
+      const pers = r.personas || 0;
+      const prod = pers > 0 ? (r.consumo_kg / pers) : 0;
 
       rows += `<tr>
         <td style="font-weight:700">${r.hora}</td>
@@ -1951,6 +2058,8 @@ function renderTurnoRows(sortedRecs, turnoLabel, almInicio, almFin, cenaData) {
         <td class="num">${formatNum(r.consumo_kg)}</td>
         <td class="num">${formatNum(r.pt_aprox_kg)}</td>
         <td class="num"><span class="badge ${rendClass}">${r.rendimiento}%</span></td>
+        <td class="num" style="font-weight:600">${pers || '—'}</td>
+        <td class="num" style="font-weight:700;color:${prod > 0 ? '#0891b2' : 'var(--muted)'}">${prod > 0 ? formatNum(prod) : '—'}</td>
         <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.supervisor || '—'}</td>
         <td style="max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${obs}">${obs}</td>
         <td style="text-align:center;white-space:nowrap"><button onclick="openEditModal('${r.id}')" title="Editar" style="background:rgba(37,99,235,0.12);color:#2563eb;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;transition:all 0.2s">✏️</button><button class="delete-btn" onclick="deleteRecord('${r.id}')" title="Eliminar">🗑️</button></td>
@@ -1967,7 +2076,7 @@ function renderTurnoRows(sortedRecs, turnoLabel, almInicio, almFin, cenaData) {
   if (cenaData && !cenaRowInserted) {
     rows += `<tr class="row-almuerzo" style="background:rgba(139,92,246,0.06)!important">
       <td style="font-weight:700;border-left:3px solid #8b5cf6" colspan="3">🌙 CENA (${cenaData.inicio} - ${cenaData.fin})</td>
-      <td colspan="6" style="color:#8b5cf6;font-weight:700;font-style:italic">Pausa de cena</td>
+      <td colspan="8" style="color:#8b5cf6;font-weight:700;font-style:italic">Pausa de cena</td>
       <td style="text-align:center;white-space:nowrap"><button onclick="abrirEditPausa('cena')" title="Editar" style="background:rgba(139,92,246,0.12);color:#8b5cf6;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center">✏️</button><button onclick="eliminarPausa('cena')" title="Eliminar" style="background:rgba(239,68,68,0.12);color:#ef4444;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px">🗑️</button></td>
     </tr>`;
   }
@@ -2015,7 +2124,7 @@ function updateTable(recs) {
   rows += diaResult.rows;
 
   if (almInicio && almFin && !diaResult.almInserted && diaRecs.length > 0) {
-    rows += `<tr class="row-almuerzo"><td style="font-weight:700" colspan="3">🍽️ ALMUERZO (${almInicio} - ${almFin})</td><td colspan="6" style="color:var(--amber);font-weight:700;font-style:italic">Pausa de almuerzo</td><td style="text-align:center;white-space:nowrap"><button onclick="abrirEditPausa('almuerzo')" title="Editar" style="background:rgba(245,158,11,0.12);color:#f59e0b;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center">✏️</button><button onclick="eliminarPausa('almuerzo')" title="Eliminar" style="background:rgba(239,68,68,0.12);color:#ef4444;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px">🗑️</button></td></tr>`;
+    rows += `<tr class="row-almuerzo"><td style="font-weight:700" colspan="3">🍽️ ALMUERZO (${almInicio} - ${almFin})</td><td colspan="8" style="color:var(--amber);font-weight:700;font-style:italic">Pausa de almuerzo</td><td style="text-align:center;white-space:nowrap"><button onclick="abrirEditPausa('almuerzo')" title="Editar" style="background:rgba(245,158,11,0.12);color:#f59e0b;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center">✏️</button><button onclick="eliminarPausa('almuerzo')" title="Eliminar" style="background:rgba(239,68,68,0.12);color:#ef4444;border:none;cursor:pointer;font-size:14px;padding:4px;border-radius:8px;width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;margin-left:4px">🗑️</button></td></tr>`;
   }
 
   // SUBTOTAL DIA
@@ -2023,11 +2132,15 @@ function updateTable(recs) {
     const diaC = diaRecs.reduce((s, r) => s + r.consumo_kg, 0);
     const diaPT = diaRecs.reduce((s, r) => s + r.pt_aprox_kg, 0);
     const diaRend = diaC > 0 ? (diaPT / diaC * 100).toFixed(1) : 0;
+    const diaPers = diaRecs.reduce((s, r) => s + (r.personas || 0), 0);
+    const diaProd = diaPers > 0 ? (diaC / diaPers) : 0;
     rows += `<tr style="background:rgba(22,163,74,0.08);border-top:2px solid rgba(22,163,74,0.3)">
       <td style="font-weight:800;color:#16a34a" colspan="4">☀️ SUBTOTAL DIA (${diaRecs.length} hrs)</td>
       <td class="num" style="font-weight:700;color:#16a34a">${formatNum(diaC)}</td>
       <td class="num" style="font-weight:700;color:#16a34a">${formatNum(diaPT)}</td>
       <td style="font-weight:700;color:#16a34a">${diaRend}%</td>
+      <td class="num" style="font-weight:700;color:#16a34a">${diaPers || '—'}</td>
+      <td class="num" style="font-weight:700;color:#16a34a">${diaPers > 0 ? formatNum(diaProd) : '—'}</td>
       <td colspan="3"></td>
     </tr>`;
   }
@@ -2045,11 +2158,15 @@ function updateTable(recs) {
     const nocheC = nocheRecs.reduce((s, r) => s + r.consumo_kg, 0);
     const nochePT = nocheRecs.reduce((s, r) => s + r.pt_aprox_kg, 0);
     const nocheRend = nocheC > 0 ? (nochePT / nocheC * 100).toFixed(1) : 0;
+    const nochePers = nocheRecs.reduce((s, r) => s + (r.personas || 0), 0);
+    const nocheProd = nochePers > 0 ? (nocheC / nochePers) : 0;
     rows += `<tr style="background:rgba(139,92,246,0.08);border-top:2px solid rgba(139,92,246,0.3)">
       <td style="font-weight:800;color:#8b5cf6" colspan="4">🌙 SUBTOTAL NOCHE (${nocheRecs.length} hrs)</td>
       <td class="num" style="font-weight:700;color:#8b5cf6">${formatNum(nocheC)}</td>
       <td class="num" style="font-weight:700;color:#8b5cf6">${formatNum(nochePT)}</td>
       <td style="font-weight:700;color:#8b5cf6">${nocheRend}%</td>
+      <td class="num" style="font-weight:700;color:#8b5cf6">${nochePers || '—'}</td>
+      <td class="num" style="font-weight:700;color:#8b5cf6">${nochePers > 0 ? formatNum(nocheProd) : '—'}</td>
       <td colspan="3"></td>
     </tr>`;
   }
@@ -2061,11 +2178,16 @@ function updateTable(recs) {
   const totPT = recs.reduce((s, r) => s + r.pt_aprox_kg, 0);
   const totRend = totC > 0 ? (totPT / totC * 100).toFixed(1) : 0;
 
+  const totPers = recs.reduce((s, r) => s + (r.personas || 0), 0);
+  const totProd = totPers > 0 ? (totC / totPers) : 0;
+
   tfoot.innerHTML = `<tr class="table-footer" style="background:rgba(37,99,235,0.08);border-top:3px solid rgba(37,99,235,0.4)">
     <td colspan="4" style="font-weight:900;color:#2563eb">🏭 TOTAL GENERAL (${recs.length} hrs)</td>
     <td class="num" style="font-weight:800;color:#2563eb">${formatNum(totC)}</td>
     <td class="num" style="font-weight:800;color:#2563eb">${formatNum(totPT)}</td>
     <td class="num" style="font-weight:800;color:#2563eb">${totRend}%</td>
+    <td class="num" style="font-weight:800;color:#2563eb">${totPers || '—'}</td>
+    <td class="num" style="font-weight:800;color:#2563eb">${totPers > 0 ? formatNum(totProd) : '—'}</td>
     <td colspan="3"></td>
   </tr>`;
 }
@@ -2195,49 +2317,56 @@ function rebuildCharts(recs) {
     plugins: [ChartDataLabels]
   });
 
-  // ── LINE CHART: Rendimiento % con colores por fruta ──
+  // ── PRODUCTIVIDAD CHART: kg consumidos / N° personas por hora ──
   if (chartLine) chartLine.destroy();
-  const ctxLine = document.getElementById('chartRendimiento').getContext('2d');
-  const rendData = sorted.map(r => r.rendimiento);
+  const ctxLine = document.getElementById('chartProductividad').getContext('2d');
+  const prodData = sorted.map(r => {
+    const p = r.personas || 0;
+    return p > 0 ? parseFloat((r.consumo_kg / p).toFixed(1)) : 0;
+  });
   const pointColors = sorted.map(r => {
     const fc = getFrutaColor(r.fruta);
     return fc.main;
   });
   const pointBorders = sorted.map(r => r.turno === 'NOCHE' ? '#8b5cf6' : '#fff');
 
+  // Color de barra según turno
+  const barColorsProd = sorted.map(r => {
+    const fc = getFrutaColor(r.fruta);
+    return fc.main + 'CC';
+  });
+  const barBordersProd = sorted.map(r => getFrutaColor(r.fruta).main);
+
   chartLine = new Chart(ctxLine, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels: labels,
       datasets: [
         {
-          label: 'Rendimiento %',
-          data: rendData,
-          borderColor: '#16a34a',
-          backgroundColor: 'rgba(22,163,74,0.1)',
-          fill: true,
-          tension: 0.3,
-          pointRadius: 7,
-          pointBackgroundColor: pointColors,
-          pointBorderColor: pointBorders,
-          pointBorderWidth: 2.5,
-          borderWidth: 2.5,
-          segment: {
-            borderColor: function(ctx) {
-              const i = ctx.p0DataIndex;
-              const r = sorted[i];
-              return r && r.turno === 'NOCHE' ? 'rgba(139,92,246,0.6)' : '#16a34a';
-            }
-          }
+          label: 'Productividad (kg/persona)',
+          data: prodData,
+          backgroundColor: barColorsProd,
+          borderColor: barBordersProd,
+          borderWidth: 1.5,
+          borderRadius: 6,
+          barPercentage: 0.65,
+          categoryPercentage: 0.85,
+          order: 2
         },
         {
-          label: 'Objetivo Rend. %',
-          data: sorted.map(r => getRendimientoObjetivo(r.fruta)),
-          borderColor: 'rgba(239,68,68,0.5)',
-          borderDash: [8, 4],
-          borderWidth: 2,
-          pointRadius: 0,
-          fill: false
+          type: 'line',
+          label: 'Tendencia',
+          data: prodData,
+          borderColor: '#0891b2',
+          backgroundColor: 'rgba(8,145,178,0.08)',
+          fill: false,
+          tension: 0.35,
+          pointRadius: 5,
+          pointBackgroundColor: pointColors,
+          pointBorderColor: pointBorders,
+          pointBorderWidth: 2,
+          borderWidth: 2.5,
+          order: 1
         }
       ]
     },
@@ -2247,19 +2376,16 @@ function rebuildCharts(recs) {
       plugins: {
         legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
         datalabels: {
-          align: 'top',
+          anchor: 'end', align: 'top',
           color: function(ctx) {
             if (ctx.datasetIndex !== 0) return 'transparent';
             const r = sorted[ctx.dataIndex];
-            if (r) return getFrutaColor(r.fruta).main;
-            const v = ctx.dataset.data[ctx.dataIndex];
-            return v >= 45 ? '#16a34a' : v >= 40 ? '#f59e0b' : '#ef4444';
+            return r ? getFrutaColor(r.fruta).main : textColor;
           },
           font: { weight: '800', size: 9, family: 'Plus Jakarta Sans' },
           formatter: function(value, ctx) {
             if (ctx.datasetIndex !== 0) return '';
-            if (Number.isInteger(value)) return value + '%';
-            return parseFloat(value).toFixed(1) + '%';
+            return value > 0 ? value.toLocaleString('es-PE') + ' kg/p' : '';
           }
         },
         tooltip: {
@@ -2272,15 +2398,18 @@ function rebuildCharts(recs) {
               return r.hora + ' — ' + icon + ' ' + r.fruta + ' (' + r.turno + ')';
             },
             label: function(item) {
-              if (item.datasetIndex === 1) return 'Objetivo: ' + item.raw + '%';
-              return 'Rendimiento: ' + item.raw + '%';
+              const r = sorted[item.dataIndex];
+              if (!r) return '';
+              const p = r.personas || 0;
+              if (p === 0) return 'Sin N° personas registrado';
+              return 'Productividad: ' + item.raw.toLocaleString('es-PE') + ' kg/persona  (' + formatNum(r.consumo_kg) + ' kg ÷ ' + p + ' pers)';
             }
           }
         }
       },
       scales: {
         x: { ticks: { color: function(ctx) { const r = sorted[ctx.index]; return r && r.turno === 'NOCHE' ? '#8b5cf6' : textColor; }, font: { size: 10 } }, grid: { color: gridColor } },
-        y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true, max: 100 }
+        y: { ticks: { color: textColor, font: { size: 10 }, callback: function(v) { return v + ' kg/p'; } }, grid: { color: gridColor }, beginAtZero: true, title: { display: true, text: 'kg / persona', color: textColor, font: { size: 11, weight: '700' } } }
       }
     },
     plugins: [ChartDataLabels]
@@ -2477,6 +2606,7 @@ async function loadFromSupabase() {
         consumo_kg: parseFloat(d.consumo_kg),
         pt_aprox_kg: parseFloat(d.pt_aprox_kg),
         rendimiento: parseFloat(d.rendimiento),
+        personas: parseInt(d.personas) || 0,
         proyectado_tn: parseFloat(d.proyectado_tn)
       }))];
       localStorage.setItem('prod_registros', JSON.stringify(merged));
@@ -2495,6 +2625,9 @@ async function loadFromSupabase() {
   // Restore supervisor
   const savedSup = localStorage.getItem('prod_reg_supervisor');
   if (savedSup) document.getElementById('fSupervisor').value = savedSup;
+
+  // Pre-cargar rendimiento por default según fruta actual
+  if (typeof onFrutaChange === 'function') onFrutaChange();
 
   // Set today's date
   const d = new Date();

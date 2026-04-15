@@ -9,7 +9,7 @@
       pct=document.getElementById('preloaderPercent'),
       preloader=document.getElementById('preloader'),
       pageContent=document.getElementById('pageContent'),
-      duration=3500, start=performance.now();
+      duration=4500, start=performance.now();
 
   function tick(now){
     var elapsed=now-start;

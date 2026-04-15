@@ -72,7 +72,13 @@
     <div class="card-title">📋 Indicadores Diarios — Detalle</div>
     <div class="badge badge-verde" id="ind-row-count">0 registros</div>
   </div>
-  <div class="table-container">
+  <div class="table-container" style="overflow-x:auto">
+    <style>
+      #panel-indicadores table.data-table { table-layout:auto; font-size:12px; width:100% }
+      #panel-indicadores table.data-table th { padding:8px 8px; white-space:nowrap; font-size:10.5px }
+      #panel-indicadores table.data-table td { padding:8px 8px }
+      #panel-indicadores table.data-table th:first-child, #panel-indicadores table.data-table td:first-child { min-width:92px }
+    </style>
     <table class="data-table">
       <thead><tr>
         <th>Fecha</th><th>Cultivo</th>

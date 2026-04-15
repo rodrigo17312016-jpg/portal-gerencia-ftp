@@ -1,31 +1,85 @@
-<!-- Panel: Comparativo Turnos -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🔄 Comparativo <span style="color:var(--azul)">Turnos</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Analisis comparativo produccion dia vs noche</p>
+<!-- Panel: Comparativo Turnos - Version Ejecutiva v4 -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(30,64,175,0.08) 0%,rgba(30,64,175,0.02) 100%);border:1px solid rgba(30,64,175,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(30,64,175,0.12);border:1px solid rgba(30,64,175,0.12)">🔄</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Comparativo de Turnos</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Analisis Dia vs Noche · <span id="compLastUpdate" style="color:var(--azul);font-weight:700">Sincronizando…</span></p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <div class="badge badge-azul" style="background:var(--azul-bg);color:var(--azul);border:1px solid rgba(30,64,175,0.2);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px">📊 ANALITICA</div>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Produccion Dia</div><div class="kpi-value" id="compDia">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
-  <div class="kpi-card"><div class="kpi-label">Produccion Noche</div><div class="kpi-value" id="compNoche">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
-  <div class="kpi-card"><div class="kpi-label">Diferencia %</div><div class="kpi-value" id="compDiff">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Mejor Turno</div><div class="kpi-value" id="compMejor">—</div></div>
+<!-- Filtros -->
+<div class="card" style="padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <div style="display:flex;gap:6px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Rango:</span>
+    <button class="filter-chip active" data-cfilter="rango" data-value="14">14 dias</button>
+    <button class="filter-chip" data-cfilter="rango" data-value="30">30 dias</button>
+    <button class="filter-chip" data-cfilter="rango" data-value="60">60 dias</button>
+  </div>
+  <span style="width:1px;height:22px;background:var(--border)"></span>
+  <div style="display:flex;gap:6px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Metrica:</span>
+    <button class="filter-chip active" data-cfilter="metrica" data-value="pt">PT kg</button>
+    <button class="filter-chip" data-cfilter="metrica" data-value="mp">MP kg</button>
+    <button class="filter-chip" data-cfilter="metrica" data-value="rend">Rendimiento %</button>
+  </div>
+  <div style="margin-left:auto">
+    <button id="compRefreshBtn" class="btn-ghost" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700">↻</button>
+  </div>
 </div>
 
-<div class="charts-grid charts-grid-1" style="margin-top:20px">
+<!-- 4 KPIs ejecutivos -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">☀️</div><div class="kpi-label" style="font-size:9px;margin:0">PRODUCCION TURNO DIA</div></div>
+    <div class="kpi-value" style="font-size:24px" id="compDia">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="compDiaSub">Promedio: — kg/dia</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--azul)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">🌙</div><div class="kpi-label" style="font-size:9px;margin:0">PRODUCCION TURNO NOCHE</div></div>
+    <div class="kpi-value" style="font-size:24px" id="compNoche">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="compNocheSub">Promedio: — kg/dia</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">⚖️</div><div class="kpi-label" style="font-size:9px;margin:0">DIFERENCIA</div></div>
+    <div class="kpi-value" style="font-size:24px" id="compDiff">0<span style="font-size:11px;font-weight:500">%</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="compDiffSub">Entre turnos</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--verde)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">🏆</div><div class="kpi-label" style="font-size:9px;margin:0">MEJOR TURNO</div></div>
+    <div class="kpi-value" style="font-size:24px" id="compMejor">—</div>
+    <div style="font-size:10px;color:var(--muted)" id="compMejorSub">Mayor promedio</div>
+  </div>
+</div>
+
+<!-- 2 Charts -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:20px">
   <div class="chart-container">
     <div class="chart-header"><div class="chart-title">📊 Produccion Dia vs Noche por Fecha</div></div>
     <div class="chart-wrapper"><canvas id="chartCompTurnos"></canvas></div>
   </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🎯 Distribucion de Turnos</div></div>
+    <div class="chart-wrapper"><canvas id="chartCompDonut"></canvas></div>
+  </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Comparativo Diario</div></div>
+<!-- Tabla -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Comparativo Diario</div>
+    <div class="badge badge-azul" style="background:var(--azul-bg);color:var(--azul);border:1px solid rgba(30,64,175,0.2);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700">📈 <span id="compRangeLabel">14 dias</span></div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>PT Dia (kg)</th><th>PT Noche (kg)</th><th>Total (kg)</th><th>Diferencia</th><th>Mejor</th></tr></thead>
-      <tbody id="compTabla"></tbody>
+      <thead><tr>
+        <th>Fecha</th><th>Dia</th><th>Noche</th><th>Total</th>
+        <th>Diferencia</th><th>Mejor Turno</th>
+      </tr></thead>
+      <tbody id="compTabla"><tr><td colspan="6" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando comparativo...</td></tr></tbody>
+      <tfoot id="compFoot"></tfoot>
     </table>
   </div>
 </div>

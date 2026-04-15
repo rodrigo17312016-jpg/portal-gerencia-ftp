@@ -1,24 +1,65 @@
-<!-- Panel: Gestion de Almuerzos -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🍽️ Gestion de <span style="color:var(--amber)">Almuerzos</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Control de almuerzos y costos de alimentacion</p>
+<!-- Panel: Gestion de Almuerzos - Ejecutivo v4 -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(180,83,9,0.08) 0%,rgba(180,83,9,0.02) 100%);border:1px solid rgba(180,83,9,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(180,83,9,0.12);border:1px solid rgba(180,83,9,0.12)">🍽️</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Gestion de Almuerzos</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Control de alimentacion y costos · <span id="almLastUpdate" style="color:var(--amber);font-weight:700">Sincronizando…</span></p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="badge" style="background:var(--amber-bg);color:var(--amber);border:1px solid rgba(180,83,9,0.2);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700">🍴 HOY</div>
+    <button id="almRefreshBtn" class="btn-ghost" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700">↻</button>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Almuerzos Hoy</div><div class="kpi-value" id="almHoy">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Costo Total</div><div class="kpi-value" id="almCostoTotal">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Costo/Persona</div><div class="kpi-value" id="almCostoPP">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Personal</div><div class="kpi-value" id="almPersonal">—</div></div>
+<!-- 4 KPIs ejecutivos -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">🍽️</div><div class="kpi-label" style="font-size:9px;margin:0">ALMUERZOS HOY</div></div>
+    <div class="kpi-value" style="font-size:24px" id="almHoy">0</div>
+    <div style="font-size:10px;color:var(--muted)" id="almHoySub">Raciones servidas</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">💵</div><div class="kpi-label" style="font-size:9px;margin:0">COSTO TOTAL HOY</div></div>
+    <div class="kpi-value" style="font-size:24px" id="almCostoTotal">S/ 0</div>
+    <div style="font-size:10px;color:var(--muted)" id="almCostoTotalSub">Total del dia</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--cyan)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">👤</div><div class="kpi-label" style="font-size:9px;margin:0">COSTO / PERSONA</div></div>
+    <div class="kpi-value" style="font-size:24px" id="almCostoPP">S/ 0</div>
+    <div style="font-size:10px;color:var(--muted)" id="almCostoPPSub">Tarifa vigente</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--purple)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">📅</div><div class="kpi-label" style="font-size:9px;margin:0">COSTO 14 DIAS</div></div>
+    <div class="kpi-value" style="font-size:24px" id="alm14d">S/ 0</div>
+    <div style="font-size:10px;color:var(--muted)" id="alm14dSub">Acumulado</div>
+  </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Registro de Almuerzos</div></div>
+<!-- Chart de costos -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">💰 Costo de Almuerzos por Dia</div></div>
+    <div class="chart-wrapper"><canvas id="chartAlmCosto"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🏢 Distribucion por Area</div></div>
+    <div class="chart-wrapper"><canvas id="chartAlmAreas"></canvas></div>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Registro de Almuerzos</div>
+    <div class="badge" style="background:var(--amber-bg);color:var(--amber);border:1px solid rgba(180,83,9,0.2);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700">📅 14 dias</div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Cantidad</th><th>Costo Unit.</th><th>Costo Total</th><th>Area</th></tr></thead>
-      <tbody id="almTabla"></tbody>
+      <thead><tr>
+        <th>Fecha</th><th>Cantidad</th><th>Costo Unit.</th><th>Costo Total</th><th>Area(s)</th>
+      </tr></thead>
+      <tbody id="almTabla"><tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando registros...</td></tr></tbody>
+      <tfoot id="almFoot"></tfoot>
     </table>
   </div>
 </div>

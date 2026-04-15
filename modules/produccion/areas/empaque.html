@@ -1,82 +1,116 @@
-<!-- Panel: Area de Empaque - Version Completa -->
-<div style="background:linear-gradient(135deg,rgba(22,163,74,0.08),rgba(22,163,74,0.02));border:1px solid rgba(22,163,74,0.15);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-  <div style="width:52px;height:52px;border-radius:14px;background:rgba(22,163,74,0.12);display:flex;align-items:center;justify-content:center;font-size:26px">&#128230;</div>
-  <div style="flex:1">
-    <h2 style="font-size:20px;font-weight:900;color:var(--texto);margin:0">Empaque</h2>
-    <p style="font-size:12px;color:var(--muted);margin:2px 0 0">Empaque y sellado de producto congelado &middot; Datos en tiempo real</p>
+<!-- Panel: Area de Empaque - Version Ejecutiva v4 -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(14,124,58,0.08) 0%,rgba(14,124,58,0.02) 100%);border:1px solid rgba(14,124,58,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(14,124,58,0.12);border:1px solid rgba(14,124,58,0.12)">📦</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Empaque Congelado</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Empaque y sellado de producto IQF · <span id="empLastUpdate" style="color:var(--verde);font-weight:700">Sincronizando…</span></p>
   </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> En vivo</div>
-    <a href="apps/empaque-congelado/index.html" target="_blank" class="btn btn-sm btn-primary">&#128230; Registro Empaque</a>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <div class="badge badge-verde" style="background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px"><span style="width:7px;height:7px;background:var(--verde);border-radius:50%;animation:tunPulse 1.5s infinite"></span> EN VIVO</div>
+    <a href="apps/empaque-congelado/index.html" target="_blank" class="btn btn-sm" style="background:var(--verde);color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(14,124,58,0.25)">📦 Registrar Empaque</a>
   </div>
 </div>
 
 <!-- Filtros -->
-<div class="filter-bar" style="margin-bottom:16px">
-  <div class="filter-chip active" data-filter="turno" data-value="DIA">Turno Dia</div>
-  <div class="filter-chip" data-filter="turno" data-value="NOCHE">Turno Noche</div>
-  <div class="filter-chip" data-filter="turno" data-value="AMBOS">Ambos Turnos</div>
-  <input type="date" id="empFilterDate" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600">
-  <select id="empFilterFruta" style="padding:6px 12px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px">
-    <option value="TODAS">Todas las frutas</option>
-    <option value="MANGO">&#129389; Mango</option><option value="ARANDANO">&#129744; Arandano</option>
-    <option value="GRANADA">&#127822; Granada</option><option value="PALTA">&#129361; Palta</option>
-    <option value="FRESA">&#127827; Fresa</option><option value="PI&Ntilde;A">&#127821; Pi&ntilde;a</option>
-  </select>
+<div class="card" style="padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border)">
+  <div style="display:flex;gap:6px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Turno:</span>
+    <button class="filter-chip active" data-efilter="turno" data-value="DIA">☀️ Dia</button>
+    <button class="filter-chip" data-efilter="turno" data-value="NOCHE">🌙 Noche</button>
+    <button class="filter-chip" data-efilter="turno" data-value="AMBOS">Ambos</button>
+  </div>
+  <span style="width:1px;height:22px;background:var(--border)"></span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Fecha:</span>
+    <input type="date" id="empFilterDate" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600;font-family:inherit">
+  </div>
+  <span style="width:1px;height:22px;background:var(--border)"></span>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Fruta:</span>
+    <select id="empFilterFruta" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600">
+      <option value="TODAS">Todas</option>
+      <option value="MANGO">🥭 Mango</option><option value="ARANDANO">🫐 Arandano</option>
+      <option value="GRANADA">🍎 Granada</option><option value="PALTA">🥑 Palta</option>
+      <option value="FRESA">🍓 Fresa</option><option value="PIÑA">🍍 Piña</option>
+    </select>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Tipo:</span>
+    <select id="empFilterTipo" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px;font-weight:600">
+      <option value="TODOS">Todos</option>
+      <option value="IQF">IQF</option>
+      <option value="CONVENCIONAL">Convencional</option>
+      <option value="PULPA">Pulpa</option>
+    </select>
+  </div>
+  <div style="margin-left:auto;display:flex;gap:8px">
+    <button id="empRefreshBtn" class="btn-ghost" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700" title="Actualizar">↻</button>
+  </div>
 </div>
 
-<!-- 6 KPIs -->
-<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(155px,1fr));margin-bottom:20px">
+<!-- 6 KPIs ejecutivos -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(165px,1fr));margin-bottom:20px">
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--verde)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">&#128230;</div><div class="kpi-label" style="font-size:9px;margin:0">CAJAS PRODUCIDAS HOY</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">📦</div><div class="kpi-label" style="font-size:9px;margin:0">CAJAS PRODUCIDAS</div></div>
     <div class="kpi-value" style="font-size:22px" id="empKpiCajas">0</div>
-    <div class="progress-bar" style="height:6px;margin:6px 0"><div class="progress-fill" id="empProgressCajas" style="width:0%"></div></div>
-    <div style="font-size:10px;color:var(--muted)" id="empKpiCajasMeta">Meta: -- cajas</div>
+    <div style="height:5px;background:var(--surface3);border-radius:4px;overflow:hidden;margin:6px 0"><div id="empProgressCajas" style="width:0%;height:100%;background:linear-gradient(90deg,var(--verde),var(--verde2));transition:width .6s ease"></div></div>
+    <div style="font-size:10px;color:var(--muted)" id="empKpiCajasMeta">Meta: 500 cajas</div>
   </div>
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--naranja)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">&#9889;</div><div class="kpi-label" style="font-size:9px;margin:0">CAJAS / HORA</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">⚡</div><div class="kpi-label" style="font-size:9px;margin:0">CAJAS / HORA</div></div>
     <div class="kpi-value" style="font-size:22px" id="empKpiCajasHr">0 <span style="font-size:11px;font-weight:500">cj/hr</span></div>
-    <div style="font-size:10px;color:var(--muted)">Promedio turno</div>
+    <div style="font-size:10px;color:var(--muted)" id="empKpiCajasHrSub">Promedio del turno</div>
   </div>
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--azul)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">&#9201;</div><div class="kpi-label" style="font-size:9px;margin:0">HRS EFECTIVAS</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">⏱️</div><div class="kpi-label" style="font-size:9px;margin:0">HRS EFECTIVAS</div></div>
     <div class="kpi-value" style="font-size:22px" id="empKpiHrsEfectivas">0 <span style="font-size:11px;font-weight:500">hrs</span></div>
     <div style="font-size:10px;color:var(--muted)">Horas con produccion</div>
   </div>
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--purple)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">&#9878;&#65039;</div><div class="kpi-label" style="font-size:9px;margin:0">KG EMPACADOS</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">⚖️</div><div class="kpi-label" style="font-size:9px;margin:0">KG PT EMPACADOS</div></div>
     <div class="kpi-value" style="font-size:22px" id="empKpiKg">0 <span style="font-size:11px;font-weight:500">kg</span></div>
     <div style="font-size:10px;color:var(--muted)" id="empKpiKgTn">0 TN</div>
   </div>
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--amber)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">&#128101;</div><div class="kpi-label" style="font-size:9px;margin:0">OPERARIOS</div></div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">👥</div><div class="kpi-label" style="font-size:9px;margin:0">OPERARIOS PROM</div></div>
     <div class="kpi-value" style="font-size:22px" id="empKpiOperarios">0 <span style="font-size:11px;font-weight:500">op.</span></div>
-    <div style="font-size:10px;color:var(--muted)">Personal activo</div>
+    <div style="font-size:10px;color:var(--muted)" id="empKpiOperariosSub">Personal activo</div>
   </div>
   <div class="kpi-card" style="padding:14px;border-top:3px solid var(--cyan)">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">&#128200;</div><div class="kpi-label" style="font-size:9px;margin:0">CJ/HR POR OPERARIO</div></div>
-    <div class="kpi-value" style="font-size:22px" id="empKpiCjHrOp">0 <span style="font-size:11px;font-weight:500">cj/hr*op</span></div>
-    <div style="font-size:10px;color:var(--muted)">Productividad individual</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--cyan-bg);display:flex;align-items:center;justify-content:center">📈</div><div class="kpi-label" style="font-size:9px;margin:0">PRODUCTIVIDAD</div></div>
+    <div class="kpi-value" style="font-size:22px" id="empKpiCjHrOp">0 <span style="font-size:11px;font-weight:500">cj/hr·op</span></div>
+    <div style="font-size:10px;color:var(--muted)">Cajas por hora por operario</div>
   </div>
 </div>
+
+<!-- Desglose por Fruta -->
+<div id="empDesgloseFrutas" style="margin-bottom:20px"></div>
 
 <!-- Tabla Hora a Hora -->
 <div class="card" style="margin-bottom:20px">
   <div class="card-header">
-    <div class="card-title">&#128203; Produccion Empaque Hora a Hora &mdash; <span id="empTableDate">Hoy</span></div>
-    <div class="badge badge-verde"><span class="status-dot online" style="width:6px;height:6px"></span> Live</div>
+    <div class="card-title">📋 Empaque Hora a Hora — <span id="empTableDate">Hoy</span></div>
+    <div class="badge badge-verde" style="background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700;display:flex;align-items:center;gap:5px"><span style="width:6px;height:6px;background:var(--verde);border-radius:50%;animation:tunPulse 1.5s infinite"></span> Live</div>
   </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Hora</th><th>Producto</th><th>Tipo</th><th>Cajas</th><th>KG PT</th><th>CJ/HR</th><th>Operarios</th></tr></thead>
-      <tbody id="empLiveBody"><tr><td colspan="7" style="text-align:center;padding:40px;color:var(--muted)">Cargando datos...</td></tr></tbody>
+      <thead><tr>
+        <th>Hora</th><th>Turno</th><th>Fruta</th><th>Tipo</th><th>Corte</th>
+        <th>Pres.</th><th>Cajas</th><th>KG PT</th><th>CJ/HR</th>
+        <th>CJ/HR·OP</th><th>Op.</th><th>Cliente</th>
+      </tr></thead>
+      <tbody id="empLiveBody"><tr><td colspan="12" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando registros de empaque...</td></tr></tbody>
       <tfoot id="empLiveFoot"></tfoot>
     </table>
   </div>
 </div>
 
-<!-- 2 Charts -->
+<!-- 3 Charts -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:16px">
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">📊 Cajas y KG PT por Hora</div></div><div class="chart-wrapper"><canvas id="chartEmpCajas"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">📈 Productividad CJ/HR·OP vs Operarios</div></div><div class="chart-wrapper"><canvas id="chartEmpProductividad"></canvas></div></div>
+</div>
 <div class="charts-grid charts-grid-2">
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#128202; Cajas por Hora</div></div><div class="chart-wrapper"><canvas id="chartEmpCajas"></canvas></div></div>
-  <div class="chart-container"><div class="chart-header"><div class="chart-title">&#128200; Productividad CJ/HR*OP</div></div><div class="chart-wrapper"><canvas id="chartEmpProductividad"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">🥭 Distribucion de Cajas por Fruta</div></div><div class="chart-wrapper"><canvas id="chartEmpFrutas"></canvas></div></div>
+  <div class="chart-container"><div class="chart-header"><div class="chart-title">🔀 Distribucion IQF vs Convencional</div></div><div class="chart-wrapper"><canvas id="chartEmpTipos"></canvas></div></div>
 </div>

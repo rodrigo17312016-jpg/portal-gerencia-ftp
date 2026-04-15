@@ -1,24 +1,67 @@
-<!-- Panel: Programa de Produccion -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">📅 Programa de <span style="color:var(--verde)">Produccion</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Planificacion y seguimiento semanal de produccion</p>
+<!-- Panel: Programa de Produccion - Ejecutivo v4 -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(14,124,58,0.08) 0%,rgba(14,124,58,0.02) 100%);border:1px solid rgba(14,124,58,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(14,124,58,0.12);border:1px solid rgba(14,124,58,0.12)">📅</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Programa de Produccion</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Planificacion y seguimiento semanal · <span id="progWeekLabel" style="color:var(--verde);font-weight:700">—</span></p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <div class="badge badge-verde" style="background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700">📊 SEMANA ACTUAL</div>
+    <button id="progRefreshBtn" class="btn-ghost" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700">↻</button>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">Programado Semana</div><div class="kpi-value" id="progProgramado">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
-  <div class="kpi-card"><div class="kpi-label">Ejecutado</div><div class="kpi-value" id="progEjecutado">—</div><div style="font-size:10px;color:var(--muted)">kg</div></div>
-  <div class="kpi-card"><div class="kpi-label">Cumplimiento %</div><div class="kpi-value" id="progCumplimiento">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Dias Restantes</div><div class="kpi-value" id="progDiasRest">—</div></div>
+<!-- 4 KPIs -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">🎯</div><div class="kpi-label" style="font-size:9px;margin:0">PROGRAMADO SEMANA</div></div>
+    <div class="kpi-value" style="font-size:24px" id="progProgramado">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="progProgramadoSub">MP proyectada</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--verde)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">✅</div><div class="kpi-label" style="font-size:9px;margin:0">EJECUTADO</div></div>
+    <div class="kpi-value" style="font-size:24px" id="progEjecutado">0 <span style="font-size:11px;font-weight:500">kg</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="progEjecutadoSub">PT producido</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--azul)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">📈</div><div class="kpi-label" style="font-size:9px;margin:0">CUMPLIMIENTO</div></div>
+    <div class="kpi-value" style="font-size:24px" id="progCumplimiento">0<span style="font-size:11px;font-weight:500">%</span></div>
+    <div style="height:5px;background:var(--surface3);border-radius:4px;overflow:hidden;margin:6px 0"><div id="progProgressBar" style="width:0%;height:100%;background:linear-gradient(90deg,var(--azul),#3b82f6);transition:width .6s ease"></div></div>
+    <div style="font-size:10px;color:var(--muted)" id="progCumplimientoSub">vs programado</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--amber)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--amber-bg);display:flex;align-items:center;justify-content:center">⏳</div><div class="kpi-label" style="font-size:9px;margin:0">DIAS RESTANTES</div></div>
+    <div class="kpi-value" style="font-size:24px" id="progDiasRest">—</div>
+    <div style="font-size:10px;color:var(--muted)" id="progDiasSub">Hasta fin de semana</div>
+  </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Programa Semanal por Fruta</div></div>
+<!-- Chart semana -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">📊 Produccion Diaria (Lun-Dom)</div></div>
+    <div class="chart-wrapper"><canvas id="chartProgDias"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🍇 Distribucion por Fruta</div></div>
+    <div class="chart-wrapper"><canvas id="chartProgFrutas"></canvas></div>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Registros de la Semana</div>
+    <div class="badge badge-verde" style="background:var(--verde-bg);color:var(--verde);border:1px solid rgba(14,124,58,0.2);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700">📅 <span id="progCountLabel">0 registros</span></div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Fruta</th><th>Consumo MP (kg)</th><th>PT (kg)</th><th>Rendimiento</th><th>Turno</th><th>Estado</th></tr></thead>
-      <tbody id="progTabla"></tbody>
+      <thead><tr>
+        <th>Fecha</th><th>Fruta</th><th>Turno</th><th>Linea</th>
+        <th>MP (kg)</th><th>PT (kg)</th><th>Rend %</th><th>Estado</th>
+      </tr></thead>
+      <tbody id="progTabla"><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando programa...</td></tr></tbody>
+      <tfoot id="progFoot"></tfoot>
     </table>
   </div>
 </div>

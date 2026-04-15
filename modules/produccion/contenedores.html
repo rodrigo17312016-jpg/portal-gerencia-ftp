@@ -1,24 +1,76 @@
-<!-- Panel: Contenedores -->
-<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:8px">
-  <div>
-    <h2 style="font-size:22px;font-weight:900;color:var(--texto)">🚢 <span style="color:var(--azul)">Contenedores</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Tracking de contenedores y exportaciones</p>
+<!-- Panel: Contenedores / Despachos - Ejecutivo v4 -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(30,64,175,0.08) 0%,rgba(30,64,175,0.02) 100%);border:1px solid rgba(30,64,175,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(30,64,175,0.12);border:1px solid rgba(30,64,175,0.12)">🚢</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Contenedores y Despachos</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Exportaciones agrupadas por cliente · <span id="contLastUpdate" style="color:var(--azul);font-weight:700">Sincronizando…</span></p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="badge badge-azul" style="background:var(--azul-bg);color:var(--azul);border:1px solid rgba(30,64,175,0.2);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700">🌐 EXPORT</div>
+    <button id="contRefreshBtn" class="btn-ghost" style="padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--surface3);color:var(--muted);cursor:pointer;font-size:12px;font-weight:700">↻</button>
   </div>
 </div>
 
-<div class="kpi-grid">
-  <div class="kpi-card"><div class="kpi-label">En Proceso</div><div class="kpi-value" id="contProceso">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Completados</div><div class="kpi-value" id="contCompletados">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">TN Exportadas</div><div class="kpi-value" id="contTN">—</div></div>
-  <div class="kpi-card"><div class="kpi-label">Destinos</div><div class="kpi-value" id="contDestinos">—</div></div>
+<!-- Filtros -->
+<div class="card" style="padding:14px 18px;margin-bottom:18px;display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+  <div style="display:flex;gap:6px;align-items:center">
+    <span style="font-size:10.5px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:1px">Rango:</span>
+    <button class="filter-chip" data-cofilter="rango" data-value="30">30 dias</button>
+    <button class="filter-chip active" data-cofilter="rango" data-value="60">60 dias</button>
+    <button class="filter-chip" data-cofilter="rango" data-value="90">90 dias</button>
+  </div>
 </div>
 
-<div class="card" style="margin-top:20px">
-  <div class="card-header"><div class="card-title">📋 Tracking de Contenedores</div></div>
+<!-- 4 KPIs -->
+<div class="kpi-grid" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:20px">
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--verde)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center">📦</div><div class="kpi-label" style="font-size:9px;margin:0">TOTAL CAJAS</div></div>
+    <div class="kpi-value" style="font-size:24px" id="contCajas">0</div>
+    <div style="font-size:10px;color:var(--muted)" id="contCajasSub">Cajas despachadas</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--naranja)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--naranja-bg);display:flex;align-items:center;justify-content:center">⚖️</div><div class="kpi-label" style="font-size:9px;margin:0">TN EXPORTADAS</div></div>
+    <div class="kpi-value" style="font-size:24px" id="contTN">0 <span style="font-size:11px;font-weight:500">TN</span></div>
+    <div style="font-size:10px;color:var(--muted)" id="contTNSub">Peso PT total</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--azul)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center">🏢</div><div class="kpi-label" style="font-size:9px;margin:0">CLIENTES</div></div>
+    <div class="kpi-value" style="font-size:24px" id="contClientes">0</div>
+    <div style="font-size:10px;color:var(--muted)" id="contClientesSub">Clientes activos</div>
+  </div>
+  <div class="kpi-card" style="padding:16px;border-top:3px solid var(--purple)">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><div style="width:32px;height:32px;border-radius:10px;background:var(--purple-bg);display:flex;align-items:center;justify-content:center">🌍</div><div class="kpi-label" style="font-size:9px;margin:0">FRUTAS EXPORTADAS</div></div>
+    <div class="kpi-value" style="font-size:24px" id="contFrutas">0</div>
+    <div style="font-size:10px;color:var(--muted)" id="contFrutasSub">Variedades</div>
+  </div>
+</div>
+
+<!-- 2 Charts -->
+<div class="charts-grid charts-grid-2" style="margin-bottom:20px">
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🏢 Top Clientes por Cajas</div></div>
+    <div class="chart-wrapper"><canvas id="chartContClientes"></canvas></div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header"><div class="chart-title">🍇 Distribucion por Fruta</div></div>
+    <div class="chart-wrapper"><canvas id="chartContFrutas"></canvas></div>
+  </div>
+</div>
+
+<!-- Tabla de consolidados por cliente -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Consolidados por Cliente</div>
+    <div class="badge badge-azul" style="background:var(--azul-bg);color:var(--azul);border:1px solid rgba(30,64,175,0.2);padding:4px 10px;border-radius:6px;font-size:10px;font-weight:700">🚢 <span id="contCountLabel">0 clientes</span></div>
+  </div>
   <div class="table-container">
     <table class="data-table">
-      <thead><tr><th>Fecha</th><th>Contenedor</th><th>Fruta</th><th>Peso (kg)</th><th>Destino</th><th>Estado</th></tr></thead>
-      <tbody id="contTabla"></tbody>
+      <thead><tr>
+        <th>Cliente</th><th>Frutas</th><th>Cajas</th><th>KG PT</th>
+        <th>TN</th><th>Registros</th><th>Primera</th><th>Ultima</th>
+      </tr></thead>
+      <tbody id="contTabla"><tr><td colspan="8" style="text-align:center;padding:40px;color:var(--muted);font-style:italic">Cargando despachos...</td></tr></tbody>
+      <tfoot id="contFoot"></tfoot>
     </table>
   </div>
 </div>

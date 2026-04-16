@@ -1,4 +1,6 @@
-<!-- Panel: Resumen Ejecutivo -->
+<!-- Panel: Dashboard Ejecutivo -->
+
+<!-- ── Hero Header ── -->
 <div class="exec-hero">
   <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
     <div>
@@ -6,88 +8,280 @@
         Dashboard <span style="color:var(--verde)">Ejecutivo</span>
       </h2>
       <p style="font-size:13px;color:var(--muted);margin-top:4px" id="resumen-campaign">
-        Campana 2026 — Frutos Tropicales Peru Export S.A.C.
+        Campana 2026 &mdash; Frutos Tropicales Peru Export S.A.C.
       </p>
     </div>
     <div style="display:flex;align-items:center;gap:12px">
       <div class="badge badge-verde">
         <span class="status-dot online"></span> Sistema Operativo
       </div>
-      <div class="badge badge-azul" id="resumen-turno">☀️ Turno Dia</div>
+      <div class="badge badge-azul" id="resumen-turno">Turno Dia</div>
     </div>
   </div>
 </div>
 
-<!-- KPI Cards -->
+<!-- ── Quick Navigation Chips ── -->
+<div class="filter-bar" style="margin-top:16px">
+  <button class="filter-chip" data-scroll="sec-produccion">Produccion</button>
+  <button class="filter-chip" data-scroll="sec-exportacion">Exportacion</button>
+  <button class="filter-chip" data-scroll="sec-laboratorio">Laboratorio</button>
+  <button class="filter-chip" data-scroll="sec-certificaciones">Certificaciones</button>
+  <button class="filter-chip" data-scroll="sec-camara">Stock</button>
+  <button class="filter-chip" data-scroll="sec-alertas-temp">Alertas Temp</button>
+</div>
+
+<!-- ── 5 Top KPIs ── -->
 <div class="kpi-grid" style="margin-top:20px">
+  <!-- KPI 1: Produccion hoy -->
   <div class="kpi-card">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div>
-        <div class="kpi-label">Produccion Total</div>
-        <div class="kpi-value" id="kpi-produccion-total">—</div>
-        <div class="kpi-change positive" id="kpi-produccion-change">Cargando...</div>
+        <div class="kpi-label">Produccion Hoy</div>
+        <div class="kpi-value" id="kpi-produccion-hoy">&mdash;</div>
+        <div class="kpi-change positive">Producto terminado</div>
       </div>
-      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">🏭</div>
+      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">&#127981;</div>
     </div>
   </div>
-
+  <!-- KPI 2: Lotes activos -->
   <div class="kpi-card">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div>
-        <div class="kpi-label">Rendimiento</div>
-        <div class="kpi-value" id="kpi-rendimiento">—</div>
-        <div class="kpi-change positive" id="kpi-rendimiento-change">Cargando...</div>
+        <div class="kpi-label">Lotes Activos</div>
+        <div class="kpi-value" id="kpi-lotes-activos">&mdash;</div>
+        <div class="kpi-change positive">Registros hoy</div>
       </div>
-      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">📈</div>
+      <div class="kpi-icon" style="background:var(--amber-bg);color:var(--amber)">&#129389;</div>
     </div>
   </div>
-
+  <!-- KPI 3: Registros temperatura -->
   <div class="kpi-card">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div>
-        <div class="kpi-label">Temperaturas</div>
-        <div class="kpi-value" id="kpi-temperaturas">—</div>
-        <div class="kpi-change" id="kpi-temp-status">Cargando...</div>
+        <div class="kpi-label">Registros Temp</div>
+        <div class="kpi-value" id="kpi-registros-temp">&mdash;</div>
+        <div class="kpi-change">Lecturas hoy</div>
       </div>
-      <div class="kpi-icon" style="background:var(--cyan-bg);color:var(--cyan)">🌡️</div>
+      <div class="kpi-icon" style="background:var(--cyan-bg);color:var(--cyan)">&#127777;&#65039;</div>
     </div>
   </div>
-
+  <!-- KPI 4: Alertas activas -->
   <div class="kpi-card">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div>
-        <div class="kpi-label">Personal Activo</div>
-        <div class="kpi-value" id="kpi-personal">—</div>
-        <div class="kpi-change" id="kpi-personal-areas">Cargando...</div>
+        <div class="kpi-label">Alertas Activas</div>
+        <div class="kpi-value" id="kpi-alertas-activas">&mdash;</div>
+        <div class="kpi-change negative">Temp. fuera de rango</div>
       </div>
-      <div class="kpi-icon" style="background:var(--purple-bg);color:var(--purple)">👥</div>
+      <div class="kpi-icon" style="background:var(--rose-bg);color:var(--danger)">&#9888;&#65039;</div>
+    </div>
+  </div>
+  <!-- KPI 5: TN Exportadas -->
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">TN Exportadas</div>
+        <div class="kpi-value" id="kpi-tn-exportadas">&mdash;</div>
+        <div class="kpi-change positive">Campana acumulada</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">&#128674;</div>
     </div>
   </div>
 </div>
 
-<!-- Charts placeholder -->
+<!-- ═══════════════════════════════════════════════════════
+     9 SECTION CARDS
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- ── Row 1: Produccion + Exportacion ── -->
 <div class="charts-grid charts-grid-2" style="margin-top:24px">
-  <div class="chart-container">
-    <div class="chart-header">
+
+  <!-- 1. Produccion - Campana 2026 -->
+  <div class="card" id="sec-produccion">
+    <div class="card-header">
       <div>
-        <div class="chart-title">Produccion por Fruta</div>
-        <div class="chart-subtitle">Ultima semana</div>
+        <div class="card-title">Produccion &mdash; Campana 2026</div>
+        <div class="card-subtitle">TN procesadas por fruta</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-amber" id="mini-prod-mango">Mango: &mdash;</span>
+        <span class="badge badge-purple" id="mini-prod-arandano">Arandano: &mdash;</span>
+        <span class="badge badge-rose" id="mini-prod-granada">Granada: &mdash;</span>
       </div>
     </div>
     <div class="chart-wrapper">
-      <canvas id="chart-produccion-fruta"></canvas>
+      <canvas id="chart-prod-campana"></canvas>
     </div>
   </div>
 
-  <div class="chart-container">
-    <div class="chart-header">
+  <!-- 2. Exportacion - Contenedores FCL -->
+  <div class="card" id="sec-exportacion">
+    <div class="card-header">
       <div>
-        <div class="chart-title">Rendimiento Diario</div>
-        <div class="chart-subtitle">Ultimos 7 dias</div>
+        <div class="card-title">Exportacion &mdash; Contenedores FCL</div>
+        <div class="card-subtitle">Acumulado por cliente</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-azul" id="mini-exp-fcl">FCL: &mdash;</span>
+        <span class="badge badge-verde" id="mini-exp-tn">TN: &mdash;</span>
+        <span class="badge badge-cyan" id="mini-exp-destinos">Destinos: &mdash;</span>
       </div>
     </div>
     <div class="chart-wrapper">
-      <canvas id="chart-rendimiento-diario"></canvas>
+      <canvas id="chart-exportacion"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── Row 2: Laboratorio + Certificaciones ── -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+
+  <!-- 3. Laboratorio - Stock Microbiologia -->
+  <div class="card" id="sec-laboratorio">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Laboratorio &mdash; Stock Microbiologia</div>
+        <div class="card-subtitle">Nivel de insumos por estado</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-rose" id="mini-lab-critico">Critico: &mdash;</span>
+        <span class="badge badge-amber" id="mini-lab-bajo">Bajo: &mdash;</span>
+        <span class="badge badge-verde" id="mini-lab-ok">OK: &mdash;</span>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-lab-stock"></canvas>
+    </div>
+  </div>
+
+  <!-- 4. Certificaciones Vigentes -->
+  <div class="card" id="sec-certificaciones">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Certificaciones Vigentes</div>
+        <div class="card-subtitle">Estado de certificaciones de planta</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-verde" id="mini-cert-vigentes">Vigentes: &mdash;</span>
+        <span class="badge badge-amber" id="mini-cert-vencer">Por vencer: &mdash;</span>
+        <span class="badge badge-rose" id="mini-cert-vencidas">Vencidas: &mdash;</span>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-certificaciones"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── Row 3: Consumo Calidad + Alertas Temperatura ── -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+
+  <!-- 5. Consumo Calidad - Campana -->
+  <div class="card" id="sec-consumo">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Consumo Calidad &mdash; Campana</div>
+        <div class="card-subtitle">Insumos consumidos por mes</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-azul" id="mini-cons-total">Total: &mdash;</span>
+        <span class="badge badge-purple" id="mini-cons-subgrupos">Subgrupos: &mdash;</span>
+        <span class="badge badge-cyan" id="mini-cons-centros">Centros: &mdash;</span>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-consumo-calidad"></canvas>
+    </div>
+  </div>
+
+  <!-- 6. Ultimas alertas de temperatura -->
+  <div class="card" id="sec-alertas-temp">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Ultimas Alertas de Temperatura</div>
+        <div class="card-subtitle">Registros fuera de rango (&gt; -15 &deg;C)</div>
+      </div>
+    </div>
+    <div class="table-container">
+      <table class="data-table" id="tbl-alertas-temp">
+        <thead>
+          <tr>
+            <th>Hora</th>
+            <th>Area</th>
+            <th>Temperatura</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4" style="text-align:center;color:var(--muted)">Cargando...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ── Row 4: Camara PT + Costos ── -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+
+  <!-- 7. Camara Producto Terminado -->
+  <div class="card" id="sec-camara">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Camara Producto Terminado</div>
+        <div class="card-subtitle">Stock en camara por fruta</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-verde" id="mini-cam-posiciones">Posiciones: &mdash;</span>
+        <span class="badge badge-azul" id="mini-cam-cajas">Cajas: &mdash;</span>
+        <span class="badge badge-naranja" id="mini-cam-tn">TN: &mdash;</span>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-camara"></canvas>
+    </div>
+  </div>
+
+  <!-- 8. Costos de Analisis -->
+  <div class="card" id="sec-costos">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Costos de Analisis</div>
+        <div class="card-subtitle">Distribucion por laboratorio / subgrupo</div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="badge badge-naranja" id="mini-cost-total">Total: &mdash;</span>
+        <span class="badge badge-purple" id="mini-cost-labs">Labs: &mdash;</span>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-costos"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── Full Width: Temperaturas por area ── -->
+<div style="margin-top:20px">
+  <div class="card" id="sec-temp-areas">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Temperaturas por Area &mdash; Hoy</div>
+        <div class="card-subtitle">Ultima lectura registrada por cada area</div>
+      </div>
+    </div>
+    <div class="table-container">
+      <table class="data-table" id="tbl-temp-areas">
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>Ultima Temp.</th>
+            <th>Hora</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="4" style="text-align:center;color:var(--muted)">Cargando...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

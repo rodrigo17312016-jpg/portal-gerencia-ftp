@@ -1779,20 +1779,28 @@ function showToast(msg, isError) {
 async function refreshAll() {
   const filterDate = document.getElementById('filterDate').value;
 
-  // Primero intentar cargar datos de Supabase para la fecha seleccionada
+  // Cargar datos de Supabase para la fecha seleccionada
   if (typeof supabaseClient !== 'undefined' && supabaseClient) {
     try {
-      const { data, error } = await supabaseClient
+      // Also load the week of the selected date so Comparativo Turnos chart has data
+      const refDate = new Date(filterDate + 'T12:00:00');
+      const dayOfWeek = refDate.getDay();
+      const mondayDate = new Date(refDate);
+      mondayDate.setDate(mondayDate.getDate() + (dayOfWeek === 0 ? -6 : 1 - dayOfWeek));
+      const mondayStr = mondayDate.getFullYear() + '-' + String(mondayDate.getMonth()+1).padStart(2,'0') + '-' + String(mondayDate.getDate()).padStart(2,'0');
+
+      const { data: weekData } = await supabaseClient
         .from('registro_produccion')
         .select('*')
-        .eq('fecha', filterDate)
+        .gte('fecha', mondayStr)
+        .order('fecha')
         .order('hora');
 
-      if (!error && data && data.length > 0) {
-        // Merge con localStorage - Supabase es fuente de verdad para esta fecha
+      if (weekData && weekData.length > 0) {
         const localRecords = JSON.parse(localStorage.getItem('prod_registros') || '[]');
-        const otherDays = localRecords.filter(r => r.fecha !== filterDate);
-        const merged = [...otherDays, ...data.map(d => ({
+        const weekDates = new Set(weekData.map(d => d.fecha));
+        const otherDays = localRecords.filter(r => !weekDates.has(r.fecha));
+        const merged = [...otherDays, ...weekData.map(d => ({
           ...d,
           consumo_kg: parseFloat(d.consumo_kg),
           pt_aprox_kg: parseFloat(d.pt_aprox_kg),
@@ -2578,6 +2586,46 @@ function getLocalToday() {
   return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 
+function getLocalMonday() {
+  const d = new Date();
+  const day = d.getDay(); // 0=Sun,1=Mon...6=Sat
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+async function loadWeekFromSupabase() {
+  if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+  try {
+    const monday = getLocalMonday();
+    const { data, error } = await supabaseClient
+      .from('registro_produccion')
+      .select('*')
+      .gte('fecha', monday)
+      .order('fecha')
+      .order('hora');
+
+    if (error || !data || data.length === 0) return;
+
+    const localRecords = JSON.parse(localStorage.getItem('prod_registros') || '[]');
+    // Get set of dates from the week data to replace
+    const weekDates = new Set(data.map(d => d.fecha));
+    // Keep local records that are NOT in the week range (older data)
+    const otherDays = localRecords.filter(r => !weekDates.has(r.fecha));
+    const merged = [...otherDays, ...data.map(d => ({
+      ...d,
+      consumo_kg: parseFloat(d.consumo_kg),
+      pt_aprox_kg: parseFloat(d.pt_aprox_kg),
+      rendimiento: parseFloat(d.rendimiento),
+      personas: parseInt(d.personas) || 0,
+      proyectado_tn: parseFloat(d.proyectado_tn)
+    }))];
+    localStorage.setItem('prod_registros', JSON.stringify(merged));
+  } catch(e) {
+    console.log('loadWeekFromSupabase: Supabase offline');
+  }
+}
+
 async function loadFromSupabase() {
   if (typeof supabaseClient === 'undefined' || !supabaseClient) {
     console.warn('Supabase no disponible, usando solo localStorage');
@@ -2585,6 +2633,9 @@ async function loadFromSupabase() {
     return;
   }
   try {
+    // Load full week data so Comparativo Turnos chart has all days
+    await loadWeekFromSupabase();
+
     const { data, error } = await supabaseClient
       .from('registro_produccion')
       .select('*')
@@ -2598,7 +2649,7 @@ async function loadFromSupabase() {
     }
 
     if (data && data.length > 0) {
-      // Merge with localStorage - Supabase is source of truth
+      // Merge with localStorage - Supabase is source of truth for today
       const localRecords = JSON.parse(localStorage.getItem('prod_registros') || '[]');
       const otherDays = localRecords.filter(r => r.fecha !== getLocalToday());
       const merged = [...otherDays, ...data.map(d => ({
@@ -2610,10 +2661,12 @@ async function loadFromSupabase() {
         proyectado_tn: parseFloat(d.proyectado_tn)
       }))];
       localStorage.setItem('prod_registros', JSON.stringify(merged));
-      if (typeof refreshAll === 'function') refreshAll();
-      else if (typeof updateAll === 'function') updateAll();
-      else if (typeof renderTabla === 'function') renderTabla();
     }
+
+    // Always rebuild after loading week + today data
+    if (typeof refreshAll === 'function') refreshAll();
+    else if (typeof updateAll === 'function') updateAll();
+    else if (typeof renderTabla === 'function') renderTabla();
   } catch(e) {
     console.log('Supabase offline, usando localStorage');
     console.log('Supabase offline - usando datos locales');

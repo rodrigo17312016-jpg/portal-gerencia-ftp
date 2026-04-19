@@ -694,6 +694,41 @@ body {
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
 .chart-wrap { height: 280px; position: relative; }
 
+/* HRS STANDARD SUB-BADGE */
+.hrs-std-sub {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  margin: -4px 0 12px 0;
+  background: linear-gradient(90deg, rgba(22,163,74,0.10), rgba(22,163,74,0.02));
+  border: 1px dashed rgba(22,163,74,0.45);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--texto2);
+}
+.hrs-std-dot {
+  width: 10px; height: 10px; border-radius: 50%;
+  background: #16a34a; box-shadow: 0 0 8px #16a34a;
+  flex-shrink: 0;
+}
+.hrs-std-text { flex: 1; min-width: 180px; }
+.hrs-std-text strong { color: #86efac; font-weight: 800; letter-spacing: 0.3px; }
+.hrs-std-legend { display: inline-flex; gap: 6px; flex-wrap: wrap; }
+.hrs-delta-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 8px;
+  border: 1px solid;
+  letter-spacing: 0.3px;
+}
+.hrs-delta-chip.under { color: #86efac; border-color: rgba(22,163,74,0.5); background: rgba(22,163,74,0.12); }
+.hrs-delta-chip.ok { color: #67e8f9; border-color: rgba(8,145,178,0.5); background: rgba(8,145,178,0.12); }
+.hrs-delta-chip.over { color: #fca5a5; border-color: rgba(239,68,68,0.5); background: rgba(239,68,68,0.12); }
+
 /* TUNNEL COLOR LEGEND */
 .tunel-color-legend {
   display: flex;
@@ -1504,6 +1539,15 @@ body {
     </div>
     <div class="card">
       <div class="card-title">&#9201; Hrs Congelamiento vs Estandar</div>
+      <div class="hrs-std-sub">
+        <span class="hrs-std-dot"></span>
+        <span class="hrs-std-text">Est&aacute;ndar por fruta: <strong id="stdHrsBadge">--</strong></span>
+        <span class="hrs-std-legend">
+          <span class="hrs-delta-chip under">&darr; Bajo est&aacute;ndar (rapido)</span>
+          <span class="hrs-delta-chip ok">&asymp; En rango</span>
+          <span class="hrs-delta-chip over">&uarr; Sobre est&aacute;ndar</span>
+        </span>
+      </div>
       <div class="chart-wrap"><canvas id="chartHrsVsStd"></canvas></div>
     </div>
   </div>
@@ -2632,7 +2676,13 @@ function renderCharts(data, forceRebuild) {
   const completedData = data.filter(r => r.hora_fin);
   const tunelShort = { 'TUNEL ESTATICO 1': 'T1', 'TUNEL ESTATICO 2': 'T2', 'TUNEL ESTATICO 3': 'T3' };
   const tunelColorMap = { 'TUNEL ESTATICO 1': '#0891b2', 'TUNEL ESTATICO 2': '#16a34a', 'TUNEL ESTATICO 3': '#d97706' };
-  const labels2 = completedData.map((r,i) => (r.hora_inicio || ('C'+(i+1))) + ' ' + (tunelShort[r.tunel] || ''));
+  // Label con rango: "08:30\u219210:13 T1" muestra ciclo completo (inicio\u2192fin)
+  const labels2 = completedData.map((r,i) => {
+    const ini = r.hora_inicio || ('C'+(i+1));
+    const fin = r.hora_fin || '--:--';
+    const tag = tunelShort[r.tunel] || '';
+    return ini + '\u2192' + fin + ' ' + tag;
+  });
   const pointColors = completedData.map(r => tunelColorMap[r.tunel] || '#64748b');
   const eficData = completedData.map(r => r.eficiencia);
   const target100 = completedData.map(() => 100);
@@ -2642,7 +2692,9 @@ function renderCharts(data, forceRebuild) {
       const idx = ctx[0].dataIndex;
       const rec = completedData[idx];
       if (!rec) return ctx[0].label;
-      return (rec.hora_inicio || '--') + '  \u2022  ' + (rec.tunel || '--') + '  \u2022  ' + (rec.fruta || '--');
+      const ini = rec.hora_inicio || '--';
+      const fin = rec.hora_fin || '--';
+      return ini + ' \u2192 ' + fin + '  \u2022  ' + (rec.tunel || '--') + '  \u2022  ' + (rec.fruta || '--');
     }
   };
 
@@ -2698,30 +2750,87 @@ function renderCharts(data, forceRebuild) {
     }
   });
 
-  // 4. Hrs Congelamiento vs Estandar - only completed (with tunnel identification)
+  // 4. Hrs Congelamiento vs Estandar - redise\u00f1o: barra por t\u00fanel + l\u00ednea estandar + delta
   const hrsActual = completedData.map(r => r.hrs_congelamiento);
   const hrsStd = completedData.map(r => STD_HRS[r.fruta] || 1.5);
-  const hrsActualColors = completedData.map(r => {
-    const c = tunelColorMap[r.tunel] || '#0891b2';
-    return c + 'B3';
+  const hrsBarColors = completedData.map(r => {
+    const actual = r.hrs_congelamiento;
+    const std = STD_HRS[r.fruta] || 1.5;
+    if (actual == null) return '#64748b80';
+    const tolerance = std * 0.05;
+    const tColor = tunelColorMap[r.tunel] || '#0891b2';
+    if (actual < std - tolerance) return tColor + 'CC';
+    if (actual > std + tolerance) return '#ef4444CC';
+    return tColor + '80';
   });
-  const hrsActualBorders = completedData.map(r => tunelColorMap[r.tunel] || '#0891b2');
+  const hrsBarBorders = completedData.map(r => {
+    const actual = r.hrs_congelamiento;
+    const std = STD_HRS[r.fruta] || 1.5;
+    if (actual == null) return '#64748b';
+    const tolerance = std * 0.05;
+    if (actual > std + tolerance) return '#ef4444';
+    return tunelColorMap[r.tunel] || '#0891b2';
+  });
+  const stdByFruta = {};
+  completedData.forEach(r => { stdByFruta[r.fruta] = STD_HRS[r.fruta] || 1.5; });
+  const stdSummary = Object.entries(stdByFruta).map(([f,h]) => f + ': ' + h + 'h').join('  \u2022  ');
+  const stdBadge = document.getElementById('stdHrsBadge');
+  if (stdBadge) stdBadge.textContent = stdSummary || 'Sin datos';
 
   chartInstances.hrsVsStd = new Chart(document.getElementById('chartHrsVsStd'), {
     type: 'bar',
     data: {
       labels: labels2,
       datasets: [
-        { label: 'Hrs Actual', data: hrsActual, backgroundColor: hrsActualColors, borderColor: hrsActualBorders, borderWidth: 2, borderRadius: 6 },
-        { label: 'Hrs Estandar', data: hrsStd, backgroundColor: 'rgba(22,163,74,0.4)', borderColor: 'rgba(22,163,74,0.8)', borderWidth: 1, borderRadius: 6 }
+        { label: 'Hrs Congelamiento', data: hrsActual, backgroundColor: hrsBarColors, borderColor: hrsBarBorders, borderWidth: 2, borderRadius: 8, barPercentage: 0.65, categoryPercentage: 0.85 },
+        { label: 'L\u00ednea Est\u00e1ndar', data: hrsStd, type: 'line', borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.08)', borderDash: [8,4], borderWidth: 2.5, pointRadius: 0, pointHoverRadius: 4, pointBackgroundColor: '#16a34a', fill: false, tension: 0, stepped: true }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { labels: { color: txtColor, font: { family: 'Plus Jakarta Sans', weight: '700' } } },
-        datalabels: { color: '#fff', font: { weight: 'bold', size: 11 }, anchor: 'center', formatter: v => v != null ? v.toFixed(1) : '' },
-        tooltip: { callbacks: chartTooltipCallback }
+        legend: { labels: { color: txtColor, font: { family: 'Plus Jakarta Sans', weight: '700' }, usePointStyle: true } },
+        datalabels: {
+          color: '#fff',
+          font: { weight: 'bold', size: 11 },
+          anchor: 'end',
+          align: 'top',
+          offset: 2,
+          formatter: (v, ctx) => {
+            if (ctx.datasetIndex !== 0 || v == null) return '';
+            const rec = completedData[ctx.dataIndex];
+            const std = STD_HRS[rec.fruta] || 1.5;
+            const delta = v - std;
+            const deltaStr = (delta >= 0 ? '+' : '') + delta.toFixed(1);
+            return v.toFixed(1) + 'h\n(' + deltaStr + ')';
+          },
+          textAlign: 'center',
+          backgroundColor: (ctx) => {
+            if (ctx.datasetIndex !== 0) return null;
+            const rec = completedData[ctx.dataIndex];
+            const v = rec.hrs_congelamiento;
+            const std = STD_HRS[rec.fruta] || 1.5;
+            if (v == null) return null;
+            const tolerance = std * 0.05;
+            if (v > std + tolerance) return 'rgba(239,68,68,0.85)';
+            if (v < std - tolerance) return 'rgba(22,163,74,0.85)';
+            return 'rgba(8,145,178,0.85)';
+          },
+          borderRadius: 6,
+          padding: { top: 3, bottom: 3, left: 6, right: 6 }
+        },
+        tooltip: {
+          callbacks: Object.assign({}, chartTooltipCallback, {
+            label: function(ctx) {
+              if (ctx.datasetIndex === 1) return 'Est\u00e1ndar: ' + ctx.parsed.y + 'h';
+              const rec = completedData[ctx.dataIndex];
+              const std = STD_HRS[rec.fruta] || 1.5;
+              const delta = ctx.parsed.y - std;
+              const status = delta > 0.05 ? '\u26A0 sobre estandar' : (delta < -0.05 ? '\u2714 bajo estandar' : '\u2248 en rango');
+              return ['Actual: ' + ctx.parsed.y.toFixed(2) + 'h', 'Est\u00e1ndar: ' + std + 'h', 'Delta: ' + (delta>=0?'+':'') + delta.toFixed(2) + 'h  ' + status];
+            }
+          })
+        }
       },
       scales: {
         x: { ticks: { color: txtColor, maxRotation: 45, font: { weight: '700' } }, grid: { display: false } },

@@ -3,19 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Frutos Tropicales Peru Export S.A.C.</title>
+<title>Frutos Tropicales Peru Export S.A.C. &middot; Desde el Peru para el mundo</title>
+<meta name="description" content="Agroexportadora peruana de frutas congeladas IQF: arandanos, fresas, mango, pina, palta y granada. Cobertura en 20+ paises.">
 <link rel="icon" href="assets/images/logo.png" type="image/png">
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#16a34a">
+<meta name="theme-color" content="#0e7c3a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Nunito:wght@300;400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="assets/css/landing.css?v=4">
+<link rel="stylesheet" href="assets/css/landing.css?v=premium">
 </head>
 <body class="loading">
 
-<!-- ══════ PRELOADER EJECUTIVO ══════ -->
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 1: PRELOADER EJECUTIVO (intacto, no tocar)
+     ══════════════════════════════════════════════════════════════ -->
 <div class="preloader" id="preloader">
   <div class="pl-backdrop"></div>
   <div class="pl-vignette"></div>
@@ -41,198 +46,1028 @@
   </div>
 </div>
 
-<!-- ══════ AURORA BACKGROUND ══════ -->
+<!-- ══════════════════════════════════════════════════════════════
+     CUSTOM CURSOR (desktop only)
+     ══════════════════════════════════════════════════════════════ -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-trail" id="cursorTrail"></div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     AURORA BACKGROUND
+     ══════════════════════════════════════════════════════════════ -->
 <div class="aurora-bg">
   <div class="aurora-layer"></div>
   <div class="aurora-layer"></div>
   <div class="aurora-layer"></div>
 </div>
 
-<!-- ══════ FLOATING FRUITS ══════ -->
 <div class="floating-fruits" id="floatingFruits"></div>
 
-<!-- ══════ PAGE CONTENT ══════ -->
+<!-- ══════════════════════════════════════════════════════════════
+     PAGE CONTENT
+     ══════════════════════════════════════════════════════════════ -->
 <div class="page-content" id="pageContent">
 
+<!-- Scroll progress bar -->
 <div class="scroll-progress" id="scrollProgress"></div>
+
+<!-- Scroll progress ring + back-top -->
+<button class="scroll-ring" id="scrollRing" aria-label="Volver arriba">
+  <svg viewBox="0 0 48 48">
+    <circle class="ring-bg" cx="24" cy="24" r="20"></circle>
+    <circle class="ring-fill" cx="24" cy="24" r="20" id="ringFill"></circle>
+  </svg>
+  <i class="fas fa-arrow-up"></i>
+</button>
+
+<!-- Theme toggle -->
 <button class="theme-toggle" id="themeToggle" onclick="toggleDark()" title="Modo oscuro/claro"><i class="fas fa-moon" id="themeIcon"></i></button>
 
-<!-- ── NAVBAR ── -->
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 2: NAVBAR
+     ══════════════════════════════════════════════════════════════ -->
 <nav class="navbar" id="navbar">
-  <a href="#inicio" class="nav-logo"><img src="assets/images/logo.png" alt="Frutos Tropicales"></a>
-  <div class="nav-links">
-    <a href="#inicio">Inicio</a>
-    <a href="#productos">Productos</a>
-    <a href="#nosotros">Nosotros</a>
-    <a href="#contacto">Contacto</a>
-    <a href="login.html" class="btn-portal"><i class="fas fa-lock"></i> Acceso al Portal</a>
+  <a href="#inicio" class="nav-logo" aria-label="Inicio">
+    <img src="assets/images/logo.png" alt="Frutos Tropicales">
+    <span class="nav-brand">
+      <span class="nav-brand-main">Frutos Tropicales</span>
+      <span class="nav-brand-sub">Peru Export S.A.C.</span>
+    </span>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="#inicio" class="nav-link"><span>Inicio</span></a>
+    <a href="#impact" class="nav-link"><span>Impacto</span></a>
+    <a href="#productos" class="nav-link"><span>Productos</span></a>
+    <a href="#nosotros" class="nav-link"><span>Nosotros</span></a>
+    <a href="#contacto" class="nav-link"><span>Contacto</span></a>
+    <a href="login.html" class="btn-portal magnetic"><i class="fas fa-lock"></i> <span>Acceso al Portal</span></a>
   </div>
-  <button class="nav-toggle" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+  <button class="nav-toggle" onclick="toggleMenu()" aria-label="Menu"><i class="fas fa-bars"></i></button>
 </nav>
+
 <div class="mobile-menu" id="mobileMenu">
-  <button class="mobile-close" onclick="toggleMenu()"><i class="fas fa-times"></i></button>
-  <a href="#inicio" onclick="closeMenu()">Inicio</a>
-  <a href="#productos" onclick="closeMenu()">Productos</a>
-  <a href="#nosotros" onclick="closeMenu()">Nosotros</a>
-  <a href="#contacto" onclick="closeMenu()">Contacto</a>
-  <a href="login.html" class="btn-portal" style="text-align:center;margin-top:16px"><i class="fas fa-lock"></i> Portal</a>
+  <button class="mobile-close" onclick="toggleMenu()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+  <div class="mobile-brand">
+    <img src="assets/images/logo.png" alt="Frutos Tropicales">
+    <div>
+      <div class="mobile-brand-main">Frutos Tropicales</div>
+      <div class="mobile-brand-sub">Peru Export S.A.C.</div>
+    </div>
+  </div>
+  <a href="#inicio" onclick="closeMenu()"><i class="fas fa-home"></i> Inicio</a>
+  <a href="#impact" onclick="closeMenu()"><i class="fas fa-globe-americas"></i> Impacto Global</a>
+  <a href="#productos" onclick="closeMenu()"><i class="fas fa-box-open"></i> Productos</a>
+  <a href="#nosotros" onclick="closeMenu()"><i class="fas fa-users"></i> Nosotros</a>
+  <a href="#contacto" onclick="closeMenu()"><i class="fas fa-envelope"></i> Contacto</a>
+  <a href="login.html" class="btn-portal mobile-portal"><i class="fas fa-lock"></i> Acceso al Portal</a>
+  <div class="mobile-social">
+    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+    <a href="https://wa.me/51935293701" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+  </div>
 </div>
 
-<!-- ── HERO ── -->
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 3: HERO CINEMATOGRAFICO
+     ══════════════════════════════════════════════════════════════ -->
 <section class="hero" id="inicio">
-  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="assets/images/campo-mango.png"><source src="assets/video/video-ftp.mp4" type="video/mp4"></video>
+  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="assets/images/products/mango.jpeg">
+    <source src="assets/video/video-ftp.mp4" type="video/mp4">
+  </video>
   <div class="hero-overlay"></div>
   <div class="hero-mesh"></div>
   <div class="hero-particles" id="heroParticles"></div>
-  <div class="hero-content">
-    <div class="hero-eyebrow reveal reveal-left"><i class="fas fa-leaf"></i> <span>Agroexportadora Peruana</span> <span class="hero-eyebrow-sep">&middot;</span> <span>Desde 2021</span></div>
+  <div class="hero-grain"></div>
+
+  <div class="hero-content" id="heroContent">
+    <div class="hero-eyebrow reveal reveal-left">
+      <span class="eyebrow-dot"></span>
+      <i class="fas fa-leaf"></i>
+      <span>Agroexportadora Peruana</span>
+      <span class="hero-eyebrow-sep">&middot;</span>
+      <span>Desde 2021</span>
+    </div>
+
     <h1 class="hero-title reveal reveal-up reveal-d1" id="heroTitle">
-      <span class="hero-title-main">Frutos <span class="shimmer">Tropicales</span></span>
-      <span class="hero-title-legal">Peru Export S.A.C.</span>
+      <span class="split-line">
+        <span class="split-text" style="--i:0">Frutos</span>
+      </span>
+      <span class="split-line">
+        <span class="split-text shimmer" style="--i:1">Tropicales</span>
+      </span>
+      <span class="hero-title-legal reveal reveal-up reveal-d2">Peru Export S.A.C.</span>
     </h1>
+
     <div class="hero-divider reveal reveal-up reveal-d2"></div>
-    <p class="hero-sub reveal reveal-up reveal-d2" id="heroSub"></p>
+
+    <p class="hero-sub reveal reveal-up reveal-d3" id="heroSub"></p>
+
     <div class="hero-buttons reveal reveal-up reveal-d3">
-      <a href="#productos" class="btn-primary"><i class="fas fa-box-open"></i> Ver catalogo</a>
-      <a href="#contacto" class="btn-outline"><i class="fas fa-phone-alt"></i> Contactar ejecutivo</a>
+      <a href="#productos" class="btn-primary magnetic">
+        <span class="btn-text"><i class="fas fa-box-open"></i> Ver catalogo</span>
+        <span class="btn-shine"></span>
+      </a>
+      <a href="#contacto" class="btn-outline magnetic">
+        <i class="fas fa-phone-alt"></i> Contactar ejecutivo
+      </a>
     </div>
-    <div class="hero-stats reveal reveal-up reveal-d4">
-      <div class="hero-stat"><span class="hero-stat-num" data-target="4" data-suffix="+">0</span><span class="hero-stat-label">Anos de trayectoria</span></div>
-      <div class="hero-stat"><span class="hero-stat-num" data-target="20" data-suffix="+">0</span><span class="hero-stat-label">Paises destino</span></div>
-      <div class="hero-stat"><span class="hero-stat-num" data-target="1000" data-suffix="T">0</span><span class="hero-stat-label">Toneladas al ano</span></div>
-    </div>
-  </div>
-  <a href="#productos" class="hero-scroll"><div class="scroll-mouse"><div class="scroll-dot"></div></div></a>
-  <button class="video-ctrl" id="videoCtrl" onclick="toggleVideoSound()"><i class="fas fa-volume-mute"></i></button>
-</section>
 
-<!-- ── FEATURES ── -->
-<section class="features"><div class="features-grid">
-  <div class="feature-item reveal reveal-up"><i class="fas fa-snowflake"></i><h4>Congelado IQF</h4><p>Tecnologia de congelado rapido individual, maxima calidad y nutrientes</p></div>
-  <div class="feature-item reveal reveal-up reveal-d1"><i class="fas fa-globe-americas"></i><h4>Exportacion Global</h4><p>Presencia en mas de 20 paises en 4 continentes</p></div>
-  <div class="feature-item reveal reveal-up reveal-d2"><i class="fas fa-award"></i><h4>Certificados</h4><p>BRC, HACCP, Organico UE, FDA, GlobalG.A.P.</p></div>
-  <div class="feature-item reveal reveal-up reveal-d3"><i class="fas fa-temperature-low"></i><h4>Cadena de Frio</h4><p>Control de temperatura desde planta hasta destino final</p></div>
-</div></section>
-
-<div class="wave-divider"><svg viewBox="0 0 1200 50" preserveAspectRatio="none"><path d="M0,25 C300,50 900,0 1200,25 L1200,50 L0,50 Z" fill="var(--bg)"/></svg></div>
-
-<!-- ── PRODUCTOS ── -->
-<section class="section" id="productos" style="background:var(--bg)">
-  <div class="section-header">
-    <span class="section-tag reveal reveal-up">Nuestros Productos</span>
-    <h2 class="section-title reveal reveal-up reveal-d1">Lo mejor del <span class="gradient-text">campo peruano</span><span class="title-line"></span></h2>
-    <p class="section-sub reveal reveal-up reveal-d2">Seleccionamos y procesamos cada fruta bajo estrictos estandares de calidad para mercados de exportacion.</p>
-  </div>
-  <div class="products-grid">
-    <div class="producto-card reveal reveal-scale"><div class="producto-img-wrap"><img src="assets/images/products/fresa.png" alt="Fresas IQF" loading="lazy"><span class="producto-overlay">IQF</span></div><div class="producto-body"><h3 class="producto-name">Fresas IQF</h3><p class="producto-desc">Cultivadas en los valles andinos, congeladas individualmente en su punto optimo de madurez.</p><div class="producto-tags"><span class="ptag">IQF</span><span class="ptag">Organico</span><span class="ptag">Premium</span></div></div></div>
-    <div class="producto-card reveal reveal-up reveal-d1"><div class="producto-img-wrap"><img src="assets/images/products/arandano.jpg" alt="Arandanos IQF" loading="lazy"><span class="producto-overlay">IQF</span></div><div class="producto-body"><h3 class="producto-name">Arandanos IQF</h3><p class="producto-desc">Superfrutas con alto contenido de antioxidantes. Cajamarca y Lambayeque.</p><div class="producto-tags"><span class="ptag">IQF</span><span class="ptag">Antioxidante</span><span class="ptag">Export</span></div></div></div>
-    <div class="producto-card reveal reveal-up reveal-d2"><div class="producto-img-wrap"><img src="assets/images/products/mango.jpeg" alt="Mango" loading="lazy"><span class="producto-overlay">IQF</span></div><div class="producto-body"><h3 class="producto-name">Mango Congelado</h3><p class="producto-desc">Variedad Kent y Tommy de Piura. Cubos y pulpa disponibles.</p><div class="producto-tags"><span class="ptag">Pulpa</span><span class="ptag">Cubos</span><span class="ptag">IQF</span></div></div></div>
-    <div class="producto-card reveal reveal-up reveal-d1"><div class="producto-img-wrap"><img src="assets/images/products/pina.png" alt="Pina" loading="lazy"><span class="producto-overlay">IQF</span></div><div class="producto-body"><h3 class="producto-name">Pina Golden</h3><p class="producto-desc">Pina MD2 de la selva peruana, sabor dulce y acidez equilibrada.</p><div class="producto-tags"><span class="ptag">MD2</span><span class="ptag">IQF</span><span class="ptag">Pulpa</span></div></div></div>
-    <div class="producto-card reveal reveal-up reveal-d2"><div class="producto-img-wrap"><img src="assets/images/products/palta-cubos.jpg" alt="Palta" loading="lazy"><span class="producto-overlay">IQF</span></div><div class="producto-body"><h3 class="producto-name">Palta Congelada</h3><p class="producto-desc">Hass peruana en mitades, cubos y pulpa. Textura cremosa.</p><div class="producto-tags"><span class="ptag">Hass</span><span class="ptag">Cubos</span><span class="ptag">Export</span></div></div></div>
-    <div class="producto-card reveal reveal-up reveal-d3"><div class="producto-img-wrap"><img src="assets/images/products/granada.jpg" alt="Granada" loading="lazy"><span class="producto-overlay">IQF</span></div><div class="producto-body"><h3 class="producto-name">Granada IQF</h3><p class="producto-desc">Arilos congelados individualmente. Ricos en polifenoles.</p><div class="producto-tags"><span class="ptag">IQF</span><span class="ptag">Arilos</span><span class="ptag">Export</span></div></div></div>
-  </div>
-</section>
-
-<!-- ── PROCESO ── -->
-<section class="section" id="proceso" style="background:var(--bg2)">
-  <div class="section-header">
-    <span class="section-tag reveal reveal-up">Nuestro Proceso</span>
-    <h2 class="section-title reveal reveal-up reveal-d1">Del campo a tu <span class="gradient-text">mesa</span><span class="title-line"></span></h2>
-    <p class="section-sub reveal reveal-up reveal-d2">Garantizamos la maxima calidad en cada etapa del proceso productivo.</p>
-  </div>
-  <div class="proceso-timeline" id="procesoTimeline">
-    <div class="proceso-line"><div class="proceso-line-fill" id="procesoLineFill"></div></div>
-    <div class="proceso-step reveal reveal-up"><div class="proceso-num">1</div><i class="fas fa-seedling proceso-icon"></i><h4>Cosecha</h4><p>Seleccion manual de frutas en campos certificados.</p></div>
-    <span class="proceso-arrow"><i class="fas fa-chevron-right"></i></span>
-    <div class="proceso-step reveal reveal-up reveal-d2"><div class="proceso-num">2</div><i class="fas fa-check-circle proceso-icon"></i><h4>Control de Calidad</h4><p>Inspeccion de calibre, color, Brix y analisis fitosanitario.</p></div>
-    <span class="proceso-arrow"><i class="fas fa-chevron-right"></i></span>
-    <div class="proceso-step reveal reveal-up reveal-d3"><div class="proceso-num">3</div><i class="fas fa-snowflake proceso-icon"></i><h4>Congelado IQF</h4><p>Tuneles a -30C, producto alcanza -22C en menos de 1 hora.</p></div>
-    <span class="proceso-arrow"><i class="fas fa-chevron-right"></i></span>
-    <div class="proceso-step reveal reveal-up reveal-d4"><div class="proceso-num">4</div><i class="fas fa-ship proceso-icon"></i><h4>Exportacion</h4><p>Contenedores reefer con GPS y monitoreo en tiempo real.</p></div>
-  </div>
-</section>
-
-<!-- ── NOSOTROS ── -->
-<section class="section" id="nosotros" style="background:var(--bg)">
-  <div class="section-header">
-    <span class="section-tag reveal reveal-up">Nuestra Historia</span>
-    <h2 class="section-title reveal reveal-up reveal-d1">Comprometidos con la <span class="gradient-text">calidad</span><span class="title-line"></span></h2>
-  </div>
-  <div class="nosotros-grid">
-    <div>
-      <p class="nosotros-text reveal reveal-left">Somos un grupo agroexportador compuesto por dos empresas consolidadas: nuestra division de alimentos frescos y nuestra planta con tecnologia de congelado IQF. Ambas trabajan en sinergia para ofrecer productos premium de la mas alta exigencia.</p>
-      <div class="timeline" id="timeline">
-        <div class="tl-item reveal reveal-left"><div class="tl-dot"><i class="fas fa-seedling"></i></div><div class="tl-content"><h4>Fundacion de la empresa</h4><p>01 de mayo del 2021, Piura.</p></div></div>
-        <div class="tl-item reveal reveal-left reveal-d1"><div class="tl-dot"><i class="fas fa-medal"></i></div><div class="tl-content"><h4>Primera certificacion BRC</h4><p>Mercados en Europa y Norteamerica.</p></div></div>
-        <div class="tl-item reveal reveal-left reveal-d2"><div class="tl-dot"><i class="fas fa-globe"></i></div><div class="tl-content"><h4>Expansion a Asia y EE.UU.</h4><p>Japon, China y Estados Unidos.</p></div></div>
-        <div class="tl-item reveal reveal-left reveal-d3"><div class="tl-dot"><i class="fas fa-snowflake"></i></div><div class="tl-content"><h4>Tecnologia IQF ultima generacion</h4><p>100 toneladas por semana.</p></div></div>
+    <div class="hero-stats reveal reveal-up reveal-d4" id="heroStats">
+      <div class="hero-stat">
+        <span class="hero-stat-num" data-target="4" data-suffix="+">0</span>
+        <span class="hero-stat-label">Anos trayectoria</span>
       </div>
-    </div>
-    <div class="nosotros-visual">
-      <div class="mission-card reveal reveal-right"><h3>Nuestra mision</h3><p>Conectar la biodiversidad fruticola peruana con el mundo, ofreciendo productos frescos y congelados de maxima calidad que deleiten paladares globales y generen desarrollo en nuestras comunidades agricolas.</p></div>
-      <div class="values-grid">
-        <div class="value-card reveal reveal-scale reveal-d1"><div class="value-icon green"><i class="fas fa-leaf"></i></div><h4>Sostenibilidad</h4><p>Comprometidos con el medio ambiente.</p></div>
-        <div class="value-card reveal reveal-scale reveal-d2"><div class="value-icon orange"><i class="fas fa-microscope"></i></div><h4>Calidad</h4><p>Los mas altos estandares.</p></div>
-        <div class="value-card reveal reveal-scale reveal-d3"><div class="value-icon green"><i class="fas fa-handshake"></i></div><h4>Confianza</h4><p>Compromiso y transparencia.</p></div>
-        <div class="value-card reveal reveal-scale reveal-d4"><div class="value-icon orange"><i class="fas fa-rocket"></i></div><h4>Innovacion</h4><p>Tecnologia de punta.</p></div>
+      <div class="hero-stat">
+        <span class="hero-stat-num" data-target="20" data-suffix="+">0</span>
+        <span class="hero-stat-label">Paises destino</span>
+      </div>
+      <div class="hero-stat">
+        <span class="hero-stat-num" data-target="1000" data-suffix="T">0</span>
+        <span class="hero-stat-label">TN anuales</span>
       </div>
     </div>
   </div>
+
+  <a href="#impact" class="hero-scroll" aria-label="Scroll">
+    <div class="scroll-mouse"><div class="scroll-dot"></div></div>
+    <span class="scroll-word">SCROLL</span>
+  </a>
+  <button class="video-ctrl magnetic" id="videoCtrl" onclick="toggleVideoSound()" aria-label="Sonido">
+    <i class="fas fa-volume-mute"></i>
+  </button>
 </section>
 
-<!-- ── CERTIFICACIONES ── -->
-<section class="certs"><h3 class="certs-title reveal reveal-up">Certificaciones & Estandares internacionales</h3>
-  <div class="marquee-wrap"><div class="marquee-track">
-    <div class="cert-badge"><i class="fas fa-award"></i><span>BRC Food</span></div><div class="cert-badge"><i class="fas fa-check-double"></i><span>HACCP</span></div><div class="cert-badge"><i class="fas fa-leaf"></i><span>Organico UE</span></div><div class="cert-badge"><i class="fas fa-flag-usa"></i><span>FDA USA</span></div><div class="cert-badge"><i class="fas fa-globe"></i><span>GlobalG.A.P.</span></div><div class="cert-badge"><i class="fas fa-recycle"></i><span>ISO 14001</span></div>
-    <div class="cert-badge"><i class="fas fa-award"></i><span>BRC Food</span></div><div class="cert-badge"><i class="fas fa-check-double"></i><span>HACCP</span></div><div class="cert-badge"><i class="fas fa-leaf"></i><span>Organico UE</span></div><div class="cert-badge"><i class="fas fa-flag-usa"></i><span>FDA USA</span></div><div class="cert-badge"><i class="fas fa-globe"></i><span>GlobalG.A.P.</span></div><div class="cert-badge"><i class="fas fa-recycle"></i><span>ISO 14001</span></div>
-  </div></div>
-</section>
-
-<!-- ── CONTACTO ── -->
-<section class="section" id="contacto" style="background:var(--bg2)">
-  <div class="section-header">
-    <span class="section-tag reveal reveal-up">Contactanos</span>
-    <h2 class="section-title reveal reveal-up reveal-d1">Hablemos de <span class="gradient-text">negocios</span><span class="title-line"></span></h2>
-    <p class="section-sub reveal reveal-up reveal-d2">Escribenos y un ejecutivo te respondera en menos de 24 horas.</p>
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 4: IMPACTO GLOBAL (NEW)
+     ══════════════════════════════════════════════════════════════ -->
+<section class="section-impact" id="impact">
+  <div class="impact-bg"></div>
+  <div class="impact-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
   </div>
-  <div class="contacto-grid">
-    <div class="contacto-cards">
-      <div class="contacto-card reveal reveal-left"><div class="contacto-icon"><i class="fas fa-map-marker-alt"></i></div><div><h4>Direccion</h4><p>Fndo. Predio Rural Don Jose De San Martin S/N Mz. 1, C.P. Mazo, Huaura, Peru</p></div></div>
-      <div class="contacto-card reveal reveal-left reveal-d1"><div class="contacto-icon"><i class="fas fa-envelope"></i></div><div><h4>Correo Comercial</h4><a href="mailto:ventas@frutostropicales.pe">ventas@frutostropicales.pe</a></div></div>
-      <div class="contacto-card reveal reveal-left reveal-d2"><div class="contacto-icon"><i class="fas fa-phone"></i></div><div><h4>Telefono / WhatsApp</h4><p>+51 935 293 701</p></div></div>
-      <a href="https://wa.me/51935293701?text=Hola,+me+interesa+conocer+sus+productos+de+exportacion" target="_blank" class="btn-whatsapp reveal reveal-left reveal-d3"><i class="fab fa-whatsapp" style="font-size:20px"></i> Escribir por WhatsApp</a>
+
+  <div class="container">
+    <div class="section-header reveal reveal-up">
+      <span class="section-tag">IMPACTO GLOBAL</span>
+      <h2 class="section-title">Presencia en <span class="gradient-text">20+ paises</span><span class="title-line"></span></h2>
+      <p class="section-sub">Cada caja que exportamos lleva el sabor del Peru al mundo entero. Trazabilidad completa, cadena de frio ininterrumpida y monitoreo en tiempo real.</p>
     </div>
-    <div class="map-container reveal reveal-right">
-      <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15566!2d-77.6049375!3d-11.0331875!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9106e46e3115c2e7%3A0x7f4c2e3e4e5f6a7b!2sFrutos+Tropicales+Peru!5e0!3m2!1ses!2spe!4v1700000000000!5m2!1ses!2spe" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+
+    <!-- Bento stats grid -->
+    <div class="bento-grid">
+      <div class="bento bento-large glass-card reveal reveal-up" data-tilt>
+        <div class="bento-icon-wrap"><div class="bento-icon">&#128674;</div></div>
+        <div class="bento-content">
+          <div class="bento-label-top">Exportacion Campaña 2026</div>
+          <div class="bento-value" data-count="535" data-suffix=" TN">0</div>
+          <div class="bento-desc">Toneladas metricas despachadas a mercados internacionales en la campaña actual.</div>
+          <div class="bento-list">
+            <div class="bento-li"><i class="fas fa-check-circle"></i> Trazabilidad completa desde origen</div>
+            <div class="bento-li"><i class="fas fa-check-circle"></i> Cadena de frio ininterrumpida</div>
+            <div class="bento-li"><i class="fas fa-check-circle"></i> Monitoreo reefer 24/7</div>
+          </div>
+        </div>
+        <div class="bento-graph">
+          <svg viewBox="0 0 200 60" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="grphGrad" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="var(--verde-2)" stop-opacity=".4"/>
+                <stop offset="100%" stop-color="var(--verde-2)" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,50 C40,40 60,20 100,25 C140,30 160,10 200,5 L200,60 L0,60 Z" fill="url(#grphGrad)"/>
+            <path d="M0,50 C40,40 60,20 100,25 C140,30 160,10 200,5" stroke="var(--verde-2)" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="bento glass-card reveal reveal-up reveal-d1" data-tilt>
+        <div class="bento-icon">&#127758;</div>
+        <div class="bento-value" data-count="20" data-suffix="+">0</div>
+        <div class="bento-label">Paises destino</div>
+        <div class="bento-mini">4 continentes</div>
+      </div>
+
+      <div class="bento glass-card reveal reveal-up reveal-d2" data-tilt>
+        <div class="bento-icon">&#127981;</div>
+        <div class="bento-value" data-count="100" data-suffix=" TN">0</div>
+        <div class="bento-label">Capacidad semanal</div>
+        <div class="bento-mini">Planta IQF</div>
+      </div>
+
+      <div class="bento glass-card reveal reveal-up reveal-d3" data-tilt>
+        <div class="bento-icon"><span class="pulse-dot"></span></div>
+        <div class="bento-value">24/7</div>
+        <div class="bento-label">Monitoreo reefer</div>
+        <div class="bento-mini">GPS tiempo real</div>
+      </div>
+    </div>
+
+    <!-- World map with pulsing destinations -->
+    <div class="world-map-wrap reveal reveal-up" id="worldMap">
+      <div class="world-map">
+        <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <radialGradient id="dotGlow">
+              <stop offset="0%" stop-color="var(--naranja-2)"/>
+              <stop offset="100%" stop-color="var(--naranja-2)" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <!-- Simplified continents as paths (soft blobs) -->
+          <g class="continents" fill="rgba(14,124,58,0.08)" stroke="rgba(14,124,58,0.15)" stroke-width="0.5">
+            <!-- North America -->
+            <path d="M80,100 Q120,70 200,80 Q260,85 280,120 Q270,170 250,200 Q200,220 150,215 Q100,200 85,160 Z"/>
+            <!-- South America (Peru highlighted) -->
+            <path d="M230,250 Q260,240 290,260 Q305,310 295,370 Q270,420 240,430 Q215,410 205,360 Q200,300 230,250 Z"/>
+            <!-- Europe -->
+            <path d="M450,100 Q490,90 540,100 Q565,120 555,160 Q520,180 480,175 Q450,155 445,125 Z"/>
+            <!-- Africa -->
+            <path d="M470,200 Q510,190 550,210 Q570,260 560,320 Q540,370 510,380 Q475,360 460,310 Q455,250 470,200 Z"/>
+            <!-- Asia -->
+            <path d="M580,100 Q650,85 740,100 Q810,120 830,170 Q800,220 730,225 Q650,215 600,190 Q575,150 580,100 Z"/>
+            <!-- Oceania -->
+            <path d="M780,320 Q820,310 860,325 Q875,355 850,375 Q810,380 785,360 Q775,340 780,320 Z"/>
+          </g>
+          <!-- Peru origin point -->
+          <g class="origin-pt">
+            <circle cx="245" cy="340" r="6" fill="var(--verde-2)"/>
+            <circle cx="245" cy="340" r="6" fill="var(--verde-2)" class="pulse-ring"/>
+            <text x="245" y="365" text-anchor="middle" fill="var(--verde)" font-size="11" font-weight="700">PERU</text>
+          </g>
+          <!-- Destination dots -->
+          <g class="dest-pts">
+            <!-- USA -->
+            <circle class="dest" cx="160" cy="140" r="4" style="--d:0s"/>
+            <!-- Canada -->
+            <circle class="dest" cx="170" cy="100" r="4" style="--d:0.2s"/>
+            <!-- Mexico -->
+            <circle class="dest" cx="180" cy="180" r="4" style="--d:0.4s"/>
+            <!-- Brazil -->
+            <circle class="dest" cx="290" cy="320" r="4" style="--d:0.6s"/>
+            <!-- UK -->
+            <circle class="dest" cx="465" cy="115" r="4" style="--d:0.8s"/>
+            <!-- Spain -->
+            <circle class="dest" cx="470" cy="145" r="4" style="--d:1s"/>
+            <!-- France -->
+            <circle class="dest" cx="490" cy="135" r="4" style="--d:1.2s"/>
+            <!-- Germany -->
+            <circle class="dest" cx="510" cy="120" r="4" style="--d:1.4s"/>
+            <!-- Italy -->
+            <circle class="dest" cx="515" cy="145" r="4" style="--d:1.6s"/>
+            <!-- Netherlands -->
+            <circle class="dest" cx="495" cy="115" r="4" style="--d:1.8s"/>
+            <!-- Russia -->
+            <circle class="dest" cx="650" cy="110" r="4" style="--d:2s"/>
+            <!-- UAE -->
+            <circle class="dest" cx="600" cy="180" r="4" style="--d:2.2s"/>
+            <!-- China -->
+            <circle class="dest" cx="740" cy="150" r="4" style="--d:2.4s"/>
+            <!-- Japan -->
+            <circle class="dest" cx="810" cy="145" r="4" style="--d:2.6s"/>
+            <!-- Korea -->
+            <circle class="dest" cx="790" cy="140" r="4" style="--d:2.8s"/>
+            <!-- Belgium -->
+            <circle class="dest" cx="488" cy="120" r="4" style="--d:3s"/>
+          </g>
+          <!-- Curved trade lines -->
+          <g class="trade-lines" stroke="var(--naranja-2)" stroke-width="1" fill="none" opacity="0.35">
+            <path d="M245,340 Q200,240 160,140" stroke-dasharray="4 4"/>
+            <path d="M245,340 Q350,260 465,115" stroke-dasharray="4 4"/>
+            <path d="M245,340 Q500,300 740,150" stroke-dasharray="4 4"/>
+            <path d="M245,340 Q550,250 810,145" stroke-dasharray="4 4"/>
+            <path d="M245,340 Q270,290 290,320" stroke-dasharray="4 4"/>
+          </g>
+        </svg>
+      </div>
+      <div class="countries-flags">
+        <span class="cflag">&#127482;&#127480; USA</span>
+        <span class="cflag">&#127464;&#127462; Canada</span>
+        <span class="cflag">&#127474;&#127485; Mexico</span>
+        <span class="cflag">&#127463;&#127479; Brasil</span>
+        <span class="cflag">&#127468;&#127463; UK</span>
+        <span class="cflag">&#127466;&#127480; Espana</span>
+        <span class="cflag">&#127467;&#127479; Francia</span>
+        <span class="cflag">&#127465;&#127466; Alemania</span>
+        <span class="cflag">&#127470;&#127481; Italia</span>
+        <span class="cflag">&#127475;&#127473; Holanda</span>
+        <span class="cflag">&#127463;&#127466; Belgica</span>
+        <span class="cflag">&#127479;&#127482; Rusia</span>
+        <span class="cflag">&#127462;&#127466; Emiratos</span>
+        <span class="cflag">&#127464;&#127475; China</span>
+        <span class="cflag">&#127471;&#127477; Japon</span>
+        <span class="cflag">&#127472;&#127479; Corea</span>
+      </div>
     </div>
   </div>
 </section>
 
-<!-- ── CTA ── -->
-<section class="cta">
-  <div class="cta-floater" style="top:10%;left:8%;--dur:6s">&#127827;</div><div class="cta-floater" style="top:60%;left:15%;--dur:8s">&#129389;</div><div class="cta-floater" style="top:20%;right:10%;--dur:7s">&#129376;</div><div class="cta-floater" style="top:70%;right:15%;--dur:5s">&#129361;</div>
-  <h2 class="reveal reveal-up">Listo para importar <span class="gradient-text">fruta peruana</span>?</h2>
-  <p class="reveal reveal-up reveal-d1">Conecta con nuestro equipo comercial y recibe una cotizacion personalizada</p>
-  <a href="#contacto" class="btn-primary reveal reveal-scale reveal-d2"><i class="fas fa-paper-plane"></i> Solicitar Cotizacion</a>
+<!-- ══════════════════════════════════════════════════════════════
+     FEATURES STRIP
+     ══════════════════════════════════════════════════════════════ -->
+<section class="features">
+  <div class="features-grid">
+    <div class="feature-item reveal reveal-up">
+      <i class="fas fa-snowflake"></i>
+      <h4>Congelado IQF</h4>
+      <p>Tecnologia de congelado rapido individual, maxima calidad y nutrientes</p>
+    </div>
+    <div class="feature-item reveal reveal-up reveal-d1">
+      <i class="fas fa-globe-americas"></i>
+      <h4>Exportacion Global</h4>
+      <p>Presencia en mas de 20 paises en 4 continentes</p>
+    </div>
+    <div class="feature-item reveal reveal-up reveal-d2">
+      <i class="fas fa-award"></i>
+      <h4>Certificados</h4>
+      <p>BRC, HACCP, Organico UE, FDA, GlobalG.A.P.</p>
+    </div>
+    <div class="feature-item reveal reveal-up reveal-d3">
+      <i class="fas fa-temperature-low"></i>
+      <h4>Cadena de Frio</h4>
+      <p>Control de temperatura desde planta hasta destino final</p>
+    </div>
+  </div>
 </section>
 
-<!-- ── FOOTER ── -->
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 5: PRODUCTOS BENTO GRID
+     ══════════════════════════════════════════════════════════════ -->
+<section class="section section-products" id="productos">
+  <div class="container">
+    <div class="section-header reveal reveal-up">
+      <span class="section-tag">NUESTROS PRODUCTOS</span>
+      <h2 class="section-title">Lo mejor del <span class="gradient-text">campo peruano</span><span class="title-line"></span></h2>
+      <p class="section-sub">Seleccionamos y procesamos cada fruta bajo estrictos estandares de calidad para mercados de exportacion.</p>
+    </div>
+
+    <div class="products-bento">
+      <!-- FEATURED LARGE: Arandanos -->
+      <article class="pbento pbento-large reveal reveal-up" data-tilt>
+        <div class="pbento-img-wrap">
+          <img src="assets/images/products/arandano.jpg" alt="Arandanos IQF" loading="lazy">
+          <div class="pbento-img-overlay"></div>
+        </div>
+        <div class="pbento-badge"><i class="fas fa-star"></i> Producto destacado</div>
+        <div class="pbento-iqf">IQF</div>
+        <div class="pbento-content">
+          <div class="pbento-origin">Cajamarca &middot; Lambayeque</div>
+          <h3 class="pbento-name">Arandanos IQF</h3>
+          <p class="pbento-desc">Superfrutas con alto contenido de antioxidantes, congeladas individualmente en su punto optimo de madurez. Producto estrella de nuestra cartera de exportacion.</p>
+          <div class="pbento-specs">
+            <div class="pspec"><span class="pspec-k">Brix</span><span class="pspec-v">12-15°</span></div>
+            <div class="pspec"><span class="pspec-k">Calibre</span><span class="pspec-v">12-18mm</span></div>
+            <div class="pspec"><span class="pspec-k">Temp</span><span class="pspec-v">-22°C</span></div>
+          </div>
+          <div class="pbento-tags">
+            <span class="ptag">IQF</span>
+            <span class="ptag">Antioxidante</span>
+            <span class="ptag">Premium</span>
+            <span class="ptag">Export</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="pbento reveal reveal-up reveal-d1" data-tilt>
+        <div class="pbento-img-wrap">
+          <img src="assets/images/products/fresa.png" alt="Fresas IQF" loading="lazy">
+          <div class="pbento-img-overlay"></div>
+        </div>
+        <div class="pbento-iqf">IQF</div>
+        <div class="pbento-content">
+          <div class="pbento-origin">Valles andinos</div>
+          <h3 class="pbento-name">Fresas IQF</h3>
+          <p class="pbento-desc">Cultivadas en los valles andinos, congeladas individualmente.</p>
+          <div class="pbento-tags">
+            <span class="ptag">IQF</span>
+            <span class="ptag">Organico</span>
+            <span class="ptag">Premium</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="pbento reveal reveal-up reveal-d2" data-tilt>
+        <div class="pbento-img-wrap">
+          <img src="assets/images/products/mango.jpeg" alt="Mango Congelado" loading="lazy">
+          <div class="pbento-img-overlay"></div>
+        </div>
+        <div class="pbento-iqf">IQF</div>
+        <div class="pbento-content">
+          <div class="pbento-origin">Piura</div>
+          <h3 class="pbento-name">Mango Congelado</h3>
+          <p class="pbento-desc">Variedad Kent y Tommy. Cubos y pulpa disponibles.</p>
+          <div class="pbento-tags">
+            <span class="ptag">Pulpa</span>
+            <span class="ptag">Cubos</span>
+            <span class="ptag">IQF</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="pbento reveal reveal-up reveal-d3" data-tilt>
+        <div class="pbento-img-wrap">
+          <img src="assets/images/products/pina.png" alt="Pina Golden" loading="lazy">
+          <div class="pbento-img-overlay"></div>
+        </div>
+        <div class="pbento-iqf">IQF</div>
+        <div class="pbento-content">
+          <div class="pbento-origin">Selva peruana</div>
+          <h3 class="pbento-name">Pina Golden MD2</h3>
+          <p class="pbento-desc">Sabor dulce y acidez equilibrada.</p>
+          <div class="pbento-tags">
+            <span class="ptag">MD2</span>
+            <span class="ptag">IQF</span>
+            <span class="ptag">Pulpa</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="pbento reveal reveal-up reveal-d1" data-tilt>
+        <div class="pbento-img-wrap">
+          <img src="assets/images/products/palta-cubos.jpg" alt="Palta Congelada" loading="lazy">
+          <div class="pbento-img-overlay"></div>
+        </div>
+        <div class="pbento-iqf">IQF</div>
+        <div class="pbento-content">
+          <div class="pbento-origin">Costa peruana</div>
+          <h3 class="pbento-name">Palta Hass</h3>
+          <p class="pbento-desc">Mitades, cubos y pulpa. Textura cremosa premium.</p>
+          <div class="pbento-tags">
+            <span class="ptag">Hass</span>
+            <span class="ptag">Cubos</span>
+            <span class="ptag">Export</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="pbento reveal reveal-up reveal-d2" data-tilt>
+        <div class="pbento-img-wrap">
+          <img src="assets/images/products/granada.jpg" alt="Granada IQF" loading="lazy">
+          <div class="pbento-img-overlay"></div>
+        </div>
+        <div class="pbento-iqf">IQF</div>
+        <div class="pbento-content">
+          <div class="pbento-origin">Ica</div>
+          <h3 class="pbento-name">Granada IQF</h3>
+          <p class="pbento-desc">Arilos congelados individualmente. Ricos en polifenoles.</p>
+          <div class="pbento-tags">
+            <span class="ptag">IQF</span>
+            <span class="ptag">Arilos</span>
+            <span class="ptag">Export</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 6: DEL CAMPO A TU MESA (STICKY SCROLL)
+     ══════════════════════════════════════════════════════════════ -->
+<section class="section-campo" id="proceso">
+  <div class="container">
+    <div class="section-header reveal reveal-up">
+      <span class="section-tag">DEL CAMPO A TU MESA</span>
+      <h2 class="section-title">Un recorrido <span class="gradient-text">impecable</span><span class="title-line"></span></h2>
+      <p class="section-sub">Cuatro etapas que garantizan la maxima calidad desde el campo hasta el destino final.</p>
+    </div>
+  </div>
+
+  <div class="sticky-scroll">
+    <div class="sticky-stories">
+      <div class="story" data-scene="0">
+        <div class="story-num">01</div>
+        <h3 class="story-title">Cosecha selectiva</h3>
+        <p class="story-text">Seleccion manual de frutas en campos certificados. Nuestros agricultores siguen protocolos estrictos de madurez optima, cosechando solo cuando la fruta alcanza los parametros ideales de Brix, color y firmeza.</p>
+        <ul class="story-pts">
+          <li><i class="fas fa-check"></i> Campos certificados GlobalG.A.P.</li>
+          <li><i class="fas fa-check"></i> Cosecha manual al amanecer</li>
+          <li><i class="fas fa-check"></i> Trazabilidad lote por lote</li>
+        </ul>
+      </div>
+      <div class="story" data-scene="1">
+        <div class="story-num">02</div>
+        <h3 class="story-title">Control de calidad</h3>
+        <p class="story-text">Cada lote pasa por inspeccion rigurosa en nuestro laboratorio: analisis de calibre, color, grados Brix y pruebas fitosanitarias. Solo avanza la fruta que cumple con los estandares internacionales.</p>
+        <ul class="story-pts">
+          <li><i class="fas fa-check"></i> Laboratorio acreditado</li>
+          <li><i class="fas fa-check"></i> Analisis microbiologico</li>
+          <li><i class="fas fa-check"></i> Certificados por lote</li>
+        </ul>
+      </div>
+      <div class="story" data-scene="2">
+        <div class="story-num">03</div>
+        <h3 class="story-title">Congelado IQF</h3>
+        <p class="story-text">Tuneles de congelado a -30°C donde el producto alcanza -22°C en menos de 1 hora. La tecnologia IQF preserva textura, nutrientes y sabor, pieza por pieza, sin formacion de cristales de hielo.</p>
+        <ul class="story-pts">
+          <li><i class="fas fa-check"></i> Tuneles de ultima generacion</li>
+          <li><i class="fas fa-check"></i> Congelado individual</li>
+          <li><i class="fas fa-check"></i> Empaque en atmosfera controlada</li>
+        </ul>
+      </div>
+      <div class="story" data-scene="3">
+        <div class="story-num">04</div>
+        <h3 class="story-title">Exportacion global</h3>
+        <p class="story-text">Contenedores reefer con GPS y monitoreo de temperatura en tiempo real. Coordinamos la logistica desde planta hasta el destino final, garantizando cadena de frio ininterrumpida.</p>
+        <ul class="story-pts">
+          <li><i class="fas fa-check"></i> Monitoreo reefer 24/7</li>
+          <li><i class="fas fa-check"></i> Cobertura a 20+ paises</li>
+          <li><i class="fas fa-check"></i> Documentacion aduanera completa</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sticky-visual">
+      <div class="scene-stack">
+        <div class="scene scene-active" data-scene="0">
+          <div class="scene-gradient scene-grad-1"></div>
+          <div class="scene-icon"><i class="fas fa-seedling"></i></div>
+          <div class="scene-label">Cosecha</div>
+        </div>
+        <div class="scene" data-scene="1">
+          <div class="scene-gradient scene-grad-2"></div>
+          <div class="scene-icon"><i class="fas fa-microscope"></i></div>
+          <div class="scene-label">QA</div>
+        </div>
+        <div class="scene" data-scene="2">
+          <div class="scene-gradient scene-grad-3"></div>
+          <div class="scene-icon"><i class="fas fa-snowflake"></i></div>
+          <div class="scene-label">IQF</div>
+        </div>
+        <div class="scene" data-scene="3">
+          <div class="scene-gradient scene-grad-4"></div>
+          <div class="scene-icon"><i class="fas fa-ship"></i></div>
+          <div class="scene-label">Export</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 7: NOSOTROS + TIMELINE
+     ══════════════════════════════════════════════════════════════ -->
+<section class="section section-about" id="nosotros">
+  <div class="container">
+    <div class="section-header reveal reveal-up">
+      <span class="section-tag">NUESTRA HISTORIA</span>
+      <h2 class="section-title">Comprometidos con la <span class="gradient-text">calidad</span><span class="title-line"></span></h2>
+    </div>
+
+    <div class="nosotros-grid">
+      <div class="nosotros-col">
+        <p class="nosotros-text reveal reveal-left">Somos un grupo agroexportador compuesto por dos empresas consolidadas: nuestra division de alimentos frescos y nuestra planta con tecnologia de congelado IQF. Ambas trabajan en sinergia para ofrecer productos premium de la mas alta exigencia internacional.</p>
+
+        <div class="timeline" id="timeline">
+          <svg class="tl-svg" viewBox="0 0 4 500" preserveAspectRatio="none">
+            <line x1="2" y1="0" x2="2" y2="500" stroke-width="2" class="tl-path"/>
+          </svg>
+          <div class="tl-item reveal reveal-left">
+            <div class="tl-dot"><i class="fas fa-seedling"></i></div>
+            <div class="tl-content">
+              <div class="tl-year">2021</div>
+              <h4>Fundacion de la empresa</h4>
+              <p>01 de mayo del 2021, Piura. Inicio de operaciones de exportacion.</p>
+            </div>
+          </div>
+          <div class="tl-item reveal reveal-left reveal-d1">
+            <div class="tl-dot"><i class="fas fa-medal"></i></div>
+            <div class="tl-content">
+              <div class="tl-year">2022</div>
+              <h4>Primera certificacion BRC</h4>
+              <p>Apertura de mercados en Europa y Norteamerica.</p>
+            </div>
+          </div>
+          <div class="tl-item reveal reveal-left reveal-d2">
+            <div class="tl-dot"><i class="fas fa-globe"></i></div>
+            <div class="tl-content">
+              <div class="tl-year">2024</div>
+              <h4>Expansion a Asia y EE.UU.</h4>
+              <p>Japon, China, Corea y Estados Unidos como destinos consolidados.</p>
+            </div>
+          </div>
+          <div class="tl-item reveal reveal-left reveal-d3">
+            <div class="tl-dot"><i class="fas fa-snowflake"></i></div>
+            <div class="tl-content">
+              <div class="tl-year">2026</div>
+              <h4>IQF ultima generacion</h4>
+              <p>Capacidad de 100 toneladas por semana con monitoreo reefer 24/7.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nosotros-visual">
+        <div class="mission-card reveal reveal-right">
+          <div class="mission-mesh"></div>
+          <div class="mission-content">
+            <div class="mission-badge"><i class="fas fa-quote-left"></i></div>
+            <h3>Nuestra mision</h3>
+            <p>Conectar la biodiversidad fruticola peruana con el mundo, ofreciendo productos frescos y congelados de maxima calidad que deleiten paladares globales y generen desarrollo en nuestras comunidades agricolas.</p>
+          </div>
+        </div>
+        <div class="values-grid">
+          <div class="value-card reveal reveal-scale reveal-d1" data-tilt>
+            <div class="value-icon green"><i class="fas fa-leaf"></i></div>
+            <h4>Sostenibilidad</h4>
+            <p>Comprometidos con el medio ambiente y las comunidades locales.</p>
+          </div>
+          <div class="value-card reveal reveal-scale reveal-d2" data-tilt>
+            <div class="value-icon orange"><i class="fas fa-microscope"></i></div>
+            <h4>Calidad</h4>
+            <p>Los mas altos estandares internacionales en cada etapa.</p>
+          </div>
+          <div class="value-card reveal reveal-scale reveal-d3" data-tilt>
+            <div class="value-icon green"><i class="fas fa-handshake"></i></div>
+            <h4>Confianza</h4>
+            <p>Compromiso, transparencia y cumplimiento impecable.</p>
+          </div>
+          <div class="value-card reveal reveal-scale reveal-d4" data-tilt>
+            <div class="value-icon orange"><i class="fas fa-rocket"></i></div>
+            <h4>Innovacion</h4>
+            <p>Tecnologia de punta para mercados exigentes.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 8: CERTIFICACIONES
+     ══════════════════════════════════════════════════════════════ -->
+<section class="section-certs">
+  <div class="certs-inner">
+    <div class="section-header reveal reveal-up center-white">
+      <span class="section-tag gold">CERTIFICACIONES</span>
+      <h3 class="certs-title">Estandares <span class="gradient-text">internacionales</span></h3>
+      <p class="certs-sub">Nuestros procesos cumplen con las certificaciones mas exigentes de la industria agroalimentaria global.</p>
+    </div>
+
+    <div class="certs-grid">
+      <div class="cert-tile glass-card reveal reveal-scale" data-tilt>
+        <i class="fas fa-award"></i>
+        <span class="cert-name">BRC Food</span>
+        <span class="cert-sub">Issue 9</span>
+      </div>
+      <div class="cert-tile glass-card reveal reveal-scale reveal-d1" data-tilt>
+        <i class="fas fa-check-double"></i>
+        <span class="cert-name">HACCP</span>
+        <span class="cert-sub">Codex Alimentarius</span>
+      </div>
+      <div class="cert-tile glass-card reveal reveal-scale reveal-d2" data-tilt>
+        <i class="fas fa-leaf"></i>
+        <span class="cert-name">Organico UE</span>
+        <span class="cert-sub">EU 848/2018</span>
+      </div>
+      <div class="cert-tile glass-card reveal reveal-scale reveal-d3" data-tilt>
+        <i class="fas fa-flag-usa"></i>
+        <span class="cert-name">FDA USA</span>
+        <span class="cert-sub">FSMA compliant</span>
+      </div>
+      <div class="cert-tile glass-card reveal reveal-scale" data-tilt>
+        <i class="fas fa-globe"></i>
+        <span class="cert-name">GlobalG.A.P.</span>
+        <span class="cert-sub">IFA v6</span>
+      </div>
+      <div class="cert-tile glass-card reveal reveal-scale reveal-d1" data-tilt>
+        <i class="fas fa-recycle"></i>
+        <span class="cert-name">ISO 14001</span>
+        <span class="cert-sub">Gestion ambiental</span>
+      </div>
+      <div class="cert-tile glass-card reveal reveal-scale reveal-d2" data-tilt>
+        <i class="fas fa-star-of-david"></i>
+        <span class="cert-name">Kosher</span>
+        <span class="cert-sub">OU certified</span>
+      </div>
+      <div class="cert-tile glass-card reveal reveal-scale reveal-d3" data-tilt>
+        <i class="fas fa-user-shield"></i>
+        <span class="cert-name">SMETA</span>
+        <span class="cert-sub">4-Pillar audit</span>
+      </div>
+    </div>
+
+    <div class="marquee-wrap">
+      <div class="marquee-track">
+        <div class="cert-badge"><i class="fas fa-award"></i><span>BRC Food</span></div>
+        <div class="cert-badge"><i class="fas fa-check-double"></i><span>HACCP</span></div>
+        <div class="cert-badge"><i class="fas fa-leaf"></i><span>Organico UE</span></div>
+        <div class="cert-badge"><i class="fas fa-flag-usa"></i><span>FDA USA</span></div>
+        <div class="cert-badge"><i class="fas fa-globe"></i><span>GlobalG.A.P.</span></div>
+        <div class="cert-badge"><i class="fas fa-recycle"></i><span>ISO 14001</span></div>
+        <div class="cert-badge"><i class="fas fa-star-of-david"></i><span>Kosher</span></div>
+        <div class="cert-badge"><i class="fas fa-user-shield"></i><span>SMETA</span></div>
+        <div class="cert-badge"><i class="fas fa-award"></i><span>BRC Food</span></div>
+        <div class="cert-badge"><i class="fas fa-check-double"></i><span>HACCP</span></div>
+        <div class="cert-badge"><i class="fas fa-leaf"></i><span>Organico UE</span></div>
+        <div class="cert-badge"><i class="fas fa-flag-usa"></i><span>FDA USA</span></div>
+        <div class="cert-badge"><i class="fas fa-globe"></i><span>GlobalG.A.P.</span></div>
+        <div class="cert-badge"><i class="fas fa-recycle"></i><span>ISO 14001</span></div>
+        <div class="cert-badge"><i class="fas fa-star-of-david"></i><span>Kosher</span></div>
+        <div class="cert-badge"><i class="fas fa-user-shield"></i><span>SMETA</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 9: TESTIMONIOS
+     ══════════════════════════════════════════════════════════════ -->
+<section class="section-testimonials">
+  <div class="container">
+    <div class="section-header reveal reveal-up">
+      <span class="section-tag">TESTIMONIOS</span>
+      <h2 class="section-title">Lo que dicen nuestros <span class="gradient-text">clientes</span><span class="title-line"></span></h2>
+      <p class="section-sub">Relaciones duraderas con distribuidores e importadores en cuatro continentes.</p>
+    </div>
+
+    <div class="testimonial-carousel" id="testimonialCarousel">
+      <div class="testimonial-track" id="testimonialTrack">
+        <article class="testimonial-card active" data-idx="0">
+          <div class="t-quote-icon"><i class="fas fa-quote-left"></i></div>
+          <div class="t-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="t-quote">Calidad excepcional y cumplimiento impecable en cada envio. Frutos Tropicales ha sido un socio estrategico clave para nuestra operacion europea desde 2023.</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:linear-gradient(135deg,#ea580c,#f97316)">MG</div>
+            <div class="t-info">
+              <div class="t-name">Maria Gonzalez</div>
+              <div class="t-role">Directora Comercial &middot; Distribuidora Premium</div>
+              <div class="t-country"><i class="fas fa-map-marker-alt"></i> Madrid, Espana</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="testimonial-card" data-idx="1">
+          <div class="t-quote-icon"><i class="fas fa-quote-left"></i></div>
+          <div class="t-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="t-quote">Trabajar con Frutos Tropicales ha sido transformador para nuestro negocio de snacks saludables. La consistencia del producto y el servicio son insuperables.</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:linear-gradient(135deg,#0e7c3a,#10b981)">JC</div>
+            <div class="t-info">
+              <div class="t-name">John Chen</div>
+              <div class="t-role">VP Procurement &middot; Asia Foods Corp</div>
+              <div class="t-country"><i class="fas fa-map-marker-alt"></i> Tokyo, Japon</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="testimonial-card" data-idx="2">
+          <div class="t-quote-icon"><i class="fas fa-quote-left"></i></div>
+          <div class="t-stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+          <p class="t-quote">La trazabilidad y las certificaciones son unicas en el mercado latinoamericano. Sus arandanos organicos son los mejores que hemos distribuido en UK.</p>
+          <div class="t-author">
+            <div class="t-avatar" style="background:linear-gradient(135deg,#b8941f,#d4af37)">SW</div>
+            <div class="t-info">
+              <div class="t-name">Sarah Williams</div>
+              <div class="t-role">Founder &middot; Organic Foods Ltd</div>
+              <div class="t-country"><i class="fas fa-map-marker-alt"></i> London, UK</div>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="testimonial-nav">
+        <button class="t-dot active" data-idx="0" aria-label="Testimonio 1"></button>
+        <button class="t-dot" data-idx="1" aria-label="Testimonio 2"></button>
+        <button class="t-dot" data-idx="2" aria-label="Testimonio 3"></button>
+      </div>
+
+      <button class="t-arrow t-prev" onclick="prevTestimonial()" aria-label="Anterior"><i class="fas fa-chevron-left"></i></button>
+      <button class="t-arrow t-next" onclick="nextTestimonial()" aria-label="Siguiente"><i class="fas fa-chevron-right"></i></button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 10: STATS TICKER (banda horizontal)
+     ══════════════════════════════════════════════════════════════ -->
+<section class="stats-ticker">
+  <div class="ticker-bg"></div>
+  <div class="ticker-grid">
+    <div class="ticker-stat reveal reveal-up"><div class="ts-value" data-count="535" data-suffix=" TN">0</div><div class="ts-label">Exportadas 2026</div></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-stat reveal reveal-up reveal-d1"><div class="ts-value" data-count="20" data-suffix="+">0</div><div class="ts-label">Paises destino</div></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-stat reveal reveal-up reveal-d2"><div class="ts-value" data-count="100" data-suffix=" TN">0</div><div class="ts-label">Capacidad/semana</div></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-stat reveal reveal-up reveal-d3"><div class="ts-value" data-count="99" data-suffix=".8%">0</div><div class="ts-label">Satisfaccion cliente</div></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-stat reveal reveal-up reveal-d4"><div class="ts-value">24/7</div><div class="ts-label">Monitoreo</div></div>
+    <div class="ticker-sep"></div>
+    <div class="ticker-stat reveal reveal-up reveal-d4"><div class="ts-value" data-count="4" data-suffix="+">0</div><div class="ts-label">Anos liderando</div></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 11: CONTACTO PREMIUM
+     ══════════════════════════════════════════════════════════════ -->
+<section class="section section-contact" id="contacto">
+  <div class="container">
+    <div class="section-header reveal reveal-up">
+      <span class="section-tag">CONTACTANOS</span>
+      <h2 class="section-title">Hablemos de <span class="gradient-text">negocios</span><span class="title-line"></span></h2>
+      <p class="section-sub">Escribenos y un ejecutivo te respondera en menos de 24 horas. Envios desde 500kg.</p>
+    </div>
+
+    <div class="contacto-premium">
+      <div class="contacto-left reveal reveal-left">
+        <div class="contacto-card" data-tilt>
+          <div class="contacto-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div>
+            <h4>Direccion</h4>
+            <p>Fndo. Predio Rural Don Jose De San Martin S/N Mz. 1, C.P. Mazo, Huaura, Peru</p>
+          </div>
+        </div>
+        <div class="contacto-card" data-tilt>
+          <div class="contacto-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <h4>Correo Comercial</h4>
+            <a href="mailto:ventas@frutostropicales.pe">ventas@frutostropicales.pe</a>
+          </div>
+        </div>
+        <div class="contacto-card" data-tilt>
+          <div class="contacto-icon"><i class="fas fa-phone"></i></div>
+          <div>
+            <h4>Telefono / WhatsApp</h4>
+            <p>+51 935 293 701</p>
+          </div>
+        </div>
+        <a href="https://wa.me/51935293701?text=Hola,+me+interesa+conocer+sus+productos+de+exportacion" target="_blank" class="btn-whatsapp magnetic">
+          <i class="fab fa-whatsapp"></i> Escribir por WhatsApp
+        </a>
+        <div class="map-container" data-tilt>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15566!2d-77.6049375!3d-11.0331875!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9106e46e3115c2e7%3A0x7f4c2e3e4e5f6a7b!2sFrutos+Tropicales+Peru!5e0!3m2!1ses!2spe!4v1700000000000!5m2!1ses!2spe" allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+      </div>
+
+      <form class="contacto-form glass-card reveal reveal-right" id="contactForm" onsubmit="handleContactSubmit(event)">
+        <div class="form-header">
+          <h3>Solicita una <span class="gradient-text">cotizacion</span></h3>
+          <p>Completa el formulario y nos pondremos en contacto.</p>
+        </div>
+
+        <div class="form-grid">
+          <div class="input-float">
+            <input type="text" id="fName" name="name" required>
+            <label for="fName">Nombre completo</label>
+            <span class="input-line"></span>
+          </div>
+          <div class="input-float">
+            <input type="email" id="fEmail" name="email" required>
+            <label for="fEmail">Correo electronico</label>
+            <span class="input-line"></span>
+          </div>
+          <div class="input-float">
+            <input type="text" id="fCompany" name="company">
+            <label for="fCompany">Empresa</label>
+            <span class="input-line"></span>
+          </div>
+          <div class="input-float">
+            <input type="text" id="fCountry" name="country">
+            <label for="fCountry">Pais</label>
+            <span class="input-line"></span>
+          </div>
+          <div class="input-float full">
+            <select id="fProduct" name="product">
+              <option value="">Selecciona producto de interes</option>
+              <option value="arandano">Arandanos IQF</option>
+              <option value="fresa">Fresas IQF</option>
+              <option value="mango">Mango Congelado</option>
+              <option value="pina">Pina Golden MD2</option>
+              <option value="palta">Palta Hass</option>
+              <option value="granada">Granada IQF</option>
+              <option value="multiple">Multiples productos</option>
+            </select>
+            <label for="fProduct" class="select-label">Producto de interes</label>
+            <span class="input-line"></span>
+          </div>
+          <div class="input-float full">
+            <textarea id="fMessage" name="message" rows="4" required></textarea>
+            <label for="fMessage">Mensaje (volumen, destino, fechas)</label>
+            <span class="input-line"></span>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit magnetic" id="submitBtn">
+          <span class="btn-submit-text"><i class="fas fa-paper-plane"></i> Enviar solicitud</span>
+          <span class="btn-submit-loading"><i class="fas fa-spinner fa-spin"></i> Enviando...</span>
+          <span class="btn-submit-success"><i class="fas fa-check"></i> Enviado!</span>
+          <div class="btn-submit-sparkles" id="sparkles"></div>
+        </button>
+
+        <p class="form-note"><i class="fas fa-shield-alt"></i> Tus datos estan protegidos. Respuesta en menos de 24h.</p>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 12: CTA FINAL (full viewport)
+     ══════════════════════════════════════════════════════════════ -->
+<section class="cta-final">
+  <div class="cta-final-bg"></div>
+  <div class="cta-final-orbs">
+    <div class="orb orb-a"></div>
+    <div class="orb orb-b"></div>
+  </div>
+  <div class="cta-floaters">
+    <div class="cta-floater" style="top:10%;left:8%;--dur:6s">&#127827;</div>
+    <div class="cta-floater" style="top:60%;left:15%;--dur:8s">&#129389;</div>
+    <div class="cta-floater" style="top:20%;right:10%;--dur:7s">&#129376;</div>
+    <div class="cta-floater" style="top:70%;right:15%;--dur:5s">&#129361;</div>
+    <div class="cta-floater" style="top:45%;left:50%;--dur:9s">&#127820;</div>
+  </div>
+  <div class="cta-final-content">
+    <div class="cta-eyebrow reveal reveal-up"><span class="eyebrow-dot"></span> READY TO EXPORT</div>
+    <h2 class="cta-final-title reveal reveal-up reveal-d1">Listo para importar <br><span class="gradient-text">fruta peruana?</span></h2>
+    <p class="cta-final-sub reveal reveal-up reveal-d2">Conecta con nuestro equipo comercial y recibe una cotizacion personalizada para tu mercado.</p>
+    <a href="#contacto" class="btn-cta-final magnetic reveal reveal-scale reveal-d3">
+      <span><i class="fas fa-paper-plane"></i> Solicitar Cotizacion Ahora</span>
+      <span class="btn-cta-arrow"><i class="fas fa-arrow-right"></i></span>
+    </a>
+    <div class="cta-final-stats reveal reveal-up reveal-d4">
+      <div class="cta-fstat"><i class="fas fa-bolt"></i> Respuesta menor a 24h</div>
+      <span class="cta-fsep"></span>
+      <div class="cta-fstat"><i class="fas fa-ship"></i> Envios desde 500kg</div>
+      <span class="cta-fsep"></span>
+      <div class="cta-fstat"><i class="fas fa-certificate"></i> Certificados internacionales</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SECTION 13: FOOTER
+     ══════════════════════════════════════════════════════════════ -->
 <footer class="footer">
   <div class="footer-divider"></div>
-  <div class="footer-grid">
-    <div class="footer-brand"><img src="assets/images/logo.png" alt="Frutos Tropicales"><p>Exportadora peruana de frutas congeladas IQF con cobertura en mas de 20 paises.</p>
-      <div class="footer-social"><a href="#"><i class="fab fa-linkedin-in"></i></a><a href="#"><i class="fab fa-instagram"></i></a><a href="#"><i class="fab fa-facebook-f"></i></a><a href="https://wa.me/51935293701" target="_blank"><i class="fab fa-whatsapp"></i></a></div>
+
+  <div class="footer-top">
+    <div class="footer-newsletter reveal reveal-up">
+      <div class="fn-left">
+        <h3>Newsletter ejecutivo</h3>
+        <p>Novedades de campañas, nuevos destinos y oportunidades comerciales directamente a tu bandeja.</p>
+      </div>
+      <form class="fn-form" onsubmit="handleNewsletter(event)">
+        <input type="email" id="fnEmail" placeholder="Tu correo electronico" required>
+        <button type="submit" class="magnetic"><i class="fas fa-paper-plane"></i> Suscribirme</button>
+      </form>
     </div>
-    <div><h4>Navegacion</h4><ul><li><a href="#inicio">Inicio</a></li><li><a href="#productos">Productos</a></li><li><a href="#nosotros">Nosotros</a></li><li><a href="#contacto">Contacto</a></li></ul></div>
-    <div><h4>Productos</h4><ul><li><a href="#productos">Fresas IQF</a></li><li><a href="#productos">Arandanos IQF</a></li><li><a href="#productos">Mango Chunks</a></li><li><a href="#productos">Pina IQF</a></li><li><a href="#productos">Palta Congelada</a></li></ul></div>
-    <div><h4>Contacto</h4><ul><li><a href="mailto:ventas@frutostropicales.pe">ventas@frutostropicales.pe</a></li><li><a href="tel:+51935293701">+51 935 293 701</a></li><li><a href="#contacto">Huaura, Lima, Peru</a></li></ul></div>
   </div>
+
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <img src="assets/images/logo.png" alt="Frutos Tropicales">
+      <div class="footer-brand-text">
+        <div class="footer-brand-main">Frutos Tropicales</div>
+        <div class="footer-brand-sub">Peru Export S.A.C.</div>
+      </div>
+      <p class="footer-brand-desc">Exportadora peruana de frutas congeladas IQF con cobertura en mas de 20 paises. Desde el Peru para el mundo.</p>
+      <div class="footer-social">
+        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://wa.me/51935293701" target="_blank" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Navegacion</h4>
+      <ul>
+        <li><a href="#inicio">Inicio</a></li>
+        <li><a href="#impact">Impacto Global</a></li>
+        <li><a href="#productos">Productos</a></li>
+        <li><a href="#nosotros">Nosotros</a></li>
+        <li><a href="#contacto">Contacto</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Productos</h4>
+      <ul>
+        <li><a href="#productos">Arandanos IQF</a></li>
+        <li><a href="#productos">Fresas IQF</a></li>
+        <li><a href="#productos">Mango Congelado</a></li>
+        <li><a href="#productos">Pina Golden MD2</a></li>
+        <li><a href="#productos">Palta Hass</a></li>
+        <li><a href="#productos">Granada IQF</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contacto</h4>
+      <ul>
+        <li><i class="fas fa-envelope"></i> <a href="mailto:ventas@frutostropicales.pe">ventas@frutostropicales.pe</a></li>
+        <li><i class="fas fa-phone"></i> <a href="tel:+51935293701">+51 935 293 701</a></li>
+        <li><i class="fas fa-map-marker-alt"></i> <a href="#contacto">Huaura, Lima, Peru</a></li>
+        <li><i class="fas fa-clock"></i> Lun-Vie 8am - 6pm PET</li>
+      </ul>
+    </div>
+  </div>
+
   <div class="footer-bottom">
-    <span class="footer-copy">&copy; 2026 Frutos Tropicales Peru Export S.A.C.</span>
+    <span class="footer-copy">&copy; 2026 Frutos Tropicales Peru Export S.A.C. &middot; Todos los derechos reservados</span>
     <div class="dev-sig">
       <div>
         <div class="dev-sig-name">Rodrigo Garcia</div>
-        <div class="dev-sig-role">Systems Analyst & Developer-QA</div>
+        <div class="dev-sig-role">Systems Analyst &amp; Developer-QA</div>
         <div class="dev-sig-badge">Frutos Tropicales Digital</div>
       </div>
     </div>
@@ -241,8 +1076,9 @@
 
 </div><!-- /page-content -->
 
-<a href="#inicio" class="back-top" id="backTop"><i class="fas fa-chevron-up"></i></a>
+<!-- Toast notifications -->
+<div class="toast" id="toast"><i class="fas fa-check-circle"></i> <span id="toastText"></span></div>
 
-<script src="assets/js/landing.js?v=4"></script>
+<script src="assets/js/landing.js?v=premium"></script>
 </body>
 </html>

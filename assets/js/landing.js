@@ -409,31 +409,46 @@
   })();
 
   /* ════════════════════════════════════════════════════════════════
-     15. STICKY SCROLL STORIES (Del Campo a tu Mesa)
+     15. JOURNEY PROCESS FLOW + MAP COUNTRY HIGHLIGHT
      ════════════════════════════════════════════════════════════════ */
-  (function initStickyStories(){
-    var stories = document.querySelectorAll('.story');
-    var scenes = document.querySelectorAll('.scene');
-    if(!stories.length || !scenes.length || !('IntersectionObserver' in window)) return;
-
-    function setActive(idx){
-      stories.forEach(function(s, i){
-        s.classList.toggle('active', i === idx);
-      });
-      scenes.forEach(function(s, i){
-        s.classList.toggle('scene-active', i === idx);
-      });
+  (function initJourneyFlow(){
+    var steps = document.querySelectorAll('.journey-step');
+    var nodes = document.querySelectorAll('.flow-node');
+    if(steps.length && nodes.length && 'IntersectionObserver' in window){
+      var sObs = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting && e.intersectionRatio > .4){
+            var idx = parseInt(e.target.dataset.step) - 1;
+            nodes.forEach(function(n, i){ n.classList.toggle('active', i <= idx); });
+          }
+        });
+      }, {threshold:[.4, .5, .6]});
+      steps.forEach(function(s){ sObs.observe(s); });
     }
 
-    var sObs = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        if(e.isIntersecting && e.intersectionRatio > .5){
-          var idx = parseInt(e.target.dataset.scene);
-          if(!isNaN(idx)) setActive(idx);
-        }
+    // Map hover interaction: hover bandera -> resalta pin
+    var flags = document.querySelectorAll('.cflag');
+    var pins = document.querySelectorAll('.dest-pin');
+    if(flags.length && pins.length){
+      flags.forEach(function(flag){
+        var c = flag.dataset.c;
+        flag.addEventListener('mouseenter', function(){
+          pins.forEach(function(p){ p.classList.toggle('active', p.dataset.country === c); });
+        });
+        flag.addEventListener('mouseleave', function(){
+          pins.forEach(function(p){ p.classList.remove('active'); });
+        });
       });
-    }, {threshold:[.5, .6, .7]});
-    stories.forEach(function(s){ sObs.observe(s); });
+      pins.forEach(function(pin){
+        var c = pin.dataset.country;
+        pin.addEventListener('mouseenter', function(){
+          flags.forEach(function(f){ f.classList.toggle('hovered', f.dataset.c === c); });
+        });
+        pin.addEventListener('mouseleave', function(){
+          flags.forEach(function(f){ f.classList.remove('hovered'); });
+        });
+      });
+    }
   })();
 
   /* ════════════════════════════════════════════════════════════════

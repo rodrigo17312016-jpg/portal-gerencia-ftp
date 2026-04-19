@@ -267,97 +267,148 @@
 
     <!-- World map with pulsing destinations -->
     <div class="world-map-wrap reveal reveal-up" id="worldMap">
+      <div class="world-map-head">
+        <div class="wm-title"><i class="fas fa-globe-americas"></i> Mapa de exportaciones</div>
+        <div class="wm-legend">
+          <span class="wm-leg-item"><i class="leg-dot leg-origin"></i> Origen Peru</span>
+          <span class="wm-leg-item"><i class="leg-dot leg-dest"></i> Destino activo</span>
+          <span class="wm-leg-item"><i class="leg-line"></i> Ruta maritima</span>
+        </div>
+      </div>
       <div class="world-map">
-        <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet">
+        <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid meet" class="wm-svg">
           <defs>
+            <linearGradient id="contGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#0e7c3a" stop-opacity="0.22"/>
+              <stop offset="100%" stop-color="#10b981" stop-opacity="0.12"/>
+            </linearGradient>
+            <linearGradient id="routeGrad2" x1="0" x2="1">
+              <stop offset="0%" stop-color="#10b981"/>
+              <stop offset="100%" stop-color="#f97316"/>
+            </linearGradient>
             <radialGradient id="dotGlow">
-              <stop offset="0%" stop-color="var(--naranja-2)"/>
-              <stop offset="100%" stop-color="var(--naranja-2)" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#f97316"/>
+              <stop offset="100%" stop-color="#f97316" stop-opacity="0"/>
             </radialGradient>
           </defs>
-          <!-- Simplified continents as paths (soft blobs) -->
-          <g class="continents" fill="rgba(14,124,58,0.08)" stroke="rgba(14,124,58,0.15)" stroke-width="0.5">
+
+          <!-- Grid pattern for ocean -->
+          <g class="wm-grid" opacity="0.12">
+            <line x1="0" y1="125" x2="1000" y2="125" stroke="#10b981" stroke-width="0.3" stroke-dasharray="2 4"/>
+            <line x1="0" y1="250" x2="1000" y2="250" stroke="#10b981" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <line x1="0" y1="375" x2="1000" y2="375" stroke="#10b981" stroke-width="0.3" stroke-dasharray="2 4"/>
+            <line x1="200" y1="0" x2="200" y2="500" stroke="#10b981" stroke-width="0.3" stroke-dasharray="2 4"/>
+            <line x1="500" y1="0" x2="500" y2="500" stroke="#10b981" stroke-width="0.5" stroke-dasharray="2 4"/>
+            <line x1="800" y1="0" x2="800" y2="500" stroke="#10b981" stroke-width="0.3" stroke-dasharray="2 4"/>
+          </g>
+
+          <!-- Continents (more realistic geography) -->
+          <g class="continents" fill="url(#contGrad)" stroke="#10b981" stroke-width="0.8" stroke-opacity="0.4">
             <!-- North America -->
-            <path d="M80,100 Q120,70 200,80 Q260,85 280,120 Q270,170 250,200 Q200,220 150,215 Q100,200 85,160 Z"/>
-            <!-- South America (Peru highlighted) -->
-            <path d="M230,250 Q260,240 290,260 Q305,310 295,370 Q270,420 240,430 Q215,410 205,360 Q200,300 230,250 Z"/>
+            <path d="M60,80 L100,60 L160,55 L210,65 L260,70 L290,80 L310,105 L305,140 L285,170 L260,195 L225,215 L195,218 L170,208 L150,195 L135,175 L118,158 L100,140 L88,118 L75,100 Z"/>
+            <!-- Central America + Caribbean -->
+            <path d="M200,215 L230,225 L245,240 L240,255 L215,250 L195,235 Z"/>
+            <!-- South America -->
+            <path d="M245,255 L285,250 L305,275 L315,315 L308,355 L290,395 L270,425 L245,440 L225,432 L215,405 L212,370 L218,330 L228,290 Z"/>
+            <!-- Greenland -->
+            <path d="M340,40 L380,35 L400,50 L395,75 L370,85 L345,75 L335,55 Z"/>
             <!-- Europe -->
-            <path d="M450,100 Q490,90 540,100 Q565,120 555,160 Q520,180 480,175 Q450,155 445,125 Z"/>
+            <path d="M460,75 L490,65 L530,68 L560,75 L585,90 L575,115 L555,135 L525,145 L495,145 L470,138 L455,120 L450,95 Z"/>
             <!-- Africa -->
-            <path d="M470,200 Q510,190 550,210 Q570,260 560,320 Q540,370 510,380 Q475,360 460,310 Q455,250 470,200 Z"/>
-            <!-- Asia -->
-            <path d="M580,100 Q650,85 740,100 Q810,120 830,170 Q800,220 730,225 Q650,215 600,190 Q575,150 580,100 Z"/>
-            <!-- Oceania -->
-            <path d="M780,320 Q820,310 860,325 Q875,355 850,375 Q810,380 785,360 Q775,340 780,320 Z"/>
-          </g>
-          <!-- Peru origin point -->
-          <g class="origin-pt">
-            <circle cx="245" cy="340" r="6" fill="var(--verde-2)"/>
-            <circle cx="245" cy="340" r="6" fill="var(--verde-2)" class="pulse-ring"/>
-            <text x="245" y="365" text-anchor="middle" fill="var(--verde)" font-size="11" font-weight="700">PERU</text>
-          </g>
-          <!-- Destination dots -->
-          <g class="dest-pts">
-            <!-- USA -->
-            <circle class="dest" cx="160" cy="140" r="4" style="--d:0s"/>
-            <!-- Canada -->
-            <circle class="dest" cx="170" cy="100" r="4" style="--d:0.2s"/>
-            <!-- Mexico -->
-            <circle class="dest" cx="180" cy="180" r="4" style="--d:0.4s"/>
-            <!-- Brazil -->
-            <circle class="dest" cx="290" cy="320" r="4" style="--d:0.6s"/>
-            <!-- UK -->
-            <circle class="dest" cx="465" cy="115" r="4" style="--d:0.8s"/>
-            <!-- Spain -->
-            <circle class="dest" cx="470" cy="145" r="4" style="--d:1s"/>
-            <!-- France -->
-            <circle class="dest" cx="490" cy="135" r="4" style="--d:1.2s"/>
-            <!-- Germany -->
-            <circle class="dest" cx="510" cy="120" r="4" style="--d:1.4s"/>
-            <!-- Italy -->
-            <circle class="dest" cx="515" cy="145" r="4" style="--d:1.6s"/>
-            <!-- Netherlands -->
-            <circle class="dest" cx="495" cy="115" r="4" style="--d:1.8s"/>
-            <!-- Russia -->
-            <circle class="dest" cx="650" cy="110" r="4" style="--d:2s"/>
-            <!-- UAE -->
-            <circle class="dest" cx="600" cy="180" r="4" style="--d:2.2s"/>
-            <!-- China -->
-            <circle class="dest" cx="740" cy="150" r="4" style="--d:2.4s"/>
+            <path d="M475,150 L515,148 L545,160 L565,185 L575,220 L570,260 L555,300 L530,340 L505,365 L475,370 L455,350 L445,315 L450,275 L458,235 L465,195 Z"/>
+            <!-- Russia + Asia -->
+            <path d="M595,70 L660,60 L730,58 L800,62 L860,72 L895,90 L880,115 L850,130 L810,138 L770,142 L720,138 L680,135 L635,128 L610,115 L595,95 Z"/>
+            <!-- Middle East -->
+            <path d="M570,145 L600,148 L625,160 L620,180 L600,192 L580,188 L565,175 Z"/>
+            <!-- India subcontinent -->
+            <path d="M655,160 L685,155 L710,170 L720,195 L705,218 L685,225 L665,215 L655,195 Z"/>
+            <!-- SE Asia + China -->
+            <path d="M735,150 L775,145 L815,155 L835,170 L825,195 L800,210 L770,212 L745,200 L730,180 Z"/>
+            <!-- Indonesia + Philippines -->
+            <path d="M785,230 L820,225 L855,232 L860,248 L835,258 L800,255 L780,245 Z"/>
             <!-- Japan -->
-            <circle class="dest" cx="810" cy="145" r="4" style="--d:2.6s"/>
-            <!-- Korea -->
-            <circle class="dest" cx="790" cy="140" r="4" style="--d:2.8s"/>
-            <!-- Belgium -->
-            <circle class="dest" cx="488" cy="120" r="4" style="--d:3s"/>
+            <path d="M865,140 L885,135 L895,155 L885,175 L870,172 L858,158 Z"/>
+            <!-- Australia -->
+            <path d="M800,340 L855,335 L895,345 L905,370 L890,395 L855,402 L815,395 L790,375 Z"/>
+            <!-- New Zealand -->
+            <path d="M920,395 L938,400 L940,415 L925,422 L915,410 Z"/>
+            <!-- UK + Ireland -->
+            <path d="M440,95 L458,92 L460,110 L450,118 L438,112 Z"/>
           </g>
-          <!-- Curved trade lines -->
-          <g class="trade-lines" stroke="var(--naranja-2)" stroke-width="1" fill="none" opacity="0.35">
-            <path d="M245,340 Q200,240 160,140" stroke-dasharray="4 4"/>
-            <path d="M245,340 Q350,260 465,115" stroke-dasharray="4 4"/>
-            <path d="M245,340 Q500,300 740,150" stroke-dasharray="4 4"/>
-            <path d="M245,340 Q550,250 810,145" stroke-dasharray="4 4"/>
-            <path d="M245,340 Q270,290 290,320" stroke-dasharray="4 4"/>
+
+          <!-- Trade routes (curved animated lines from Peru) -->
+          <g class="trade-lines" stroke="url(#routeGrad2)" stroke-width="1.4" fill="none" opacity="0.55">
+            <path d="M245,370 Q180,290 150,150" class="route" style="--rd:0s"/>
+            <path d="M245,370 Q180,250 170,100" class="route" style="--rd:.3s"/>
+            <path d="M245,370 Q205,290 205,240" class="route" style="--rd:.6s"/>
+            <path d="M245,370 Q260,350 280,330" class="route" style="--rd:.9s"/>
+            <path d="M245,370 Q350,280 470,110" class="route" style="--rd:1.2s"/>
+            <path d="M245,370 Q400,300 520,100" class="route" style="--rd:1.5s"/>
+            <path d="M245,370 Q450,300 570,120" class="route" style="--rd:1.8s"/>
+            <path d="M245,370 Q500,250 720,100" class="route" style="--rd:2.1s"/>
+            <path d="M245,370 Q550,280 810,160" class="route" style="--rd:2.4s"/>
+            <path d="M245,370 Q580,260 870,145" class="route" style="--rd:2.7s"/>
+            <path d="M245,370 Q600,200 600,180" class="route" style="--rd:3s"/>
+          </g>
+
+          <!-- Peru origin -->
+          <g class="origin-pt">
+            <circle cx="245" cy="370" r="18" fill="#10b981" opacity="0.15" class="pulse-ring"/>
+            <circle cx="245" cy="370" r="10" fill="#10b981" opacity="0.3" class="pulse-ring-2"/>
+            <circle cx="245" cy="370" r="5" fill="#10b981"/>
+            <circle cx="245" cy="370" r="5" fill="none" stroke="#fff" stroke-width="1.5"/>
+            <rect x="218" y="380" width="56" height="20" rx="10" fill="#0e7c3a"/>
+            <text x="246" y="394" text-anchor="middle" fill="#fff" font-size="11" font-weight="800" letter-spacing="1">PERU</text>
+          </g>
+
+          <!-- Destination pins with country labels -->
+          <g class="dest-pts">
+            <g class="dest-pin" data-country="USA"><circle cx="150" cy="150" r="5" fill="#f97316"/><circle cx="150" cy="150" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Canada"><circle cx="170" cy="100" r="5" fill="#f97316"/><circle cx="170" cy="100" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Mexico"><circle cx="205" cy="240" r="5" fill="#f97316"/><circle cx="205" cy="240" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Brasil"><circle cx="290" cy="330" r="5" fill="#f97316"/><circle cx="290" cy="330" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="UK"><circle cx="450" cy="105" r="5" fill="#f97316"/><circle cx="450" cy="105" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Espana"><circle cx="470" cy="130" r="5" fill="#f97316"/><circle cx="470" cy="130" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Francia"><circle cx="495" cy="115" r="5" fill="#f97316"/><circle cx="495" cy="115" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Alemania"><circle cx="520" cy="100" r="5" fill="#f97316"/><circle cx="520" cy="100" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Italia"><circle cx="525" cy="128" r="5" fill="#f97316"/><circle cx="525" cy="128" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Holanda"><circle cx="502" cy="97" r="5" fill="#f97316"/><circle cx="502" cy="97" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Belgica"><circle cx="488" cy="105" r="5" fill="#f97316"/><circle cx="488" cy="105" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Rusia"><circle cx="680" cy="90" r="5" fill="#f97316"/><circle cx="680" cy="90" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Emiratos"><circle cx="600" cy="180" r="5" fill="#f97316"/><circle cx="600" cy="180" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="China"><circle cx="790" cy="165" r="5" fill="#f97316"/><circle cx="790" cy="165" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Japon"><circle cx="875" cy="155" r="5" fill="#f97316"/><circle cx="875" cy="155" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+            <g class="dest-pin" data-country="Corea"><circle cx="840" cy="148" r="5" fill="#f97316"/><circle cx="840" cy="148" r="5" fill="none" stroke="#fff" stroke-width="1"/></g>
+          </g>
+
+          <!-- Continent labels -->
+          <g class="cont-labels" fill="#94a3b8" font-size="9" font-weight="700" letter-spacing="1.5" text-anchor="middle" opacity="0.55">
+            <text x="180" y="130" class="cont-lbl">AMERICA DEL NORTE</text>
+            <text x="260" y="395" class="cont-lbl">AMERICA DEL SUR</text>
+            <text x="510" y="110" class="cont-lbl">EUROPA</text>
+            <text x="510" y="280" class="cont-lbl">AFRICA</text>
+            <text x="740" y="105" class="cont-lbl">ASIA</text>
+            <text x="850" y="370" class="cont-lbl">OCEANIA</text>
           </g>
         </svg>
       </div>
       <div class="countries-flags">
-        <span class="cflag">&#127482;&#127480; USA</span>
-        <span class="cflag">&#127464;&#127462; Canada</span>
-        <span class="cflag">&#127474;&#127485; Mexico</span>
-        <span class="cflag">&#127463;&#127479; Brasil</span>
-        <span class="cflag">&#127468;&#127463; UK</span>
-        <span class="cflag">&#127466;&#127480; Espana</span>
-        <span class="cflag">&#127467;&#127479; Francia</span>
-        <span class="cflag">&#127465;&#127466; Alemania</span>
-        <span class="cflag">&#127470;&#127481; Italia</span>
-        <span class="cflag">&#127475;&#127473; Holanda</span>
-        <span class="cflag">&#127463;&#127466; Belgica</span>
-        <span class="cflag">&#127479;&#127482; Rusia</span>
-        <span class="cflag">&#127462;&#127466; Emiratos</span>
-        <span class="cflag">&#127464;&#127475; China</span>
-        <span class="cflag">&#127471;&#127477; Japon</span>
-        <span class="cflag">&#127472;&#127479; Corea</span>
+        <span class="cflag" data-c="USA">&#127482;&#127480; <b>USA</b></span>
+        <span class="cflag" data-c="Canada">&#127464;&#127462; <b>Canada</b></span>
+        <span class="cflag" data-c="Mexico">&#127474;&#127485; <b>Mexico</b></span>
+        <span class="cflag" data-c="Brasil">&#127463;&#127479; <b>Brasil</b></span>
+        <span class="cflag" data-c="UK">&#127468;&#127463; <b>UK</b></span>
+        <span class="cflag" data-c="Espana">&#127466;&#127480; <b>Espana</b></span>
+        <span class="cflag" data-c="Francia">&#127467;&#127479; <b>Francia</b></span>
+        <span class="cflag" data-c="Alemania">&#127465;&#127466; <b>Alemania</b></span>
+        <span class="cflag" data-c="Italia">&#127470;&#127481; <b>Italia</b></span>
+        <span class="cflag" data-c="Holanda">&#127475;&#127473; <b>Holanda</b></span>
+        <span class="cflag" data-c="Belgica">&#127463;&#127466; <b>Belgica</b></span>
+        <span class="cflag" data-c="Rusia">&#127479;&#127482; <b>Rusia</b></span>
+        <span class="cflag" data-c="Emiratos">&#127462;&#127466; <b>Emiratos</b></span>
+        <span class="cflag" data-c="China">&#127464;&#127475; <b>China</b></span>
+        <span class="cflag" data-c="Japon">&#127471;&#127477; <b>Japon</b></span>
+        <span class="cflag" data-c="Corea">&#127472;&#127479; <b>Corea</b></span>
       </div>
     </div>
   </div>
@@ -523,7 +574,7 @@
 </section>
 
 <!-- ══════════════════════════════════════════════════════════════
-     SECTION 6: DEL CAMPO A TU MESA (STICKY SCROLL)
+     SECTION 6: DEL CAMPO A TU MESA (ZIGZAG PREMIUM)
      ══════════════════════════════════════════════════════════════ -->
 <section class="section-campo" id="proceso">
   <div class="container">
@@ -532,75 +583,190 @@
       <h2 class="section-title">Un recorrido <span class="gradient-text">impecable</span><span class="title-line"></span></h2>
       <p class="section-sub">Cuatro etapas que garantizan la maxima calidad desde el campo hasta el destino final.</p>
     </div>
-  </div>
 
-  <div class="sticky-scroll">
-    <div class="sticky-stories">
-      <div class="story" data-scene="0">
-        <div class="story-num">01</div>
-        <h3 class="story-title">Cosecha selectiva</h3>
-        <p class="story-text">Seleccion manual de frutas en campos certificados. Nuestros agricultores siguen protocolos estrictos de madurez optima, cosechando solo cuando la fruta alcanza los parametros ideales de Brix, color y firmeza.</p>
-        <ul class="story-pts">
-          <li><i class="fas fa-check"></i> Campos certificados GlobalG.A.P.</li>
-          <li><i class="fas fa-check"></i> Cosecha manual al amanecer</li>
-          <li><i class="fas fa-check"></i> Trazabilidad lote por lote</li>
-        </ul>
-      </div>
-      <div class="story" data-scene="1">
-        <div class="story-num">02</div>
-        <h3 class="story-title">Control de calidad</h3>
-        <p class="story-text">Cada lote pasa por inspeccion rigurosa en nuestro laboratorio: analisis de calibre, color, grados Brix y pruebas fitosanitarias. Solo avanza la fruta que cumple con los estandares internacionales.</p>
-        <ul class="story-pts">
-          <li><i class="fas fa-check"></i> Laboratorio acreditado</li>
-          <li><i class="fas fa-check"></i> Analisis microbiologico</li>
-          <li><i class="fas fa-check"></i> Certificados por lote</li>
-        </ul>
-      </div>
-      <div class="story" data-scene="2">
-        <div class="story-num">03</div>
-        <h3 class="story-title">Congelado IQF</h3>
-        <p class="story-text">Tuneles de congelado a -30°C donde el producto alcanza -22°C en menos de 1 hora. La tecnologia IQF preserva textura, nutrientes y sabor, pieza por pieza, sin formacion de cristales de hielo.</p>
-        <ul class="story-pts">
-          <li><i class="fas fa-check"></i> Tuneles de ultima generacion</li>
-          <li><i class="fas fa-check"></i> Congelado individual</li>
-          <li><i class="fas fa-check"></i> Empaque en atmosfera controlada</li>
-        </ul>
-      </div>
-      <div class="story" data-scene="3">
-        <div class="story-num">04</div>
-        <h3 class="story-title">Exportacion global</h3>
-        <p class="story-text">Contenedores reefer con GPS y monitoreo de temperatura en tiempo real. Coordinamos la logistica desde planta hasta el destino final, garantizando cadena de frio ininterrumpida.</p>
-        <ul class="story-pts">
-          <li><i class="fas fa-check"></i> Monitoreo reefer 24/7</li>
-          <li><i class="fas fa-check"></i> Cobertura a 20+ paises</li>
-          <li><i class="fas fa-check"></i> Documentacion aduanera completa</li>
-        </ul>
-      </div>
+    <!-- Process connector line with floating nodes -->
+    <div class="process-flow reveal reveal-up">
+      <div class="flow-line"></div>
+      <div class="flow-node active"><span>01</span><em>Cosecha</em></div>
+      <div class="flow-node"><span>02</span><em>Calidad</em></div>
+      <div class="flow-node"><span>03</span><em>Congelado</em></div>
+      <div class="flow-node"><span>04</span><em>Exportacion</em></div>
     </div>
 
-    <div class="sticky-visual">
-      <div class="scene-stack">
-        <div class="scene scene-active" data-scene="0">
-          <div class="scene-gradient scene-grad-1"></div>
-          <div class="scene-icon"><i class="fas fa-seedling"></i></div>
-          <div class="scene-label">Cosecha</div>
+    <div class="journey-stack">
+
+      <!-- Step 01 - Cosecha (imagen izquierda) -->
+      <article class="journey-step reveal reveal-up" data-step="1">
+        <div class="journey-visual">
+          <div class="journey-img" style="background-image:url('assets/images/campo-mango.png')"></div>
+          <div class="journey-badge">
+            <i class="fas fa-seedling"></i>
+            <span>01</span>
+          </div>
+          <div class="journey-chip journey-chip-tl"><i class="fas fa-sun"></i> 5:30 AM</div>
+          <div class="journey-chip journey-chip-br"><i class="fas fa-leaf"></i> GlobalG.A.P.</div>
         </div>
-        <div class="scene" data-scene="1">
-          <div class="scene-gradient scene-grad-2"></div>
-          <div class="scene-icon"><i class="fas fa-microscope"></i></div>
-          <div class="scene-label">QA</div>
+        <div class="journey-content">
+          <div class="journey-meta">
+            <span class="journey-tag">Etapa 01 &middot; Campo</span>
+            <span class="journey-dur">Piura &middot; Cajamarca</span>
+          </div>
+          <h3 class="journey-title">Cosecha <span class="gradient-text">selectiva</span></h3>
+          <p class="journey-text">Seleccion manual de frutas en campos certificados. Nuestros agricultores siguen protocolos estrictos de madurez optima, cosechando solo cuando la fruta alcanza los parametros ideales de Brix, color y firmeza.</p>
+          <div class="journey-stats">
+            <div class="js-item"><b>12-18</b><span>&deg;Brix optimo</span></div>
+            <div class="js-item"><b>100%</b><span>Manual</span></div>
+            <div class="js-item"><b>24h</b><span>Al acopio</span></div>
+          </div>
+          <ul class="journey-pts">
+            <li><i class="fas fa-check-circle"></i> Campos certificados GlobalG.A.P. y organicos</li>
+            <li><i class="fas fa-check-circle"></i> Cosecha manual al amanecer para preservar firmeza</li>
+            <li><i class="fas fa-check-circle"></i> Trazabilidad lote por lote desde el arbol</li>
+          </ul>
         </div>
-        <div class="scene" data-scene="2">
-          <div class="scene-gradient scene-grad-3"></div>
-          <div class="scene-icon"><i class="fas fa-snowflake"></i></div>
-          <div class="scene-label">IQF</div>
+      </article>
+
+      <!-- Step 02 - Calidad (imagen derecha) -->
+      <article class="journey-step journey-reverse reveal reveal-up" data-step="2">
+        <div class="journey-visual">
+          <div class="journey-img journey-grad-lab"></div>
+          <div class="journey-viz-overlay">
+            <svg viewBox="0 0 200 200" class="lab-svg">
+              <defs>
+                <linearGradient id="labGrad" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0%" stop-color="#60a5fa"/>
+                  <stop offset="100%" stop-color="#2563eb"/>
+                </linearGradient>
+              </defs>
+              <circle cx="100" cy="100" r="80" fill="none" stroke="url(#labGrad)" stroke-width="1.5" opacity="0.35"/>
+              <circle cx="100" cy="100" r="60" fill="none" stroke="url(#labGrad)" stroke-width="1" opacity="0.5"/>
+              <circle cx="100" cy="100" r="40" fill="none" stroke="url(#labGrad)" stroke-width="1" opacity="0.7"/>
+              <g class="lab-dots">
+                <circle cx="100" cy="20" r="3" fill="#fff"/>
+                <circle cx="180" cy="100" r="3" fill="#fff"/>
+                <circle cx="100" cy="180" r="3" fill="#fff"/>
+                <circle cx="20" cy="100" r="3" fill="#fff"/>
+              </g>
+            </svg>
+          </div>
+          <div class="journey-badge badge-blue">
+            <i class="fas fa-microscope"></i>
+            <span>02</span>
+          </div>
+          <div class="journey-chip journey-chip-tl"><i class="fas fa-flask"></i> Lab acreditado</div>
+          <div class="journey-chip journey-chip-br"><i class="fas fa-check-double"></i> ISO 17025</div>
         </div>
-        <div class="scene" data-scene="3">
-          <div class="scene-gradient scene-grad-4"></div>
-          <div class="scene-icon"><i class="fas fa-ship"></i></div>
-          <div class="scene-label">Export</div>
+        <div class="journey-content">
+          <div class="journey-meta">
+            <span class="journey-tag blue">Etapa 02 &middot; Laboratorio</span>
+            <span class="journey-dur">Planta IQF</span>
+          </div>
+          <h3 class="journey-title">Control de <span class="gradient-text-blue">calidad</span></h3>
+          <p class="journey-text">Cada lote pasa por inspeccion rigurosa en nuestro laboratorio: analisis de calibre, color, grados Brix y pruebas fitosanitarias. Solo avanza la fruta que cumple con los estandares internacionales.</p>
+          <div class="journey-stats">
+            <div class="js-item"><b>100%</b><span>Inspeccion</span></div>
+            <div class="js-item"><b>15+</b><span>Parametros</span></div>
+            <div class="js-item"><b>0</b><span>Tolerancia</span></div>
+          </div>
+          <ul class="journey-pts">
+            <li><i class="fas fa-check-circle"></i> Laboratorio acreditado con equipos calibrados</li>
+            <li><i class="fas fa-check-circle"></i> Analisis microbiologico y fisicoquimico</li>
+            <li><i class="fas fa-check-circle"></i> Certificado de calidad emitido por cada lote</li>
+          </ul>
         </div>
-      </div>
+      </article>
+
+      <!-- Step 03 - IQF (imagen izquierda) -->
+      <article class="journey-step reveal reveal-up" data-step="3">
+        <div class="journey-visual">
+          <div class="journey-img journey-grad-ice"></div>
+          <div class="journey-viz-overlay">
+            <div class="ice-shimmer"></div>
+            <div class="ice-flakes">
+              <i class="fas fa-snowflake"></i>
+              <i class="fas fa-snowflake"></i>
+              <i class="fas fa-snowflake"></i>
+              <i class="fas fa-snowflake"></i>
+              <i class="fas fa-snowflake"></i>
+              <i class="fas fa-snowflake"></i>
+            </div>
+            <div class="temp-big">-30&deg;<span>C</span></div>
+          </div>
+          <div class="journey-badge badge-cyan">
+            <i class="fas fa-snowflake"></i>
+            <span>03</span>
+          </div>
+          <div class="journey-chip journey-chip-tl"><i class="fas fa-bolt"></i> &lt; 1 hora</div>
+          <div class="journey-chip journey-chip-br"><i class="fas fa-temperature-low"></i> -22&deg;C producto</div>
+        </div>
+        <div class="journey-content">
+          <div class="journey-meta">
+            <span class="journey-tag cyan">Etapa 03 &middot; Planta</span>
+            <span class="journey-dur">Tuneles IQF</span>
+          </div>
+          <h3 class="journey-title">Congelado <span class="gradient-text-cyan">IQF premium</span></h3>
+          <p class="journey-text">Tuneles de congelado a -30&deg;C donde el producto alcanza -22&deg;C en menos de 1 hora. La tecnologia IQF preserva textura, nutrientes y sabor, pieza por pieza, sin formacion de cristales de hielo.</p>
+          <div class="journey-stats">
+            <div class="js-item"><b>-30&deg;C</b><span>Tunel</span></div>
+            <div class="js-item"><b>100 TN</b><span>Semana</span></div>
+            <div class="js-item"><b>IQF</b><span>Individual</span></div>
+          </div>
+          <ul class="journey-pts">
+            <li><i class="fas fa-check-circle"></i> Tuneles de ultima generacion alta eficiencia</li>
+            <li><i class="fas fa-check-circle"></i> Congelado individual preserva textura y nutrientes</li>
+            <li><i class="fas fa-check-circle"></i> Empaque en atmosfera controlada</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Step 04 - Exportacion (imagen derecha) -->
+      <article class="journey-step journey-reverse reveal reveal-up" data-step="4">
+        <div class="journey-visual">
+          <div class="journey-img journey-grad-export"></div>
+          <div class="journey-viz-overlay">
+            <div class="export-route">
+              <svg viewBox="0 0 300 200">
+                <defs>
+                  <linearGradient id="routeGrad" x1="0" x2="1">
+                    <stop offset="0%" stop-color="#fbbf24"/>
+                    <stop offset="100%" stop-color="#ea580c"/>
+                  </linearGradient>
+                </defs>
+                <path d="M30,150 Q100,40 150,80 Q200,120 270,50" fill="none" stroke="url(#routeGrad)" stroke-width="2" stroke-dasharray="4 4" class="route-line"/>
+                <circle cx="30" cy="150" r="6" fill="#10b981"/>
+                <circle cx="270" cy="50" r="6" fill="#ea580c"/>
+                <text x="30" y="175" fill="#fff" font-size="12" font-weight="800" text-anchor="middle">PERU</text>
+                <text x="270" y="40" fill="#fff" font-size="12" font-weight="800" text-anchor="middle">GLOBAL</text>
+              </svg>
+            </div>
+          </div>
+          <div class="journey-badge badge-orange">
+            <i class="fas fa-ship"></i>
+            <span>04</span>
+          </div>
+          <div class="journey-chip journey-chip-tl"><i class="fas fa-satellite-dish"></i> GPS 24/7</div>
+          <div class="journey-chip journey-chip-br"><i class="fas fa-globe"></i> 20+ paises</div>
+        </div>
+        <div class="journey-content">
+          <div class="journey-meta">
+            <span class="journey-tag orange">Etapa 04 &middot; Logistica</span>
+            <span class="journey-dur">Callao &middot; Paita</span>
+          </div>
+          <h3 class="journey-title">Exportacion <span class="gradient-text-orange">global</span></h3>
+          <p class="journey-text">Contenedores reefer con GPS y monitoreo de temperatura en tiempo real. Coordinamos la logistica desde planta hasta el destino final, garantizando cadena de frio ininterrumpida.</p>
+          <div class="journey-stats">
+            <div class="js-item"><b>20+</b><span>Paises</span></div>
+            <div class="js-item"><b>24/7</b><span>Monitoreo</span></div>
+            <div class="js-item"><b>100%</b><span>Cadena frio</span></div>
+          </div>
+          <ul class="journey-pts">
+            <li><i class="fas fa-check-circle"></i> Monitoreo reefer 24/7 con alertas en tiempo real</li>
+            <li><i class="fas fa-check-circle"></i> Cobertura a 20+ paises en cuatro continentes</li>
+            <li><i class="fas fa-check-circle"></i> Documentacion aduanera completa y trazable</li>
+          </ul>
+        </div>
+      </article>
+
     </div>
   </div>
 </section>

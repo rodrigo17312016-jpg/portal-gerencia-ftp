@@ -984,7 +984,7 @@ body {
     </div>
     <div class="table-controls">
       <label style="font-size:12px;font-weight:700;color:var(--muted)">Filtrar por fecha:</label>
-      <input type="date" id="filterDate" onchange="refreshAll()">
+      <input type="date" id="filterDate" onchange="loadFromSupabase(this.value)">
     </div>
     <div class="table-wrap">
       <table class="data-table" id="historyTable">
@@ -1821,41 +1821,60 @@ function rebuildCharts(recs) {
 }
 
 // ═══════════════ SUPABASE LOAD ═══════════════
-async function loadFromSupabase() {
+// Carga los registros de Supabase para la fecha dada (o la del filtro / hoy por defecto)
+// y los fusiona con localStorage. Supabase tiene prioridad y gana en duplicados (fecha|hora|turno).
+async function loadFromSupabase(targetFecha) {
   if (typeof supabaseClient === 'undefined' || !supabaseClient) {
     console.warn('Supabase no disponible');
+    refreshAll();
     return;
   }
   try {
-    const today = getLocalToday();
+    const filterEl = document.getElementById('filterDate');
+    const fecha = targetFecha
+      || (filterEl && filterEl.value)
+      || getLocalToday();
+
     const { data, error } = await supabaseClient
       .from('registro_empaque_congelado')
       .select('*')
-      .eq('fecha', today)
+      .eq('fecha', fecha)
       .order('hora');
 
     if (error) {
       console.error('Supabase load error:', error);
+      refreshAll();
       return;
     }
 
-    if (data && data.length > 0) {
-      const localRecords = getRecords();
-      const otherDays = localRecords.filter(r => r.fecha !== today);
-      const merged = [...otherDays, ...data.map(d => ({
-        ...d,
-        cajas: parseInt(d.cajas) || 0,
-        kg_pt: parseFloat(d.kg_pt) || 0,
-        kg_presentacion: parseFloat(d.kg_presentacion) || 0,
-        operarios: parseInt(d.operarios) || 0,
-        cj_hr: parseInt(d.cj_hr) || 0,
-        cj_hr_op: parseFloat(d.cj_hr_op) || 0
-      }))];
-      saveRecords(merged);
-      refreshAll();
-    }
+    const supaRecords = (data || []).map(d => ({
+      ...d,
+      id: d.id != null ? String(d.id) : (Date.now().toString(36) + Math.random().toString(36).substr(2,5)),
+      cajas: parseInt(d.cajas) || 0,
+      kg_pt: parseFloat(d.kg_pt) || 0,
+      kg_presentacion: parseFloat(d.kg_presentacion) || 0,
+      operarios: parseInt(d.operarios) || 0,
+      cj_hr: parseInt(d.cj_hr) || 0,
+      cj_hr_op: parseFloat(d.cj_hr_op) || 0
+    }));
+
+    const localRecords = getRecords();
+    const otherDays = localRecords.filter(r => r.fecha !== fecha);
+    const localSameDay = localRecords.filter(r => r.fecha === fecha);
+
+    // Dedup por fecha|hora|turno, Supabase gana
+    const dedup = new Map();
+    const keyOf = r => (r.fecha || '') + '|' + (r.hora || '') + '|' + (r.turno || '');
+    supaRecords.forEach(r => dedup.set(keyOf(r), r));
+    localSameDay.forEach(r => { const k = keyOf(r); if (!dedup.has(k)) dedup.set(k, r); });
+
+    const mergedSameDay = Array.from(dedup.values());
+    const merged = [...otherDays, ...mergedSameDay];
+    saveRecords(merged);
+    refreshAll();
   } catch(e) {
-    console.log('Supabase offline');
+    console.log('Supabase offline', e);
+    refreshAll();
   }
 }
 

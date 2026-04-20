@@ -265,17 +265,17 @@
       </div>
     </div>
 
-    <!-- World map premium (dot-matrix style) -->
+    <!-- World map premium (dot-matrix + aereas + maritimas) -->
     <div class="world-map-wrap reveal reveal-up" id="worldMap">
       <div class="world-map-head">
         <div class="wm-title-group">
-          <div class="wm-title"><i class="fas fa-globe-americas"></i> Red global de exportacion</div>
-          <div class="wm-sub">Presencia activa en 20+ mercados internacionales</div>
+          <div class="wm-title"><i class="fas fa-globe-americas"></i> Conectamos el mundo, <span class="gradient-text">llevamos lo mejor del campo peruano</span></div>
+          <div class="wm-sub">Transporte aereo y maritimo seguro, eficiente y sostenible &mdash; desde el Peru hacia mas de 20 paises</div>
         </div>
-        <div class="wm-legend">
-          <span class="wm-leg-item"><i class="leg-dot leg-origin"></i> Origen Peru</span>
-          <span class="wm-leg-item"><i class="leg-dot leg-dest"></i> Mercado destino</span>
-          <span class="wm-leg-item"><i class="leg-line"></i> Ruta maritima</span>
+        <div class="wm-view-tabs" role="tablist">
+          <button class="wm-tab" data-view="air" aria-label="Vista aerea"><i class="fas fa-plane"></i> Vista aerea</button>
+          <button class="wm-tab" data-view="sea" aria-label="Vista maritima"><i class="fas fa-ship"></i> Vista maritima</button>
+          <button class="wm-tab active" data-view="all" aria-label="Vista completa"><i class="fas fa-globe"></i> Vista completa</button>
         </div>
       </div>
       <div class="world-map">
@@ -446,50 +446,96 @@
             </g>
           </g>
 
-          <!-- Trade routes from Peru to destinations -->
-          <g class="trade-lines" stroke="url(#routeGrad2)" stroke-width="1.4" fill="none" opacity="0.7">
-            <path d="M248,345 Q185,260 170,125" class="route" style="--rd:0s"/>
-            <path d="M248,345 Q200,260 175,88" class="route" style="--rd:.3s"/>
-            <path d="M248,345 Q210,270 205,182" class="route" style="--rd:.6s"/>
-            <path d="M248,345 Q265,330 285,295" class="route" style="--rd:.9s"/>
-            <path d="M248,345 Q340,260 460,108" class="route" style="--rd:1.2s"/>
-            <path d="M248,345 Q380,260 510,128" class="route" style="--rd:1.5s"/>
-            <path d="M248,345 Q440,260 580,155" class="route" style="--rd:1.8s"/>
-            <path d="M248,345 Q490,240 740,130" class="route" style="--rd:2.1s"/>
-            <path d="M248,345 Q540,250 820,150" class="route" style="--rd:2.4s"/>
-            <path d="M248,345 Q570,230 860,148" class="route" style="--rd:2.7s"/>
-            <path d="M248,345 Q480,260 605,172" class="route" style="--rd:3s"/>
+          <!-- AIR ROUTES (curvas altas dashed con aviones animados) -->
+          <g class="routes-air" fill="none" opacity="0.9">
+            <!-- Peru -> LAX -->
+            <path id="airR1" d="M 248,345 Q 160,200 185,155" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> New York -->
+            <path id="airR2" d="M 248,345 Q 200,220 235,130" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Miami -->
+            <path id="airR3" d="M 248,345 Q 220,260 220,175" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> London -->
+            <path id="airR4" d="M 248,345 Q 340,180 452,108" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Madrid -->
+            <path id="airR5" d="M 248,345 Q 360,220 468,138" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Amsterdam -->
+            <path id="airR6" d="M 248,345 Q 370,180 498,105" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Frankfurt -->
+            <path id="airR7" d="M 248,345 Q 380,190 510,108" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Dubai -->
+            <path id="airR8" d="M 248,345 Q 430,230 610,178" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Mumbai -->
+            <path id="airR9" d="M 248,345 Q 460,260 680,190" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Beijing -->
+            <path id="airR10" d="M 248,345 Q 520,200 775,140" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+            <!-- Peru -> Tokyo -->
+            <path id="airR11" d="M 248,345 Q 560,220 855,150" stroke="#84cc16" stroke-width="1.3" stroke-dasharray="4 4" class="r-air"/>
+          </g>
+
+          <!-- SEA ROUTES (curvas por oceano solidas con barcos animados) -->
+          <g class="routes-sea" fill="none" opacity="0.85">
+            <path id="seaR1" d="M 248,345 C 160,370 140,340 185,155" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR2" d="M 248,345 C 170,400 160,350 235,130" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR3" d="M 248,345 C 180,380 200,230 220,175" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR4" d="M 248,345 C 150,430 280,410 285,315" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR5" d="M 248,345 C 300,500 420,470 460,425" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR6" d="M 248,345 C 380,440 420,380 452,108" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR7" d="M 248,345 C 340,400 430,300 468,138" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR8" d="M 248,345 C 420,470 590,350 610,178" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR9" d="M 248,345 C 500,470 650,300 680,190" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR10" d="M 248,345 C 600,470 760,240 780,175" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR11" d="M 248,345 C 680,470 820,270 855,180" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+            <path id="seaR12" d="M 248,345 C 650,500 820,430 850,370" stroke="#3b82f6" stroke-width="1.6" class="r-sea"/>
+          </g>
+
+          <!-- Moving vehicles (planes + ships traveling along the routes) -->
+          <g class="vehicles-air">
+            <g class="plane-ico" style="offset-path:path('M 248,345 Q 340,180 452,108');offset-rotate:auto"><polygon points="-5,-3 5,0 -5,3 -3,0" fill="#84cc16"/></g>
+            <g class="plane-ico plane-d1" style="offset-path:path('M 248,345 Q 430,230 610,178');offset-rotate:auto"><polygon points="-5,-3 5,0 -5,3 -3,0" fill="#84cc16"/></g>
+            <g class="plane-ico plane-d2" style="offset-path:path('M 248,345 Q 560,220 855,150');offset-rotate:auto"><polygon points="-5,-3 5,0 -5,3 -3,0" fill="#84cc16"/></g>
+            <g class="plane-ico plane-d3" style="offset-path:path('M 248,345 Q 200,220 235,130');offset-rotate:auto"><polygon points="-5,-3 5,0 -5,3 -3,0" fill="#84cc16"/></g>
+          </g>
+          <g class="vehicles-sea">
+            <g class="ship-ico" style="offset-path:path('M 248,345 C 380,440 420,380 452,108');offset-rotate:auto"><rect x="-4" y="-2" width="8" height="4" rx="1" fill="#3b82f6"/></g>
+            <g class="ship-ico ship-d1" style="offset-path:path('M 248,345 C 500,470 650,300 680,190');offset-rotate:auto"><rect x="-4" y="-2" width="8" height="4" rx="1" fill="#3b82f6"/></g>
+            <g class="ship-ico ship-d2" style="offset-path:path('M 248,345 C 650,500 820,430 850,370');offset-rotate:auto"><rect x="-4" y="-2" width="8" height="4" rx="1" fill="#3b82f6"/></g>
           </g>
 
           <!-- Peru origin with premium pin -->
           <g class="origin-pt">
             <circle cx="248" cy="345" r="22" fill="#10b981" opacity="0.12" class="pulse-ring"/>
             <circle cx="248" cy="345" r="14" fill="#10b981" opacity="0.25" class="pulse-ring-2"/>
-            <circle cx="248" cy="345" r="7" fill="#059669"/>
-            <circle cx="248" cy="345" r="7" fill="none" stroke="#fff" stroke-width="2"/>
-            <rect x="218" y="355" width="60" height="22" rx="11" fill="#047857" filter="url(#pinGlow)"/>
-            <rect x="218" y="355" width="60" height="22" rx="11" fill="#047857"/>
-            <text x="248" y="370" text-anchor="middle" fill="#fff" font-size="11" font-weight="800" letter-spacing="1">PERU</text>
+            <circle cx="248" cy="345" r="8" fill="#059669"/>
+            <circle cx="248" cy="345" r="8" fill="none" stroke="#fff" stroke-width="2"/>
+            <rect x="218" y="358" width="60" height="22" rx="11" fill="#047857"/>
+            <text x="248" y="373" text-anchor="middle" fill="#fff" font-size="11" font-weight="800" letter-spacing="1">PERU</text>
           </g>
 
-          <!-- Destination pins -->
-          <g class="dest-pts">
-            <g class="dest-pin" data-country="USA"><circle cx="170" cy="125" r="4" fill="#f97316"/><circle cx="170" cy="125" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Canada"><circle cx="175" cy="88" r="4" fill="#f97316"/><circle cx="175" cy="88" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Mexico"><circle cx="205" cy="182" r="4" fill="#f97316"/><circle cx="205" cy="182" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Brasil"><circle cx="285" cy="295" r="4" fill="#f97316"/><circle cx="285" cy="295" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="UK"><circle cx="460" cy="108" r="4" fill="#f97316"/><circle cx="460" cy="108" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Espana"><circle cx="480" cy="130" r="4" fill="#f97316"/><circle cx="480" cy="130" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Francia"><circle cx="495" cy="115" r="4" fill="#f97316"/><circle cx="495" cy="115" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Alemania"><circle cx="510" cy="100" r="4" fill="#f97316"/><circle cx="510" cy="100" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Italia"><circle cx="515" cy="128" r="4" fill="#f97316"/><circle cx="515" cy="128" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Holanda"><circle cx="498" cy="102" r="4" fill="#f97316"/><circle cx="498" cy="102" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Belgica"><circle cx="488" cy="108" r="4" fill="#f97316"/><circle cx="488" cy="108" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Rusia"><circle cx="680" cy="90" r="4" fill="#f97316"/><circle cx="680" cy="90" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Emiratos"><circle cx="605" cy="172" r="4" fill="#f97316"/><circle cx="605" cy="172" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="China"><circle cx="740" cy="158" r="4" fill="#f97316"/><circle cx="740" cy="158" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Japon"><circle cx="855" cy="150" r="4" fill="#f97316"/><circle cx="855" cy="150" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
-            <g class="dest-pin" data-country="Corea"><circle cx="820" cy="150" r="4" fill="#f97316"/><circle cx="820" cy="150" r="4" fill="none" stroke="#fff" stroke-width="1.2"/></g>
+          <!-- City destinations with labels (positioned on continents) -->
+          <g class="dest-cities">
+            <g class="dest-city" data-country="USA-LA"><circle cx="185" cy="155" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="185" cy="155" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="185" y="170" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">LOS ANGELES</text></g>
+            <g class="dest-city" data-country="USA-NY"><circle cx="235" cy="130" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="235" cy="130" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="235" y="123" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">NUEVA YORK</text></g>
+            <g class="dest-city" data-country="USA-MIA"><circle cx="220" cy="175" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="220" cy="175" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="220" y="190" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">MIAMI</text></g>
+            <g class="dest-city" data-country="CA-TOR"><circle cx="205" cy="95" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="205" cy="95" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="205" y="88" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">TORONTO</text></g>
+            <g class="dest-city" data-country="MX-CDMX"><circle cx="195" cy="195" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="195" cy="195" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="195" y="210" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">CDMX</text></g>
+            <g class="dest-city" data-country="BR-SP"><circle cx="285" cy="315" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="285" cy="315" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="285" y="330" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">SAO PAULO</text></g>
+            <g class="dest-city" data-country="UK"><circle cx="452" cy="108" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="452" cy="108" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="445" y="100" text-anchor="end" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">LONDRES</text></g>
+            <g class="dest-city" data-country="ES"><circle cx="468" cy="138" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="468" cy="138" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="460" y="150" text-anchor="end" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">MADRID</text></g>
+            <g class="dest-city" data-country="FR"><circle cx="488" cy="122" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="488" cy="122" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="488" y="135" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">PARIS</text></g>
+            <g class="dest-city" data-country="NL"><circle cx="498" cy="105" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="498" cy="105" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="498" y="95" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">AMSTERDAM</text></g>
+            <g class="dest-city" data-country="DE"><circle cx="510" cy="108" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="510" cy="108" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="530" y="108" text-anchor="start" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">FRANKFURT</text></g>
+            <g class="dest-city" data-country="IT"><circle cx="515" cy="132" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="515" cy="132" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="518" y="145" text-anchor="start" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">ROMA</text></g>
+            <g class="dest-city" data-country="RU"><circle cx="625" cy="90" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="625" cy="90" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="625" y="82" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">MOSCU</text></g>
+            <g class="dest-city" data-country="AE"><circle cx="610" cy="178" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="610" cy="178" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="610" y="192" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">DUBAI</text></g>
+            <g class="dest-city" data-country="IN"><circle cx="680" cy="190" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="680" cy="190" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="680" y="205" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">MUMBAI</text></g>
+            <g class="dest-city" data-country="CN-BJ"><circle cx="775" cy="140" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="775" cy="140" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="775" y="131" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">BEIJING</text></g>
+            <g class="dest-city" data-country="CN-SH"><circle cx="800" cy="160" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="800" cy="160" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="810" y="160" text-anchor="start" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">SHANGHAI</text></g>
+            <g class="dest-city" data-country="KR"><circle cx="822" cy="148" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="822" cy="148" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="822" y="140" text-anchor="middle" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">SEUL</text></g>
+            <g class="dest-city" data-country="JP"><circle cx="855" cy="150" r="4.5" fill="#84cc16" class="city-dot"/><circle cx="855" cy="150" r="9" fill="#84cc16" opacity="0.2" class="city-pulse"/><text x="865" y="150" text-anchor="start" font-size="8.5" font-weight="800" fill="currentColor" class="city-lbl">TOKIO</text></g>
+            <g class="dest-city" data-country="SG"><circle cx="770" cy="225" r="4" fill="#38bdf8" class="city-dot city-dot-sea"/><circle cx="770" cy="225" r="8" fill="#38bdf8" opacity="0.2" class="city-pulse"/><text x="770" y="240" text-anchor="middle" font-size="8" font-weight="800" fill="currentColor" class="city-lbl">SINGAPUR</text></g>
+            <g class="dest-city" data-country="ZA"><circle cx="525" cy="340" r="4" fill="#38bdf8" class="city-dot city-dot-sea"/><circle cx="525" cy="340" r="8" fill="#38bdf8" opacity="0.2" class="city-pulse"/><text x="525" y="355" text-anchor="middle" font-size="8" font-weight="800" fill="currentColor" class="city-lbl">CIUDAD DEL CABO</text></g>
+            <g class="dest-city" data-country="AU"><circle cx="850" cy="370" r="4" fill="#38bdf8" class="city-dot city-dot-sea"/><circle cx="850" cy="370" r="8" fill="#38bdf8" opacity="0.2" class="city-pulse"/><text x="850" y="385" text-anchor="middle" font-size="8" font-weight="800" fill="currentColor" class="city-lbl">SYDNEY</text></g>
+            <g class="dest-city" data-country="AR"><circle cx="275" cy="400" r="4" fill="#38bdf8" class="city-dot city-dot-sea"/><circle cx="275" cy="400" r="8" fill="#38bdf8" opacity="0.2" class="city-pulse"/><text x="275" y="415" text-anchor="middle" font-size="8" font-weight="800" fill="currentColor" class="city-lbl">BUENOS AIRES</text></g>
           </g>
 
           <!-- Region labels (more subtle) -->
@@ -502,24 +548,51 @@
             <text x="830" y="310" class="cont-lbl">OCEANIA</text>
           </g>
         </svg>
+
+        <!-- Legend panel (right overlay) -->
+        <div class="wm-legend-panel">
+          <div class="wm-lg-item"><span class="wm-lg-line wm-lg-air"></span> Rutas aereas</div>
+          <div class="wm-lg-item"><span class="wm-lg-line wm-lg-sea"></span> Rutas maritimas</div>
+          <div class="wm-lg-item"><span class="wm-lg-dot wm-lg-op"></span> Operativo</div>
+          <div class="wm-lg-item"><span class="wm-lg-dot wm-lg-soon"></span> Proximamente</div>
+        </div>
+
+        <!-- Stats side panel (left overlay) -->
+        <div class="wm-side-panel">
+          <div class="wm-sp-block">
+            <div class="wm-sp-hd"><i class="fas fa-plane"></i> <b>Transporte Aereo</b></div>
+            <p class="wm-sp-desc">Envios rapidos y seguros que conectan calidad y frescura.</p>
+            <div class="wm-sp-stats">
+              <div><b>12+</b><span>Destinos</span></div>
+              <div><b>4</b><span>Continentes</span></div>
+              <div><b>24/7</b><span>Operaciones</span></div>
+            </div>
+          </div>
+          <div class="wm-sp-block wm-sp-sea">
+            <div class="wm-sp-hd"><i class="fas fa-ship"></i> <b>Transporte Maritimo</b></div>
+            <p class="wm-sp-desc">Soluciones maritimas confiables para grandes volumenes.</p>
+            <div class="wm-sp-stats">
+              <div><b>25+</b><span>Destinos</span></div>
+              <div><b>6</b><span>Rutas principales</span></div>
+              <div><b>98%</b><span>Entregas exitosas</span></div>
+            </div>
+          </div>
+          <div class="wm-sp-mini">
+            <div class="wm-sp-mi"><i class="fas fa-satellite-dish"></i><div><b>Seguimiento tiempo real</b><em>Monitoreo 24/7</em></div></div>
+            <div class="wm-sp-mi"><i class="fas fa-shield-halved"></i><div><b>Seguridad garantizada</b><em>Carga protegida</em></div></div>
+            <div class="wm-sp-mi"><i class="fas fa-globe"></i><div><b>Red global</b><em>Principales mercados</em></div></div>
+            <div class="wm-sp-mi"><i class="fas fa-leaf"></i><div><b>Sostenibilidad</b><em>Futuro mas verde</em></div></div>
+          </div>
+        </div>
       </div>
-      <div class="countries-flags">
-        <span class="cflag" data-c="USA">&#127482;&#127480; <b>USA</b></span>
-        <span class="cflag" data-c="Canada">&#127464;&#127462; <b>Canada</b></span>
-        <span class="cflag" data-c="Mexico">&#127474;&#127485; <b>Mexico</b></span>
-        <span class="cflag" data-c="Brasil">&#127463;&#127479; <b>Brasil</b></span>
-        <span class="cflag" data-c="UK">&#127468;&#127463; <b>UK</b></span>
-        <span class="cflag" data-c="Espana">&#127466;&#127480; <b>Espana</b></span>
-        <span class="cflag" data-c="Francia">&#127467;&#127479; <b>Francia</b></span>
-        <span class="cflag" data-c="Alemania">&#127465;&#127466; <b>Alemania</b></span>
-        <span class="cflag" data-c="Italia">&#127470;&#127481; <b>Italia</b></span>
-        <span class="cflag" data-c="Holanda">&#127475;&#127473; <b>Holanda</b></span>
-        <span class="cflag" data-c="Belgica">&#127463;&#127466; <b>Belgica</b></span>
-        <span class="cflag" data-c="Rusia">&#127479;&#127482; <b>Rusia</b></span>
-        <span class="cflag" data-c="Emiratos">&#127462;&#127466; <b>Emiratos</b></span>
-        <span class="cflag" data-c="China">&#127464;&#127475; <b>China</b></span>
-        <span class="cflag" data-c="Japon">&#127471;&#127477; <b>Japon</b></span>
-        <span class="cflag" data-c="Corea">&#127472;&#127479; <b>Corea</b></span>
+
+      <!-- Features strip (bottom) -->
+      <div class="wm-features">
+        <div class="wmf-item"><i class="fas fa-globe"></i><div><b>Cobertura global</b><em>20+ paises conectados</em></div></div>
+        <div class="wmf-item"><i class="fas fa-microchip"></i><div><b>Tecnologia avanzada</b><em>Seguimiento en tiempo real</em></div></div>
+        <div class="wmf-item"><i class="fas fa-route"></i><div><b>Logistica inteligente</b><em>Rutas optimizadas</em></div></div>
+        <div class="wmf-item"><i class="fas fa-tree"></i><div><b>Compromiso sostenible</b><em>Cuidamos el planeta</em></div></div>
+        <div class="wmf-item"><i class="fas fa-headset"></i><div><b>Atencion personalizada</b><em>Soporte 24/7</em></div></div>
       </div>
     </div>
   </div>

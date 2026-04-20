@@ -409,21 +409,48 @@
   })();
 
   /* ════════════════════════════════════════════════════════════════
-     15. JOURNEY PROCESS FLOW + MAP COUNTRY HIGHLIGHT
+     15. JOURNEY VERTICAL RAIL + MAP COUNTRY HIGHLIGHT
      ════════════════════════════════════════════════════════════════ */
-  (function initJourneyFlow(){
+  (function initJourneyRail(){
     var steps = document.querySelectorAll('.journey-step');
-    var nodes = document.querySelectorAll('.flow-node');
-    if(steps.length && nodes.length && 'IntersectionObserver' in window){
-      var sObs = new IntersectionObserver(function(entries){
-        entries.forEach(function(e){
-          if(e.isIntersecting && e.intersectionRatio > .4){
-            var idx = parseInt(e.target.dataset.step) - 1;
-            nodes.forEach(function(n, i){ n.classList.toggle('active', i <= idx); });
-          }
-        });
-      }, {threshold:[.4, .5, .6]});
-      steps.forEach(function(s){ sObs.observe(s); });
+    var railNodes = document.querySelectorAll('.rail-node');
+    var railProgress = document.getElementById('railProgress');
+    var railLine = document.querySelector('.rail-line');
+    var journeyStack = document.querySelector('.journey-stack');
+
+    if(steps.length && railNodes.length){
+      // Intersection Observer para activar nodos
+      if('IntersectionObserver' in window){
+        var activeStep = 0;
+        var sObs = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if(e.isIntersecting && e.intersectionRatio > .25){
+              var idx = parseInt(e.target.dataset.step) - 1;
+              activeStep = Math.max(activeStep, idx);
+              railNodes.forEach(function(n, i){
+                n.classList.toggle('active', i <= idx);
+                n.classList.toggle('current', i === idx);
+              });
+            }
+          });
+        }, {threshold:[.25, .4, .6], rootMargin:'-20% 0px -40% 0px'});
+        steps.forEach(function(s){ sObs.observe(s); });
+      }
+
+      // Progress bar dinamica basada en scroll dentro de journey-stack
+      if(railProgress && journeyStack){
+        function updateProgress(){
+          var rect = journeyStack.getBoundingClientRect();
+          var vh = window.innerHeight;
+          var scrolled = Math.max(0, (vh * 0.6) - rect.top);
+          var total = rect.height - (vh * 0.3);
+          var pct = Math.max(0, Math.min(1, scrolled / total));
+          railProgress.style.height = (pct * 100) + '%';
+        }
+        window.addEventListener('scroll', updateProgress, {passive:true});
+        window.addEventListener('resize', updateProgress);
+        updateProgress();
+      }
     }
 
     // Map hover interaction: hover bandera -> resalta pin

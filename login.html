@@ -204,19 +204,19 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
 /* ── WELCOME BANNER (shown when minimized) ── */
 .login-welcome{
-  position:fixed;top:18%;left:50%;
+  position:fixed;top:8%;left:50%;
   transform:translateX(-50%);
   text-align:center;z-index:99;
   pointer-events:none;
-  width:min(90%,720px);
+  width:min(90%,760px);
   opacity:0;
   transition:opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 .login-welcome.visible{opacity:1}
 .welcome-greeting{
   font-family:'Playfair Display',serif;
-  font-size:13px;font-weight:700;
-  text-transform:uppercase;letter-spacing:7px;
+  font-size:14px;font-weight:700;
+  text-transform:uppercase;letter-spacing:8px;
   color:rgba(212,175,55,0.95);
   margin-bottom:14px;
   text-shadow:0 2px 14px rgba(0,0,0,0.6), 0 0 22px rgba(212,175,55,0.25);
@@ -225,52 +225,25 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 .welcome-greeting::before,
 .welcome-greeting::after{
   content:'';display:inline-block;vertical-align:middle;
-  width:36px;height:1px;margin:0 14px;
+  width:40px;height:1px;margin:0 16px;
   background:linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent);
 }
 .welcome-title{
   font-family:'Playfair Display',serif;
-  font-size:clamp(30px,4.5vw,56px);font-weight:900;
-  color:#fff;letter-spacing:-0.5px;
-  margin-bottom:6px;line-height:1.05;
+  font-size:clamp(28px,4vw,48px);font-weight:900;
+  color:#fff;letter-spacing:-0.3px;
+  margin-bottom:10px;line-height:1.05;
   text-shadow:0 6px 30px rgba(0,0,0,0.65), 0 2px 10px rgba(0,0,0,0.4);
   opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
   white-space:nowrap;
 }
-.welcome-brand{
-  display:block;
-  font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:clamp(13px,1.4vw,17px);
-  font-weight:800;letter-spacing:8px;
-  text-transform:uppercase;
-  margin-top:6px;
-  background:linear-gradient(135deg,#d4af37 0%,#fff8dc 20%,#ffd700 35%,#fff8dc 55%,#d4af37 75%,#e8c46a 100%);
-  background-size:300% 100%;
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  animation:brandShimmer 5s ease infinite;
-  filter:drop-shadow(0 3px 14px rgba(212,175,55,0.5));
-}
-@keyframes brandShimmer{
-  0%,100%{background-position:0% 50%}
-  50%{background-position:100% 50%}
-}
-.welcome-tagline{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:12px;font-weight:600;
-  color:rgba(255,255,255,0.78);
-  letter-spacing:5px;text-transform:uppercase;
-  margin-bottom:6px;
-  text-shadow:0 2px 10px rgba(0,0,0,0.55);
-  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
-}
 .welcome-date{
   font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:10.5px;font-weight:500;
-  color:rgba(255,255,255,0.55);
-  letter-spacing:2.5px;text-transform:capitalize;
+  font-size:11px;font-weight:600;
+  color:rgba(255,255,255,0.65);
+  letter-spacing:3px;text-transform:capitalize;
   text-shadow:0 2px 8px rgba(0,0,0,0.5);
-  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 1.05s forwards;
+  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
 }
 @keyframes welcomeFadeDown{
   from{opacity:0;transform:translateY(-12px)}
@@ -498,9 +471,8 @@ body.login-minimized .login-overlay{background:linear-gradient(135deg,rgba(0,0,0
 
 <!-- Welcome Banner (visible cuando el login esta minimizado) -->
 <div class="login-welcome" id="loginWelcome">
-  <div class="welcome-greeting" id="welcomeGreeting">Bienvenido</div>
-  <div class="welcome-title">Frutos Tropicales <span class="welcome-brand">Peru Export</span></div>
-  <div class="welcome-tagline">La frescura del Peru al mundo</div>
+  <div class="welcome-greeting" id="welcomeGreeting">Bienvenidos</div>
+  <div class="welcome-title">Frutos Tropicales</div>
   <div class="welcome-date" id="welcomeDate">&nbsp;</div>
 </div>
 
@@ -619,18 +591,8 @@ const welcome = document.getElementById('loginWelcome');
 const welcomeGreeting = document.getElementById('welcomeGreeting');
 const welcomeDate = document.getElementById('welcomeDate');
 
-// ── Saludo dinamico segun hora Lima ──
-function getLimaHour() {
-  const str = new Date().toLocaleString('en-US',{timeZone:'America/Lima',hour:'2-digit',hour12:false});
-  return parseInt(str,10);
-}
+// ── Fecha en vivo en el banner ──
 function updateWelcome() {
-  const h = getLimaHour();
-  let greet;
-  if (h >= 5 && h < 12)      greet = 'Buenos dias';
-  else if (h >= 12 && h < 19) greet = 'Buenas tardes';
-  else                         greet = 'Buenas noches';
-  welcomeGreeting.textContent = greet;
   welcomeDate.textContent = new Date().toLocaleDateString('es-PE',{
     timeZone:'America/Lima', weekday:'long', day:'numeric', month:'long', year:'numeric'
   });
@@ -651,7 +613,6 @@ function minimizeCard() {
   isMinimized = true;
   card.classList.add('minimized');
   document.body.classList.add('login-minimized');
-  updateWelcome();
   setTimeout(() => {
     welcome.classList.remove('hiding');
     welcome.classList.add('visible');

@@ -1,0 +1,412 @@
+<!-- Panel: Mantenimiento Correctivo -->
+
+<!-- Header -->
+<div class="cm-header">
+  <div>
+    <h2 class="cm-title">🔨 Mantenimiento Correctivo</h2>
+    <p class="cm-subtitle">Reparaciones tras falla - Reportes, analisis y gestion</p>
+  </div>
+  <button class="btn btn-primary cm-btn-reportar" id="btn-reportar-falla">
+    <span>🚨</span> Reportar Falla
+  </button>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid" style="margin-top:20px">
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Total Correctivas</div>
+        <div class="kpi-value" id="cm-kpi-total">—</div>
+        <div class="kpi-change">OT en el periodo</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--rose-bg);color:var(--danger)">🔨</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">MTTR Promedio</div>
+        <div class="kpi-value" id="cm-kpi-mttr">—</div>
+        <div class="kpi-change">Tiempo reparacion</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">⏱️</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Costo Mes</div>
+        <div class="kpi-value" id="cm-kpi-costo">—</div>
+        <div class="kpi-change">Reparaciones</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--naranja-bg);color:var(--naranja)">💰</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Recurrentes</div>
+        <div class="kpi-value" id="cm-kpi-recurrentes" style="color:var(--danger)">—</div>
+        <div class="kpi-change negative">Equipos problematicos</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--rose-bg);color:var(--danger)">🔁</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🏆 Top Equipos con Fallas</div>
+        <div class="card-subtitle">Ranking con mayor numero de correctivas</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:340px">
+      <canvas id="cm-chart-top"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">📉 Evolucion MTTR</div>
+        <div class="card-subtitle">Ultimos 6 meses</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:340px">
+      <canvas id="cm-chart-mttr"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Analisis Causa Raiz (6M) -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🎯 Analisis Causa Raiz (5 Whys / Ishikawa)</div>
+      <div class="card-subtitle">Diagrama 6M - Distribucion de causas de falla</div>
+    </div>
+  </div>
+  <div class="cm-ishikawa">
+    <div class="cm-ishi-spine"></div>
+    <div class="cm-ishi-grid">
+      <div class="cm-ishi-branch cm-ishi-top" style="--c:var(--azul);--cb:var(--azul-bg)">
+        <div class="cm-ishi-bone"></div>
+        <div class="cm-ishi-box">
+          <div class="cm-ishi-icon">👷</div>
+          <div class="cm-ishi-name">Mano de Obra</div>
+          <div class="cm-ishi-count" data-cr="mano">0</div>
+          <div class="cm-ishi-examples">Error operativo, falta capacitacion, fatiga</div>
+        </div>
+      </div>
+      <div class="cm-ishi-branch cm-ishi-top" style="--c:var(--verde);--cb:var(--verde-bg)">
+        <div class="cm-ishi-bone"></div>
+        <div class="cm-ishi-box">
+          <div class="cm-ishi-icon">📋</div>
+          <div class="cm-ishi-name">Metodo</div>
+          <div class="cm-ishi-count" data-cr="metodo">0</div>
+          <div class="cm-ishi-examples">Procedimiento incorrecto, mala operacion</div>
+        </div>
+      </div>
+      <div class="cm-ishi-branch cm-ishi-top" style="--c:var(--naranja);--cb:var(--naranja-bg)">
+        <div class="cm-ishi-bone"></div>
+        <div class="cm-ishi-box">
+          <div class="cm-ishi-icon">⚙️</div>
+          <div class="cm-ishi-name">Maquinaria</div>
+          <div class="cm-ishi-count" data-cr="maquinaria">0</div>
+          <div class="cm-ishi-examples">Desgaste, falta mantto, fatiga mecanica</div>
+        </div>
+      </div>
+      <div class="cm-ishi-branch cm-ishi-bottom" style="--c:var(--purple);--cb:var(--purple-bg)">
+        <div class="cm-ishi-bone"></div>
+        <div class="cm-ishi-box">
+          <div class="cm-ishi-icon">📦</div>
+          <div class="cm-ishi-name">Material</div>
+          <div class="cm-ishi-count" data-cr="material">0</div>
+          <div class="cm-ishi-examples">Repuesto defectuoso, mala calidad</div>
+        </div>
+      </div>
+      <div class="cm-ishi-branch cm-ishi-bottom" style="--c:var(--cyan);--cb:var(--cyan-bg)">
+        <div class="cm-ishi-bone"></div>
+        <div class="cm-ishi-box">
+          <div class="cm-ishi-icon">🌡️</div>
+          <div class="cm-ishi-name">Medio Ambiente</div>
+          <div class="cm-ishi-count" data-cr="medio">0</div>
+          <div class="cm-ishi-examples">Humedad, temperatura, polvo, corrosion</div>
+        </div>
+      </div>
+      <div class="cm-ishi-branch cm-ishi-bottom" style="--c:var(--amber);--cb:var(--amber-bg)">
+        <div class="cm-ishi-bone"></div>
+        <div class="cm-ishi-box">
+          <div class="cm-ishi-icon">📏</div>
+          <div class="cm-ishi-name">Medicion</div>
+          <div class="cm-ishi-count" data-cr="medicion">0</div>
+          <div class="cm-ishi-examples">Instrumento descalibrado, sensor falla</div>
+        </div>
+      </div>
+    </div>
+    <div class="cm-ishi-head">
+      <div class="cm-ishi-head-label">EFECTO</div>
+      <div class="cm-ishi-head-title">Falla del Equipo</div>
+    </div>
+  </div>
+</div>
+
+<!-- Filtros -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🔍 Filtros</div>
+      <div class="card-subtitle">Filtrar OT correctivas por estado y prioridad</div>
+    </div>
+  </div>
+  <div class="cm-filters">
+    <div class="cm-filter-group">
+      <div class="cm-filter-label">Estado</div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-cm-estado="all">Todos</button>
+        <button class="filter-chip" data-cm-estado="abierta">Abiertas</button>
+        <button class="filter-chip" data-cm-estado="ejecucion">Ejecucion</button>
+        <button class="filter-chip" data-cm-estado="completada">Completadas</button>
+        <button class="filter-chip" data-cm-estado="pausada">Pausadas</button>
+      </div>
+    </div>
+    <div class="cm-filter-group">
+      <div class="cm-filter-label">Prioridad</div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-cm-prioridad="all">Todas</button>
+        <button class="filter-chip" data-cm-prioridad="alta">Alta</button>
+        <button class="filter-chip" data-cm-prioridad="media">Media</button>
+        <button class="filter-chip" data-cm-prioridad="baja">Baja</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🔨 OT Correctivas</div>
+      <div class="card-subtitle" id="cm-count-subtitle">Cargando...</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Fecha</th>
+          <th>Equipo</th>
+          <th>Descripcion Falla</th>
+          <th>Tecnico</th>
+          <th style="text-align:center">Tiempo (h)</th>
+          <th style="text-align:right">Costo (S/)</th>
+          <th>Causa Raiz</th>
+          <th>Prioridad</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody id="cm-tbody">
+        <tr><td colspan="10" style="text-align:center;color:var(--muted)">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Reportar Falla -->
+<div class="cm-modal-backdrop" id="cm-modal-backdrop">
+  <div class="cm-modal">
+    <div class="cm-modal-header">
+      <div>
+        <div class="cm-modal-title">🚨 Reportar Nueva Falla</div>
+        <div class="cm-modal-sub">Crea una OT correctiva inmediata</div>
+      </div>
+      <button class="cm-modal-close" id="cm-modal-close">×</button>
+    </div>
+    <div class="cm-modal-body">
+      <div class="cm-field">
+        <label for="cm-f-equipo">Equipo afectado *</label>
+        <select id="cm-f-equipo"></select>
+      </div>
+      <div class="cm-field">
+        <label for="cm-f-descripcion">Descripcion de la falla *</label>
+        <textarea id="cm-f-descripcion" rows="3" placeholder="Describe sintomas, ruidos, fugas, indicadores..."></textarea>
+      </div>
+      <div class="cm-field-grid">
+        <div class="cm-field">
+          <label for="cm-f-prioridad">Prioridad *</label>
+          <select id="cm-f-prioridad">
+            <option value="alta">Alta - Parada critica</option>
+            <option value="media" selected>Media - Operacion afectada</option>
+            <option value="baja">Baja - Programable</option>
+          </select>
+        </div>
+        <div class="cm-field">
+          <label for="cm-f-causa">Causa probable (6M)</label>
+          <select id="cm-f-causa">
+            <option value="maquinaria">Maquinaria</option>
+            <option value="metodo">Metodo</option>
+            <option value="mano">Mano de Obra</option>
+            <option value="material">Material</option>
+            <option value="medio">Medio Ambiente</option>
+            <option value="medicion">Medicion</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="cm-modal-footer">
+      <button class="btn btn-secondary" id="cm-modal-cancel">Cancelar</button>
+      <button class="btn btn-primary cm-btn-reportar" id="cm-modal-save">🚨 Crear OT Correctiva</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.cm-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.cm-title{font-size:24px;font-weight:900;color:var(--texto);margin:0}
+.cm-subtitle{font-size:13px;color:var(--muted);margin:4px 0 0}
+
+.cm-btn-reportar{
+  background:linear-gradient(135deg,#e11d48,#be123c)!important;
+  color:#fff!important;border:none!important;
+  box-shadow:0 4px 12px rgba(225,29,72,0.25);
+}
+.cm-btn-reportar:hover{
+  transform:translateY(-1px);
+  box-shadow:0 8px 20px rgba(225,29,72,0.35);
+}
+
+.cm-filters{display:flex;flex-direction:column;gap:14px}
+.cm-filter-group{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.cm-filter-label{
+  font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;min-width:90px;
+}
+
+/* ISHIKAWA */
+.cm-ishikawa{
+  position:relative;padding:30px 20px;min-height:360px;
+  background:linear-gradient(135deg,rgba(0,0,0,0.01),rgba(0,0,0,0.03));
+  border-radius:var(--radius);overflow:hidden;
+}
+.cm-ishi-spine{
+  position:absolute;top:50%;left:20px;right:160px;height:3px;
+  background:linear-gradient(90deg,var(--azul),var(--naranja),var(--danger));
+  border-radius:2px;transform:translateY(-50%);
+  box-shadow:0 0 12px rgba(37,99,235,0.3);
+}
+.cm-ishi-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  position:relative;z-index:2;
+}
+.cm-ishi-branch{position:relative;min-height:150px}
+.cm-ishi-top{align-self:start}
+.cm-ishi-bottom{align-self:end;grid-row:2}
+.cm-ishi-bone{
+  position:absolute;left:50%;width:2px;height:30px;
+  background:var(--c);
+}
+.cm-ishi-top .cm-ishi-bone{bottom:-30px;transform:skewX(30deg);transform-origin:bottom}
+.cm-ishi-bottom .cm-ishi-bone{top:-30px;transform:skewX(-30deg);transform-origin:top}
+
+.cm-ishi-box{
+  background:var(--surface);border:2px solid var(--c);
+  border-radius:14px;padding:12px 14px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.05);
+  transition:var(--transition);
+}
+.cm-ishi-box:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,0.1)}
+.cm-ishi-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:var(--cb);color:var(--c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;margin-bottom:6px;
+}
+.cm-ishi-name{font-size:13px;font-weight:800;color:var(--texto)}
+.cm-ishi-count{
+  font-size:22px;font-weight:900;color:var(--c);
+  margin:4px 0;line-height:1;
+}
+.cm-ishi-examples{font-size:10px;color:var(--muted);line-height:1.3}
+
+.cm-ishi-head{
+  position:absolute;right:10px;top:50%;transform:translateY(-50%);
+  background:linear-gradient(135deg,var(--danger),var(--naranja));
+  color:#fff;padding:14px 16px;border-radius:14px;
+  box-shadow:0 8px 20px rgba(225,29,72,0.3);
+  text-align:center;min-width:130px;z-index:3;
+}
+.cm-ishi-head-label{
+  font-size:10px;font-weight:800;letter-spacing:1px;
+  opacity:0.9;margin-bottom:4px;
+}
+.cm-ishi-head-title{font-size:15px;font-weight:800}
+
+/* MODAL */
+.cm-modal-backdrop{
+  position:fixed;inset:0;background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:9999;padding:20px;
+}
+.cm-modal-backdrop.open{display:flex}
+.cm-modal{
+  background:var(--surface);border-radius:var(--radius-lg);
+  border:1px solid var(--border);width:100%;max-width:560px;
+  max-height:90vh;overflow:auto;
+  box-shadow:0 20px 50px rgba(0,0,0,0.3);
+  animation:cmModalIn 0.25s ease-out;
+}
+@keyframes cmModalIn{
+  from{transform:translateY(20px) scale(0.98);opacity:0}
+  to{transform:translateY(0) scale(1);opacity:1}
+}
+.cm-modal-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  background:linear-gradient(135deg,rgba(225,29,72,0.04),transparent);
+}
+.cm-modal-title{font-size:18px;font-weight:800;color:var(--texto)}
+.cm-modal-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.cm-modal-close{
+  background:transparent;border:none;font-size:28px;cursor:pointer;
+  color:var(--muted);line-height:1;padding:0;transition:var(--transition);
+}
+.cm-modal-close:hover{color:var(--danger)}
+.cm-modal-body{padding:20px 24px}
+.cm-field{margin-bottom:14px}
+.cm-field label{
+  display:block;font-size:12px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;
+}
+.cm-field input,.cm-field select,.cm-field textarea{
+  width:100%;padding:10px 12px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--texto);font-family:inherit;font-size:13px;
+}
+.cm-field textarea{resize:vertical;min-height:70px}
+.cm-field input:focus,.cm-field select:focus,.cm-field textarea:focus{
+  outline:none;border-color:var(--danger);
+}
+.cm-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cm-modal-footer{
+  display:flex;gap:10px;justify-content:flex-end;
+  padding:16px 24px;border-top:1px solid var(--border);
+}
+
+@media (max-width: 850px){
+  .cm-ishi-grid{grid-template-columns:repeat(2,1fr)}
+  .cm-ishi-bottom{grid-row:auto}
+  .cm-ishi-spine{display:none}
+  .cm-ishi-head{position:relative;right:auto;top:auto;transform:none;margin:20px auto 0}
+  .cm-ishi-bone{display:none}
+}
+@media (max-width: 700px){
+  .cm-header{flex-direction:column;align-items:stretch}
+  .cm-field-grid{grid-template-columns:1fr}
+  .cm-ishi-grid{grid-template-columns:1fr}
+}
+</style>

@@ -1,0 +1,307 @@
+<div class="panel-header">
+  <div class="panel-header-left">
+    <h1 class="panel-title">📈 Indicadores KPI de Mantenimiento</h1>
+    <p class="panel-subtitle">Panel integral de performance: MTTR, MTBF, OEE, Disponibilidad y cumplimiento preventivo</p>
+  </div>
+  <div class="panel-header-right" style="display:flex;gap:10px;align-items:center">
+    <select id="periodo-select" class="btn btn-secondary" style="padding:8px 12px">
+      <option value="mes">📅 Mes Actual</option>
+      <option value="trimestre" selected>📊 Trimestre</option>
+      <option value="anio">🗓️ Año</option>
+    </select>
+  </div>
+</div>
+
+<!-- KPIs GAUGES -->
+<div class="kpi-grid" style="margin-top:16px">
+  <div class="card gauge-card">
+    <div class="gauge-wrapper">
+      <canvas id="gauge-mttr"></canvas>
+      <div class="gauge-center">
+        <div class="gauge-value" id="gauge-mttr-val">0</div>
+        <div class="gauge-unit">horas</div>
+      </div>
+    </div>
+    <div class="gauge-info">
+      <div class="gauge-label">⏱️ MTTR</div>
+      <div class="gauge-sub">Tiempo Medio de Reparación</div>
+      <div class="gauge-target" id="mttr-target">Meta: &lt; 4h</div>
+      <div class="gauge-trend" id="mttr-trend"></div>
+    </div>
+  </div>
+
+  <div class="card gauge-card">
+    <div class="gauge-wrapper">
+      <canvas id="gauge-mtbf"></canvas>
+      <div class="gauge-center">
+        <div class="gauge-value" id="gauge-mtbf-val">0</div>
+        <div class="gauge-unit">horas</div>
+      </div>
+    </div>
+    <div class="gauge-info">
+      <div class="gauge-label">🔧 MTBF</div>
+      <div class="gauge-sub">Tiempo Medio Entre Fallas</div>
+      <div class="gauge-target" id="mtbf-target">Meta: &gt; 500h</div>
+      <div class="gauge-trend" id="mtbf-trend"></div>
+    </div>
+  </div>
+
+  <div class="card gauge-card">
+    <div class="gauge-wrapper">
+      <canvas id="gauge-oee"></canvas>
+      <div class="gauge-center">
+        <div class="gauge-value" id="gauge-oee-val">0</div>
+        <div class="gauge-unit">%</div>
+      </div>
+    </div>
+    <div class="gauge-info">
+      <div class="gauge-label">🎯 OEE</div>
+      <div class="gauge-sub">Efectividad Global</div>
+      <div class="gauge-target" id="oee-target">Meta: &gt; 85%</div>
+      <div class="gauge-trend" id="oee-trend"></div>
+    </div>
+  </div>
+
+  <div class="card gauge-card">
+    <div class="gauge-wrapper">
+      <canvas id="gauge-disp"></canvas>
+      <div class="gauge-center">
+        <div class="gauge-value" id="gauge-disp-val">0</div>
+        <div class="gauge-unit">%</div>
+      </div>
+    </div>
+    <div class="gauge-info">
+      <div class="gauge-label">✅ Disponibilidad</div>
+      <div class="gauge-sub">Uptime de Planta</div>
+      <div class="gauge-target" id="disp-target">Meta: &gt; 95%</div>
+      <div class="gauge-trend" id="disp-trend"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Evolucion MTTR/MTBF y Disponibilidad -->
+<div class="charts-grid-2" style="margin-top:20px">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">📉 Evolución MTTR vs MTBF</div>
+        <div class="card-subtitle">Últimos 6 meses - Tendencia de mantenibilidad</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:320px">
+      <canvas id="chart-mttr-mtbf"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">⚡ Evolución Disponibilidad</div>
+        <div class="card-subtitle">Uptime mensual vs meta 95%</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:320px">
+      <canvas id="chart-disp"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Radar + Bar apilado -->
+<div class="charts-grid-2" style="margin-top:20px">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🎯 Performance por Área</div>
+        <div class="card-subtitle">Comparativa normalizada 0-100</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:340px">
+      <canvas id="chart-radar"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">📊 Ratio Preventivo / Correctivo / Predictivo</div>
+        <div class="card-subtitle">Distribución mensual de OT por tipo</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:340px">
+      <canvas id="chart-ratio-tipo"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Pareto de fallas -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📊 Pareto de Fallas (Regla 80/20)</div>
+      <div class="card-subtitle">Top 10 equipos con más OT correctivas - identificar foco de intervención</div>
+    </div>
+  </div>
+  <div class="chart-wrapper" style="height:360px">
+    <canvas id="chart-pareto"></canvas>
+  </div>
+</div>
+
+<!-- Cumplimiento PM -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🎯 Cumplimiento del Plan Preventivo</div>
+      <div class="card-subtitle">Estado actual del programa de mantenimiento preventivo</div>
+    </div>
+  </div>
+  <div class="pm-cumpl-grid">
+    <div class="pm-gauge-big">
+      <div class="gauge-wrapper" style="max-width:220px">
+        <canvas id="gauge-pm-cumpl"></canvas>
+        <div class="gauge-center">
+          <div class="gauge-value" id="gauge-pm-cumpl-val">0</div>
+          <div class="gauge-unit">% Cumplimiento</div>
+        </div>
+      </div>
+    </div>
+    <div class="pm-stats">
+      <div class="pm-stat">
+        <div class="pm-stat-icon" style="background:rgba(37,99,235,.12);color:var(--azul)">📋</div>
+        <div>
+          <div class="pm-stat-label">Programadas</div>
+          <div class="pm-stat-value" id="pm-stat-prog">0</div>
+        </div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-icon" style="background:rgba(22,163,74,.12);color:var(--verde)">✅</div>
+        <div>
+          <div class="pm-stat-label">Ejecutadas</div>
+          <div class="pm-stat-value" id="pm-stat-ejec">0</div>
+        </div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-icon" style="background:rgba(225,29,72,.12);color:var(--rose)">⚠️</div>
+        <div>
+          <div class="pm-stat-label">Vencidas</div>
+          <div class="pm-stat-value" id="pm-stat-venc">0</div>
+        </div>
+      </div>
+      <div class="pm-stat">
+        <div class="pm-stat-icon" style="background:rgba(217,119,6,.12);color:var(--amber)">⏰</div>
+        <div>
+          <div class="pm-stat-label">Próximas 7d</div>
+          <div class="pm-stat-value" id="pm-stat-prox">0</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Insights -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">💡 Insights Automáticos</div>
+      <div class="card-subtitle">Análisis de tendencias generado a partir de los datos</div>
+    </div>
+  </div>
+  <div id="insights-container" class="insights-grid"></div>
+</div>
+
+<style>
+  .gauge-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 16px;
+    padding: 18px !important;
+  }
+  .gauge-wrapper {
+    position: relative;
+    width: 140px; height: 140px;
+    flex-shrink: 0;
+  }
+  .gauge-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+  .gauge-value {
+    font-size: 26px; font-weight: 800;
+    color: var(--texto); line-height: 1;
+  }
+  .gauge-unit {
+    font-size: 11px; color: var(--muted);
+    margin-top: 2px; font-weight: 600;
+  }
+  .gauge-info { flex: 1; }
+  .gauge-label { font-size: 15px; font-weight: 800; color: var(--texto); }
+  .gauge-sub { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+  .gauge-target {
+    display: inline-block; padding: 3px 10px;
+    background: var(--surface3); border-radius: 999px;
+    font-size: 11px; color: var(--muted); font-weight: 700;
+    margin-top: 4px;
+  }
+  .gauge-trend {
+    margin-top: 6px; font-size: 12px; font-weight: 700;
+  }
+  .trend-up { color: var(--verde); }
+  .trend-down { color: var(--rose); }
+
+  .pm-cumpl-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 28px;
+    align-items: center;
+    padding: 10px;
+  }
+  .pm-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
+  .pm-stat {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .pm-stat-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .pm-stat-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .pm-stat-value { font-size: 22px; font-weight: 800; color: var(--texto); line-height: 1; margin-top: 2px; }
+
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    padding: 4px;
+  }
+  .insight-card {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--azul);
+    border-radius: var(--radius);
+    transition: transform .2s ease;
+  }
+  .insight-card:hover { transform: translateY(-1px); }
+  .insight-card.ok { border-left-color: var(--verde); }
+  .insight-card.warn { border-left-color: var(--amber); }
+  .insight-card.alert { border-left-color: var(--rose); }
+  .insight-icon { font-size: 26px; flex-shrink: 0; }
+  .insight-title { font-weight: 800; color: var(--texto); margin-bottom: 4px; }
+  .insight-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  @media (max-width: 768px) {
+    .pm-cumpl-grid { grid-template-columns: 1fr; }
+    .gauge-card { flex-direction: column !important; text-align: center; }
+  }
+</style>

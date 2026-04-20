@@ -1,0 +1,399 @@
+<!-- Panel: Ordenes de Trabajo (OT) - Mantenimiento Industrial -->
+
+<!-- ── Header ── -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div>
+      <div class="card-title">📋 Ordenes de Trabajo (OT)</div>
+      <div class="card-subtitle">Gestion integral del ciclo de vida de ordenes de trabajo</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" id="btn-export-ot">⬇️ Exportar CSV</button>
+      <button class="btn btn-primary btn-sm" id="btn-nueva-ot">+ Nueva OT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── KPI Cards ── -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Total OT mes</div>
+        <div class="kpi-value" id="kpi-ot-total">—</div>
+        <div class="kpi-change" id="kpi-ot-total-sub">Registradas</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--purple-bg);color:var(--purple)">📋</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Abiertas</div>
+        <div class="kpi-value" id="kpi-ot-abiertas" style="color:var(--azul)">—</div>
+        <div class="kpi-change" id="kpi-ot-abiertas-pct">— del total</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">📬</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">En Ejecucion</div>
+        <div class="kpi-value" id="kpi-ot-ejecucion" style="color:var(--amber)">—</div>
+        <div class="kpi-change" id="kpi-ot-ejecucion-pct">— del total</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--amber-bg);color:var(--amber)">🔧</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Completadas</div>
+        <div class="kpi-value" id="kpi-ot-completadas" style="color:var(--verde)">—</div>
+        <div class="kpi-change positive" id="kpi-ot-completadas-pct">— del total</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">✅</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Charts ── -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🏭 OT por Area</div>
+        <div class="card-subtitle">Abiertas vs Completadas por area</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:320px">
+      <canvas id="chart-ot-areas"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🎯 Distribucion por Tipo</div>
+        <div class="card-subtitle">Preventivo, Correctivo y Predictivo</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:320px">
+      <canvas id="chart-ot-tipos"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── Filtros ── -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🔎 Filtros</div>
+      <div class="card-subtitle">Combina filtros por estado, tipo y prioridad</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <div>
+      <div class="ot-filter-label">Por estado</div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-ot-filter="all">Todas</button>
+        <button class="filter-chip" data-ot-estado="abierta">📬 Abiertas</button>
+        <button class="filter-chip" data-ot-estado="ejecucion">🔧 En Ejecucion</button>
+        <button class="filter-chip" data-ot-estado="completada">✅ Completadas</button>
+        <button class="filter-chip" data-ot-estado="pausada">⏸️ Pausadas</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="ot-filter-label">Por tipo</div>
+      <div class="filter-bar">
+        <button class="filter-chip" data-ot-tipo="preventivo">🗓️ Preventivo</button>
+        <button class="filter-chip" data-ot-tipo="correctivo">🔨 Correctivo</button>
+        <button class="filter-chip" data-ot-tipo="predictivo">📡 Predictivo</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="ot-filter-label">Por prioridad</div>
+      <div class="filter-bar">
+        <button class="filter-chip" data-ot-prio="alta">🔴 Alta</button>
+        <button class="filter-chip" data-ot-prio="media">🟡 Media</button>
+        <button class="filter-chip" data-ot-prio="baja">🟢 Baja</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tabla ── -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📋 Listado de OT</div>
+      <div class="card-subtitle" id="ot-count-sub">Mostrando todas las OT</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>OT</th>
+          <th>Equipo</th>
+          <th>Area</th>
+          <th>Tipo</th>
+          <th>Prioridad</th>
+          <th>Tecnico</th>
+          <th style="text-align:right">Hrs Est/Real</th>
+          <th style="text-align:right">Costo</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th style="text-align:center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-ot"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── Modal Detalle OT ── -->
+<div class="modal" id="ot-modal-detalle" style="display:none">
+  <div class="modal-backdrop" data-ot-close></div>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="ot-modal-title">Detalle de OT</div>
+        <div class="modal-sub" id="ot-modal-sub"></div>
+      </div>
+      <button class="modal-close" data-ot-close>&times;</button>
+    </div>
+    <div class="modal-body" id="ot-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-ot-close>Cerrar</button>
+      <button class="btn btn-primary" id="ot-modal-complete" style="display:none">✅ Completar OT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Nueva OT ── -->
+<div class="modal" id="ot-modal-new" style="display:none">
+  <div class="modal-backdrop" data-ot-close-new></div>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">➕ Nueva Orden de Trabajo</div>
+        <div class="modal-sub">Crea una OT nueva para intervenir un equipo</div>
+      </div>
+      <button class="modal-close" data-ot-close-new>&times;</button>
+    </div>
+    <form id="ot-form-new" class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Equipo *</label>
+        <select class="form-select" name="equipoCodigo" id="ot-new-equipo" required></select>
+      </div>
+      <div class="ot-form-row">
+        <div class="form-group">
+          <label class="form-label">Tipo *</label>
+          <select class="form-select" name="tipo" required>
+            <option value="preventivo">🗓️ Preventivo</option>
+            <option value="correctivo">🔨 Correctivo</option>
+            <option value="predictivo">📡 Predictivo</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Prioridad *</label>
+          <select class="form-select" name="prioridad" required>
+            <option value="alta">🔴 Alta</option>
+            <option value="media" selected>🟡 Media</option>
+            <option value="baja">🟢 Baja</option>
+          </select>
+        </div>
+      </div>
+      <div class="ot-form-row">
+        <div class="form-group">
+          <label class="form-label">Tecnico *</label>
+          <select class="form-select" name="tecnicoId" id="ot-new-tecnico" required></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado inicial *</label>
+          <select class="form-select" name="estado">
+            <option value="abierta" selected>📬 Abierta</option>
+            <option value="ejecucion">🔧 En ejecucion</option>
+          </select>
+        </div>
+      </div>
+      <div class="ot-form-row">
+        <div class="form-group">
+          <label class="form-label">Horas estimadas</label>
+          <input type="number" class="form-input" name="horasEstimadas" min="0" step="0.5" value="2">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Costo estimado (S/)</label>
+          <input type="number" class="form-input" name="costoEstimado" min="0" step="10" value="500">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fecha *</label>
+        <input type="date" class="form-input" name="fecha" id="ot-new-fecha" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descripcion *</label>
+        <textarea class="form-input" name="descripcion" rows="3" required placeholder="Describe el trabajo a realizar..."></textarea>
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-ot-close-new>Cancelar</button>
+      <button class="btn btn-primary" id="ot-save-new">Crear OT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div id="ot-toast" class="toast" style="display:none"></div>
+
+<style>
+  .ot-filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .ot-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 640px) {
+    .ot-form-row { grid-template-columns: 1fr; }
+  }
+
+  /* Modal */
+  .modal {
+    position: fixed; inset: 0;
+    z-index: 9500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(3px);
+  }
+  .modal-dialog {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 100%; max-width: 560px;
+    max-height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+  .modal-dialog.modal-lg { max-width: 820px; }
+  .modal-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .modal-title {
+    font-size: 18px; font-weight: 700;
+    color: var(--texto);
+  }
+  .modal-sub {
+    font-size: 13px; color: var(--muted); margin-top: 2px;
+  }
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 6px;
+  }
+  .modal-close:hover { color: var(--texto); }
+  .modal-body {
+    padding: 20px 22px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+
+  .ot-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .ot-detail-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+  }
+  .ot-detail-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .ot-detail-value {
+    font-size: 14px;
+    color: var(--texto);
+    font-weight: 600;
+    margin-top: 4px;
+  }
+
+  .ot-desc-box {
+    background: var(--azul-bg);
+    border-left: 4px solid var(--azul);
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin-top: 10px;
+  }
+  .ot-desc-label {
+    font-size: 11px;
+    color: var(--azul);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .ot-desc-text {
+    color: var(--texto);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    padding: 12px 18px;
+    background: var(--verde);
+    color: #fff;
+    border-radius: var(--radius);
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    z-index: 9999;
+    font-size: 14px;
+  }
+  .toast.error { background: var(--danger); }
+
+  .filter-chip.active {
+    background: var(--verde);
+    color: #fff;
+    border-color: var(--verde);
+  }
+
+  .ot-row-actions {
+    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
+  }
+</style>

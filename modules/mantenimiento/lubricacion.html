@@ -1,0 +1,179 @@
+<div class="panel-header">
+  <div class="panel-header-left">
+    <h1 class="panel-title">🛢️ Plan de Lubricación</h1>
+    <p class="panel-subtitle">Control de puntos de lubricación de equipos industriales</p>
+  </div>
+  <div class="panel-header-right" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <button id="btn-nuevo-punto" class="btn btn-primary">+ Nuevo Punto</button>
+    <button id="btn-ejecutar-ruta" class="btn btn-secondary">🚀 Ejecutar Ruta</button>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid" style="margin-top:16px">
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:var(--azul-bg,rgba(37,99,235,.12));color:var(--azul)">🛢️</div>
+    <div>
+      <div class="kpi-label">Total Puntos</div>
+      <div class="kpi-value" id="kpi-lub-total">0</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px">Puntos registrados</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:rgba(225,29,72,.12);color:var(--rose)">⚠️</div>
+    <div>
+      <div class="kpi-label">Vencidos</div>
+      <div class="kpi-value" id="kpi-lub-vencidos" style="color:var(--rose)">0</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px">Requieren atención</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:rgba(217,119,6,.12);color:var(--amber)">⏰</div>
+    <div>
+      <div class="kpi-label">Próximos 7d</div>
+      <div class="kpi-value" id="kpi-lub-proximos" style="color:var(--amber)">0</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px">Programar pronto</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:rgba(22,163,74,.12);color:var(--verde)">🧴</div>
+    <div>
+      <div class="kpi-label">Consumo Mes (L/kg)</div>
+      <div class="kpi-value" id="kpi-lub-consumo">0</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px">Aceite + grasa</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts grid -->
+<div class="charts-grid-2" style="margin-top:20px">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🧪 Distribución por Tipo de Lubricante</div>
+        <div class="card-subtitle">Cantidad de puntos por lubricante</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:300px">
+      <canvas id="chart-lub-tipos"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🏭 Puntos por Área</div>
+        <div class="card-subtitle">Distribución geográfica de lubricación</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:300px">
+      <canvas id="chart-lub-areas"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Mapa de Lubricacion por Area -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🗺️ Mapa de Lubricación por Área</div>
+      <div class="card-subtitle">Estado visual de cada zona de la planta</div>
+    </div>
+  </div>
+  <div id="mapa-lub-areas" class="mapa-lub-grid"></div>
+</div>
+
+<!-- Filtros -->
+<div class="filter-bar" style="margin-top:20px">
+  <span style="font-weight:700;color:var(--muted);margin-right:8px">Estado:</span>
+  <span class="filter-chip active" data-filter-estado="all">Todos</span>
+  <span class="filter-chip" data-filter-estado="vencido">Vencidos</span>
+  <span class="filter-chip" data-filter-estado="proximo">Próximos</span>
+  <span class="filter-chip" data-filter-estado="programado">Programados</span>
+  <span style="margin-left:16px;font-weight:700;color:var(--muted);margin-right:8px">Frecuencia:</span>
+  <span class="filter-chip active" data-filter-frec="all">Todas</span>
+  <span class="filter-chip" data-filter-frec="Diario">Diario</span>
+  <span class="filter-chip" data-filter-frec="Semanal">Semanal</span>
+  <span class="filter-chip" data-filter-frec="Mensual">Mensual</span>
+  <span class="filter-chip" data-filter-frec="Trimestral">Trimestral</span>
+</div>
+
+<!-- Tabla -->
+<div class="card" style="margin-top:16px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📋 Puntos de Lubricación</div>
+      <div class="card-subtitle" id="tbl-lub-count">0 registros</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Equipo</th>
+          <th>Área</th>
+          <th>Punto</th>
+          <th>Lubricante</th>
+          <th>Frecuencia</th>
+          <th>Cantidad</th>
+          <th>Próxima Fecha</th>
+          <th>Días</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-lub-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+  .mapa-lub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px;
+    padding: 4px;
+  }
+  .mapa-area-card {
+    position: relative;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px;
+    transition: transform .2s ease, box-shadow .2s ease;
+    overflow: hidden;
+  }
+  .mapa-area-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
+  .mapa-area-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: var(--verde);
+  }
+  .mapa-area-card.has-vencidos::before { background: var(--rose); }
+  .mapa-area-card.has-proximos::before { background: var(--amber); }
+  .mapa-area-icon { font-size: 28px; margin-bottom: 8px; }
+  .mapa-area-nombre { font-weight: 700; color: var(--texto); margin-bottom: 6px; }
+  .mapa-area-stats { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+  .mapa-area-chip {
+    padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700;
+  }
+  .mapa-area-total {
+    font-size: 28px; font-weight: 800; color: var(--texto); line-height: 1;
+  }
+  .mapa-area-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .lub-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+    margin-right: 6px; vertical-align: middle;
+  }
+  .dias-neg { color: var(--rose); font-weight: 700; }
+  .dias-pos { color: var(--verde); font-weight: 600; }
+  .dias-amber { color: var(--amber); font-weight: 700; }
+  .btn-ejecutar-lub {
+    padding: 5px 10px; background: var(--verde); color: white; border: none;
+    border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 700;
+    transition: opacity .2s;
+  }
+  .btn-ejecutar-lub:hover { opacity: .85; }
+</style>

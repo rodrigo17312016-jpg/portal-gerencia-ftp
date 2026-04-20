@@ -1,0 +1,345 @@
+<!-- Panel: Mantenimiento Predictivo -->
+
+<!-- Header -->
+<div class="pd-header">
+  <div>
+    <h2 class="pd-title">📡 Mantenimiento Predictivo</h2>
+    <p class="pd-subtitle">Monitoreo de condiciones - Analisis proactivo de equipos criticos</p>
+  </div>
+  <button class="btn btn-primary" id="btn-nuevo-analisis">
+    <span>+</span> Nuevo Analisis
+  </button>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid" style="margin-top:20px">
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Total Analisis</div>
+        <div class="kpi-value" id="pd-kpi-total">—</div>
+        <div class="kpi-change">Mes en curso</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">📊</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Normal</div>
+        <div class="kpi-value" id="pd-kpi-normal" style="color:var(--verde)">—</div>
+        <div class="kpi-change positive">Dentro de rango</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">✅</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Alerta</div>
+        <div class="kpi-value" id="pd-kpi-alerta" style="color:var(--amber)">—</div>
+        <div class="kpi-change">Vigilancia</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--amber-bg);color:var(--amber)">⚠️</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Critico</div>
+        <div class="kpi-value" id="pd-kpi-critico" style="color:var(--danger)">—</div>
+        <div class="kpi-change negative">Accion inmediata</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--rose-bg);color:var(--danger)">🚨</div>
+    </div>
+  </div>
+</div>
+
+<!-- Tarjetas por Tecnica -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🔬 Tecnicas de Monitoreo</div>
+      <div class="card-subtitle">Indicadores por cada tecnica predictiva</div>
+    </div>
+  </div>
+  <div class="pd-tech-grid">
+    <div class="pd-tech-card" style="--c:var(--azul);--cb:var(--azul-bg)" data-tech="vibraciones">
+      <div class="pd-tech-head">
+        <div class="pd-tech-icon">📳</div>
+        <div>
+          <div class="pd-tech-name">Analisis de Vibraciones</div>
+          <div class="pd-tech-unit" data-tech-unit>mm/s</div>
+        </div>
+      </div>
+      <div class="pd-tech-stats">
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-count>—</div>
+          <div class="pd-tech-stat-lbl">Analisis</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-crit-pct>—</div>
+          <div class="pd-tech-stat-lbl">% Criticos</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-last-val>—</div>
+          <div class="pd-tech-stat-lbl">Ultimo valor</div>
+        </div>
+      </div>
+      <div class="pd-tech-sparkline">
+        <canvas data-tech-sparkline width="240" height="50"></canvas>
+      </div>
+      <div class="pd-tech-last" data-tech-last-equipo>Ultimo: —</div>
+    </div>
+
+    <div class="pd-tech-card" style="--c:var(--rose);--cb:var(--rose-bg)" data-tech="termografia">
+      <div class="pd-tech-head">
+        <div class="pd-tech-icon">🌡️</div>
+        <div>
+          <div class="pd-tech-name">Termografia Infrarroja</div>
+          <div class="pd-tech-unit" data-tech-unit>°C</div>
+        </div>
+      </div>
+      <div class="pd-tech-stats">
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-count>—</div>
+          <div class="pd-tech-stat-lbl">Analisis</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-crit-pct>—</div>
+          <div class="pd-tech-stat-lbl">% Criticos</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-last-val>—</div>
+          <div class="pd-tech-stat-lbl">Ultimo valor</div>
+        </div>
+      </div>
+      <div class="pd-tech-sparkline">
+        <canvas data-tech-sparkline width="240" height="50"></canvas>
+      </div>
+      <div class="pd-tech-last" data-tech-last-equipo>Ultimo: —</div>
+    </div>
+
+    <div class="pd-tech-card" style="--c:var(--amber);--cb:var(--amber-bg)" data-tech="aceite">
+      <div class="pd-tech-head">
+        <div class="pd-tech-icon">🛢️</div>
+        <div>
+          <div class="pd-tech-name">Analisis de Aceite</div>
+          <div class="pd-tech-unit" data-tech-unit>ppm</div>
+        </div>
+      </div>
+      <div class="pd-tech-stats">
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-count>—</div>
+          <div class="pd-tech-stat-lbl">Analisis</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-crit-pct>—</div>
+          <div class="pd-tech-stat-lbl">% Criticos</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-last-val>—</div>
+          <div class="pd-tech-stat-lbl">Ultimo valor</div>
+        </div>
+      </div>
+      <div class="pd-tech-sparkline">
+        <canvas data-tech-sparkline width="240" height="50"></canvas>
+      </div>
+      <div class="pd-tech-last" data-tech-last-equipo>Ultimo: —</div>
+    </div>
+
+    <div class="pd-tech-card" style="--c:var(--purple);--cb:var(--purple-bg)" data-tech="ultrasonido">
+      <div class="pd-tech-head">
+        <div class="pd-tech-icon">🔊</div>
+        <div>
+          <div class="pd-tech-name">Ultrasonido</div>
+          <div class="pd-tech-unit" data-tech-unit>dB</div>
+        </div>
+      </div>
+      <div class="pd-tech-stats">
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-count>—</div>
+          <div class="pd-tech-stat-lbl">Analisis</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-crit-pct>—</div>
+          <div class="pd-tech-stat-lbl">% Criticos</div>
+        </div>
+        <div class="pd-tech-stat">
+          <div class="pd-tech-stat-val" data-tech-last-val>—</div>
+          <div class="pd-tech-stat-lbl">Ultimo valor</div>
+        </div>
+      </div>
+      <div class="pd-tech-sparkline">
+        <canvas data-tech-sparkline width="240" height="50"></canvas>
+      </div>
+      <div class="pd-tech-last" data-tech-last-equipo>Ultimo: —</div>
+    </div>
+  </div>
+</div>
+
+<!-- Scatter Plot Grande -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📍 Mapa de Condiciones por Equipo</div>
+      <div class="card-subtitle">Valor normalizado (0-100) de todos los analisis - Color segun estado</div>
+    </div>
+    <div class="pd-legend">
+      <span class="pd-legend-item"><span class="pd-dot" style="background:#16a34a"></span>Normal</span>
+      <span class="pd-legend-item"><span class="pd-dot" style="background:#d97706"></span>Alerta</span>
+      <span class="pd-legend-item"><span class="pd-dot" style="background:#e11d48"></span>Critico</span>
+    </div>
+  </div>
+  <div class="chart-wrapper" style="height:480px">
+    <canvas id="pd-chart-scatter"></canvas>
+  </div>
+</div>
+
+<!-- Filtros -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🔍 Filtros</div>
+      <div class="card-subtitle">Filtrar analisis por tecnica y estado</div>
+    </div>
+  </div>
+  <div class="pd-filters">
+    <div class="pd-filter-group">
+      <div class="pd-filter-label">Tecnica</div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-pd-tecnica="all">Todas</button>
+        <button class="filter-chip" data-pd-tecnica="vibraciones">Vibraciones</button>
+        <button class="filter-chip" data-pd-tecnica="termografia">Termografia</button>
+        <button class="filter-chip" data-pd-tecnica="aceite">Aceite</button>
+        <button class="filter-chip" data-pd-tecnica="ultrasonido">Ultrasonido</button>
+      </div>
+    </div>
+    <div class="pd-filter-group">
+      <div class="pd-filter-label">Estado</div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-pd-estado="all">Todos</button>
+        <button class="filter-chip" data-pd-estado="normal">Normal</button>
+        <button class="filter-chip" data-pd-estado="alerta">Alerta</button>
+        <button class="filter-chip" data-pd-estado="critico">Critico</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📋 Analisis Predictivos</div>
+      <div class="card-subtitle" id="pd-count-subtitle">Cargando...</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Equipo</th>
+          <th>Area</th>
+          <th>Tecnica</th>
+          <th style="text-align:right">Valor</th>
+          <th style="text-align:right">Limite OK</th>
+          <th style="text-align:right">Limite Alerta</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Tecnico</th>
+        </tr>
+      </thead>
+      <tbody id="pd-tbody">
+        <tr><td colspan="10" style="text-align:center;color:var(--muted)">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<style>
+.pd-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.pd-title{font-size:24px;font-weight:900;color:var(--texto);margin:0}
+.pd-subtitle{font-size:13px;color:var(--muted);margin:4px 0 0}
+
+/* Tarjetas Tecnica */
+.pd-tech-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;
+}
+.pd-tech-card{
+  padding:16px;border-radius:var(--radius-lg);
+  background:var(--surface);border:1px solid var(--border);
+  border-top:4px solid var(--c);
+  transition:var(--transition);position:relative;overflow:hidden;
+}
+.pd-tech-card::before{
+  content:'';position:absolute;top:0;right:0;width:120px;height:120px;
+  background:radial-gradient(circle,var(--cb),transparent 70%);
+  opacity:0.4;pointer-events:none;
+}
+.pd-tech-card:hover{transform:translateY(-3px);box-shadow:0 10px 25px rgba(0,0,0,0.08)}
+
+.pd-tech-head{display:flex;align-items:center;gap:12px;margin-bottom:14px;position:relative}
+.pd-tech-icon{
+  width:50px;height:50px;border-radius:14px;
+  background:var(--cb);color:var(--c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;flex-shrink:0;
+}
+.pd-tech-name{font-size:14px;font-weight:800;color:var(--texto);line-height:1.2}
+.pd-tech-unit{
+  font-size:10px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;margin-top:2px;
+}
+
+.pd-tech-stats{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  padding:10px;background:rgba(0,0,0,0.02);border-radius:10px;
+  margin-bottom:12px;position:relative;
+}
+.pd-tech-stat{text-align:center}
+.pd-tech-stat-val{
+  font-size:18px;font-weight:900;color:var(--c);line-height:1;
+}
+.pd-tech-stat-lbl{
+  font-size:9px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.3px;margin-top:4px;
+}
+
+.pd-tech-sparkline{
+  height:50px;margin-bottom:10px;position:relative;
+}
+.pd-tech-sparkline canvas{width:100%;height:100%;display:block}
+
+.pd-tech-last{
+  font-size:11px;color:var(--muted);
+  padding-top:8px;border-top:1px solid var(--border);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* Legend */
+.pd-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.pd-legend-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--muted);font-weight:600;
+}
+.pd-dot{
+  width:10px;height:10px;border-radius:50%;display:inline-block;
+}
+
+/* Filtros */
+.pd-filters{display:flex;flex-direction:column;gap:14px}
+.pd-filter-group{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pd-filter-label{
+  font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;min-width:90px;
+}
+
+@media (max-width: 700px){
+  .pd-header{flex-direction:column;align-items:stretch}
+  .pd-tech-stats{grid-template-columns:repeat(3,1fr)}
+}
+</style>

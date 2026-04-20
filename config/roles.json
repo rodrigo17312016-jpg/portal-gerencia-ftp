@@ -1,6 +1,6 @@
 {
   "admin": {
-    "modules": ["gerencia", "produccion", "calidad", "almacen", "rrhh"],
+    "modules": ["gerencia", "produccion", "calidad", "almacen", "rrhh", "mantenimiento"],
     "panels": "*",
     "apps": "*",
     "dashboards": "*"
@@ -34,5 +34,17 @@
       "temperaturas", "laboratorio", "reporte-frio",
       "consumos", "consumo-diario"
     ]
+  },
+  "mantenimiento": {
+    "modules": ["mantenimiento", "almacen"],
+    "panels": [
+      "resumen-mant", "equipos", "ordenes-trabajo",
+      "preventivo", "correctivo", "predictivo",
+      "repuestos", "tecnicos-mant", "calendario-mant",
+      "lubricacion", "indicadores-mant", "costos-mant",
+      "materiales", "stock-general"
+    ],
+    "apps": [],
+    "dashboards": ["mantenimiento"]
   }
 }

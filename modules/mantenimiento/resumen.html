@@ -1,0 +1,495 @@
+<!-- Panel: Resumen Mantenimiento Industrial -->
+
+<!-- ── HERO con CTA al Dashboard Inmenso ── -->
+<div class="mant-hero">
+  <div class="mant-hero-left">
+    <div class="mant-hero-badge">
+      <span class="status-dot online"></span>
+      <span>Gestion de Activos Industriales</span>
+    </div>
+    <h2 class="mant-hero-title">
+      <span>Mantenimiento</span>
+      <strong>Industrial</strong>
+    </h2>
+    <p class="mant-hero-desc">
+      Control integral de equipos, ordenes de trabajo, preventivos, correctivos y
+      predictivos de toda la planta agroindustrial.
+    </p>
+
+    <div class="mant-hero-stats">
+      <div class="mant-hero-stat">
+        <div class="mant-hero-stat-val" id="hero-equipos-total">—</div>
+        <div class="mant-hero-stat-lbl">Equipos Activos</div>
+      </div>
+      <div class="mant-hero-stat">
+        <div class="mant-hero-stat-val" id="hero-ot-abiertas">—</div>
+        <div class="mant-hero-stat-lbl">OT Abiertas</div>
+      </div>
+      <div class="mant-hero-stat">
+        <div class="mant-hero-stat-val" id="hero-pm-cumplimiento">—</div>
+        <div class="mant-hero-stat-lbl">Cumpl. PM</div>
+      </div>
+      <div class="mant-hero-stat">
+        <div class="mant-hero-stat-val" id="hero-disponibilidad">—</div>
+        <div class="mant-hero-stat-lbl">Disponibilidad</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTON GIGANTE al Dashboard Inmenso -->
+  <div class="mant-hero-right">
+    <a href="dashboards/mantenimiento.html" target="_blank" class="mant-dash-cta">
+      <div class="mant-dash-cta-icon">🖥️</div>
+      <div class="mant-dash-cta-body">
+        <div class="mant-dash-cta-label">TV WALL</div>
+        <div class="mant-dash-cta-title">Dashboard Inmenso</div>
+        <div class="mant-dash-cta-sub">Vista ejecutiva pantalla completa con todos los KPIs en tiempo real</div>
+      </div>
+      <div class="mant-dash-cta-arrow">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M7 17L17 7M17 7H8M17 7V16"/>
+        </svg>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- ── KPIs principales ── -->
+<div class="kpi-grid" style="margin-top:20px">
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">MTTR</div>
+        <div class="kpi-value" id="kpi-mttr">—</div>
+        <div class="kpi-change">Tiempo medio reparacion</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">⏱️</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">MTBF</div>
+        <div class="kpi-value" id="kpi-mtbf">—</div>
+        <div class="kpi-change positive">Tiempo entre fallas</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">🎯</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">OEE</div>
+        <div class="kpi-value" id="kpi-oee">—</div>
+        <div class="kpi-change positive">Efectividad global</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--purple-bg);color:var(--purple)">⚡</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">OT Criticas</div>
+        <div class="kpi-value" id="kpi-ot-criticas" style="color:var(--danger)">—</div>
+        <div class="kpi-change negative">Prioridad alta</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--rose-bg);color:var(--danger)">⚠️</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Backlog</div>
+        <div class="kpi-value" id="kpi-backlog">—</div>
+        <div class="kpi-change">OT pendientes</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--amber-bg);color:var(--amber)">📋</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Costo Mes</div>
+        <div class="kpi-value" id="kpi-costo-mes">—</div>
+        <div class="kpi-change">Gasto acumulado</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--naranja-bg);color:var(--naranja)">💰</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Accesos Rapidos ── -->
+<div class="card" style="margin-top:24px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🚀 Accesos Rapidos</div>
+      <div class="card-subtitle">Ingresa rapidamente a cada modulo de mantenimiento</div>
+    </div>
+  </div>
+
+  <div class="mant-quickgrid">
+    <button class="mant-quick" data-panel="equipos" data-module="mantenimiento/equipos" style="--c:var(--azul);--cb:var(--azul-bg)">
+      <div class="mant-quick-icon">🔧</div>
+      <div class="mant-quick-title">Equipos</div>
+      <div class="mant-quick-sub">Inventario de activos</div>
+    </button>
+    <button class="mant-quick" data-panel="ordenes-trabajo" data-module="mantenimiento/ordenes" style="--c:var(--verde);--cb:var(--verde-bg)">
+      <div class="mant-quick-icon">📋</div>
+      <div class="mant-quick-title">Ordenes</div>
+      <div class="mant-quick-sub">Gestion de OT</div>
+    </button>
+    <button class="mant-quick" data-panel="preventivo" data-module="mantenimiento/preventivo" style="--c:var(--cyan);--cb:var(--cyan-bg)">
+      <div class="mant-quick-icon">🗓️</div>
+      <div class="mant-quick-title">Preventivo</div>
+      <div class="mant-quick-sub">Plan programado</div>
+    </button>
+    <button class="mant-quick" data-panel="correctivo" data-module="mantenimiento/correctivo" style="--c:var(--rose);--cb:var(--rose-bg)">
+      <div class="mant-quick-icon">🔨</div>
+      <div class="mant-quick-title">Correctivo</div>
+      <div class="mant-quick-sub">Reparaciones</div>
+    </button>
+    <button class="mant-quick" data-panel="predictivo" data-module="mantenimiento/predictivo" style="--c:var(--purple);--cb:var(--purple-bg)">
+      <div class="mant-quick-icon">📡</div>
+      <div class="mant-quick-title">Predictivo</div>
+      <div class="mant-quick-sub">Monitoreo condicion</div>
+    </button>
+    <button class="mant-quick" data-panel="repuestos" data-module="mantenimiento/repuestos" style="--c:var(--amber);--cb:var(--amber-bg)">
+      <div class="mant-quick-icon">⚙️</div>
+      <div class="mant-quick-title">Repuestos</div>
+      <div class="mant-quick-sub">Inventario</div>
+    </button>
+    <button class="mant-quick" data-panel="tecnicos-mant" data-module="mantenimiento/tecnicos" style="--c:var(--naranja);--cb:var(--naranja-bg)">
+      <div class="mant-quick-icon">👷</div>
+      <div class="mant-quick-title">Tecnicos</div>
+      <div class="mant-quick-sub">Personal</div>
+    </button>
+    <button class="mant-quick" data-panel="calendario-mant" data-module="mantenimiento/calendario" style="--c:var(--azul);--cb:var(--azul-bg)">
+      <div class="mant-quick-icon">📅</div>
+      <div class="mant-quick-title">Calendario</div>
+      <div class="mant-quick-sub">Vista mensual</div>
+    </button>
+    <button class="mant-quick" data-panel="lubricacion" data-module="mantenimiento/lubricacion" style="--c:var(--amber);--cb:var(--amber-bg)">
+      <div class="mant-quick-icon">🛢️</div>
+      <div class="mant-quick-title">Lubricacion</div>
+      <div class="mant-quick-sub">Plan aceite</div>
+    </button>
+    <button class="mant-quick" data-panel="indicadores-mant" data-module="mantenimiento/indicadores" style="--c:var(--verde);--cb:var(--verde-bg)">
+      <div class="mant-quick-icon">📈</div>
+      <div class="mant-quick-title">Indicadores</div>
+      <div class="mant-quick-sub">KPIs detallados</div>
+    </button>
+    <button class="mant-quick" data-panel="costos-mant" data-module="mantenimiento/costos" style="--c:var(--naranja);--cb:var(--naranja-bg)">
+      <div class="mant-quick-icon">💰</div>
+      <div class="mant-quick-title">Costos</div>
+      <div class="mant-quick-sub">Analisis gasto</div>
+    </button>
+  </div>
+</div>
+
+<!-- ── Row: Estado por Area + OT Recientes ── -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+
+  <!-- Estado por Area -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🏭 Estado por Area</div>
+        <div class="card-subtitle">Equipos y alertas por area operativa</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-areas"></canvas>
+    </div>
+  </div>
+
+  <!-- Distribucion Tipo OT -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">📊 Distribucion Tipos de OT</div>
+        <div class="card-subtitle">Preventivo vs Correctivo vs Predictivo</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-tipos"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── Row: Tendencia MTTR/MTBF + Costos por Area ── -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+
+  <!-- Tendencia MTTR/MTBF -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">📉 Tendencia MTTR / MTBF</div>
+        <div class="card-subtitle">Ultimos 6 meses</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-tendencia"></canvas>
+    </div>
+  </div>
+
+  <!-- Costos por Area -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">💵 Costos por Area (S/)</div>
+        <div class="card-subtitle">Mes en curso</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="chart-costos-area"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ── OT Recientes ── -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📋 Ultimas Ordenes de Trabajo</div>
+      <div class="card-subtitle">OT creadas o actualizadas recientemente</div>
+    </div>
+    <div class="filter-bar" style="margin:0">
+      <button class="filter-chip active" data-ot-filter="all">Todas</button>
+      <button class="filter-chip" data-ot-filter="abierta">Abiertas</button>
+      <button class="filter-chip" data-ot-filter="ejecucion">En Ejecucion</button>
+      <button class="filter-chip" data-ot-filter="completada">Completadas</button>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>OT</th>
+          <th>Equipo</th>
+          <th>Area</th>
+          <th>Tipo</th>
+          <th>Prioridad</th>
+          <th>Tecnico</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-ot-recientes">
+        <tr><td colspan="8" style="text-align:center;color:var(--muted)">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── Alertas Criticas ── -->
+<div class="card" style="margin-top:20px;border-left:4px solid var(--danger)">
+  <div class="card-header">
+    <div>
+      <div class="card-title" style="color:var(--danger)">🚨 Alertas Criticas Activas</div>
+      <div class="card-subtitle">Equipos que requieren atencion inmediata</div>
+    </div>
+    <span class="badge badge-rose" id="badge-alertas-count">0 alertas</span>
+  </div>
+  <div id="alertas-criticas-grid" class="mant-alert-grid"></div>
+</div>
+
+<!-- Estilos especificos del modulo mantenimiento -->
+<style>
+/* HERO */
+.mant-hero{
+  display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:stretch;
+  background:linear-gradient(135deg,rgba(14,124,58,0.04) 0%,rgba(234,88,12,0.04) 50%,rgba(30,64,175,0.04) 100%);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  overflow:hidden;position:relative;
+}
+.mant-hero::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(600px circle at 85% 30%,rgba(234,88,12,0.07),transparent 60%),
+             radial-gradient(500px circle at 10% 80%,rgba(14,124,58,0.08),transparent 55%);
+  pointer-events:none;
+}
+.mant-hero-left,.mant-hero-right{position:relative;z-index:1}
+
+.mant-hero-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:6px 14px;border-radius:20px;
+  background:var(--surface);border:1px solid var(--border);
+  font-size:11px;font-weight:700;letter-spacing:0.6px;
+  color:var(--muted);text-transform:uppercase;
+  margin-bottom:12px;
+}
+.mant-hero-title{
+  font-size:32px;font-weight:900;line-height:1.1;color:var(--texto);
+  display:flex;gap:10px;flex-wrap:wrap;
+}
+.mant-hero-title span{color:var(--muted);font-weight:600}
+.mant-hero-title strong{
+  background:linear-gradient(135deg,var(--amber),var(--naranja));
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.mant-hero-desc{
+  font-size:14px;color:var(--muted);margin-top:8px;max-width:520px;
+  line-height:1.55;
+}
+.mant-hero-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px;
+}
+.mant-hero-stat{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:12px 14px;
+  transition:var(--transition);
+}
+.mant-hero-stat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.mant-hero-stat-val{
+  font-size:22px;font-weight:900;color:var(--texto);line-height:1;
+}
+.mant-hero-stat-lbl{
+  font-size:10px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;margin-top:6px;
+}
+
+/* BOTON GIGANTE Dashboard Inmenso */
+.mant-dash-cta{
+  display:flex;align-items:center;gap:16px;
+  background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);
+  color:#fff;text-decoration:none;
+  border-radius:var(--radius-lg);
+  padding:22px 22px;
+  height:100%;
+  position:relative;overflow:hidden;
+  transition:var(--transition);
+  border:1px solid rgba(255,255,255,0.08);
+  box-shadow:0 8px 24px rgba(15,23,42,0.2);
+}
+.mant-dash-cta::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(400px circle at 100% 0%,rgba(34,197,94,0.18),transparent 60%),
+    radial-gradient(300px circle at 0% 100%,rgba(234,88,12,0.18),transparent 60%);
+  transition:all 0.5s ease;
+}
+.mant-dash-cta::after{
+  content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.08),transparent);
+  transition:left 0.8s ease;
+}
+.mant-dash-cta:hover{
+  transform:translateY(-3px) scale(1.01);
+  box-shadow:0 16px 40px rgba(15,23,42,0.3),0 0 40px rgba(22,163,74,0.15);
+  border-color:rgba(34,197,94,0.3);
+}
+.mant-dash-cta:hover::after{left:100%}
+.mant-dash-cta:hover .mant-dash-cta-arrow{transform:translate(4px,-4px) rotate(0deg)}
+
+.mant-dash-cta-icon{
+  font-size:60px;line-height:1;flex-shrink:0;
+  filter:drop-shadow(0 4px 12px rgba(34,197,94,0.3));
+  position:relative;z-index:1;
+  animation:pulseCta 3s ease-in-out infinite;
+}
+@keyframes pulseCta{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+}
+.mant-dash-cta-body{flex:1;position:relative;z-index:1}
+.mant-dash-cta-label{
+  display:inline-block;
+  font-size:10px;font-weight:800;letter-spacing:2px;
+  padding:3px 10px;border-radius:20px;
+  background:linear-gradient(90deg,#22c55e,#84cc16);
+  color:#052e16;
+  margin-bottom:8px;
+}
+.mant-dash-cta-title{
+  font-size:22px;font-weight:900;line-height:1.1;margin-bottom:4px;
+  background:linear-gradient(90deg,#fff,#cbd5e1);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.mant-dash-cta-sub{
+  font-size:12px;color:rgba(255,255,255,0.6);line-height:1.4;max-width:260px;
+}
+.mant-dash-cta-arrow{
+  width:44px;height:44px;border-radius:14px;
+  background:rgba(34,197,94,0.15);border:1px solid rgba(34,197,94,0.3);
+  color:#4ade80;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  transform:rotate(-45deg);
+  flex-shrink:0;position:relative;z-index:1;
+}
+
+/* QUICK GRID */
+.mant-quickgrid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;
+}
+.mant-quick{
+  display:flex;flex-direction:column;gap:4px;
+  padding:16px 14px;border-radius:14px;
+  background:var(--surface);border:1px solid var(--border);
+  cursor:pointer;text-align:left;
+  transition:var(--transition);position:relative;overflow:hidden;
+}
+.mant-quick::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--c);opacity:0;transition:var(--transition);
+}
+.mant-quick:hover{
+  transform:translateY(-3px);
+  box-shadow:var(--shadow);
+  border-color:var(--c);
+}
+.mant-quick:hover::before{opacity:1}
+.mant-quick-icon{
+  width:44px;height:44px;border-radius:12px;
+  background:var(--cb);color:var(--c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin-bottom:4px;
+}
+.mant-quick-title{
+  font-size:14px;font-weight:800;color:var(--texto);
+}
+.mant-quick-sub{
+  font-size:11px;color:var(--muted);
+}
+
+/* Alertas grid */
+.mant-alert-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;
+}
+.mant-alert{
+  display:flex;gap:12px;padding:14px;
+  background:var(--surface);border:1px solid var(--border);
+  border-left:4px solid var(--danger);
+  border-radius:12px;
+  transition:var(--transition);
+}
+.mant-alert:hover{transform:translateX(2px);box-shadow:var(--shadow)}
+.mant-alert-icon{
+  width:40px;height:40px;border-radius:10px;
+  background:var(--rose-bg);color:var(--danger);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;
+}
+.mant-alert-body{flex:1;min-width:0}
+.mant-alert-title{font-size:13px;font-weight:800;color:var(--texto);margin-bottom:3px}
+.mant-alert-desc{font-size:11px;color:var(--muted);line-height:1.4}
+.mant-alert-meta{
+  display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;
+}
+.mant-alert-chip{
+  font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;
+  background:var(--surface2);color:var(--muted);
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .mant-hero{grid-template-columns:1fr}
+  .mant-hero-stats{grid-template-columns:repeat(2,1fr)}
+  .mant-hero-title{font-size:24px}
+  .mant-dash-cta{padding:18px}
+  .mant-dash-cta-icon{font-size:48px}
+  .mant-dash-cta-title{font-size:18px}
+}
+</style>

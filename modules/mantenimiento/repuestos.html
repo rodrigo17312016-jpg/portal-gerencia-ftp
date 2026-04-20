@@ -1,0 +1,294 @@
+<!-- ════════════════════════════════════════════════════════
+     MANTENIMIENTO - INVENTARIO DE REPUESTOS
+     Control de stock de repuestos e insumos
+     ════════════════════════════════════════════════════════ -->
+
+<div class="card">
+  <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+    <div>
+      <div class="card-title">⚙️ Inventario de Repuestos</div>
+      <div class="card-subtitle">Control de stock de repuestos e insumos de mantenimiento</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary btn-sm" id="btn-nuevo-repuesto">+ Nuevo Repuesto</button>
+      <button class="btn btn-secondary btn-sm" id="btn-entrada-stock">📥 Entrada</button>
+      <button class="btn btn-secondary btn-sm" id="btn-salida-stock">📤 Salida</button>
+      <button class="btn btn-secondary btn-sm" id="btn-export-rep">Exportar CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid" style="margin-top:12px">
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:var(--azul);color:white">📦</div>
+    <div class="kpi-label">Total SKUs</div>
+    <div class="kpi-value" id="kpi-rep-total">0</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:var(--rose);color:white">🚨</div>
+    <div class="kpi-label">Stock Crítico</div>
+    <div class="kpi-value" id="kpi-rep-critico" style="color:var(--danger)">0</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:var(--amber);color:white">⚠️</div>
+    <div class="kpi-label">Stock Bajo</div>
+    <div class="kpi-value" id="kpi-rep-bajo" style="color:var(--warn)">0</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:var(--verde);color:white">💰</div>
+    <div class="kpi-label">Valor Total Inventario</div>
+    <div class="kpi-value" id="kpi-rep-valor">S/ 0</div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid-2" style="margin-top:12px">
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Distribución por Categoría</div>
+      <div class="card-subtitle">SKUs por tipo de repuesto</div>
+    </div>
+    <div class="chart-wrapper" style="height:300px">
+      <canvas id="chart-rep-categorias"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Valor Inventario por Categoría</div>
+      <div class="card-subtitle">Stock × precio unitario (S/)</div>
+    </div>
+    <div class="chart-wrapper" style="height:300px">
+      <canvas id="chart-rep-valor"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Alertas de stock -->
+<div class="card" style="margin-top:12px">
+  <div class="card-header">
+    <div class="card-title">⚠️ Alertas de Stock</div>
+    <div class="card-subtitle">Items por debajo del mínimo requerido</div>
+  </div>
+  <div id="rep-alertas-list" class="rep-alertas-list"></div>
+</div>
+
+<!-- Filtros -->
+<div class="card" style="margin-top:12px">
+  <div class="card-header" style="flex-direction:column;align-items:flex-start;gap:10px">
+    <div class="card-title">Lista de Repuestos</div>
+    <div class="filter-bar" id="rep-filter-estado">
+      <div class="filter-chip active" data-estado="todos">Todos</div>
+      <div class="filter-chip" data-estado="critico">Crítico</div>
+      <div class="filter-chip" data-estado="bajo">Bajo</div>
+      <div class="filter-chip" data-estado="ok">OK</div>
+    </div>
+    <div class="filter-bar" id="rep-filter-cat"></div>
+    <input type="text" class="form-input" id="rep-search" placeholder="🔍 Buscar por código o nombre..." style="max-width:400px" />
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Categoría</th>
+          <th style="text-align:right">Stock</th>
+          <th style="text-align:right">Mínimo</th>
+          <th>Unidad</th>
+          <th style="text-align:right">Precio Unit.</th>
+          <th style="text-align:right">Valor Total</th>
+          <th>Ubicación</th>
+          <th>Estado</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="rep-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal movimiento stock -->
+<div id="rep-modal" class="rep-modal" style="display:none">
+  <div class="rep-modal-backdrop"></div>
+  <div class="rep-modal-content">
+    <div class="rep-modal-header">
+      <h3 id="rep-modal-title">Movimiento de Stock</h3>
+      <button class="rep-modal-close" id="rep-modal-close">✕</button>
+    </div>
+    <div class="rep-modal-body">
+      <div class="rep-form-row">
+        <label>Repuesto</label>
+        <select class="form-input" id="rep-mov-select"></select>
+      </div>
+      <div class="rep-form-row">
+        <label>Stock actual</label>
+        <div class="rep-form-display" id="rep-mov-stock-actual">-</div>
+      </div>
+      <div class="rep-form-row">
+        <label>Cantidad</label>
+        <input type="number" class="form-input" id="rep-mov-cantidad" min="1" value="1" />
+      </div>
+      <div class="rep-form-row">
+        <label>Motivo</label>
+        <input type="text" class="form-input" id="rep-mov-motivo" placeholder="Ej: compra orden 1234 / OT-2045" />
+      </div>
+      <div class="rep-form-row">
+        <label>Stock resultante</label>
+        <div class="rep-form-display" id="rep-mov-stock-nuevo">-</div>
+      </div>
+    </div>
+    <div class="rep-modal-footer">
+      <button class="btn btn-secondary btn-sm" id="rep-mov-cancel">Cancelar</button>
+      <button class="btn btn-primary btn-sm" id="rep-mov-confirm">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<style>
+/* ════════════════════════════════════════════════════════
+   REPUESTOS - ESTILOS LOCALES
+   ════════════════════════════════════════════════════════ */
+.rep-alertas-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 4px 0;
+}
+.rep-alerta-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--danger);
+  border-radius: var(--radius);
+  transition: background 0.15s ease;
+}
+.rep-alerta-item:hover { background: rgba(225,29,72,0.06); }
+.rep-alerta-item.bajo { border-left-color: var(--warn); }
+.rep-alerta-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.rep-alerta-title {
+  font-weight: 600;
+  color: var(--texto);
+  font-size: 13.5px;
+}
+.rep-alerta-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+.rep-stock-label {
+  font-weight: 700;
+  color: var(--danger);
+}
+.rep-alerta-item.bajo .rep-stock-label {
+  color: var(--warn);
+}
+
+/* Tabla */
+.rep-accion-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--texto);
+  margin-right: 4px;
+  transition: all 0.15s ease;
+}
+.rep-accion-btn:hover { background: var(--surface2); border-color: var(--azul); }
+.rep-accion-btn.entrada { color: #16a34a; }
+.rep-accion-btn.salida { color: #e11d48; }
+
+/* Modal */
+.rep-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rep-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15,23,42,0.55);
+  backdrop-filter: blur(4px);
+}
+.rep-modal-content {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  width: 95%;
+  max-width: 480px;
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.35);
+}
+.rep-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.rep-modal-header h3 { margin: 0; font-size: 16px; color: var(--texto); }
+.rep-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+.rep-modal-close:hover { background: var(--surface2); color: var(--texto); }
+.rep-modal-body {
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.rep-form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rep-form-row label {
+  font-size: 12px;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.rep-form-display {
+  padding: 8px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-weight: 600;
+  color: var(--texto);
+}
+.rep-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+}
+</style>

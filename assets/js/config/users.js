@@ -24,6 +24,13 @@ export const USERS = {
     roleLabel: 'Area de Calidad',
     initials: 'CA'
   },
+  'mantenimiento': {
+    pass: 'mant2026',
+    name: 'Jefe Mantenimiento',
+    role: 'mantenimiento',
+    roleLabel: 'Area de Mantenimiento',
+    initials: 'MT'
+  },
   'rodrigo': {
     pass: 'ftp2026',
     name: 'Rodrigo Garcia',
@@ -49,5 +56,10 @@ export const ROLES = {
     label: 'Calidad',
     description: 'Acceso a modulos de calidad y almacen',
     color: 'azul'
+  },
+  mantenimiento: {
+    label: 'Mantenimiento',
+    description: 'Acceso a modulos de mantenimiento industrial',
+    color: 'amber'
   }
 };

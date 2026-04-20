@@ -1,0 +1,416 @@
+<!-- Panel: Equipos & Activos - Mantenimiento Industrial -->
+
+<!-- ── Header ── -->
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header" style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
+    <div>
+      <div class="card-title">🔧 Equipos &amp; Activos</div>
+      <div class="card-subtitle">Inventario maestro de equipos de la planta agroindustrial</div>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" id="btn-export-equipos">⬇️ Exportar CSV</button>
+      <button class="btn btn-primary btn-sm" id="btn-nuevo-equipo">+ Nuevo Equipo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── KPI Cards ── -->
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Total Equipos</div>
+        <div class="kpi-value" id="kpi-eq-total">—</div>
+        <div class="kpi-change">Inventario activo</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">📦</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Operativos</div>
+        <div class="kpi-value" id="kpi-eq-operativos" style="color:var(--verde)">—</div>
+        <div class="kpi-change positive">Funcionamiento normal</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">✅</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">En Alerta</div>
+        <div class="kpi-value" id="kpi-eq-alerta" style="color:var(--amber)">—</div>
+        <div class="kpi-change">Requieren atencion</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--amber-bg);color:var(--amber)">⚠️</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">En Falla</div>
+        <div class="kpi-value" id="kpi-eq-falla" style="color:var(--danger)">—</div>
+        <div class="kpi-change negative">Intervencion urgente</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--rose-bg);color:var(--danger)">🔴</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Filtros ── -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🔎 Filtros de busqueda</div>
+      <div class="card-subtitle">Combina chips y texto para encontrar equipos</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:14px">
+    <!-- Search -->
+    <div>
+      <input type="text" class="form-input" id="eq-search" placeholder="🔍 Buscar por codigo, nombre, fabricante o modelo..." style="max-width:520px">
+    </div>
+
+    <!-- Chips area -->
+    <div>
+      <div class="eq-filter-label">Por area</div>
+      <div class="filter-bar" data-eq-group="area">
+        <button class="filter-chip active" data-eq-filter="all">Todos</button>
+        <button class="filter-chip" data-eq-area="Recepcion">Recepcion</button>
+        <button class="filter-chip" data-eq-area="Acondicionado">Acondicionado</button>
+        <button class="filter-chip" data-eq-area="Tuneles IQF">Tuneles IQF</button>
+        <button class="filter-chip" data-eq-area="Empaque">Empaque</button>
+        <button class="filter-chip" data-eq-area="Camaras Frio">Camaras Frio</button>
+        <button class="filter-chip" data-eq-area="Sala Maquinas">Sala Maquinas</button>
+        <button class="filter-chip" data-eq-area="Sala Calderas">Sala Calderas</button>
+        <button class="filter-chip" data-eq-area="PTAP">PTAP</button>
+        <button class="filter-chip" data-eq-area="Servicios">Servicios</button>
+        <button class="filter-chip" data-eq-area="Logistica">Logistica</button>
+      </div>
+    </div>
+
+    <!-- Chips estado -->
+    <div>
+      <div class="eq-filter-label">Por estado</div>
+      <div class="filter-bar" data-eq-group="estado">
+        <button class="filter-chip" data-eq-estado="operativo">✅ Operativo</button>
+        <button class="filter-chip" data-eq-estado="alerta">⚠️ Alerta</button>
+        <button class="filter-chip" data-eq-estado="falla">🔴 Falla</button>
+      </div>
+    </div>
+
+    <!-- Chips criticidad -->
+    <div>
+      <div class="eq-filter-label">Por criticidad</div>
+      <div class="filter-bar" data-eq-group="criticidad">
+        <button class="filter-chip" data-eq-crit="alta">Alta</button>
+        <button class="filter-chip" data-eq-crit="media">Media</button>
+        <button class="filter-chip" data-eq-crit="baja">Baja</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Tabla ── -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📋 Listado de equipos</div>
+      <div class="card-subtitle" id="eq-count-sub">Mostrando todos los equipos</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Codigo</th>
+          <th>Nombre</th>
+          <th>Area</th>
+          <th>Tipo</th>
+          <th>Criticidad</th>
+          <th style="text-align:right">Horas Uso</th>
+          <th>Fabricante / Modelo</th>
+          <th>Año</th>
+          <th>Estado</th>
+          <th style="text-align:center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-equipos"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ── Modal Ficha Tecnica ── -->
+<div class="modal" id="eq-modal-ficha" style="display:none">
+  <div class="modal-backdrop" data-eq-close></div>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title" id="eq-modal-title">Ficha tecnica</div>
+        <div class="modal-sub" id="eq-modal-sub"></div>
+      </div>
+      <button class="modal-close" data-eq-close>&times;</button>
+    </div>
+    <div class="modal-body" id="eq-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-eq-close>Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Modal Nuevo Equipo ── -->
+<div class="modal" id="eq-modal-new" style="display:none">
+  <div class="modal-backdrop" data-eq-close-new></div>
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">➕ Nuevo equipo</div>
+        <div class="modal-sub">Registra un equipo en el inventario</div>
+      </div>
+      <button class="modal-close" data-eq-close-new>&times;</button>
+    </div>
+    <form id="eq-form-new" class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Codigo *</label>
+        <input type="text" class="form-input" name="codigo" placeholder="Ej: EMP-007" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Nombre *</label>
+        <input type="text" class="form-input" name="nombre" required>
+      </div>
+      <div class="eq-form-row">
+        <div class="form-group">
+          <label class="form-label">Area *</label>
+          <select class="form-select" name="area" required>
+            <option value="Recepcion">Recepcion</option>
+            <option value="Acondicionado">Acondicionado</option>
+            <option value="Tuneles IQF">Tuneles IQF</option>
+            <option value="Empaque">Empaque</option>
+            <option value="Camaras Frio">Camaras Frio</option>
+            <option value="Sala Maquinas">Sala Maquinas</option>
+            <option value="Sala Calderas">Sala Calderas</option>
+            <option value="PTAP">PTAP</option>
+            <option value="Servicios">Servicios</option>
+            <option value="Logistica">Logistica</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tipo *</label>
+          <select class="form-select" name="tipo" required>
+            <option value="Mecanico">Mecanico</option>
+            <option value="Electrico">Electrico</option>
+            <option value="Electronico">Electronico</option>
+            <option value="Refrigeracion">Refrigeracion</option>
+            <option value="Termico">Termico</option>
+            <option value="Neumatico">Neumatico</option>
+            <option value="Hidraulico">Hidraulico</option>
+            <option value="Instrumentacion">Instrumentacion</option>
+            <option value="Quimico">Quimico</option>
+          </select>
+        </div>
+      </div>
+      <div class="eq-form-row">
+        <div class="form-group">
+          <label class="form-label">Criticidad</label>
+          <select class="form-select" name="criticidad">
+            <option value="alta">Alta</option>
+            <option value="media" selected>Media</option>
+            <option value="baja">Baja</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estado</label>
+          <select class="form-select" name="estado">
+            <option value="operativo" selected>Operativo</option>
+            <option value="alerta">Alerta</option>
+            <option value="falla">Falla</option>
+          </select>
+        </div>
+      </div>
+      <div class="eq-form-row">
+        <div class="form-group">
+          <label class="form-label">Fabricante</label>
+          <input type="text" class="form-input" name="fabricante">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Modelo</label>
+          <input type="text" class="form-input" name="modelo">
+        </div>
+      </div>
+      <div class="eq-form-row">
+        <div class="form-group">
+          <label class="form-label">Año</label>
+          <input type="number" class="form-input" name="anio" min="1990" max="2100" value="2024">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Horas de uso</label>
+          <input type="number" class="form-input" name="horasUso" min="0" value="0">
+        </div>
+      </div>
+    </form>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" data-eq-close-new>Cancelar</button>
+      <button class="btn btn-primary" id="eq-save-new">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div id="eq-toast" class="toast" style="display:none"></div>
+
+<style>
+  .eq-filter-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+  .eq-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  @media (max-width: 640px) {
+    .eq-form-row { grid-template-columns: 1fr; }
+  }
+
+  /* Modal (fallback si no existe global) */
+  .modal {
+    position: fixed; inset: 0;
+    z-index: 9500;
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .modal-backdrop {
+    position: absolute; inset: 0;
+    background: rgba(15, 23, 42, 0.55);
+    backdrop-filter: blur(3px);
+  }
+  .modal-dialog {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    width: 100%; max-width: 560px;
+    max-height: 90vh;
+    display: flex; flex-direction: column;
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+  }
+  .modal-dialog.modal-lg { max-width: 820px; }
+  .modal-header {
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px;
+  }
+  .modal-title {
+    font-size: 18px; font-weight: 700;
+    color: var(--texto);
+  }
+  .modal-sub {
+    font-size: 13px; color: var(--muted); margin-top: 2px;
+  }
+  .modal-close {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    color: var(--muted);
+    cursor: pointer;
+    line-height: 1;
+    padding: 0 6px;
+  }
+  .modal-close:hover { color: var(--texto); }
+  .modal-body {
+    padding: 20px 22px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--border);
+    display: flex; gap: 10px; justify-content: flex-end;
+  }
+
+  /* Ficha tecnica */
+  .eq-ficha-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .eq-ficha-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 14px;
+  }
+  .eq-ficha-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+  .eq-ficha-value {
+    font-size: 15px;
+    color: var(--texto);
+    font-weight: 600;
+    margin-top: 4px;
+    word-break: break-word;
+  }
+
+  .eq-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--texto);
+    margin: 18px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 2px solid var(--border);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .eq-hist-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 110px 110px;
+    gap: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 6px;
+    font-size: 13px;
+    align-items: center;
+  }
+  .eq-hist-code { font-weight: 700; color: var(--azul); }
+  .eq-hist-desc { color: var(--texto); }
+  .eq-hist-date { color: var(--muted); font-size: 12px; white-space: nowrap; }
+  @media (max-width: 640px) {
+    .eq-hist-row { grid-template-columns: 1fr; gap: 4px; }
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    padding: 12px 18px;
+    background: var(--verde);
+    color: #fff;
+    border-radius: var(--radius);
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    z-index: 9999;
+    font-size: 14px;
+  }
+  .toast.error { background: var(--danger); }
+
+  /* filter-chip active */
+  .filter-chip.active {
+    background: var(--azul);
+    color: #fff;
+    border-color: var(--azul);
+  }
+</style>

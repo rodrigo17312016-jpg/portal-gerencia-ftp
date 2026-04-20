@@ -160,7 +160,8 @@ function updateUserUI(user) {
   const portalTitles = {
     'admin': 'Portal de Gerencia',
     'produccion': 'Portal de Produccion',
-    'calidad': 'Portal de Calidad'
+    'calidad': 'Portal de Calidad',
+    'mantenimiento': 'Portal de Mantenimiento'
   };
   const portalTitle = portalTitles[user.role] || 'Portal de Gerencia';
 

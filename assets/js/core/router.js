@@ -149,7 +149,19 @@ function updateBreadcrumb(panelId) {
     'stock-general': 'Almacen / Stock General',
     'materiales': 'Almacen / Materiales',
     'contenedores': 'Almacen / Contenedores',
-    'rrhh': 'RRHH / Sistema'
+    'rrhh': 'RRHH / Sistema',
+    'resumen-mant': 'Mantenimiento / Resumen',
+    'equipos': 'Mantenimiento / Equipos & Activos',
+    'ordenes-trabajo': 'Mantenimiento / Ordenes de Trabajo',
+    'preventivo': 'Mantenimiento / Preventivo',
+    'correctivo': 'Mantenimiento / Correctivo',
+    'predictivo': 'Mantenimiento / Predictivo',
+    'repuestos': 'Mantenimiento / Repuestos',
+    'tecnicos-mant': 'Mantenimiento / Tecnicos',
+    'calendario-mant': 'Mantenimiento / Calendario',
+    'lubricacion': 'Mantenimiento / Lubricacion',
+    'indicadores-mant': 'Mantenimiento / Indicadores KPI',
+    'costos-mant': 'Mantenimiento / Costos'
   };
 
   breadcrumb.textContent = labels[panelId] || panelId;
@@ -174,6 +186,7 @@ export function getDefaultPanel() {
     case 'admin': return { id: 'resumen', module: 'gerencia/resumen' };
     case 'produccion': return { id: 'indicadores', module: 'produccion/indicadores' };
     case 'calidad': return { id: 'temperaturas', module: 'calidad/temperaturas' };
+    case 'mantenimiento': return { id: 'resumen-mant', module: 'mantenimiento/resumen' };
     default: return { id: 'resumen', module: 'gerencia/resumen' };
   }
 }

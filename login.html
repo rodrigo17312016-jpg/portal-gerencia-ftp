@@ -137,8 +137,8 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
 /* ── FLOATING PILL (when minimized) ── */
 .login-pill{
-  position:fixed;top:46%;left:50%;
-  transform:translate(-50%,-50%) scale(0.85);
+  position:fixed;top:0;left:50%;
+  transform:translateX(-50%) scale(0.85);
   display:flex;align-items:center;gap:12px;
   padding:9px 9px 9px 20px;
   background:rgba(8,25,14,0.27);
@@ -150,24 +150,20 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   cursor:pointer;
   z-index:100;
   opacity:0;
+  pointer-events:none;
   transition:opacity 0.8s cubic-bezier(0.34,1.56,0.64,1), transform 0.8s cubic-bezier(0.34,1.56,0.64,1), background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
   font-family:'Plus Jakarta Sans','Inter',sans-serif;
-  animation:pillBreath 4s ease-in-out infinite;
 }
 .login-pill.visible{
   opacity:1;
-  transform:translate(-50%,-50%) scale(1);
+  pointer-events:auto;
+  transform:translateX(-50%) scale(1);
 }
 .login-pill:hover{
   background:rgba(8,25,14,0.5);
   border-color:rgba(74,222,128,0.5);
   box-shadow:0 25px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(74,222,128,0.25), 0 0 50px rgba(74,222,128,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
-  transform:translate(-50%,-50%) scale(1.05);
-  animation:none;
-}
-@keyframes pillBreath{
-  0%,100%{box-shadow:0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06), 0 0 0 0 rgba(74,222,128,0), inset 0 1px 0 rgba(255,255,255,0.15)}
-  50%{box-shadow:0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08), 0 0 0 14px rgba(74,222,128,0.04), inset 0 1px 0 rgba(255,255,255,0.15)}
+  transform:translateX(-50%) scale(1.05);
 }
 .login-pill-icon{
   width:34px;height:34px;border-radius:50%;
@@ -213,37 +209,22 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   transition:opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1);
 }
 .login-welcome.visible{opacity:1}
-.welcome-greeting{
-  font-family:'Playfair Display',serif;
-  font-size:14px;font-weight:700;
-  text-transform:uppercase;letter-spacing:8px;
-  color:rgba(212,175,55,0.95);
-  margin-bottom:14px;
-  text-shadow:0 2px 14px rgba(0,0,0,0.6), 0 0 22px rgba(212,175,55,0.25);
-  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
-}
-.welcome-greeting::before,
-.welcome-greeting::after{
-  content:'';display:inline-block;vertical-align:middle;
-  width:40px;height:1px;margin:0 16px;
-  background:linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent);
-}
 .welcome-title{
   font-family:'Playfair Display',serif;
-  font-size:clamp(28px,4vw,48px);font-weight:900;
+  font-size:clamp(32px,4.5vw,56px);font-weight:900;
   color:#fff;letter-spacing:-0.3px;
-  margin-bottom:10px;line-height:1.05;
+  margin-bottom:14px;line-height:1.05;
   text-shadow:0 6px 30px rgba(0,0,0,0.65), 0 2px 10px rgba(0,0,0,0.4);
-  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
+  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
   white-space:nowrap;
 }
 .welcome-date{
   font-family:'Plus Jakarta Sans',sans-serif;
-  font-size:11px;font-weight:600;
-  color:rgba(255,255,255,0.65);
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,0.7);
   letter-spacing:3px;text-transform:capitalize;
   text-shadow:0 2px 8px rgba(0,0,0,0.5);
-  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
 }
 @keyframes welcomeFadeDown{
   from{opacity:0;transform:translateY(-12px)}
@@ -471,8 +452,7 @@ body.login-minimized .login-overlay{background:linear-gradient(135deg,rgba(0,0,0
 
 <!-- Welcome Banner (visible cuando el login esta minimizado) -->
 <div class="login-welcome" id="loginWelcome">
-  <div class="welcome-greeting" id="welcomeGreeting">Bienvenidos</div>
-  <div class="welcome-title">Frutos Tropicales</div>
+  <div class="welcome-title">Bienvenidos</div>
   <div class="welcome-date" id="welcomeDate">&nbsp;</div>
 </div>
 
@@ -588,7 +568,6 @@ const minBtn = document.getElementById('loginMinBtn');
 const pill = document.getElementById('loginPill');
 const kbdHint = document.getElementById('loginKbdHint');
 const welcome = document.getElementById('loginWelcome');
-const welcomeGreeting = document.getElementById('welcomeGreeting');
 const welcomeDate = document.getElementById('welcomeDate');
 
 // ── Fecha en vivo en el banner ──
@@ -596,9 +575,33 @@ function updateWelcome() {
   welcomeDate.textContent = new Date().toLocaleDateString('es-PE',{
     timeZone:'America/Lima', weekday:'long', day:'numeric', month:'long', year:'numeric'
   });
+  positionPill();
 }
+
+// ── Posicionar la pill a 1cm debajo de la fecha ──
+function cmToPx(cm) {
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:absolute;width:1cm;height:1cm;visibility:hidden;pointer-events:none';
+  document.body.appendChild(probe);
+  const px = probe.getBoundingClientRect().width;
+  probe.remove();
+  return px;
+}
+const ONE_CM = cmToPx(1);
+
+function positionPill() {
+  if (!welcome || !pill) return;
+  const rect = welcome.getBoundingClientRect();
+  pill.style.top = (rect.bottom + ONE_CM) + 'px';
+}
+
 updateWelcome();
 setInterval(updateWelcome, 60000);
+window.addEventListener('resize', positionPill);
+// Recalcular despues de que las animaciones de entrada terminen
+setTimeout(positionPill, 100);
+setTimeout(positionPill, 900);
+setTimeout(positionPill, 1400);
 
 // ── Estado inicial: MINIMIZADO ──
 let isMinimized = true;

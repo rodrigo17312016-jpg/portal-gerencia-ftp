@@ -137,30 +137,37 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
 
 /* ── FLOATING PILL (when minimized) ── */
 .login-pill{
-  position:fixed;top:32px;left:50%;transform:translateX(-50%) translateY(-120%);
+  position:fixed;top:46%;left:50%;
+  transform:translate(-50%,-50%) scale(0.85);
   display:flex;align-items:center;gap:12px;
   padding:9px 9px 9px 20px;
-  background:rgba(8,25,14,0.55);
-  backdrop-filter:blur(20px) saturate(1.6);
-  -webkit-backdrop-filter:blur(20px) saturate(1.6);
-  border:1px solid rgba(255,255,255,0.15);
+  background:rgba(8,25,14,0.27);
+  backdrop-filter:blur(22px) saturate(1.8);
+  -webkit-backdrop-filter:blur(22px) saturate(1.8);
+  border:1px solid rgba(255,255,255,0.18);
   border-radius:50px;
-  box-shadow:0 20px 50px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.12);
+  box-shadow:0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06), inset 0 1px 0 rgba(255,255,255,0.15);
   cursor:pointer;
   z-index:100;
   opacity:0;
-  transition:all 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  transition:opacity 0.8s cubic-bezier(0.34,1.56,0.64,1), transform 0.8s cubic-bezier(0.34,1.56,0.64,1), background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
   font-family:'Plus Jakarta Sans','Inter',sans-serif;
+  animation:pillBreath 4s ease-in-out infinite;
 }
 .login-pill.visible{
   opacity:1;
-  transform:translateX(-50%) translateY(0);
+  transform:translate(-50%,-50%) scale(1);
 }
 .login-pill:hover{
-  background:rgba(8,25,14,0.75);
-  border-color:rgba(74,222,128,0.4);
-  box-shadow:0 25px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(74,222,128,0.2), 0 0 40px rgba(74,222,128,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
-  transform:translateX(-50%) translateY(-2px);
+  background:rgba(8,25,14,0.5);
+  border-color:rgba(74,222,128,0.5);
+  box-shadow:0 25px 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(74,222,128,0.25), 0 0 50px rgba(74,222,128,0.25), inset 0 1px 0 rgba(255,255,255,0.2);
+  transform:translate(-50%,-50%) scale(1.05);
+  animation:none;
+}
+@keyframes pillBreath{
+  0%,100%{box-shadow:0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.06), 0 0 0 0 rgba(74,222,128,0), inset 0 1px 0 rgba(255,255,255,0.15)}
+  50%{box-shadow:0 20px 60px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08), 0 0 0 14px rgba(74,222,128,0.04), inset 0 1px 0 rgba(255,255,255,0.15)}
 }
 .login-pill-icon{
   width:34px;height:34px;border-radius:50%;
@@ -194,6 +201,82 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:#0a0f1a}
   box-shadow:0 0 16px rgba(22,163,74,0.5);
 }
 .login-pill-arrow svg{width:12px;height:12px}
+
+/* ── WELCOME BANNER (shown when minimized) ── */
+.login-welcome{
+  position:fixed;top:18%;left:50%;
+  transform:translateX(-50%);
+  text-align:center;z-index:99;
+  pointer-events:none;
+  width:min(90%,720px);
+  opacity:0;
+  transition:opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1);
+}
+.login-welcome.visible{opacity:1}
+.welcome-greeting{
+  font-family:'Playfair Display',serif;
+  font-size:13px;font-weight:700;
+  text-transform:uppercase;letter-spacing:7px;
+  color:rgba(212,175,55,0.95);
+  margin-bottom:14px;
+  text-shadow:0 2px 14px rgba(0,0,0,0.6), 0 0 22px rgba(212,175,55,0.25);
+  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+}
+.welcome-greeting::before,
+.welcome-greeting::after{
+  content:'';display:inline-block;vertical-align:middle;
+  width:36px;height:1px;margin:0 14px;
+  background:linear-gradient(90deg,transparent,rgba(212,175,55,0.6),transparent);
+}
+.welcome-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(30px,4.5vw,56px);font-weight:900;
+  color:#fff;letter-spacing:-0.5px;
+  margin-bottom:6px;line-height:1.05;
+  text-shadow:0 6px 30px rgba(0,0,0,0.65), 0 2px 10px rgba(0,0,0,0.4);
+  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.55s forwards;
+  white-space:nowrap;
+}
+.welcome-brand{
+  display:block;
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:clamp(13px,1.4vw,17px);
+  font-weight:800;letter-spacing:8px;
+  text-transform:uppercase;
+  margin-top:6px;
+  background:linear-gradient(135deg,#d4af37 0%,#fff8dc 20%,#ffd700 35%,#fff8dc 55%,#d4af37 75%,#e8c46a 100%);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+  animation:brandShimmer 5s ease infinite;
+  filter:drop-shadow(0 3px 14px rgba(212,175,55,0.5));
+}
+@keyframes brandShimmer{
+  0%,100%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+}
+.welcome-tagline{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:12px;font-weight:600;
+  color:rgba(255,255,255,0.78);
+  letter-spacing:5px;text-transform:uppercase;
+  margin-bottom:6px;
+  text-shadow:0 2px 10px rgba(0,0,0,0.55);
+  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
+}
+.welcome-date{
+  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:10.5px;font-weight:500;
+  color:rgba(255,255,255,0.55);
+  letter-spacing:2.5px;text-transform:capitalize;
+  text-shadow:0 2px 8px rgba(0,0,0,0.5);
+  opacity:0;animation:welcomeFadeDown 1s cubic-bezier(0.16,1,0.3,1) 1.05s forwards;
+}
+@keyframes welcomeFadeDown{
+  from{opacity:0;transform:translateY(-12px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.login-welcome.hiding{opacity:0;transform:translateX(-50%) translateY(-18px)}
 
 /* Kbd hint at bottom when minimized */
 .login-kbd-hint{
@@ -413,9 +496,17 @@ body.login-minimized .login-overlay{background:linear-gradient(135deg,rgba(0,0,0
   <div class="particle green" style="width:2px;height:2px;top:50%;left:92%;animation-delay:0s;animation-duration:8s"></div>
 </div>
 
+<!-- Welcome Banner (visible cuando el login esta minimizado) -->
+<div class="login-welcome" id="loginWelcome">
+  <div class="welcome-greeting" id="welcomeGreeting">Bienvenido</div>
+  <div class="welcome-title">Frutos Tropicales <span class="welcome-brand">Peru Export</span></div>
+  <div class="welcome-tagline">La frescura del Peru al mundo</div>
+  <div class="welcome-date" id="welcomeDate">&nbsp;</div>
+</div>
+
 <!-- Login Card -->
 <div class="login-container">
-  <div class="login-card" id="loginCard">
+  <div class="login-card minimized" id="loginCard">
     <!-- Minimize button -->
     <button class="login-minimize-btn" id="loginMinBtn" data-tip="Ver paisaje" title="Ver paisaje (Esc)" type="button" aria-label="Minimizar">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -516,7 +607,6 @@ function handleLogin() {
 loginBtn.addEventListener('click', handleLogin);
 passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
 userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
-userInput.focus();
 
 // ═══════════════════════════════════════════
 // MINIMIZE / MAXIMIZE con animacion elegante
@@ -525,15 +615,46 @@ const card = document.querySelector('.login-card');
 const minBtn = document.getElementById('loginMinBtn');
 const pill = document.getElementById('loginPill');
 const kbdHint = document.getElementById('loginKbdHint');
-let isMinimized = false;
+const welcome = document.getElementById('loginWelcome');
+const welcomeGreeting = document.getElementById('welcomeGreeting');
+const welcomeDate = document.getElementById('welcomeDate');
+
+// ── Saludo dinamico segun hora Lima ──
+function getLimaHour() {
+  const str = new Date().toLocaleString('en-US',{timeZone:'America/Lima',hour:'2-digit',hour12:false});
+  return parseInt(str,10);
+}
+function updateWelcome() {
+  const h = getLimaHour();
+  let greet;
+  if (h >= 5 && h < 12)      greet = 'Buenos dias';
+  else if (h >= 12 && h < 19) greet = 'Buenas tardes';
+  else                         greet = 'Buenas noches';
+  welcomeGreeting.textContent = greet;
+  welcomeDate.textContent = new Date().toLocaleDateString('es-PE',{
+    timeZone:'America/Lima', weekday:'long', day:'numeric', month:'long', year:'numeric'
+  });
+}
+updateWelcome();
+setInterval(updateWelcome, 60000);
+
+// ── Estado inicial: MINIMIZADO ──
+let isMinimized = true;
+document.body.classList.add('login-minimized');
+// Dar un pequeno delay para que el banner y la pill aparezcan con stagger
+setTimeout(() => { welcome.classList.add('visible'); }, 150);
+setTimeout(() => { pill.classList.add('visible'); }, 1100);
+setTimeout(() => { kbdHint.classList.add('visible'); }, 1600);
 
 function minimizeCard() {
   if (isMinimized) return;
   isMinimized = true;
   card.classList.add('minimized');
   document.body.classList.add('login-minimized');
-  // Aparecer pill con ligero delay tras que el card empiece a desvanecer
+  updateWelcome();
   setTimeout(() => {
+    welcome.classList.remove('hiding');
+    welcome.classList.add('visible');
     pill.classList.add('visible');
     kbdHint.classList.add('visible');
   }, 250);
@@ -542,12 +663,13 @@ function minimizeCard() {
 function restoreCard() {
   if (!isMinimized) return;
   isMinimized = false;
+  welcome.classList.add('hiding');
+  welcome.classList.remove('visible');
   pill.classList.remove('visible');
   kbdHint.classList.remove('visible');
   setTimeout(() => {
     card.classList.remove('minimized');
     document.body.classList.remove('login-minimized');
-    // Refocus en el primer campo vacio
     setTimeout(() => {
       if (!userInput.value) userInput.focus();
       else if (!passInput.value) passInput.focus();

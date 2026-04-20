@@ -1984,13 +1984,21 @@ async function renderRendimiento() {
       catch(e) { detail = null; }
     }
     const kgPres = parseFloat(r.kg_presentacion) || 0;
+    const cajasTot = parseInt(r.cajas) || 0;
     const totalCortesCajas = detail ? Object.values(detail).reduce((s,v)=>s+(parseInt(v)||0),0) : 0;
     if (detail && typeof detail === 'object' && totalCortesCajas > 0 && kgPres > 0) {
       Object.entries(detail).forEach(([corte, cajas]) => {
         const n = parseInt(cajas) || 0;
         if (n > 0) kgByFruitCorte[f][corte] = (kgByFruitCorte[f][corte] || 0) + n * kgPres;
       });
+      // Remanente: si el detalle no cubre todas las cajas del registro, asignar al corte principal
+      const remanente = cajasTot - totalCortesCajas;
+      if (remanente > 0) {
+        const corteMain = ((r.corte || '').toString().split(',')[0] || '').trim() || 'SIN DETALLE';
+        kgByFruitCorte[f][corteMain] = (kgByFruitCorte[f][corteMain] || 0) + remanente * kgPres;
+      }
     } else {
+      // Sin cuts_detail o kg_presentacion: usar kg_pt total en el corte principal
       const corte = ((r.corte || '').toString().split(',')[0] || '').trim() || 'SIN CORTE';
       const kg = parseFloat(r.kg_pt) || 0;
       if (kg > 0) kgByFruitCorte[f][corte] = (kgByFruitCorte[f][corte] || 0) + kg;

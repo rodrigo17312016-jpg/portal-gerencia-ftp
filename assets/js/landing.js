@@ -453,28 +453,19 @@
       }
     }
 
-    // Map hover interaction: hover bandera -> resalta pin
-    var flags = document.querySelectorAll('.cflag');
-    var pins = document.querySelectorAll('.dest-pin');
-    if(flags.length && pins.length){
-      flags.forEach(function(flag){
-        var c = flag.dataset.c;
-        flag.addEventListener('mouseenter', function(){
-          pins.forEach(function(p){ p.classList.toggle('active', p.dataset.country === c); });
-        });
-        flag.addEventListener('mouseleave', function(){
-          pins.forEach(function(p){ p.classList.remove('active'); });
+    // Map view tabs (air / sea / all)
+    var tabs = document.querySelectorAll('.wm-tab');
+    var worldMapEl = document.querySelector('.world-map');
+    if(tabs.length && worldMapEl){
+      tabs.forEach(function(t){
+        t.addEventListener('click', function(){
+          var view = t.dataset.view;
+          tabs.forEach(function(x){ x.classList.toggle('active', x === t); });
+          worldMapEl.setAttribute('data-view', view);
         });
       });
-      pins.forEach(function(pin){
-        var c = pin.dataset.country;
-        pin.addEventListener('mouseenter', function(){
-          flags.forEach(function(f){ f.classList.toggle('hovered', f.dataset.c === c); });
-        });
-        pin.addEventListener('mouseleave', function(){
-          flags.forEach(function(f){ f.classList.remove('hovered'); });
-        });
-      });
+      // Vista inicial
+      worldMapEl.setAttribute('data-view', 'all');
     }
   })();
 

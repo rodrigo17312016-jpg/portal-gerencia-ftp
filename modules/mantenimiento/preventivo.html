@@ -1,0 +1,285 @@
+<!-- Panel: Mantenimiento Preventivo -->
+
+<!-- Header -->
+<div class="pm-header">
+  <div>
+    <h2 class="pm-title">🗓️ Mantenimiento Preventivo</h2>
+    <p class="pm-subtitle">Plan anual de rutinas preventivas - Cumplimiento y programacion</p>
+  </div>
+  <button class="btn btn-primary" id="btn-nueva-rutina">
+    <span>+</span> Nueva Rutina
+  </button>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid" style="margin-top:20px">
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Total Rutinas</div>
+        <div class="kpi-value" id="pm-kpi-total">—</div>
+        <div class="kpi-change">Plan vigente</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--azul-bg);color:var(--azul)">📋</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Vencidas</div>
+        <div class="kpi-value" id="pm-kpi-vencidas" style="color:var(--danger)">—</div>
+        <div class="kpi-change negative">Requieren accion</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--rose-bg);color:var(--danger)">⚠️</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Proximas 7 dias</div>
+        <div class="kpi-value" id="pm-kpi-proximas" style="color:var(--amber)">—</div>
+        <div class="kpi-change">A programar</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--amber-bg);color:var(--amber)">⏰</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="kpi-label">Cumplimiento</div>
+        <div class="kpi-value" id="pm-kpi-cumpl" style="color:var(--verde)">—</div>
+        <div class="kpi-change positive">Al dia</div>
+      </div>
+      <div class="kpi-icon" style="background:var(--verde-bg);color:var(--verde)">✅</div>
+    </div>
+  </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid charts-grid-2" style="margin-top:20px">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">📊 Rutinas por Frecuencia</div>
+        <div class="card-subtitle">Distribucion segun periodicidad</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="pm-chart-frecuencia"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🎯 Estado Actual</div>
+        <div class="card-subtitle">Programadas, proximas y vencidas</div>
+      </div>
+    </div>
+    <div class="chart-wrapper">
+      <canvas id="pm-chart-estado"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🔍 Filtros</div>
+      <div class="card-subtitle">Filtrar rutinas por frecuencia o estado</div>
+    </div>
+  </div>
+  <div class="pm-filters">
+    <div class="pm-filter-group">
+      <div class="pm-filter-label">Frecuencia</div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-pm-freq="all">Todas</button>
+        <button class="filter-chip" data-pm-freq="diaria">Diaria</button>
+        <button class="filter-chip" data-pm-freq="semanal">Semanal</button>
+        <button class="filter-chip" data-pm-freq="mensual">Mensual</button>
+        <button class="filter-chip" data-pm-freq="trimestral">Trimestral</button>
+        <button class="filter-chip" data-pm-freq="semestral">Semestral</button>
+        <button class="filter-chip" data-pm-freq="anual">Anual</button>
+      </div>
+    </div>
+    <div class="pm-filter-group">
+      <div class="pm-filter-label">Estado</div>
+      <div class="filter-bar">
+        <button class="filter-chip active" data-pm-estado="all">Todos</button>
+        <button class="filter-chip" data-pm-estado="programada">Programada</button>
+        <button class="filter-chip" data-pm-estado="proxima">Proxima</button>
+        <button class="filter-chip" data-pm-estado="vencida">Vencida</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Tabla -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📋 Rutinas Preventivas</div>
+      <div class="card-subtitle" id="pm-count-subtitle">Mostrando todas las rutinas</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Equipo</th>
+          <th>Area</th>
+          <th>Frecuencia</th>
+          <th>Descripcion</th>
+          <th style="text-align:center">Duracion (h)</th>
+          <th>Ultima</th>
+          <th>Proxima</th>
+          <th>Estado</th>
+          <th style="text-align:center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="pm-tbody">
+        <tr><td colspan="10" style="text-align:center;color:var(--muted)">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Modal Ejecutar -->
+<div class="pm-modal-backdrop" id="pm-modal-backdrop">
+  <div class="pm-modal">
+    <div class="pm-modal-header">
+      <div>
+        <div class="pm-modal-title">✅ Ejecutar Rutina Preventiva</div>
+        <div class="pm-modal-sub" id="pm-modal-sub">—</div>
+      </div>
+      <button class="pm-modal-close" id="pm-modal-close">×</button>
+    </div>
+    <div class="pm-modal-body">
+      <div class="pm-modal-info">
+        <div><strong>ID:</strong> <span id="pm-modal-id">—</span></div>
+        <div><strong>Frecuencia:</strong> <span id="pm-modal-freq">—</span></div>
+        <div><strong>Duracion estimada:</strong> <span id="pm-modal-dur">—</span></div>
+      </div>
+      <div class="pm-modal-checklist-title">Checklist de ejecucion</div>
+      <div class="pm-modal-checklist" id="pm-modal-checklist"></div>
+      <div class="pm-modal-notes">
+        <label for="pm-modal-obs">Observaciones</label>
+        <textarea id="pm-modal-obs" rows="3" placeholder="Notas adicionales, hallazgos, recomendaciones..."></textarea>
+      </div>
+    </div>
+    <div class="pm-modal-footer">
+      <button class="btn btn-secondary" id="pm-modal-cancel">Cancelar</button>
+      <button class="btn btn-primary" id="pm-modal-save">Guardar y Programar Proxima</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.pm-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.pm-title{font-size:24px;font-weight:900;color:var(--texto);margin:0}
+.pm-subtitle{font-size:13px;color:var(--muted);margin:4px 0 0}
+
+.pm-filters{display:flex;flex-direction:column;gap:14px}
+.pm-filter-group{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.pm-filter-label{
+  font-size:11px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;min-width:90px;
+}
+
+/* Badges de frecuencia */
+.pm-freq-badge{
+  display:inline-block;padding:3px 10px;border-radius:12px;
+  font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;
+}
+
+/* Modal */
+.pm-modal-backdrop{
+  position:fixed;inset:0;background:rgba(15,23,42,0.5);backdrop-filter:blur(4px);
+  display:none;align-items:center;justify-content:center;z-index:9999;
+  padding:20px;
+}
+.pm-modal-backdrop.open{display:flex}
+.pm-modal{
+  background:var(--surface);border-radius:var(--radius-lg);
+  border:1px solid var(--border);
+  width:100%;max-width:600px;max-height:90vh;overflow:auto;
+  box-shadow:0 20px 50px rgba(0,0,0,0.3);
+  animation:pmModalIn 0.25s ease-out;
+}
+@keyframes pmModalIn{
+  from{transform:translateY(20px) scale(0.98);opacity:0}
+  to{transform:translateY(0) scale(1);opacity:1}
+}
+.pm-modal-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:20px 24px;border-bottom:1px solid var(--border);
+}
+.pm-modal-title{font-size:18px;font-weight:800;color:var(--texto)}
+.pm-modal-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.pm-modal-close{
+  background:transparent;border:none;font-size:28px;cursor:pointer;
+  color:var(--muted);line-height:1;padding:0;
+  transition:var(--transition);
+}
+.pm-modal-close:hover{color:var(--danger)}
+.pm-modal-body{padding:20px 24px}
+.pm-modal-info{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:12px;
+  padding:14px;background:var(--surface2,rgba(0,0,0,0.02));
+  border-radius:var(--radius);margin-bottom:18px;
+  font-size:12px;color:var(--muted);
+}
+.pm-modal-info strong{color:var(--texto)}
+.pm-modal-checklist-title{
+  font-size:12px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;
+}
+.pm-modal-checklist{
+  display:flex;flex-direction:column;gap:8px;margin-bottom:18px;
+}
+.pm-check-item{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border:1px solid var(--border);
+  border-radius:10px;cursor:pointer;
+  transition:var(--transition);
+}
+.pm-check-item:hover{background:var(--surface2,rgba(0,0,0,0.02))}
+.pm-check-item input{width:18px;height:18px;cursor:pointer}
+.pm-check-item label{font-size:13px;color:var(--texto);cursor:pointer;flex:1}
+.pm-check-item.checked{background:var(--verde-bg);border-color:var(--verde)}
+
+.pm-modal-notes label{
+  display:block;font-size:12px;font-weight:800;color:var(--muted);
+  text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;
+}
+.pm-modal-notes textarea{
+  width:100%;padding:10px 12px;border-radius:10px;
+  border:1px solid var(--border);background:var(--surface);
+  color:var(--texto);font-family:inherit;font-size:13px;
+  resize:vertical;min-height:70px;
+}
+.pm-modal-notes textarea:focus{outline:none;border-color:var(--verde)}
+
+.pm-modal-footer{
+  display:flex;gap:10px;justify-content:flex-end;
+  padding:16px 24px;border-top:1px solid var(--border);
+}
+
+/* Botones accion tabla */
+.pm-btn-ejecutar{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 10px;border-radius:8px;
+  background:var(--verde-bg);color:var(--verde);
+  border:1px solid var(--verde);font-size:11px;font-weight:700;
+  cursor:pointer;transition:var(--transition);
+}
+.pm-btn-ejecutar:hover{background:var(--verde);color:#fff;transform:translateY(-1px)}
+
+@media (max-width: 700px){
+  .pm-header{flex-direction:column;align-items:stretch}
+  .pm-modal-info{grid-template-columns:1fr}
+}
+</style>

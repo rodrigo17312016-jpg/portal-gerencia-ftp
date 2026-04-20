@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Control - Mantenimiento Industrial | Frutos Tropicales Peru Export</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-deepest: #06090f;
+    --bg-darkest: #0a0f1a;
+    --bg-dark: #0f172a;
+    --bg-card: #1e293b;
+    --bg-card-elevated: #263449;
+    --border-subtle: rgba(148, 163, 184, 0.08);
+    --border-accent: rgba(148, 163, 184, 0.18);
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --text-tertiary: #64748b;
+    --green: #22c55e;
+    --green-glow: rgba(34, 197, 94, 0.4);
+    --amber: #fbbf24;
+    --amber-glow: rgba(251, 191, 36, 0.4);
+    --rose: #f87171;
+    --rose-glow: rgba(248, 113, 113, 0.4);
+    --blue: #3b82f6;
+    --blue-glow: rgba(59, 130, 246, 0.4);
+    --purple: #a78bfa;
+    --purple-glow: rgba(167, 139, 250, 0.4);
+    --cyan: #22d3ee;
+    --cyan-glow: rgba(34, 211, 238, 0.4);
+  }
+
+  html, body {
+    background: var(--bg-deepest);
+    color: var(--text-primary);
+    font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, sans-serif;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body {
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(59, 130, 246, 0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(167, 139, 250, 0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(34, 197, 94, 0.03) 0%, transparent 70%),
+      var(--bg-deepest);
+    min-height: 100vh;
+    padding: 16px;
+  }
+
+  /* ===== TOPBAR ===== */
+  .topbar {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 24px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--border-accent);
+    border-radius: 16px;
+    padding: 14px 24px;
+    margin-bottom: 14px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .brand-logo {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.5px;
+    box-shadow: 0 6px 20px rgba(34, 197, 94, 0.25), 0 0 30px rgba(34, 197, 94, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .brand-logo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .brand-name {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-primary);
+    letter-spacing: 0.2px;
+  }
+
+  .brand-sub {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  .topbar-title-wrap {
+    text-align: center;
+  }
+
+  .topbar-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    background: linear-gradient(90deg, #22c55e, #22d3ee, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .topbar-subtitle {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 2px;
+    font-weight: 600;
+  }
+
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .clock-widget {
+    text-align: right;
+    padding-right: 18px;
+    border-right: 1px solid var(--border-accent);
+  }
+
+  .clock-time {
+    font-family: 'Inter', monospace;
+    font-weight: 800;
+    font-size: 24px;
+    color: var(--text-primary);
+    letter-spacing: 1px;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+  }
+
+  .clock-date {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .status-live {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    background: rgba(34, 197, 94, 0.1);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 999px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--green-glow);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(1.2); }
+  }
+
+  .status-text {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+
+  .refresh-counter {
+    font-family: 'Inter', monospace;
+    font-size: 11px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    padding: 8px 12px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+  }
+
+  .refresh-counter span { color: var(--cyan); font-weight: 800; }
+
+  .btn-portal {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(167, 139, 250, 0.15));
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    border-radius: 10px;
+    color: var(--text-primary);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .btn-portal:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(167, 139, 250, 0.3));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+
+  /* ===== GRID LAYOUT ===== */
+  .grid-wall {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.75), rgba(15, 23, 42, 0.85));
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--border-accent);
+    border-radius: 14px;
+    padding: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.3s ease;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+
+  .card-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .card-badge {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .badge-green { background: rgba(34, 197, 94, 0.15); color: var(--green); border: 1px solid rgba(34, 197, 94, 0.3); }
+  .badge-amber { background: rgba(251, 191, 36, 0.15); color: var(--amber); border: 1px solid rgba(251, 191, 36, 0.3); }
+  .badge-rose { background: rgba(248, 113, 113, 0.15); color: var(--rose); border: 1px solid rgba(248, 113, 113, 0.3); }
+  .badge-blue { background: rgba(59, 130, 246, 0.15); color: var(--blue); border: 1px solid rgba(59, 130, 246, 0.3); }
+  .badge-purple { background: rgba(167, 139, 250, 0.15); color: var(--purple); border: 1px solid rgba(167, 139, 250, 0.3); }
+  .badge-cyan { background: rgba(34, 211, 238, 0.15); color: var(--cyan); border: 1px solid rgba(34, 211, 238, 0.3); }
+
+  /* ===== KPI CARDS ===== */
+  .kpi-row { grid-column: span 12; display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px; }
+
+  .kpi-card {
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.85), rgba(15, 23, 42, 0.95));
+    border: 1px solid var(--border-accent);
+    border-radius: 16px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .kpi-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top right, var(--glow-color, transparent), transparent 70%);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .kpi-card.glow-green { --glow-color: rgba(34, 197, 94, 0.15); }
+  .kpi-card.glow-blue { --glow-color: rgba(59, 130, 246, 0.15); }
+  .kpi-card.glow-purple { --glow-color: rgba(167, 139, 250, 0.15); }
+  .kpi-card.glow-amber { --glow-color: rgba(251, 191, 36, 0.15); }
+  .kpi-card.glow-rose { --glow-color: rgba(248, 113, 113, 0.15); }
+  .kpi-card.glow-cyan { --glow-color: rgba(34, 211, 238, 0.15); }
+
+  .kpi-card.pulse-critical {
+    animation: criticalPulse 2s infinite;
+  }
+
+  @keyframes criticalPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.5), 0 8px 30px rgba(248, 113, 113, 0.1); }
+    50% { box-shadow: 0 0 0 8px rgba(248, 113, 113, 0), 0 8px 40px rgba(248, 113, 113, 0.25); }
+  }
+
+  .kpi-label {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .kpi-value {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: -1.5px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .kpi-value.c-green { color: var(--green); text-shadow: 0 0 30px var(--green-glow); }
+  .kpi-value.c-blue { color: var(--blue); text-shadow: 0 0 30px var(--blue-glow); }
+  .kpi-value.c-purple { color: var(--purple); text-shadow: 0 0 30px var(--purple-glow); }
+  .kpi-value.c-amber { color: var(--amber); text-shadow: 0 0 30px var(--amber-glow); }
+  .kpi-value.c-rose { color: var(--rose); text-shadow: 0 0 30px var(--rose-glow); }
+  .kpi-value.c-cyan { color: var(--cyan); text-shadow: 0 0 30px var(--cyan-glow); }
+
+  .kpi-unit {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-left: 2px;
+  }
+
+  .kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .trend-up { color: var(--green); }
+  .trend-down { color: var(--rose); }
+  .trend-icon {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    font-size: 12px;
+    font-weight: 900;
+  }
+
+  .kpi-sparkline {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+    width: 70px;
+    height: 30px;
+    opacity: 0.6;
+  }
+
+  /* ===== MAIN GRID CELLS ===== */
+  .cell-trend { grid-column: span 6; min-height: 300px; }
+  .cell-map { grid-column: span 6; min-height: 300px; }
+  .cell-donut { grid-column: span 4; min-height: 320px; }
+  .cell-costs { grid-column: span 4; min-height: 320px; }
+  .cell-radar { grid-column: span 4; min-height: 320px; }
+  .cell-ticker { grid-column: span 7; min-height: 180px; }
+  .cell-techs { grid-column: span 5; min-height: 180px; }
+  .cell-orders { grid-column: span 8; min-height: 300px; }
+  .cell-upcoming { grid-column: span 4; min-height: 300px; }
+
+  .chart-wrap {
+    position: relative;
+    height: 250px;
+  }
+
+  .chart-wrap-sm {
+    position: relative;
+    height: 260px;
+  }
+
+  /* ===== AREA MAP ===== */
+  .area-map-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .area-box {
+    background: linear-gradient(135deg, rgba(15, 23, 42, 0.6), rgba(30, 41, 59, 0.4));
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+    padding: 10px;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .area-box:hover {
+    border-color: rgba(34, 211, 238, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .area-name {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .area-count {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 22px;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .area-count span {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    margin-left: 4px;
+  }
+
+  .area-progress {
+    height: 4px;
+    background: rgba(148, 163, 184, 0.1);
+    border-radius: 999px;
+    overflow: hidden;
+    margin: 8px 0;
+  }
+
+  .area-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--cyan));
+    border-radius: 999px;
+    transition: width 0.8s ease;
+  }
+
+  .area-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+
+  .area-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .dot-operativo { background: var(--green); box-shadow: 0 0 4px var(--green-glow); }
+  .dot-alerta { background: var(--amber); box-shadow: 0 0 4px var(--amber-glow); }
+  .dot-falla { background: var(--rose); box-shadow: 0 0 4px var(--rose-glow); animation: pulse 1.5s infinite; }
+
+  /* ===== TICKER ===== */
+  .ticker-wrap {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+    padding: 10px 0;
+    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.2) 10%, rgba(0,0,0,0.2) 90%, transparent);
+    border-radius: 10px;
+    margin-top: 10px;
+  }
+
+  .ticker-track {
+    display: inline-block;
+    animation: tickerScroll 45s linear infinite;
+    will-change: transform;
+  }
+
+  @keyframes tickerScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .ticker-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 16px;
+    margin: 0 6px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .ticker-item.critical {
+    border-color: rgba(248, 113, 113, 0.5);
+    background: rgba(248, 113, 113, 0.08);
+  }
+
+  .ticker-item.warning {
+    border-color: rgba(251, 191, 36, 0.5);
+    background: rgba(251, 191, 36, 0.08);
+  }
+
+  .ticker-item .t-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* ===== TECHS LIST ===== */
+  .tech-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .tech-item {
+    display: grid;
+    grid-template-columns: 38px 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    background: rgba(15, 23, 42, 0.4);
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    transition: all 0.3s ease;
+  }
+
+  .tech-item:hover {
+    border-color: rgba(34, 211, 238, 0.3);
+    background: rgba(15, 23, 42, 0.6);
+  }
+
+  .tech-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    letter-spacing: -0.5px;
+  }
+
+  .tech-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .tech-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tech-spec {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    letter-spacing: 0.5px;
+  }
+
+  .tech-bar {
+    width: 70px;
+    height: 4px;
+    background: rgba(148, 163, 184, 0.1);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 5px;
+  }
+
+  .tech-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--cyan), var(--blue));
+    border-radius: 999px;
+  }
+
+  .tech-count {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--cyan);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tech-count span {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    display: block;
+    line-height: 1;
+  }
+
+  /* ===== ORDERS TABLE ===== */
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .orders-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border-accent);
+  }
+
+  .orders-table td {
+    padding: 10px;
+    font-size: 12px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+
+  .orders-table tr:last-child td { border-bottom: none; }
+
+  .orders-table tr {
+    transition: background 0.3s ease;
+  }
+
+  .orders-table tr:hover td {
+    background: rgba(34, 211, 238, 0.04);
+  }
+
+  .order-id {
+    font-family: 'Inter', monospace;
+    font-weight: 700;
+    color: var(--cyan);
+    font-size: 11px;
+  }
+
+  .order-type {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .order-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  /* ===== UPCOMING ===== */
+  .upcoming-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .upcoming-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 12px;
+    background: rgba(15, 23, 42, 0.5);
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+
+  .upcoming-item:hover {
+    background: rgba(15, 23, 42, 0.8);
+    transform: translateX(2px);
+  }
+
+  .upcoming-item.urgent {
+    border-left-color: var(--amber);
+  }
+
+  .upcoming-item.critical {
+    border-left-color: var(--rose);
+  }
+
+  .upcoming-date {
+    text-align: center;
+    min-width: 42px;
+  }
+
+  .upcoming-day {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 800;
+    font-size: 18px;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .upcoming-mon {
+    font-size: 9px;
+    color: var(--text-tertiary);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+
+  .upcoming-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .upcoming-equip {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .upcoming-task {
+    font-size: 10px;
+    color: var(--text-tertiary);
+  }
+
+  .upcoming-hrs {
+    font-size: 10px;
+    color: var(--text-secondary);
+    font-family: 'Inter', monospace;
+    font-weight: 700;
+    padding: 3px 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border-radius: 6px;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.5), rgba(15, 23, 42, 0.8));
+    border: 1px solid var(--border-subtle);
+    border-radius: 14px;
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--text-tertiary);
+  }
+
+  .footer-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-center {
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .footer-right {
+    text-align: right;
+    font-family: 'Inter', monospace;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .footer-right span { color: var(--cyan); }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 1200px) {
+    .kpi-row { grid-template-columns: repeat(3, 1fr); }
+    .cell-trend, .cell-map { grid-column: span 12; }
+    .cell-donut, .cell-costs, .cell-radar { grid-column: span 6; }
+    .cell-ticker, .cell-techs { grid-column: span 12; }
+    .cell-orders, .cell-upcoming { grid-column: span 12; }
+  }
+
+  @media (max-width: 768px) {
+    .mobile-warn {
+      display: block;
+      padding: 40px;
+      text-align: center;
+      background: rgba(251, 191, 36, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.3);
+      border-radius: 12px;
+      margin-bottom: 20px;
+      color: var(--amber);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .kpi-row { grid-template-columns: repeat(2, 1fr); }
+    .area-map-grid { grid-template-columns: repeat(3, 1fr); }
+    .topbar { grid-template-columns: 1fr; text-align: center; gap: 12px; }
+    .topbar-right { justify-content: center; }
+  }
+
+  .mobile-warn { display: none; }
+
+  /* ===== KEYBOARD HINT ===== */
+  .kbd-hint {
+    position: fixed;
+    bottom: 16px;
+    left: 16px;
+    padding: 8px 14px;
+    background: rgba(15, 23, 42, 0.9);
+    border: 1px solid var(--border-accent);
+    border-radius: 10px;
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .kbd {
+    display: inline-block;
+    padding: 2px 7px;
+    background: var(--bg-card-elevated);
+    border: 1px solid var(--border-accent);
+    border-radius: 5px;
+    font-family: 'Inter', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  /* ===== FLOATING PORTAL BTN ===== */
+  .portal-float {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    padding: 12px 20px;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.95), rgba(167, 139, 250, 0.95));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 14px;
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+    transition: all 0.3s ease;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+
+  .portal-float:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.45);
+  }
+
+  /* SCROLLBAR STYLING */
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: var(--bg-darkest); }
+  ::-webkit-scrollbar-thumb { background: var(--bg-card-elevated); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
+
+  /* Count up animation */
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .slide-in { animation: slideIn 0.5s ease; }
+
+</style>
+</head>
+<body>
+
+<div class="mobile-warn">
+  Este dashboard esta optimizado para pantallas grandes. Mejor visto en monitor 1920x1080 o superior.
+</div>
+
+<!-- ===== TOPBAR ===== -->
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-logo">
+      <img src="../assets/images/logo.png" alt="FTP" onerror="this.parentElement.innerHTML='FTP'">
+    </div>
+    <div class="brand-text">
+      <div class="brand-name">Frutos Tropicales Peru Export</div>
+      <div class="brand-sub">Mantenimiento Industrial</div>
+    </div>
+  </div>
+  <div class="topbar-title-wrap">
+    <div class="topbar-title">CENTRO DE CONTROL — MANTENIMIENTO INDUSTRIAL</div>
+    <div class="topbar-subtitle">Monitoreo en Tiempo Real · Planta Agroindustrial</div>
+  </div>
+  <div class="topbar-right">
+    <div class="clock-widget">
+      <div class="clock-time" id="clockTime">00:00:00</div>
+      <div class="clock-date" id="clockDate">Cargando...</div>
+    </div>
+    <div class="status-live">
+      <div class="status-dot"></div>
+      <div class="status-text">Sistema Online</div>
+    </div>
+    <div class="refresh-counter">Refresh: <span id="refreshCounter">30</span>s</div>
+    <a href="../portal.html" class="btn-portal">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      Portal
+    </a>
+  </div>
+</div>
+
+<!-- ===== MAIN GRID ===== -->
+<div class="grid-wall">
+
+  <!-- KPI ROW -->
+  <div class="kpi-row">
+    <div class="kpi-card glow-green" id="kpi-disp">
+      <div class="kpi-label">Disponibilidad</div>
+      <div class="kpi-value c-green"><span id="v-disp">97.3</span><span class="kpi-unit">%</span></div>
+      <div class="kpi-trend trend-up"><span class="trend-icon">▲</span> <span id="t-disp">+0.5%</span> vs mes anterior</div>
+    </div>
+    <div class="kpi-card glow-blue">
+      <div class="kpi-label">MTTR</div>
+      <div class="kpi-value c-blue"><span id="v-mttr">2.9</span><span class="kpi-unit">h</span></div>
+      <div class="kpi-trend trend-up"><span class="trend-icon">▼</span> <span id="t-mttr">-0.3h</span> vs mes anterior</div>
+    </div>
+    <div class="kpi-card glow-purple">
+      <div class="kpi-label">MTBF</div>
+      <div class="kpi-value c-purple"><span id="v-mtbf">610</span><span class="kpi-unit">h</span></div>
+      <div class="kpi-trend trend-up"><span class="trend-icon">▲</span> <span id="t-mtbf">+50h</span> vs mes anterior</div>
+    </div>
+    <div class="kpi-card glow-green" id="kpi-oee">
+      <div class="kpi-label">OEE</div>
+      <div class="kpi-value c-green"><span id="v-oee">87.4</span><span class="kpi-unit">%</span></div>
+      <div class="kpi-trend trend-up"><span class="trend-icon">▲</span> <span id="t-oee">+1.2%</span> vs mes anterior</div>
+    </div>
+    <div class="kpi-card glow-amber">
+      <div class="kpi-label">OT Activas</div>
+      <div class="kpi-value c-amber"><span id="v-ot">14</span></div>
+      <div class="kpi-trend trend-down"><span class="trend-icon">▲</span> <span id="t-ot">+2</span> vs ayer</div>
+    </div>
+    <div class="kpi-card glow-rose" id="kpi-alertas">
+      <div class="kpi-label">Alertas Criticas</div>
+      <div class="kpi-value c-rose"><span id="v-alert">3</span></div>
+      <div class="kpi-trend trend-down"><span class="trend-icon">▲</span> <span id="t-alert">+1</span> ultimas 24h</div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div class="card cell-trend">
+    <div class="card-header">
+      <div class="card-title">Tendencia 6 Meses · MTTR / MTBF / Disponibilidad</div>
+      <div class="card-badge badge-cyan">Live</div>
+    </div>
+    <div class="chart-wrap"><canvas id="chartTrend"></canvas></div>
+  </div>
+
+  <div class="card cell-map">
+    <div class="card-header">
+      <div class="card-title">Mapa de Equipos por Area · Planta</div>
+      <div class="card-badge badge-green">40 Equipos</div>
+    </div>
+    <div class="area-map-grid" id="areaMap"></div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div class="card cell-donut">
+    <div class="card-header">
+      <div class="card-title">Tipos de Orden de Trabajo</div>
+      <div class="card-badge badge-blue">48 OT</div>
+    </div>
+    <div class="chart-wrap-sm"><canvas id="chartDonut"></canvas></div>
+  </div>
+
+  <div class="card cell-costs">
+    <div class="card-header">
+      <div class="card-title">Costos Mantenimiento · 6 Meses (USD)</div>
+      <div class="card-badge badge-purple">Stacked</div>
+    </div>
+    <div class="chart-wrap-sm"><canvas id="chartCosts"></canvas></div>
+  </div>
+
+  <div class="card cell-radar">
+    <div class="card-header">
+      <div class="card-title">Performance por Area</div>
+      <div class="card-badge badge-cyan">Radar</div>
+    </div>
+    <div class="chart-wrap-sm"><canvas id="chartRadar"></canvas></div>
+  </div>
+
+  <!-- ROW 4 -->
+  <div class="card cell-ticker">
+    <div class="card-header">
+      <div class="card-title">Ticker · Alertas y Fallas Activas</div>
+      <div class="card-badge badge-rose" id="alertBadge">Ultima Hora</div>
+    </div>
+    <div class="ticker-wrap">
+      <div class="ticker-track" id="tickerTrack"></div>
+    </div>
+  </div>
+
+  <div class="card cell-techs">
+    <div class="card-header">
+      <div class="card-title">Top Tecnicos del Mes</div>
+      <div class="card-badge badge-green">Top 5</div>
+    </div>
+    <div class="tech-list" id="techList"></div>
+  </div>
+
+  <!-- ROW 5 -->
+  <div class="card cell-orders">
+    <div class="card-header">
+      <div class="card-title">Ultimas Ordenes de Trabajo · Monitor Live</div>
+      <div class="card-badge badge-cyan">Live Feed</div>
+    </div>
+    <table class="orders-table" id="ordersTable">
+      <thead>
+        <tr>
+          <th style="width: 30px"></th>
+          <th>ID</th>
+          <th>Equipo / Area</th>
+          <th>Tipo</th>
+          <th>Tecnico</th>
+          <th>Prioridad</th>
+          <th>Estado</th>
+          <th>Tiempo</th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody"></tbody>
+    </table>
+  </div>
+
+  <div class="card cell-upcoming">
+    <div class="card-header">
+      <div class="card-title">Proximos Mantenimientos PM</div>
+      <div class="card-badge badge-amber">Planificado</div>
+    </div>
+    <div class="upcoming-list" id="upcomingList"></div>
+  </div>
+
+</div>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <div class="footer-left">
+    <div class="status-dot" style="background: var(--cyan); box-shadow: 0 0 10px var(--cyan-glow);"></div>
+    Datos actualizados en tiempo real · Portal Mantenimiento Industrial
+  </div>
+  <div class="footer-center">Frutos Tropicales Peru Export S.A.C.</div>
+  <div class="footer-right">
+    Ultima actualizacion: <span id="lastUpdate">--:--:--</span> · v2.1.0
+  </div>
+</div>
+
+<div class="kbd-hint">
+  <span><span class="kbd">ESC</span> Portal</span>
+  <span><span class="kbd">F11</span> Pantalla Completa</span>
+</div>
+
+<a href="../portal.html" class="portal-float">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+  Volver al Portal
+</a>
+
+<script>
+/* ================================================
+   DATOS EMBEBIDOS - PLANTA FRUTOS TROPICALES
+   ================================================ */
+
+const AREAS = [
+  'Recepcion', 'Acondicionado', 'Tuneles IQF', 'Empaque', 'Camaras Frio',
+  'Sala Maquinas', 'Sala Calderas', 'PTAP', 'Servicios', 'Logistica'
+];
+
+const EQUIPOS_BASE = [
+  // Recepcion
+  { id: 'RC-001', nombre: 'Mesa Volcadora MV-1', area: 'Recepcion', estado: 'operativo' },
+  { id: 'RC-002', nombre: 'Lavadora Mango LM-01', area: 'Recepcion', estado: 'operativo' },
+  { id: 'RC-003', nombre: 'Cinta Transportadora CT-RC', area: 'Recepcion', estado: 'operativo' },
+  { id: 'RC-004', nombre: 'Clasificadora Optica CO-1', area: 'Recepcion', estado: 'alerta' },
+  // Acondicionado
+  { id: 'AC-001', nombre: 'Pelador Mango PM-1', area: 'Acondicionado', estado: 'operativo' },
+  { id: 'AC-002', nombre: 'Cortador Dados CD-1', area: 'Acondicionado', estado: 'operativo' },
+  { id: 'AC-003', nombre: 'Despepitador Granada DG-1', area: 'Acondicionado', estado: 'operativo' },
+  { id: 'AC-004', nombre: 'Lavadora Arandano LA-01', area: 'Acondicionado', estado: 'alerta' },
+  // Tuneles IQF
+  { id: 'IQ-001', nombre: 'Tunel IQF-01 Mango', area: 'Tuneles IQF', estado: 'operativo' },
+  { id: 'IQ-002', nombre: 'Tunel IQF-02 Arandano', area: 'Tuneles IQF', estado: 'operativo' },
+  { id: 'IQ-003', nombre: 'Tunel IQF-03 Granada', area: 'Tuneles IQF', estado: 'falla' },
+  { id: 'IQ-004', nombre: 'Compresor Amoniaco CA-1', area: 'Tuneles IQF', estado: 'operativo' },
+  { id: 'IQ-005', nombre: 'Evaporador IQF-EV1', area: 'Tuneles IQF', estado: 'operativo' },
+  // Empaque
+  { id: 'EM-001', nombre: 'Envasadora EV-01', area: 'Empaque', estado: 'operativo' },
+  { id: 'EM-002', nombre: 'Detector Metales DM-1', area: 'Empaque', estado: 'operativo' },
+  { id: 'EM-003', nombre: 'Selladora SL-01', area: 'Empaque', estado: 'operativo' },
+  { id: 'EM-004', nombre: 'Paletizador PZ-1', area: 'Empaque', estado: 'alerta' },
+  { id: 'EM-005', nombre: 'Balanza Checkweigher CW-1', area: 'Empaque', estado: 'operativo' },
+  // Camaras Frio
+  { id: 'CF-001', nombre: 'Camara Frio CF-01', area: 'Camaras Frio', estado: 'operativo' },
+  { id: 'CF-002', nombre: 'Camara Frio CF-02', area: 'Camaras Frio', estado: 'operativo' },
+  { id: 'CF-003', nombre: 'Camara Frio CF-03', area: 'Camaras Frio', estado: 'operativo' },
+  { id: 'CF-004', nombre: 'Antecamara AC-1', area: 'Camaras Frio', estado: 'alerta' },
+  // Sala Maquinas
+  { id: 'SM-001', nombre: 'Compresor Tornillo CT-1', area: 'Sala Maquinas', estado: 'operativo' },
+  { id: 'SM-002', nombre: 'Compresor Tornillo CT-2', area: 'Sala Maquinas', estado: 'operativo' },
+  { id: 'SM-003', nombre: 'Condensador Evaporativo CE-1', area: 'Sala Maquinas', estado: 'operativo' },
+  { id: 'SM-004', nombre: 'Tanque Separador TS-1', area: 'Sala Maquinas', estado: 'falla' },
+  // Sala Calderas
+  { id: 'SC-001', nombre: 'Caldera Vapor CV-1', area: 'Sala Calderas', estado: 'operativo' },
+  { id: 'SC-002', nombre: 'Caldera Vapor CV-2', area: 'Sala Calderas', estado: 'alerta' },
+  { id: 'SC-003', nombre: 'Ablandador Agua AB-1', area: 'Sala Calderas', estado: 'operativo' },
+  // PTAP
+  { id: 'PT-001', nombre: 'Bomba PTAP BP-1', area: 'PTAP', estado: 'operativo' },
+  { id: 'PT-002', nombre: 'Filtro Multimedia FM-1', area: 'PTAP', estado: 'operativo' },
+  { id: 'PT-003', nombre: 'Sistema UV UV-1', area: 'PTAP', estado: 'operativo' },
+  { id: 'PT-004', nombre: 'Tanque Cisterna TC-1', area: 'PTAP', estado: 'operativo' },
+  // Servicios
+  { id: 'SV-001', nombre: 'Generador Emergencia GE-1', area: 'Servicios', estado: 'operativo' },
+  { id: 'SV-002', nombre: 'Transformador TR-1', area: 'Servicios', estado: 'operativo' },
+  { id: 'SV-003', nombre: 'Tablero Principal TP-1', area: 'Servicios', estado: 'alerta' },
+  { id: 'SV-004', nombre: 'Compresor Aire CA-2', area: 'Servicios', estado: 'operativo' },
+  // Logistica
+  { id: 'LG-001', nombre: 'Montacarga MC-01', area: 'Logistica', estado: 'operativo' },
+  { id: 'LG-002', nombre: 'Montacarga MC-02', area: 'Logistica', estado: 'operativo' },
+  { id: 'LG-003', nombre: 'Dock Leveler DL-1', area: 'Logistica', estado: 'operativo' }
+];
+
+const TRENDS = {
+  meses: ['Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr'],
+  mttr: [4.8, 4.2, 3.8, 3.5, 3.2, 2.9],
+  mtbf: [410, 440, 480, 520, 560, 610],
+  disponibilidad: [94.2, 95.1, 95.8, 96.2, 96.8, 97.3]
+};
+
+const COSTOS = {
+  meses: ['Nov', 'Dic', 'Ene', 'Feb', 'Mar', 'Abr'],
+  preventivo: [18500, 22000, 19800, 21200, 24500, 23100],
+  correctivo: [12400, 15800, 8900, 11200, 14500, 9800],
+  predictivo: [4200, 5100, 4800, 5500, 6200, 5800]
+};
+
+const TECNICOS = [
+  { id: 1, nombre: 'Carlos Mendoza', especialidad: 'Refrigeracion Industrial', ot: 28, color: '#22c55e' },
+  { id: 2, nombre: 'Luis Quispe', especialidad: 'Mecanica / Vibraciones', ot: 24, color: '#3b82f6' },
+  { id: 3, nombre: 'Roberto Flores', especialidad: 'Electrica / PLC', ot: 22, color: '#a78bfa' },
+  { id: 4, nombre: 'Miguel Huaman', especialidad: 'Calderas / Vapor', ot: 19, color: '#fbbf24' },
+  { id: 5, nombre: 'Jorge Paredes', especialidad: 'Neumatica / Hidraulica', ot: 17, color: '#22d3ee' },
+  { id: 6, nombre: 'Andres Ramos', especialidad: 'Instrumentacion', ot: 14, color: '#f87171' },
+  { id: 7, nombre: 'Pedro Cordova', especialidad: 'Termografia', ot: 12, color: '#ec4899' },
+  { id: 8, nombre: 'Juan Vasquez', especialidad: 'Soldadura', ot: 10, color: '#10b981' },
+  { id: 9, nombre: 'Ricardo Torres', especialidad: 'Automatizacion', ot: 9, color: '#f59e0b' },
+  { id: 10, nombre: 'Oscar Salazar', especialidad: 'General', ot: 7, color: '#6366f1' }
+];
+
+const ORDENES_BASE = [
+  { id: 'OT-2024-0487', equipo: 'Tunel IQF-03 Granada', area: 'Tuneles IQF', tipo: 'correctivo', tecnico: 'Carlos M.', prioridad: 'alta', estado: 'en-curso', tiempo: '2h 14m' },
+  { id: 'OT-2024-0486', equipo: 'Tanque Separador TS-1', area: 'Sala Maquinas', tipo: 'correctivo', tecnico: 'Luis Q.', prioridad: 'alta', estado: 'en-curso', tiempo: '1h 45m' },
+  { id: 'OT-2024-0485', equipo: 'Caldera Vapor CV-2', area: 'Sala Calderas', tipo: 'preventivo', tecnico: 'Miguel H.', prioridad: 'media', estado: 'asignada', tiempo: '00:15' },
+  { id: 'OT-2024-0484', equipo: 'Compresor Tornillo CT-1', area: 'Sala Maquinas', tipo: 'predictivo', tecnico: 'Pedro C.', prioridad: 'media', estado: 'programada', tiempo: '14:30' },
+  { id: 'OT-2024-0483', equipo: 'Paletizador PZ-1', area: 'Empaque', tipo: 'correctivo', tecnico: 'Roberto F.', prioridad: 'media', estado: 'en-curso', tiempo: '42m' },
+  { id: 'OT-2024-0482', equipo: 'Lavadora Arandano LA-01', area: 'Acondicionado', tipo: 'preventivo', tecnico: 'Jorge P.', prioridad: 'baja', estado: 'completada', tiempo: 'OK' },
+  { id: 'OT-2024-0481', equipo: 'Clasificadora Optica CO-1', area: 'Recepcion', tipo: 'preventivo', tecnico: 'Andres R.', prioridad: 'baja', estado: 'completada', tiempo: 'OK' },
+  { id: 'OT-2024-0480', equipo: 'Tablero Principal TP-1', area: 'Servicios', tipo: 'predictivo', tecnico: 'Roberto F.', prioridad: 'media', estado: 'asignada', tiempo: '09:00' },
+  { id: 'OT-2024-0479', equipo: 'Envasadora EV-01', area: 'Empaque', tipo: 'preventivo', tecnico: 'Oscar S.', prioridad: 'baja', estado: 'completada', tiempo: 'OK' },
+  { id: 'OT-2024-0478', equipo: 'Antecamara AC-1', area: 'Camaras Frio', tipo: 'correctivo', tecnico: 'Juan V.', prioridad: 'alta', estado: 'completada', tiempo: 'OK' }
+];
+
+const PROXIMOS = [
+  { dia: 20, mes: 'ABR', equipo: 'Tunel IQF-01 Mango', task: 'Limpieza evaporadores · 8h', hrs: '08:00', tipo: 'normal' },
+  { dia: 21, mes: 'ABR', equipo: 'Caldera Vapor CV-1', task: 'Inspeccion anual · Vacio', hrs: '06:00', tipo: 'urgent' },
+  { dia: 22, mes: 'ABR', equipo: 'Compresor Tornillo CT-2', task: 'Cambio aceite + filtros', hrs: '14:00', tipo: 'normal' },
+  { dia: 23, mes: 'ABR', equipo: 'Generador Emergencia GE-1', task: 'Prueba mensual carga', hrs: '10:00', tipo: 'normal' },
+  { dia: 25, mes: 'ABR', equipo: 'Tanque Separador TS-1', task: 'Reparacion + test hidro', hrs: '07:00', tipo: 'critical' },
+  { dia: 26, mes: 'ABR', equipo: 'Camara Frio CF-01', task: 'Calibracion termostatos', hrs: '09:00', tipo: 'normal' }
+];
+
+const AREA_PERF = {
+  'Refrigeracion': 92,
+  'Produccion': 88,
+  'Servicios': 95,
+  'Calderas': 86,
+  'Electrica': 90,
+  'Mecanica': 89
+};
+
+/* ================================================
+   CHART.JS - DEFAULTS DARK THEME
+   ================================================ */
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.borderColor = 'rgba(148, 163, 184, 0.08)';
+Chart.defaults.plugins.legend.labels.color = '#cbd5e1';
+Chart.defaults.plugins.legend.labels.font = { size: 11, weight: '600' };
+Chart.defaults.plugins.legend.labels.boxWidth = 10;
+Chart.defaults.plugins.legend.labels.boxHeight = 10;
+Chart.defaults.plugins.legend.labels.padding = 12;
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+
+const tooltipCfg = {
+  backgroundColor: 'rgba(15, 23, 42, 0.98)',
+  titleColor: '#e2e8f0',
+  titleFont: { weight: '700', size: 12 },
+  bodyColor: '#cbd5e1',
+  bodyFont: { size: 11, weight: '500' },
+  padding: 12,
+  borderColor: 'rgba(148, 163, 184, 0.15)',
+  borderWidth: 1,
+  cornerRadius: 8,
+  displayColors: true,
+  boxWidth: 8,
+  boxHeight: 8,
+  usePointStyle: true
+};
+
+/* ================================================
+   INICIALIZACION
+   ================================================ */
+let charts = {};
+let refreshTimer = 30;
+
+function initClock() {
+  const update = () => {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    document.getElementById('clockTime').textContent =
+      `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const dias = ['DOMINGO','LUNES','MARTES','MIERCOLES','JUEVES','VIERNES','SABADO'];
+    const meses = ['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
+    document.getElementById('clockDate').textContent =
+      `${dias[now.getDay()]} ${pad(now.getDate())} ${meses[now.getMonth()]} ${now.getFullYear()}`;
+  };
+  update();
+  setInterval(update, 1000);
+}
+
+function initRefreshCounter() {
+  setInterval(() => {
+    refreshTimer--;
+    if (refreshTimer < 0) refreshTimer = 30;
+    document.getElementById('refreshCounter').textContent = refreshTimer;
+    if (refreshTimer === 0) {
+      refreshData();
+      updateLastUpdate();
+    }
+  }, 1000);
+}
+
+function updateLastUpdate() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, '0');
+  document.getElementById('lastUpdate').innerHTML =
+    `<span>${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}</span>`;
+}
+
+/* ---- AREA MAP ---- */
+function buildAreaMap() {
+  const cont = document.getElementById('areaMap');
+  cont.innerHTML = '';
+  AREAS.forEach(area => {
+    const equipos = EQUIPOS_BASE.filter(e => e.area === area);
+    const op = equipos.filter(e => e.estado === 'operativo').length;
+    const pct = equipos.length ? Math.round(op / equipos.length * 100) : 100;
+    const dots = equipos.map(e => `<div class="area-dot dot-${e.estado}" title="${e.nombre}"></div>`).join('');
+    cont.insertAdjacentHTML('beforeend', `
+      <div class="area-box">
+        <div class="area-name">${area}</div>
+        <div class="area-count">${op}<span>/${equipos.length}</span></div>
+        <div class="area-progress">
+          <div class="area-progress-bar" style="width: ${pct}%"></div>
+        </div>
+        <div class="area-dots">${dots}</div>
+      </div>
+    `);
+  });
+}
+
+/* ---- TICKER ---- */
+function buildTicker() {
+  const track = document.getElementById('tickerTrack');
+  const alertas = EQUIPOS_BASE.filter(e => e.estado !== 'operativo');
+  const buildItems = () => alertas.map(e => {
+    const cls = e.estado === 'falla' ? 'critical' : 'warning';
+    const icon = e.estado === 'falla' ? '⚠' : '●';
+    const label = e.estado === 'falla' ? 'FALLA' : 'ALERTA';
+    const color = e.estado === 'falla' ? '#f87171' : '#fbbf24';
+    return `<span class="ticker-item ${cls}">
+      <span style="color:${color};font-size:14px">${icon}</span>
+      <span class="t-label">${label}</span>
+      <strong>${e.id}</strong> · ${e.nombre} · ${e.area}
+    </span>`;
+  }).join('');
+  track.innerHTML = buildItems() + buildItems();
+  document.getElementById('alertBadge').textContent = `${alertas.length} ACTIVAS`;
+}
+
+/* ---- TECHS ---- */
+function buildTechs() {
+  const cont = document.getElementById('techList');
+  const top5 = [...TECNICOS].sort((a,b) => b.ot - a.ot).slice(0, 5);
+  const max = top5[0].ot;
+  cont.innerHTML = top5.map(t => {
+    const initials = t.nombre.split(' ').map(w => w[0]).slice(0, 2).join('');
+    const pct = Math.round(t.ot / max * 100);
+    return `
+      <div class="tech-item">
+        <div class="tech-avatar" style="background: linear-gradient(135deg, ${t.color}, ${t.color}cc)">${initials}</div>
+        <div class="tech-info">
+          <div class="tech-name">${t.nombre}</div>
+          <div class="tech-spec">${t.especialidad}</div>
+          <div class="tech-bar"><div class="tech-bar-fill" style="width:${pct}%; background: linear-gradient(90deg, ${t.color}, ${t.color}99)"></div></div>
+        </div>
+        <div class="tech-count">${t.ot}<span>OT</span></div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* ---- ORDERS TABLE ---- */
+function buildOrders() {
+  const tbody = document.getElementById('ordersBody');
+  const stateMap = {
+    'en-curso': { color: '#22d3ee', pulse: true, label: 'En Curso' },
+    'asignada': { color: '#fbbf24', pulse: false, label: 'Asignada' },
+    'programada': { color: '#3b82f6', pulse: false, label: 'Programada' },
+    'completada': { color: '#22c55e', pulse: false, label: 'Completada' }
+  };
+  const tipoMap = {
+    'preventivo': { bg: 'rgba(34,197,94,0.15)', color: '#22c55e' },
+    'correctivo': { bg: 'rgba(248,113,113,0.15)', color: '#f87171' },
+    'predictivo': { bg: 'rgba(167,139,250,0.15)', color: '#a78bfa' }
+  };
+  const prioMap = {
+    'alta': { bg: 'rgba(248,113,113,0.15)', color: '#f87171', label: 'Alta' },
+    'media': { bg: 'rgba(251,191,36,0.15)', color: '#fbbf24', label: 'Media' },
+    'baja': { bg: 'rgba(34,197,94,0.15)', color: '#22c55e', label: 'Baja' }
+  };
+
+  tbody.innerHTML = ORDENES_BASE.slice(0, 8).map(o => {
+    const s = stateMap[o.estado];
+    const t = tipoMap[o.tipo];
+    const p = prioMap[o.prioridad];
+    const pulseCss = s.pulse ? 'animation: pulse 1.5s infinite;' : '';
+    return `
+      <tr>
+        <td><span class="order-live-dot" style="background:${s.color}; box-shadow: 0 0 8px ${s.color}66; ${pulseCss}"></span></td>
+        <td class="order-id">${o.id}</td>
+        <td>
+          <div style="font-weight:600;">${o.equipo}</div>
+          <div style="font-size:10px;color:var(--text-tertiary)">${o.area}</div>
+        </td>
+        <td><span class="order-type" style="background:${t.bg};color:${t.color}">${o.tipo}</span></td>
+        <td style="color:var(--text-secondary);font-size:11px">${o.tecnico}</td>
+        <td><span class="order-type" style="background:${p.bg};color:${p.color}">${p.label}</span></td>
+        <td><span style="color:${s.color};font-weight:600;font-size:11px">${s.label}</span></td>
+        <td style="font-family: 'Inter', monospace; font-weight:700;color:var(--text-secondary)">${o.tiempo}</td>
+      </tr>
+    `;
+  }).join('');
+}
+
+/* ---- UPCOMING ---- */
+function buildUpcoming() {
+  const cont = document.getElementById('upcomingList');
+  cont.innerHTML = PROXIMOS.map(p => `
+    <div class="upcoming-item ${p.tipo === 'normal' ? '' : p.tipo}">
+      <div class="upcoming-date">
+        <div class="upcoming-day">${String(p.dia).padStart(2,'0')}</div>
+        <div class="upcoming-mon">${p.mes}</div>
+      </div>
+      <div class="upcoming-info">
+        <div class="upcoming-equip">${p.equipo}</div>
+        <div class="upcoming-task">${p.task}</div>
+      </div>
+      <div class="upcoming-hrs">${p.hrs}</div>
+    </div>
+  `).join('');
+}
+
+/* ---- CHARTS ---- */
+function buildChartTrend() {
+  const ctx = document.getElementById('chartTrend').getContext('2d');
+  charts.trend = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: TRENDS.meses,
+      datasets: [
+        {
+          label: 'MTTR (h)',
+          data: TRENDS.mttr,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59, 130, 246, 0.15)',
+          tension: 0.4,
+          borderWidth: 3,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: '#3b82f6',
+          pointBorderColor: '#0f172a',
+          pointBorderWidth: 2,
+          pointHoverRadius: 8,
+          yAxisID: 'y'
+        },
+        {
+          label: 'MTBF (h)',
+          data: TRENDS.mtbf,
+          borderColor: '#a78bfa',
+          backgroundColor: 'rgba(167, 139, 250, 0.15)',
+          tension: 0.4,
+          borderWidth: 3,
+          fill: true,
+          pointRadius: 5,
+          pointBackgroundColor: '#a78bfa',
+          pointBorderColor: '#0f172a',
+          pointBorderWidth: 2,
+          pointHoverRadius: 8,
+          yAxisID: 'y1'
+        },
+        {
+          label: 'Disponibilidad %',
+          data: TRENDS.disponibilidad,
+          borderColor: '#22c55e',
+          backgroundColor: 'rgba(34, 197, 94, 0.08)',
+          tension: 0.4,
+          borderWidth: 2,
+          borderDash: [6, 4],
+          fill: false,
+          pointRadius: 4,
+          pointBackgroundColor: '#22c55e',
+          pointBorderColor: '#0f172a',
+          pointBorderWidth: 2,
+          yAxisID: 'y2'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: { position: 'bottom', labels: { padding: 14 } },
+        tooltip: tooltipCfg
+      },
+      scales: {
+        x: {
+          grid: { color: 'rgba(148, 163, 184, 0.05)' },
+          ticks: { color: '#94a3b8', font: { weight: '700' } }
+        },
+        y: {
+          type: 'linear', position: 'left',
+          grid: { color: 'rgba(148, 163, 184, 0.07)' },
+          ticks: { color: '#3b82f6', font: { weight: '600' }, callback: v => v + 'h' },
+          title: { display: true, text: 'MTTR', color: '#3b82f6', font: { size: 10, weight: '700' } }
+        },
+        y1: {
+          type: 'linear', position: 'right',
+          grid: { display: false },
+          ticks: { color: '#a78bfa', font: { weight: '600' }, callback: v => v + 'h' },
+          title: { display: true, text: 'MTBF', color: '#a78bfa', font: { size: 10, weight: '700' } }
+        },
+        y2: { display: false, min: 90, max: 100 }
+      },
+      animation: { duration: 1200, easing: 'easeOutQuart' }
+    }
+  });
+}
+
+function buildChartDonut() {
+  const ctx = document.getElementById('chartDonut').getContext('2d');
+  const datos = { preventivo: 28, correctivo: 14, predictivo: 6 };
+  charts.donut = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Preventivo', 'Correctivo', 'Predictivo'],
+      datasets: [{
+        data: [datos.preventivo, datos.correctivo, datos.predictivo],
+        backgroundColor: ['#22c55e', '#f87171', '#a78bfa'],
+        borderColor: '#0f172a',
+        borderWidth: 4,
+        hoverOffset: 12
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          ...tooltipCfg,
+          callbacks: {
+            label: ctx => {
+              const total = ctx.dataset.data.reduce((a,b) => a+b, 0);
+              const pct = ((ctx.raw / total) * 100).toFixed(1);
+              return `${ctx.label}: ${ctx.raw} OT (${pct}%)`;
+            }
+          }
+        },
+        datalabels: {
+          color: '#fff',
+          font: { weight: '800', size: 14, family: "'Plus Jakarta Sans'" },
+          formatter: (v, ctx) => {
+            const total = ctx.dataset.data.reduce((a,b) => a+b, 0);
+            const pct = ((v / total) * 100).toFixed(0);
+            return pct + '%';
+          }
+        }
+      },
+      animation: { animateRotate: true, animateScale: true, duration: 1200 }
+    },
+    plugins: [ChartDataLabels]
+  });
+}
+
+function buildChartCosts() {
+  const ctx = document.getElementById('chartCosts').getContext('2d');
+  charts.costs = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: COSTOS.meses,
+      datasets: [
+        {
+          label: 'Preventivo',
+          data: COSTOS.preventivo,
+          backgroundColor: 'rgba(34, 197, 94, 0.85)',
+          borderRadius: 4,
+          stack: 'c'
+        },
+        {
+          label: 'Correctivo',
+          data: COSTOS.correctivo,
+          backgroundColor: 'rgba(248, 113, 113, 0.85)',
+          borderRadius: 4,
+          stack: 'c'
+        },
+        {
+          label: 'Predictivo',
+          data: COSTOS.predictivo,
+          backgroundColor: 'rgba(167, 139, 250, 0.85)',
+          borderRadius: 4,
+          stack: 'c'
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          ...tooltipCfg,
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: $${ctx.raw.toLocaleString()}`
+          }
+        },
+        datalabels: { display: false }
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false }, ticks: { font: { weight: '700' } } },
+        y: {
+          stacked: true,
+          grid: { color: 'rgba(148, 163, 184, 0.07)' },
+          ticks: {
+            callback: v => '$' + (v/1000) + 'k',
+            font: { weight: '600' }
+          }
+        }
+      },
+      animation: { duration: 1200, easing: 'easeOutQuart' }
+    }
+  });
+}
+
+function buildChartRadar() {
+  const ctx = document.getElementById('chartRadar').getContext('2d');
+  charts.radar = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: Object.keys(AREA_PERF),
+      datasets: [{
+        label: 'Performance %',
+        data: Object.values(AREA_PERF),
+        borderColor: '#22d3ee',
+        backgroundColor: 'rgba(34, 211, 238, 0.22)',
+        pointBackgroundColor: '#22d3ee',
+        pointBorderColor: '#0f172a',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: '#22d3ee',
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        borderWidth: 2.5
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: tooltipCfg,
+        datalabels: { display: false }
+      },
+      scales: {
+        r: {
+          beginAtZero: true,
+          min: 60,
+          max: 100,
+          ticks: {
+            color: '#64748b',
+            backdropColor: 'transparent',
+            font: { size: 9, weight: '600' },
+            stepSize: 10
+          },
+          grid: { color: 'rgba(148, 163, 184, 0.12)' },
+          angleLines: { color: 'rgba(148, 163, 184, 0.08)' },
+          pointLabels: {
+            color: '#cbd5e1',
+            font: { size: 10, weight: '700', family: "'Plus Jakarta Sans'" }
+          }
+        }
+      },
+      animation: { duration: 1400, easing: 'easeOutQuart' }
+    }
+  });
+}
+
+/* ---- REFRESH ---- */
+function randVar(val, pctRange) {
+  const delta = val * (pctRange / 100);
+  return val + (Math.random() * delta * 2 - delta);
+}
+
+function animateValue(elId, newVal, decimals = 1) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  const current = parseFloat(el.textContent) || 0;
+  const steps = 20;
+  let step = 0;
+  const diff = newVal - current;
+  const tick = setInterval(() => {
+    step++;
+    const v = current + (diff * step / steps);
+    el.textContent = v.toFixed(decimals);
+    if (step >= steps) { el.textContent = newVal.toFixed(decimals); clearInterval(tick); }
+  }, 30);
+}
+
+function refreshData() {
+  const newDisp = Math.min(99.5, Math.max(94, randVar(97.3, 0.8)));
+  const newMttr = Math.max(2.2, randVar(2.9, 4));
+  const newMtbf = Math.round(Math.max(520, randVar(610, 3)));
+  const newOee = Math.min(95, Math.max(82, randVar(87.4, 1.5)));
+  const newOt = Math.max(8, Math.round(randVar(14, 20)));
+  const newAlert = Math.max(0, Math.round(randVar(3, 30)));
+
+  animateValue('v-disp', newDisp, 1);
+  animateValue('v-mttr', newMttr, 1);
+  document.getElementById('v-mtbf').textContent = newMtbf;
+  animateValue('v-oee', newOee, 1);
+  document.getElementById('v-ot').textContent = newOt;
+  document.getElementById('v-alert').textContent = newAlert;
+
+  // pulso critico
+  const kpiAlert = document.getElementById('kpi-alertas');
+  const kpiOee = document.getElementById('kpi-oee');
+  if (newAlert > 0) kpiAlert.classList.add('pulse-critical');
+  else kpiAlert.classList.remove('pulse-critical');
+  if (newOee < 85) kpiOee.classList.add('pulse-critical');
+  else kpiOee.classList.remove('pulse-critical');
+
+  // actualizar charts (leve variacion)
+  if (charts.trend) {
+    const arr = charts.trend.data.datasets[2].data;
+    arr[arr.length - 1] = parseFloat(newDisp.toFixed(1));
+    charts.trend.data.datasets[0].data[5] = parseFloat(newMttr.toFixed(1));
+    charts.trend.data.datasets[1].data[5] = newMtbf;
+    charts.trend.update('none');
+  }
+}
+
+/* ---- KEYBOARD ---- */
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    window.location.href = '../portal.html';
+  }
+});
+
+/* ---- INIT ---- */
+window.addEventListener('DOMContentLoaded', () => {
+  initClock();
+  initRefreshCounter();
+  buildAreaMap();
+  buildTicker();
+  buildTechs();
+  buildOrders();
+  buildUpcoming();
+  buildChartTrend();
+  buildChartDonut();
+  buildChartCosts();
+  buildChartRadar();
+  updateLastUpdate();
+
+  // Critical pulse inicial si hay alertas
+  const initialAlert = parseInt(document.getElementById('v-alert').textContent);
+  if (initialAlert > 0) {
+    document.getElementById('kpi-alertas').classList.add('pulse-critical');
+  }
+});
+</script>
+
+</body>
+</html>

@@ -50,9 +50,28 @@
       ]
     },
     {
+      "label": "Mantenimiento",
+      "icon": "wrench",
+      "roles": ["admin", "mantenimiento"],
+      "items": [
+        { "id": "resumen-mant", "label": "Resumen Mantenimiento", "icon": "\uD83C\uDFE0", "module": "mantenimiento/resumen" },
+        { "id": "equipos", "label": "Equipos & Activos", "icon": "\uD83D\uDD27", "module": "mantenimiento/equipos" },
+        { "id": "ordenes-trabajo", "label": "Ordenes de Trabajo", "icon": "\uD83D\uDCCB", "module": "mantenimiento/ordenes" },
+        { "id": "preventivo", "label": "Preventivo", "icon": "\uD83D\uDDD3\uFE0F", "module": "mantenimiento/preventivo" },
+        { "id": "correctivo", "label": "Correctivo", "icon": "\uD83D\uDD28", "module": "mantenimiento/correctivo" },
+        { "id": "predictivo", "label": "Predictivo", "icon": "\uD83D\uDCE1", "module": "mantenimiento/predictivo" },
+        { "id": "repuestos", "label": "Repuestos", "icon": "\u2699\uFE0F", "module": "mantenimiento/repuestos" },
+        { "id": "tecnicos-mant", "label": "Tecnicos", "icon": "\uD83D\uDC77", "module": "mantenimiento/tecnicos" },
+        { "id": "calendario-mant", "label": "Calendario", "icon": "\uD83D\uDCC5", "module": "mantenimiento/calendario" },
+        { "id": "lubricacion", "label": "Lubricacion", "icon": "\uD83D\uDEE2\uFE0F", "module": "mantenimiento/lubricacion" },
+        { "id": "indicadores-mant", "label": "Indicadores KPI", "icon": "\uD83D\uDCC8", "module": "mantenimiento/indicadores" },
+        { "id": "costos-mant", "label": "Costos Mantto", "icon": "\uD83D\uDCB0", "module": "mantenimiento/costos" }
+      ]
+    },
+    {
       "label": "Almacen",
       "icon": "warehouse",
-      "roles": ["admin", "produccion", "calidad"],
+      "roles": ["admin", "produccion", "calidad", "mantenimiento"],
       "items": [
         { "id": "stock-general", "label": "Stock General", "icon": "\uD83D\uDCE6", "module": "almacen/stock-general" },
         { "id": "materiales", "label": "Materiales", "icon": "\uD83D\uDDC3\uFE0F", "module": "almacen/materiales" },

@@ -1,0 +1,191 @@
+<div class="panel-header">
+  <div class="panel-header-left">
+    <h1 class="panel-title">💰 Análisis de Costos</h1>
+    <p class="panel-subtitle">Control presupuestal y detalle de gastos de mantenimiento</p>
+  </div>
+  <div class="panel-header-right" style="display:flex;gap:10px;align-items:center">
+    <select id="costo-periodo" class="btn btn-secondary" style="padding:8px 12px">
+      <option value="mes" selected>📅 Mes</option>
+      <option value="trimestre">📊 Trimestre</option>
+      <option value="anio">🗓️ Año</option>
+    </select>
+    <button id="btn-exportar" class="btn btn-primary">📥 Exportar Reporte</button>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="kpi-grid" style="margin-top:16px">
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:rgba(37,99,235,.12);color:var(--azul)">💵</div>
+    <div>
+      <div class="kpi-label">Presupuesto Mes</div>
+      <div class="kpi-value" id="kpi-presupuesto">S/ 0</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px">Asignado</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:rgba(234,88,12,.12);color:var(--naranja)">💸</div>
+    <div>
+      <div class="kpi-label">Gasto Mes</div>
+      <div class="kpi-value" id="kpi-gasto">S/ 0</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px" id="kpi-gasto-sub">Ejecutado</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" id="kpi-var-icon" style="background:rgba(22,163,74,.12);color:var(--verde)">📊</div>
+    <div>
+      <div class="kpi-label">Variación %</div>
+      <div class="kpi-value" id="kpi-variacion">0%</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px" id="kpi-variacion-sub">vs presupuesto</div>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon" style="background:rgba(124,58,237,.12);color:var(--purple)">🧾</div>
+    <div>
+      <div class="kpi-label">Costo por OT</div>
+      <div class="kpi-value" id="kpi-costo-ot">S/ 0</div>
+      <div class="kpi-sub" style="color:var(--muted);font-size:12px">Promedio ejecutado</div>
+    </div>
+  </div>
+</div>
+
+<!-- Presupuesto vs Gasto -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📊 Presupuesto vs Gasto por Mes</div>
+      <div class="card-subtitle">Comparación mensual con indicador visual de variación</div>
+    </div>
+    <div id="presup-variacion-badge"></div>
+  </div>
+  <div class="chart-wrapper" style="height:340px">
+    <canvas id="chart-presup-gasto"></canvas>
+  </div>
+</div>
+
+<!-- Row charts -->
+<div class="charts-grid-2" style="margin-top:20px">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🏭 Costo por Área</div>
+        <div class="card-subtitle">Ranking de áreas por gasto acumulado</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:320px">
+      <canvas id="chart-costo-area"></canvas>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">🔧 Distribución por Tipo</div>
+        <div class="card-subtitle">Preventivo vs Correctivo vs Predictivo</div>
+      </div>
+    </div>
+    <div class="chart-wrapper" style="height:320px">
+      <canvas id="chart-costo-tipo"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- Evolucion 6 meses stacked -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">📈 Evolución de Costos - Últimos 6 Meses</div>
+      <div class="card-subtitle">Stacked area: Preventivo, Correctivo y Predictivo</div>
+    </div>
+  </div>
+  <div class="chart-wrapper" style="height:340px">
+    <canvas id="chart-costo-evolucion"></canvas>
+  </div>
+</div>
+
+<!-- Top 10 equipos -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">🏆 Top 10 Equipos por Costo</div>
+      <div class="card-subtitle">Ranking de equipos más costosos del periodo</div>
+    </div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Equipo</th>
+          <th>Área</th>
+          <th># OT</th>
+          <th>Costo Total</th>
+          <th>S/ / Hora Op.</th>
+          <th>% del Total</th>
+          <th>Distribución</th>
+        </tr>
+      </thead>
+      <tbody id="tbl-top-equipos"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Oportunidades de ahorro -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">💡 Oportunidades de Ahorro</div>
+      <div class="card-subtitle">Recomendaciones automáticas basadas en análisis de outliers</div>
+    </div>
+  </div>
+  <div id="oportunidades-grid" class="oport-grid"></div>
+</div>
+
+<style>
+  .oport-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    padding: 4px;
+  }
+  .oport-card {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: var(--radius);
+    transition: transform .2s ease;
+  }
+  .oport-card:hover { transform: translateY(-1px); }
+  .oport-card.high { border-left-color: var(--rose); }
+  .oport-card.medium { border-left-color: var(--amber); }
+  .oport-card.info { border-left-color: var(--azul); }
+  .oport-icon { font-size: 26px; flex-shrink: 0; }
+  .oport-title { font-weight: 800; color: var(--texto); margin-bottom: 4px; }
+  .oport-desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  .oport-ahorro {
+    margin-top: 8px; padding: 4px 10px;
+    background: rgba(22,163,74,.12); color: var(--verde);
+    border-radius: 999px; font-size: 12px; font-weight: 800;
+    display: inline-block;
+  }
+  .mini-dist {
+    display: flex; height: 8px; border-radius: 4px;
+    overflow: hidden; background: var(--surface3);
+    min-width: 120px;
+  }
+  .mini-dist-seg { height: 100%; }
+  .mini-dist-seg.prev { background: var(--verde); }
+  .mini-dist-seg.corr { background: var(--rose); }
+  .mini-dist-seg.pred { background: var(--purple); }
+
+  .var-positiva { color: var(--verde) !important; }
+  .var-negativa { color: var(--rose) !important; }
+
+  .badge-var {
+    padding: 6px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 800;
+  }
+  .badge-var.positiva { background: rgba(22,163,74,.15); color: var(--verde); }
+  .badge-var.negativa { background: rgba(225,29,72,.15); color: var(--rose); }
+</style>

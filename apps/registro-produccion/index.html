@@ -923,13 +923,11 @@ body {
 
   <!-- CHART FILTERS -->
   <div class="card" style="padding:14px 18px;margin-bottom:12px">
-    <!-- FILA 1: MODO DE VISTA + LIMPIAR -->
+    <!-- FILA 1: MODO DE VISTA -->
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--border)">
       <span style="font-size:12px;font-weight:800;color:var(--muted);margin-right:4px">MODO:</span>
       <button class="chart-filter-chip active" data-filter="modo" data-value="CONSOLIDADO" onclick="toggleChartFilter(this)">📊 Consolidado</button>
       <button class="chart-filter-chip" data-filter="modo" data-value="POR_FRUTA" onclick="toggleChartFilter(this)">🍎 Separado por Fruta</button>
-      <div style="flex:1"></div>
-      <button class="chart-filter-chip" onclick="limpiarFiltrosGraficos()" style="background:rgba(239,68,68,0.1);border-color:rgba(239,68,68,0.35);color:#ef4444;font-weight:800" title="Reinicia los filtros para empezar con una nueva fruta o turno">🧹 Limpiar Todo</button>
     </div>
     <!-- FILA 2: TURNO Y FRUTA -->
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -2250,20 +2248,6 @@ function aplicarModoVista() {
   }
 }
 
-// Limpia los filtros (turno + fruta) dejando MODO como está. Permite preparar la vista
-// para la siguiente fruta del siguiente turno.
-function limpiarFiltrosGraficos() {
-  chartFilterTurno = 'AMBOS';
-  chartFilterFruta = 'TODAS';
-  document.querySelectorAll('.chart-filter-chip[data-filter="turno"]').forEach(b => {
-    b.classList.toggle('active', b.dataset.value === 'AMBOS');
-  });
-  document.querySelectorAll('.chart-filter-chip[data-filter="fruta"]').forEach(b => {
-    b.classList.toggle('active', b.dataset.value === 'TODAS');
-  });
-  rebuildCharts();
-  showToast('Filtros reiniciados - listo para nueva fruta/turno');
-}
 
 // Objetivos de rendimiento por fruta (editables)
 const REND_OBJETIVOS = {

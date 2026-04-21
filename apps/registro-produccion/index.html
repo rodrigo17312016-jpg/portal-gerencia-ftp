@@ -450,7 +450,31 @@ body {
 
 /* ═══════════════ CHARTS ═══════════════ */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
-.chart-wrap { height: 280px; position: relative; }
+.chart-wrap { height: 320px; position: relative; }
+/* Acumulado full-width y Comparativo Turnos: más altura para datalabels del acumulado */
+#chartAcumulado, #chartTurnos { min-height: 280px; }
+
+/* ═══════════════ VISTA MOVIL FORZADA (toggle 📱) ═══════════════
+   Replica la experiencia de @media (max-width:768px) pero se activa
+   cuando el usuario fuerza Vista Movil desde el topbar. */
+[data-force-mobile="1"] .content { padding: 10px !important; max-width: 520px !important; }
+[data-force-mobile="1"] .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+[data-force-mobile="1"] .kpi-card { padding: 10px !important; }
+[data-force-mobile="1"] .kpi-value { font-size: 20px !important; }
+[data-force-mobile="1"] .kpi-label { font-size: 9px !important; }
+[data-force-mobile="1"] .kpi-icon { font-size: 18px !important; }
+[data-force-mobile="1"] .form-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+[data-force-mobile="1"] .grid-2 { grid-template-columns: 1fr !important; gap: 12px !important; }
+[data-force-mobile="1"] .chart-wrap { height: 230px !important; }
+[data-force-mobile="1"] .card { padding: 12px !important; border-radius: 12px !important; margin-bottom: 12px !important; }
+[data-force-mobile="1"] .card-title { font-size: 13px !important; }
+[data-force-mobile="1"] .data-table { font-size: 11px !important; }
+[data-force-mobile="1"] .data-table th, [data-force-mobile="1"] .data-table td { padding: 6px 8px !important; }
+[data-force-mobile="1"] .chart-filter-chip { font-size: 10px !important; padding: 4px 8px !important; }
+[data-force-mobile="1"] #chartsPorFruta > div { margin-bottom: 14px !important; padding: 12px !important; }
+[data-force-mobile="1"] .topbar-dev-signature { display: none !important; }
+[data-force-mobile="1"] .topbar-title { font-size: 15px !important; }
+[data-force-mobile="1"] .topbar-subtitle { font-size: 9px !important; }
 
 /* ═══════════════ TABLE ═══════════════ */
 .table-controls {
@@ -689,6 +713,7 @@ body {
   <div class="topbar-right">
     <div id="supabaseStatus" style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(0,0,0,0.3);cursor:help;flex-shrink:0" title="Supabase: Verificando..."></div>
     <button onclick="syncLocalToSupabase()" title="Sincronizar registros locales a Supabase" style="background:rgba(37,99,235,0.15);color:#3b82f6;border:1px solid rgba(37,99,235,0.3);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px" id="btnSync">🔄 Sync</button>
+    <button class="theme-toggle" onclick="toggleForceMobile()" title="Alternar vista Movil / Escritorio" id="mobileBtn">🖥️</button>
     <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="themeBtn">🌙</button>
     <div class="topbar-dev-signature">
       <div class="topbar-sig-label">Desarrollado por:</div>
@@ -2290,8 +2315,77 @@ function getChartTheme() {
   };
 }
 
+// Detecta si está en vista móvil (real o forzada por el usuario)
+let forceMobileView = (function(){
+  try { return localStorage.getItem('prod_force_mobile') === '1'; } catch(e) { return false; }
+})();
+function isMobileView() {
+  return forceMobileView || window.innerWidth <= 640;
+}
+
+// Aplica atributo data-force-mobile al <html> para que el CSS adapte el layout
+function aplicarAtributoMobile() {
+  if (forceMobileView) document.documentElement.setAttribute('data-force-mobile', '1');
+  else document.documentElement.removeAttribute('data-force-mobile');
+  const btn = document.getElementById('mobileBtn');
+  if (btn) {
+    btn.textContent = forceMobileView ? '📱' : '🖥️';
+    btn.title = forceMobileView ? 'Vista Móvil activa — click para volver a Escritorio' : 'Vista Escritorio — click para activar Móvil';
+  }
+}
+
+// Toggle del botón 📱/🖥️ del topbar
+function toggleForceMobile() {
+  forceMobileView = !forceMobileView;
+  try { localStorage.setItem('prod_force_mobile', forceMobileView ? '1' : '0'); } catch(e) {}
+  aplicarAtributoMobile();
+  if (typeof rebuildCharts === 'function') rebuildCharts();
+  if (typeof showToast === 'function') showToast('Vista ' + (forceMobileView ? 'Movil' : 'Escritorio') + ' activada');
+}
+
+// Rebuild de charts con debounce cuando cambia el tamaño de la ventana
+let _resizeDebounce = null;
+window.addEventListener('resize', function() {
+  clearTimeout(_resizeDebounce);
+  _resizeDebounce = setTimeout(function() {
+    if (typeof rebuildCharts === 'function') rebuildCharts();
+  }, 200);
+});
+
+// Config compartida de datalabels: evita amontonamiento con display:'auto' y clamp:true.
+// En móvil los datalabels se ocultan por defecto (el tooltip los reemplaza).
+function getDatalabelsConfig(textColor, opts) {
+  opts = opts || {};
+  const mobile = isMobileView();
+  return {
+    display: mobile ? false : (opts.display || 'auto'),
+    clamp: true,
+    clip: false,
+    anchor: opts.anchor || 'end',
+    align: opts.align || 'top',
+    offset: opts.offset != null ? opts.offset : 2,
+    color: opts.color || textColor,
+    font: { size: opts.size || 9, weight: '700', family: 'Plus Jakarta Sans' },
+    formatter: opts.formatter || function(v) { return v > 0 ? v.toLocaleString('es-PE') : ''; }
+  };
+}
+
+// Config común de opciones responsivas para móvil vs desktop
+function getResponsiveTicks(textColor) {
+  const mobile = isMobileView();
+  return {
+    color: textColor,
+    font: { size: mobile ? 9 : 10 },
+    maxRotation: mobile ? 60 : 0,
+    minRotation: 0,
+    autoSkip: true,
+    autoSkipPadding: mobile ? 6 : 4
+  };
+}
+
 // ── Gráfico: Consumo vs PT por Hora ──
 function buildChartBarras(ctx, sorted, labels, theme) {
+  const mobile = isMobileView();
   const barBgConsumo = sorted.map(r => getFrutaColor(r.fruta).main + 'B3');
   const barBorderConsumo = sorted.map(r => getFrutaColor(r.fruta).main);
   const barBgPT = sorted.map(r => r.turno === 'NOCHE' ? 'rgba(139,92,246,0.55)' : 'rgba(37,99,235,0.55)');
@@ -2301,19 +2395,17 @@ function buildChartBarras(ctx, sorted, labels, theme) {
     data: {
       labels: labels,
       datasets: [
-        { label: 'Consumo MP (kg)', data: sorted.map(r => r.consumo_kg), backgroundColor: barBgConsumo, borderColor: barBorderConsumo, borderWidth: 1, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.8 },
-        { label: 'P. Terminado (kg)', data: sorted.map(r => r.pt_aprox_kg), backgroundColor: barBgPT, borderColor: barBorderPT, borderWidth: 1, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.8 }
+        { label: 'Consumo MP (kg)', data: sorted.map(r => r.consumo_kg), backgroundColor: barBgConsumo, borderColor: barBorderConsumo, borderWidth: 1, borderRadius: 6, barPercentage: 0.72, categoryPercentage: 0.82 },
+        { label: 'P. Terminado (kg)', data: sorted.map(r => r.pt_aprox_kg), backgroundColor: barBgPT, borderColor: barBorderPT, borderWidth: 1, borderRadius: 6, barPercentage: 0.72, categoryPercentage: 0.82 }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 18 } },
       plugins: {
-        legend: { labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
-        datalabels: {
-          anchor: 'end', align: 'top', color: theme.textColor, font: { size: 9, weight: '700', family: 'Plus Jakarta Sans' },
-          formatter: function(v) { return v > 0 ? v.toLocaleString('es-PE') : ''; }
-        },
+        legend: { position: mobile ? 'bottom' : 'top', labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: mobile ? 10 : 11 }, boxWidth: mobile ? 10 : 14, padding: mobile ? 8 : 12 } },
+        datalabels: getDatalabelsConfig(theme.textColor, { size: 8, offset: 3 }),
         tooltip: {
           callbacks: {
             title: function(items) { const r = sorted[items[0].dataIndex]; return r.hora + ' — ' + r.fruta + ' (' + r.turno + ')'; }
@@ -2321,8 +2413,8 @@ function buildChartBarras(ctx, sorted, labels, theme) {
         }
       },
       scales: {
-        x: { ticks: { color: function(c) { const r = sorted[c.index]; return r && r.turno === 'NOCHE' ? '#8b5cf6' : theme.textColor; }, font: { size: 10, weight: function(c) { const r = sorted[c.index]; return r && r.turno === 'NOCHE' ? '700' : '400'; } } }, grid: { color: theme.gridColor } },
-        y: { ticks: { color: theme.textColor, font: { size: 10 } }, grid: { color: theme.gridColor }, beginAtZero: true }
+        x: { ticks: Object.assign(getResponsiveTicks(theme.textColor), { color: function(c) { const r = sorted[c.index]; return r && r.turno === 'NOCHE' ? '#8b5cf6' : theme.textColor; } }), grid: { color: theme.gridColor } },
+        y: { ticks: { color: theme.textColor, font: { size: mobile ? 9 : 10 } }, grid: { color: theme.gridColor }, beginAtZero: true }
       }
     },
     plugins: [ChartDataLabels]
@@ -2331,6 +2423,7 @@ function buildChartBarras(ctx, sorted, labels, theme) {
 
 // ── Gráfico: Productividad (kg/persona) por Hora ──
 function buildChartProductividad(ctx, sorted, labels, theme) {
+  const mobile = isMobileView();
   const prodData = sorted.map(r => { const p = r.personas || 0; return p > 0 ? parseFloat((r.consumo_kg / p).toFixed(1)) : 0; });
   const pointColors = sorted.map(r => getFrutaColor(r.fruta).main);
   const pointBorders = sorted.map(r => r.turno === 'NOCHE' ? '#8b5cf6' : '#fff');
@@ -2341,19 +2434,25 @@ function buildChartProductividad(ctx, sorted, labels, theme) {
     data: {
       labels: labels,
       datasets: [
-        { label: 'Productividad (kg/persona)', data: prodData, backgroundColor: barColorsProd, borderColor: barBordersProd, borderWidth: 1.5, borderRadius: 6, barPercentage: 0.65, categoryPercentage: 0.85, order: 2 },
-        { type: 'line', label: 'Tendencia', data: prodData, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.08)', fill: false, tension: 0.35, pointRadius: 5, pointBackgroundColor: pointColors, pointBorderColor: pointBorders, pointBorderWidth: 2, borderWidth: 2.5, order: 1 }
+        { label: 'Productividad (kg/persona)', data: prodData, backgroundColor: barColorsProd, borderColor: barBordersProd, borderWidth: 1.5, borderRadius: 6, barPercentage: 0.68, categoryPercentage: 0.85, order: 2 },
+        { type: 'line', label: 'Tendencia', data: prodData, borderColor: '#0891b2', backgroundColor: 'rgba(8,145,178,0.08)', fill: false, tension: 0.35, pointRadius: mobile ? 3 : 5, pointBackgroundColor: pointColors, pointBorderColor: pointBorders, pointBorderWidth: 2, borderWidth: 2.5, order: 1 }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },
       plugins: {
-        legend: { labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
+        legend: { position: mobile ? 'bottom' : 'top', labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: mobile ? 10 : 11 }, boxWidth: mobile ? 10 : 14, padding: mobile ? 8 : 12 } },
         datalabels: {
-          anchor: 'end', align: 'top',
+          display: mobile ? false : 'auto',
+          clamp: true,
+          clip: false,
+          anchor: 'end',
+          align: 'top',
+          offset: 4,
           color: function(c) { if (c.datasetIndex !== 0) return 'transparent'; const r = sorted[c.dataIndex]; return r ? getFrutaColor(r.fruta).main : theme.textColor; },
-          font: { weight: '800', size: 9, family: 'Plus Jakarta Sans' },
+          font: { weight: '800', size: 8, family: 'Plus Jakarta Sans' },
           formatter: function(value, c) { if (c.datasetIndex !== 0) return ''; return value > 0 ? value.toLocaleString('es-PE') + ' kg/p' : ''; }
         },
         tooltip: {
@@ -2364,8 +2463,8 @@ function buildChartProductividad(ctx, sorted, labels, theme) {
         }
       },
       scales: {
-        x: { ticks: { color: function(c) { const r = sorted[c.index]; return r && r.turno === 'NOCHE' ? '#8b5cf6' : theme.textColor; }, font: { size: 10 } }, grid: { color: theme.gridColor } },
-        y: { ticks: { color: theme.textColor, font: { size: 10 }, callback: function(v) { return v + ' kg/p'; } }, grid: { color: theme.gridColor }, beginAtZero: true, title: { display: true, text: 'kg / persona', color: theme.textColor, font: { size: 11, weight: '700' } } }
+        x: { ticks: Object.assign(getResponsiveTicks(theme.textColor), { color: function(c) { const r = sorted[c.index]; return r && r.turno === 'NOCHE' ? '#8b5cf6' : theme.textColor; } }), grid: { color: theme.gridColor } },
+        y: { ticks: { color: theme.textColor, font: { size: mobile ? 9 : 10 }, callback: function(v) { return v + ' kg/p'; } }, grid: { color: theme.gridColor }, beginAtZero: true, title: { display: !mobile, text: 'kg / persona', color: theme.textColor, font: { size: 11, weight: '700' } } }
       }
     },
     plugins: [ChartDataLabels]
@@ -2374,35 +2473,68 @@ function buildChartProductividad(ctx, sorted, labels, theme) {
 
 // ── Gráfico: Producción Acumulada por Hora ──
 function buildChartAcumulado(ctx, sorted, labels, theme, frutaColor) {
+  const mobile = isMobileView();
   const consumoPerHour = sorted.map(r => r.consumo_kg);
   let cumulative = [];
   let runningTotal = 0;
   consumoPerHour.forEach(v => { runningTotal += v; cumulative.push(runningTotal); });
   const barColor = frutaColor || '#ea580c';
   const barBg = frutaColor ? (frutaColor + 'B3') : 'rgba(234,88,12,0.7)';
+  const nPts = cumulative.length;
+  // Mostrar label solo en el último y en puntos espaciados para que no se amontonen
+  const labelStep = nPts > 12 ? 3 : nPts > 8 ? 2 : 1;
   return new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,
       datasets: [
-        { label: 'Consumo por Hora (kg)', data: consumoPerHour, backgroundColor: barBg, borderColor: barColor, borderWidth: 1, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.8, yAxisID: 'y', order: 2 },
-        { label: 'Acumulado Consumo (kg)', data: cumulative, type: 'line', borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.15)', fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#16a34a', borderWidth: 2.5, yAxisID: 'y1', order: 1 }
+        {
+          label: 'Consumo por Hora (kg)',
+          data: consumoPerHour,
+          backgroundColor: barBg, borderColor: barColor, borderWidth: 1, borderRadius: 6, barPercentage: 0.72, categoryPercentage: 0.82,
+          yAxisID: 'y', order: 2,
+          datalabels: { display: false } // No mostrar: info ya visible en gráfico 1 y en tooltip
+        },
+        {
+          label: 'Acumulado Consumo (kg)',
+          data: cumulative, type: 'line',
+          borderColor: '#16a34a', backgroundColor: 'rgba(22,163,74,0.15)', fill: true, tension: 0.3,
+          pointRadius: mobile ? 3 : 5, pointBackgroundColor: '#16a34a', borderWidth: 2.5,
+          yAxisID: 'y1', order: 1,
+          datalabels: {
+            display: function(c) {
+              if (mobile) return false;
+              // Mostrar solo último punto + cada labelStep
+              return c.dataIndex === nPts - 1 || c.dataIndex % labelStep === 0;
+            },
+            anchor: 'end', align: 'top', offset: 6, clamp: true, clip: false,
+            color: '#16a34a', backgroundColor: 'rgba(22,163,74,0.08)', borderRadius: 4, padding: { top: 2, bottom: 2, left: 5, right: 5 },
+            font: { size: 9, weight: '800', family: 'Plus Jakarta Sans' },
+            formatter: function(v) { return v > 0 ? v.toLocaleString('es-PE') : ''; }
+          }
+        }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },
       plugins: {
-        legend: { labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
-        datalabels: {
-          anchor: 'end', align: 'top', color: theme.textColor, font: { size: 9, weight: '700', family: 'Plus Jakarta Sans' },
-          formatter: function(v) { return v > 0 ? v.toLocaleString('es-PE') : ''; }
+        legend: { position: mobile ? 'bottom' : 'top', labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: mobile ? 10 : 11 }, boxWidth: mobile ? 10 : 14, padding: mobile ? 8 : 12 } },
+        datalabels: { display: false }, // Se define a nivel de dataset
+        tooltip: {
+          callbacks: {
+            label: function(item) {
+              if (item.datasetIndex === 0) return 'Consumo hora: ' + item.raw.toLocaleString('es-PE') + ' kg';
+              return 'Acumulado: ' + item.raw.toLocaleString('es-PE') + ' kg';
+            }
+          }
         }
       },
       scales: {
-        x: { ticks: { color: theme.textColor, font: { size: 10 } }, grid: { color: theme.gridColor } },
-        y: { type: 'linear', position: 'left', title: { display: true, text: 'Kg/hora', color: theme.textColor, font: { size: 11, weight: '700' } }, ticks: { color: theme.textColor, font: { size: 10 } }, grid: { color: theme.gridColor }, beginAtZero: true },
-        y1: { type: 'linear', position: 'right', title: { display: true, text: 'Acumulado (kg)', color: theme.textColor, font: { size: 11, weight: '700' } }, ticks: { color: theme.textColor, font: { size: 10 } }, grid: { drawOnChartArea: false }, beginAtZero: true }
+        x: { ticks: getResponsiveTicks(theme.textColor), grid: { color: theme.gridColor } },
+        y: { type: 'linear', position: 'left', title: { display: !mobile, text: 'Kg/hora', color: theme.textColor, font: { size: 11, weight: '700' } }, ticks: { color: theme.textColor, font: { size: mobile ? 9 : 10 } }, grid: { color: theme.gridColor }, beginAtZero: true },
+        y1: { type: 'linear', position: 'right', title: { display: !mobile, text: 'Acumulado (kg)', color: theme.textColor, font: { size: 11, weight: '700' } }, ticks: { color: theme.textColor, font: { size: mobile ? 9 : 10 } }, grid: { drawOnChartArea: false }, beginAtZero: true }
       }
     },
     plugins: [ChartDataLabels]
@@ -2437,25 +2569,27 @@ function buildChartTurnos() {
     });
   }
 
+  const mobile = isMobileView();
   chartTurnos = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: dayNames,
       datasets: [
-        { label: 'Turno Dia', data: diaData, backgroundColor: 'rgba(22,163,74,0.7)', borderColor: '#16a34a', borderWidth: 1, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.8 },
-        { label: 'Turno Noche', data: nocheData, backgroundColor: 'rgba(139,92,246,0.7)', borderColor: '#8b5cf6', borderWidth: 1, borderRadius: 6, barPercentage: 0.7, categoryPercentage: 0.8 }
+        { label: 'Turno Dia', data: diaData, backgroundColor: 'rgba(22,163,74,0.7)', borderColor: '#16a34a', borderWidth: 1, borderRadius: 6, barPercentage: 0.72, categoryPercentage: 0.82 },
+        { label: 'Turno Noche', data: nocheData, backgroundColor: 'rgba(139,92,246,0.7)', borderColor: '#8b5cf6', borderWidth: 1, borderRadius: 6, barPercentage: 0.72, categoryPercentage: 0.82 }
       ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 18 } },
       plugins: {
-        legend: { labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
-        datalabels: { anchor: 'end', align: 'top', color: theme.textColor, font: { size: 9, weight: '700', family: 'Plus Jakarta Sans' }, formatter: function(v) { return v > 0 ? v.toLocaleString('es-PE') : ''; } }
+        legend: { position: mobile ? 'bottom' : 'top', labels: { color: theme.textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: mobile ? 10 : 11 }, boxWidth: mobile ? 10 : 14, padding: mobile ? 8 : 12 } },
+        datalabels: getDatalabelsConfig(theme.textColor, { size: 9, offset: 3 })
       },
       scales: {
-        x: { ticks: { color: theme.textColor, font: { size: 10 } }, grid: { color: theme.gridColor } },
-        y: { ticks: { color: theme.textColor, font: { size: 10 } }, grid: { color: theme.gridColor }, beginAtZero: true, title: { display: true, text: 'Consumo (kg)', color: theme.textColor, font: { size: 11, weight: '700' } } }
+        x: { ticks: Object.assign(getResponsiveTicks(theme.textColor), { maxRotation: 0 }), grid: { color: theme.gridColor } },
+        y: { ticks: { color: theme.textColor, font: { size: mobile ? 9 : 10 } }, grid: { color: theme.gridColor }, beginAtZero: true, title: { display: !mobile, text: 'Consumo (kg)', color: theme.textColor, font: { size: 11, weight: '700' } } }
       }
     },
     plugins: [ChartDataLabels]
@@ -2680,6 +2814,9 @@ async function loadFromSupabase() {
 
 // ═══════════════ INIT ═══════════════
 (function init() {
+  // Aplicar estado persistido de Vista Movil
+  aplicarAtributoMobile();
+
   // Restore supervisor
   const savedSup = localStorage.getItem('prod_reg_supervisor');
   if (savedSup) document.getElementById('fSupervisor').value = savedSup;

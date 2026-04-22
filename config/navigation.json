@@ -86,16 +86,5 @@
         { "id": "rrhh", "label": "Sistema RRHH", "icon": "\uD83D\uDC65", "module": "rrhh/rrhh" }
       ]
     }
-  ],
-  "quickApps": {
-    "label": "Registros",
-    "roles": ["admin", "produccion"],
-    "items": [
-      { "id": "registro-produccion", "label": "Registro Produccion", "icon": "\uD83D\uDCDD", "path": "apps/registro-produccion/index.html" },
-      { "id": "registro-personal", "label": "Registro Personal", "icon": "\uD83D\uDC65", "path": "apps/registro-personal/index.html" },
-      { "id": "registro-costos", "label": "Registro Costos", "icon": "\uD83D\uDCB2", "path": "apps/registro-costos/index.html" },
-      { "id": "registro-tuneles", "label": "Registro Tuneles", "icon": "\u2744\uFE0F", "path": "apps/registro-tuneles/index.html" },
-      { "id": "empaque-congelado", "label": "Empaque Congelado", "icon": "\uD83D\uDCE6", "path": "apps/empaque-congelado/index.html" }
-    ]
-  }
+  ]
 }

@@ -3,7 +3,7 @@
    Data real extraida del BI corporativo (Abril 2026)
    ════════════════════════════════════════════════════════ */
 
-const IMG_BASE = '/assets/images/certificaciones/';
+const IMG_BASE = 'assets/images/certificaciones/';
 
 // Data real de certificaciones vigentes segun BI de la empresa
 const CERTIFICACIONES = [

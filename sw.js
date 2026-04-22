@@ -3,7 +3,7 @@
    Frutos Tropicales Peru Export S.A.C.
    ════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'ftp-portal-v5';
+const CACHE_NAME = 'ftp-portal-v6';
 const STATIC_ASSETS = [
   '/',
   '/portal.html',

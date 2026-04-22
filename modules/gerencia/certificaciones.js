@@ -155,10 +155,6 @@ function renderCard(cert) {
   const remaining = formatRemaining(days);
   const pct = progressPct(days);
 
-  const fruitsHTML = cert.alcance.map(f =>
-    `<span class="cert-fruit-tag">${f}</span>`
-  ).join('');
-
   const statusClass = status.key === 'ok' ? '' : (status.key === 'warn' ? 'status-warn' : 'status-danger');
 
   return `
@@ -174,21 +170,7 @@ function renderCard(cert) {
         </div>
         <div class="cert-head-info">
           <div class="cert-name">${cert.nombre}</div>
-          <div class="cert-entity">Entidad: <b>${cert.entidad}</b></div>
-        </div>
-      </div>
-
-      <div class="cert-body">
-        <div class="cert-row">
-          <div class="cert-row-label">Alcance</div>
-          <div class="cert-row-value">
-            ${cert.alcanceDescripcion ? `<div style="margin-bottom:6px;font-style:italic;color:var(--muted)">${cert.alcanceDescripcion}</div>` : ''}
-            <div class="cert-fruits">${fruitsHTML}</div>
-          </div>
-        </div>
-        <div class="cert-row">
-          <div class="cert-row-label">Resultado</div>
-          <div class="cert-row-value" style="color:#15803d;font-weight:700">✓ ${cert.resultado}</div>
+          <div class="cert-result">✓ ${cert.resultado}</div>
         </div>
       </div>
 

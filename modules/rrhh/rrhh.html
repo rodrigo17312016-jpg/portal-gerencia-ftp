@@ -1,12 +1,123 @@
-<!-- Panel: Sistema RRHH -->
+<!-- Panel: Sistema RRHH - Resumen Ejecutivo -->
+<style>
+  .rrhh-ql-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:12px; padding:16px; }
+  .rrhh-ql { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:16px 12px; background:var(--card-bg,rgba(255,255,255,0.03)); border:1px solid var(--border,rgba(148,163,184,0.15)); border-radius:var(--radius-md,10px); text-decoration:none; color:var(--texto); transition:all 0.2s ease; cursor:pointer; text-align:center; }
+  .rrhh-ql:hover { background:rgba(34,197,94,0.08); border-color:var(--verde,#22c55e); transform:translateY(-2px); box-shadow:0 4px 12px rgba(34,197,94,0.15); }
+  .rrhh-ql-icon { font-size:26px; line-height:1; }
+  .rrhh-ql-title { font-weight:700; font-size:13px; }
+  .rrhh-ql-sub { font-size:10px; color:var(--muted); }
+  .rrhh-chart-empty { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:8px; height:220px; color:var(--muted); }
+  .rrhh-chart-empty-icon { font-size:36px; opacity:0.5; }
+</style>
+
 <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:12px">
   <div>
     <h2 style="font-size:22px;font-weight:900;color:var(--texto)">👥 Sistema de <span style="color:var(--verde)">Recursos Humanos</span></h2>
-    <p style="font-size:13px;color:var(--muted);margin-top:4px">Planilla, asistencia, beneficios, liquidaciones y reportes</p>
+    <p style="font-size:13px;color:var(--muted);margin-top:4px">Planilla, asistencia, beneficios y reportes &middot; <span id="rrhhLastUpdate" style="color:var(--verde);font-weight:700">—</span></p>
   </div>
-  <a href="modules/rrhh/index.html" target="_blank" class="btn btn-sm btn-primary">🚀 Abrir en ventana completa</a>
+  <a href="modules/rrhh/index.html" target="_blank" class="btn btn-sm btn-primary" style="background:var(--verde);border:none">🚀 Abrir en ventana completa</a>
 </div>
 
-<div class="card" style="padding:0;overflow:hidden;border-radius:var(--radius-lg);height:calc(100vh - 180px);min-height:500px">
-  <iframe id="rrhh-iframe" src="modules/rrhh/index.html" style="width:100%;height:100%;border:none;border-radius:var(--radius-lg)"></iframe>
+<div class="kpi-grid">
+  <div class="kpi-card">
+    <div class="kpi-label">👥 Empleados Activos</div>
+    <div class="kpi-value" id="rrhhEmps">—</div>
+    <div class="kpi-change" id="rrhhEmpsSub" style="color:var(--muted)">—</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">🏭 Planta Huaura</div>
+    <div class="kpi-value" style="color:var(--warn,#f97316)" id="rrhhHuaura">—</div>
+    <div class="kpi-change" id="rrhhHuauraSub" style="color:var(--muted)">—</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">🏢 Planta Piura</div>
+    <div class="kpi-value" style="color:var(--azul,#2563eb)" id="rrhhPiura">—</div>
+    <div class="kpi-change" id="rrhhPiuraSub" style="color:var(--muted)">—</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">💰 Planilla Mensual</div>
+    <div class="kpi-value" style="color:var(--purple,#8b5cf6);font-size:22px" id="rrhhMensual">—</div>
+    <div class="kpi-change" id="rrhhMensualSub" style="color:var(--muted)">Régimen General</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">📅 Planilla Semanal</div>
+    <div class="kpi-value" style="color:var(--verde,#22c55e);font-size:22px" id="rrhhSemanal">—</div>
+    <div class="kpi-change" id="rrhhSemanalSub" style="color:var(--muted)">Régimen Agrario</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">⚕ EsSalud Estimado</div>
+    <div class="kpi-value" style="color:var(--rose,#ec4899);font-size:22px" id="rrhhEssalud">—</div>
+    <div class="kpi-change" style="color:var(--muted)">9% Gral / 6% Agr</div>
+  </div>
+</div>
+
+<div class="charts-grid charts-grid-2" style="margin-top:20px;margin-bottom:20px">
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">📊 Empleados por Área</div>
+    </div>
+    <div class="chart-wrapper" id="rrhhAreasWrap">
+      <canvas id="chartRrhhAreas"></canvas>
+    </div>
+  </div>
+  <div class="chart-container">
+    <div class="chart-header">
+      <div class="chart-title">⚖ Régimen Laboral</div>
+    </div>
+    <div class="chart-wrapper" id="rrhhRegimenWrap">
+      <canvas id="chartRrhhRegimen"></canvas>
+    </div>
+  </div>
+</div>
+
+<div class="card" style="margin-bottom:20px">
+  <div class="card-header">
+    <div class="card-title">⚡ Accesos Rápidos</div>
+  </div>
+  <div class="rrhh-ql-grid">
+    <a href="modules/rrhh/index.html" target="_blank" class="rrhh-ql">
+      <div class="rrhh-ql-icon">👤</div>
+      <div class="rrhh-ql-title">Empleados</div>
+      <div class="rrhh-ql-sub" id="rrhhQLEmps">—</div>
+    </a>
+    <a href="modules/rrhh/index.html" target="_blank" class="rrhh-ql">
+      <div class="rrhh-ql-icon">⏱</div>
+      <div class="rrhh-ql-title">Asistencia</div>
+      <div class="rrhh-ql-sub">Marcajes del día</div>
+    </a>
+    <a href="modules/rrhh/index.html" target="_blank" class="rrhh-ql">
+      <div class="rrhh-ql-icon">💵</div>
+      <div class="rrhh-ql-title">Planilla Mensual</div>
+      <div class="rrhh-ql-sub">Régimen General</div>
+    </a>
+    <a href="modules/rrhh/index.html" target="_blank" class="rrhh-ql">
+      <div class="rrhh-ql-icon">📆</div>
+      <div class="rrhh-ql-title">Planilla Semanal</div>
+      <div class="rrhh-ql-sub">Régimen Agrario</div>
+    </a>
+    <a href="modules/rrhh/index.html" target="_blank" class="rrhh-ql">
+      <div class="rrhh-ql-icon">💳</div>
+      <div class="rrhh-ql-title">Préstamos</div>
+      <div class="rrhh-ql-sub" id="rrhhQLLoans">—</div>
+    </a>
+    <a href="modules/rrhh/index.html" target="_blank" class="rrhh-ql">
+      <div class="rrhh-ql-icon">📑</div>
+      <div class="rrhh-ql-title">Reportes</div>
+      <div class="rrhh-ql-sub">Centro de reportes</div>
+    </a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Resumen de Composición</div>
+  </div>
+  <div class="table-container">
+    <table class="data-table">
+      <thead>
+        <tr><th>Métrica</th><th>Valor</th><th>Proporción</th></tr>
+      </thead>
+      <tbody id="rrhhResumenTabla"></tbody>
+    </table>
+  </div>
 </div>

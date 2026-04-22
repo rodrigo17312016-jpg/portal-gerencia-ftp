@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registro de Produccion — FTP Planta</title>
+<title>Registro de Acondicionado — FTP Planta</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -454,27 +454,30 @@ body {
 /* Acumulado full-width y Comparativo Turnos: más altura para datalabels del acumulado */
 #chartAcumulado, #chartTurnos { min-height: 280px; }
 
-/* ═══════════════ VISTA MOVIL FORZADA (toggle 📱) ═══════════════
-   Replica la experiencia de @media (max-width:768px) pero se activa
-   cuando el usuario fuerza Vista Movil desde el topbar. */
-[data-force-mobile="1"] .content { padding: 10px !important; max-width: 520px !important; }
-[data-force-mobile="1"] .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
-[data-force-mobile="1"] .kpi-card { padding: 10px !important; }
-[data-force-mobile="1"] .kpi-value { font-size: 20px !important; }
-[data-force-mobile="1"] .kpi-label { font-size: 9px !important; }
-[data-force-mobile="1"] .kpi-icon { font-size: 18px !important; }
-[data-force-mobile="1"] .form-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
-[data-force-mobile="1"] .grid-2 { grid-template-columns: 1fr !important; gap: 12px !important; }
-[data-force-mobile="1"] .chart-wrap { height: 230px !important; }
-[data-force-mobile="1"] .card { padding: 12px !important; border-radius: 12px !important; margin-bottom: 12px !important; }
-[data-force-mobile="1"] .card-title { font-size: 13px !important; }
-[data-force-mobile="1"] .data-table { font-size: 11px !important; }
-[data-force-mobile="1"] .data-table th, [data-force-mobile="1"] .data-table td { padding: 6px 8px !important; }
-[data-force-mobile="1"] .chart-filter-chip { font-size: 10px !important; padding: 4px 8px !important; }
-[data-force-mobile="1"] #chartsPorFruta > div { margin-bottom: 14px !important; padding: 12px !important; }
-[data-force-mobile="1"] .topbar-dev-signature { display: none !important; }
-[data-force-mobile="1"] .topbar-title { font-size: 15px !important; }
-[data-force-mobile="1"] .topbar-subtitle { font-size: 9px !important; }
+/* ═══════════════ VISTA MOVIL AUTOMATICA (<=640px) ═══════════════
+   Detecta automaticamente celular/tablet pequena y aplica layout compacto
+   optimizado: 1 columna, graficos mas bajos, tabla densa, form 2 cols. */
+@media (max-width: 640px) {
+  .content { padding: 10px !important; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px !important; }
+  .kpi-card { padding: 10px !important; }
+  .kpi-value { font-size: 20px !important; }
+  .kpi-label { font-size: 9px !important; }
+  .kpi-icon { font-size: 18px !important; }
+  .form-grid { grid-template-columns: 1fr 1fr !important; gap: 10px !important; }
+  .grid-2 { grid-template-columns: 1fr !important; gap: 12px !important; }
+  .chart-wrap { height: 230px !important; }
+  #chartAcumulado, #chartTurnos { min-height: 230px !important; }
+  .card { padding: 12px !important; border-radius: 12px !important; margin-bottom: 12px !important; }
+  .card-title { font-size: 13px !important; }
+  .data-table { font-size: 11px !important; }
+  .data-table th, .data-table td { padding: 6px 8px !important; }
+  .chart-filter-chip { font-size: 10px !important; padding: 4px 8px !important; }
+  #chartsPorFruta > div { margin-bottom: 14px !important; padding: 12px !important; }
+  .topbar-dev-signature { display: none !important; }
+  .topbar-title { font-size: 15px !important; }
+  .topbar-subtitle { font-size: 9px !important; }
+}
 
 /* ═══════════════ TABLE ═══════════════ */
 .table-controls {
@@ -707,13 +710,12 @@ body {
   <a href="../../portal.html" class="topbar-back">&larr; Portal</a>
   <img src="LOGO.png" class="dash-logo" alt="FTP Logo">
   <div class="topbar-title-wrap">
-    <div class="topbar-title">Registro de Produccion</div>
+    <div class="topbar-title">Registro de Acondicionado</div>
     <div class="topbar-subtitle">Frutos Tropicales Peru Export S.A.C.</div>
   </div>
   <div class="topbar-right">
     <div id="supabaseStatus" style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(0,0,0,0.3);cursor:help;flex-shrink:0" title="Supabase: Verificando..."></div>
     <button onclick="syncLocalToSupabase()" title="Sincronizar registros locales a Supabase" style="background:rgba(37,99,235,0.15);color:#3b82f6;border:1px solid rgba(37,99,235,0.3);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:4px" id="btnSync">🔄 Sync</button>
-    <button class="theme-toggle" onclick="toggleForceMobile()" title="Alternar vista Movil / Escritorio" id="mobileBtn">🖥️</button>
     <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="themeBtn">🌙</button>
     <div class="topbar-dev-signature">
       <div class="topbar-sig-label">Desarrollado por:</div>
@@ -1046,7 +1048,7 @@ body {
 <div id="editModal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:1000;justify-content:center;align-items:center;padding:20px">
   <div style="background:var(--surface-solid);border:1px solid var(--border);border-radius:20px;padding:28px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:modalIn 0.3s cubic-bezier(0.16,1,0.3,1)">
     <style>@keyframes modalIn{from{transform:scale(0.9) translateY(20px);opacity:0}to{transform:scale(1) translateY(0);opacity:1}}</style>
-    <div style="font-size:18px;font-weight:900;margin-bottom:20px;display:flex;align-items:center;gap:8px">🔧 Editar Registro de Produccion</div>
+    <div style="font-size:18px;font-weight:900;margin-bottom:20px;display:flex;align-items:center;gap:8px">🔧 Editar Registro de Acondicionado</div>
     <div class="form-grid" style="grid-template-columns:1fr 1fr;">
       <div class="form-group"><label>Fecha</label><input type="date" id="mFecha"></div>
       <div class="form-group"><label>Turno</label><select id="mTurno"><option value="DIA">TURNO DIA</option><option value="NOCHE">TURNO NOCHE</option></select></div>
@@ -2315,40 +2317,25 @@ function getChartTheme() {
   };
 }
 
-// Detecta si está en vista móvil (real o forzada por el usuario)
-let forceMobileView = (function(){
-  try { return localStorage.getItem('prod_force_mobile') === '1'; } catch(e) { return false; }
-})();
+// Detecta si está en vista móvil — detección automática por ancho de ventana
 function isMobileView() {
-  return forceMobileView || window.innerWidth <= 640;
+  return window.innerWidth <= 640;
 }
 
-// Aplica atributo data-force-mobile al <html> para que el CSS adapte el layout
-function aplicarAtributoMobile() {
-  if (forceMobileView) document.documentElement.setAttribute('data-force-mobile', '1');
-  else document.documentElement.removeAttribute('data-force-mobile');
-  const btn = document.getElementById('mobileBtn');
-  if (btn) {
-    btn.textContent = forceMobileView ? '📱' : '🖥️';
-    btn.title = forceMobileView ? 'Vista Móvil activa — click para volver a Escritorio' : 'Vista Escritorio — click para activar Móvil';
-  }
-}
-
-// Toggle del botón 📱/🖥️ del topbar
-function toggleForceMobile() {
-  forceMobileView = !forceMobileView;
-  try { localStorage.setItem('prod_force_mobile', forceMobileView ? '1' : '0'); } catch(e) {}
-  aplicarAtributoMobile();
-  if (typeof rebuildCharts === 'function') rebuildCharts();
-  if (typeof showToast === 'function') showToast('Vista ' + (forceMobileView ? 'Movil' : 'Escritorio') + ' activada');
-}
-
-// Rebuild de charts con debounce cuando cambia el tamaño de la ventana
+// Rebuild de charts con debounce cuando cambia el tamaño de la ventana.
+// Permite que el layout y datalabels se ajusten automaticamente cuando
+// el usuario pasa de escritorio a tableta/celular (o rota el telefono).
 let _resizeDebounce = null;
+let _lastMobileState = isMobileView();
 window.addEventListener('resize', function() {
   clearTimeout(_resizeDebounce);
   _resizeDebounce = setTimeout(function() {
-    if (typeof rebuildCharts === 'function') rebuildCharts();
+    const nowMobile = isMobileView();
+    // Solo rebuild cuando cambia el modo (evita rebuilds innecesarios)
+    if (nowMobile !== _lastMobileState) {
+      _lastMobileState = nowMobile;
+      if (typeof rebuildCharts === 'function') rebuildCharts();
+    }
   }, 200);
 });
 
@@ -2814,8 +2801,11 @@ async function loadFromSupabase() {
 
 // ═══════════════ INIT ═══════════════
 (function init() {
-  // Aplicar estado persistido de Vista Movil
-  aplicarAtributoMobile();
+  // Limpiar residuo de versiones anteriores (toggle movil manual ya eliminado)
+  try {
+    localStorage.removeItem('prod_force_mobile');
+    document.documentElement.removeAttribute('data-force-mobile');
+  } catch(e) {}
 
   // Restore supervisor
   const savedSup = localStorage.getItem('prod_reg_supervisor');

@@ -86,7 +86,7 @@
 <body>
 
   <!-- ════════════ SIDEBAR ════════════ -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Menu principal">
     <!-- Header con logo -->
     <div class="sidebar-header">
       <div class="sidebar-header-bg">
@@ -125,12 +125,12 @@
   </aside>
 
   <!-- Overlay mobile -->
-  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+  <div class="sidebar-overlay" id="sidebar-overlay" role="button" aria-label="Cerrar menu lateral" tabindex="-1"></div>
 
   <!-- ════════════ TOPBAR ════════════ -->
   <header class="topbar">
     <div class="topbar-left">
-      <button class="hamburger" id="menu-toggle">☰</button>
+      <button class="hamburger" id="menu-toggle" aria-label="Abrir menu lateral" aria-expanded="false" aria-controls="sidebar">☰</button>
       <div>
         <div class="topbar-title">Portal de Gerencia</div>
         <div class="topbar-breadcrumb" id="topbar-breadcrumb">General / Resumen Ejecutivo</div>
@@ -150,7 +150,7 @@
       </div>
 
       <!-- Theme toggle -->
-      <button class="topbar-theme" id="theme-toggle" title="Cambiar tema">🌙</button>
+      <button class="topbar-theme" id="theme-toggle" title="Cambiar tema" aria-label="Alternar modo oscuro" aria-pressed="false">🌙</button>
 
       <!-- Developer Signature -->
       <div class="topbar-dev-signature">
@@ -162,9 +162,9 @@
   </header>
 
   <!-- ════════════ MAIN CONTENT ════════════ -->
-  <main class="main" id="main-content">
+  <main class="main" id="main-content" role="main" aria-live="polite">
     <!-- Los paneles se cargan dinamicamente aqui por router.js -->
-    <div class="loading-spinner" id="initial-loader"></div>
+    <div class="loading-spinner" id="initial-loader" role="status" aria-label="Cargando panel"></div>
   </main>
 
   <!-- Entry point -->

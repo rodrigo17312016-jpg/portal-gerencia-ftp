@@ -1,18 +1,13 @@
 /* ════════════════════════════════════════════════════════
-   AUTH - Sistema dual: Supabase Auth (real) con fallback
-   a USERS[] hardcoded para transicion suave.
+   AUTH - Supabase Auth exclusivo (post Fase 9)
 
-   Comportamiento:
-   - signIn intenta primero supabase.auth.signInWithPassword
-     usando email sintetico {username}@frutos.local
-   - Si falla (user no existe en Supabase Auth), cae al sistema
-     legacy USERS[] con localStorage. Esto permite migrar sin
-     romper logins durante la transicion.
-   - La sesion Supabase es JWT firmado (no manipulable).
-     La sesion legacy es localStorage manipulable (deuda tecnica).
-
-   Para migrar 100%: una vez confirmado que todos los users
-   pueden entrar via Supabase, eliminar el fallback en doLogin().
+   - doLogin: supabase.auth.signInWithPassword con email
+     sintetico {username}@frutos-tropicales.pe
+   - JWT HS256 firmado (no manipulable)
+   - Role siempre leido de app_metadata (no user_metadata)
+   - USERS[] solo se usa para display info (nombre, iniciales)
+     cuando el JWT solo trae email. NO es fuente de autoridad.
+   - Fallback legacy ELIMINADO (hallazgo H4 auditoria externa).
    ════════════════════════════════════════════════════════ */
 
 import { USERS } from '../config/users.js';
@@ -53,30 +48,17 @@ function userFromSupabaseSession(sbSession) {
 }
 
 // ─── Sesion ───
+// Post-Fase 9: solo se usa el currentUser en memoria (cargado desde JWT supabase).
+// No hay fallback a ftp_session en localStorage (se elimina en anti-flash).
 export function getSession() {
-  // Prioridad: sesion Supabase (si esta cargada)
-  // No es async para mantener compatibilidad; usa el estado en memoria
   if (currentUser && currentUser._supabase) {
     return { user: currentUser.username, expires: Date.now() + SESSION_TIMEOUT };
   }
-  // Fallback: localStorage (sistema legacy)
-  try {
-    const data = JSON.parse(localStorage.getItem('ftp_session') || 'null');
-    if (data && data.user && data.expires > Date.now() && USERS[data.user]) {
-      return data;
-    }
-  } catch {}
   return null;
 }
 
 export function getCurrentUser() {
-  if (currentUser) return currentUser;
-  const session = getSession();
-  if (session && USERS[session.user]) {
-    currentUser = { ...USERS[session.user], username: session.user };
-    return currentUser;
-  }
-  return null;
+  return currentUser || null;
 }
 
 export function getCurrentRole() {
@@ -210,17 +192,9 @@ function startSessionTimer() {
 }
 
 export function resetSessionTimer() {
-  // Si estamos en Supabase mode, refrescamos el JWT (el SDK auto-refresca)
-  if (currentUser && currentUser._supabase) {
-    startSessionTimer();
-    return;
-  }
-  // Modo legacy
-  const session = getSession();
-  if (!session) return;
-  session.expires = Date.now() + SESSION_TIMEOUT;
-  localStorage.setItem('ftp_session', JSON.stringify(session));
-  startSessionTimer();
+  // El SDK de Supabase auto-refresca el JWT.
+  // Aqui solo reseteamos el timer de inactividad local.
+  if (currentUser) startSessionTimer();
 }
 
 // ─── Listeners de actividad (registro idempotente) ───
@@ -268,14 +242,12 @@ export async function requireAuth() {
   return false;
 }
 
-// ─── Restaurar sesion (sincrona: usa solo cache local) ───
+// ─── Restaurar sesion (sincrona: usa solo estado en memoria) ───
+// Post-Fase 9: la restauracion real se hace via requireAuth() async,
+// que consulta supabase.auth.getSession(). Este helper solo confirma
+// si ya hay un currentUser en memoria (util para guards rapidos).
 export function restoreSession() {
-  const session = getSession();
-  if (session && USERS[session.user]) {
-    currentUser = { ...USERS[session.user], username: session.user };
-    return true;
-  }
-  return false;
+  return currentUser !== null;
 }
 
 // ─── Auto-refresh de sesion Supabase ───

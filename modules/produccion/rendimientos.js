@@ -223,7 +223,6 @@ function buildCharts(container, data) {
   });
 
   charts = [c1, c2].filter(Boolean);
-  window.__activeCharts = [...(window.__activeCharts || []), ...charts];
 }
 
 function buildTable(container, data) {

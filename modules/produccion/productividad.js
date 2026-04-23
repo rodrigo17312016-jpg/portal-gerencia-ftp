@@ -264,8 +264,6 @@ function buildCharts(container, todayRecs, allRecs) {
     }
   });
   charts.push(c3);
-
-  window.__activeCharts = [...(window.__activeCharts || []), ...charts.filter(Boolean)];
 }
 
 function estimateStageEfficiency(todayRecs) {

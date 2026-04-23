@@ -211,10 +211,16 @@ function setupUIEvents() {
   const themeBtn = document.getElementById('theme-toggle');
   if (themeBtn) themeBtn.addEventListener('click', toggleTheme);
 
-  // Logout
+  // Logout — un-solo-click + feedback inmediato
   const logoutBtn = document.getElementById('logout-btn');
   if (logoutBtn) {
+    let _clicked = false;
     logoutBtn.addEventListener('click', () => {
+      if (_clicked) return;
+      _clicked = true;
+      logoutBtn.disabled = true;
+      logoutBtn.style.opacity = '0.5';
+      logoutBtn.style.pointerEvents = 'none';
       import('./core/auth.js').then(m => m.doLogout());
     });
   }

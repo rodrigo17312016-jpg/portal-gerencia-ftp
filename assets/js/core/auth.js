@@ -161,28 +161,56 @@ export async function doLogin(username, password) {
 }
 
 // ─── Logout ───
+// Previene doble-click y garantiza redirect aunque la red este caida
+let _logoutInProgress = false;
 export async function doLogout() {
+  if (_logoutInProgress) return;
+  _logoutInProgress = true;
+
   if (sessionTimer) clearTimeout(sessionTimer);
 
-  // Cerrar sesion Supabase si existe
+  // Feedback visual inmediato: el anti-flash se encarga del splash
   try {
-    await supabase.auth.signOut();
-  } catch (_) { /* noop */ }
+    document.documentElement.style.pointerEvents = 'none';
+    document.documentElement.style.opacity = '0.5';
+  } catch (e) {}
 
-  // Limpiar legacy storage
-  localStorage.removeItem('ftp_session');
-  sessionStorage.removeItem('ftp_logged_in');
+  // Fire-and-forget cleanup con timeout agresivo (2s max)
+  // Si Supabase no responde en 2s, redirigimos igual
+  const signOutPromise = Promise.race([
+    supabase.auth.signOut().catch(() => null),
+    new Promise((resolve) => setTimeout(resolve, 2000))
+  ]);
+
+  // Limpieza local SINCRONA (no espera Supabase)
+  try { localStorage.removeItem('ftp_session'); } catch (e) {}
+  try { sessionStorage.removeItem('ftp_logged_in'); } catch (e) {}
+  // Borrar tokens Supabase de localStorage explicitamente (por si signOut falla)
+  try {
+    for (let i = localStorage.length - 1; i >= 0; i--) {
+      const k = localStorage.key(i);
+      if (k && k.indexOf('sb-') === 0 && k.indexOf('-auth-token') > 0) {
+        localStorage.removeItem(k);
+      }
+    }
+  } catch (e) {}
   currentUser = null;
 
-  // Destruir charts
-  if (typeof Chart !== 'undefined') {
-    document.querySelectorAll('canvas').forEach(c => {
-      const ch = Chart.getChart(c);
-      if (ch) ch.destroy();
-    });
-  }
+  // Destruir charts (si existen) sin bloquear
+  try {
+    if (typeof Chart !== 'undefined') {
+      const canvases = document.querySelectorAll('canvas');
+      canvases.forEach(c => {
+        const ch = Chart.getChart(c);
+        if (ch) { try { ch.destroy(); } catch (e) {} }
+      });
+    }
+  } catch (e) {}
 
-  window.location.href = 'login.html';
+  // Redirect inmediato - no esperamos al signOut remote
+  // (si falla, el anti-flash de login.html detectara que no hay session)
+  signOutPromise.finally(() => { /* cleanup ya hecho */ });
+  window.location.replace('login.html');
 }
 
 // ─── Timer de inactividad ───

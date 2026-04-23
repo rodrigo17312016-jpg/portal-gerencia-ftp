@@ -82,10 +82,13 @@
       }
     }
     if (!hasSupabase) {
-      // replace() no agrega historia (evita back-button loop a portal sin sesion)
-      window.location.replace('login.html');
+      // URL absoluta calculada desde pathname para evitar ambiguedades del SW/rewrite
+      var p = window.location.pathname;
+      var i = p.lastIndexOf('/');
+      var dir = i >= 0 ? p.substring(0, i + 1) : '/';
+      window.location.replace(window.location.origin + dir + 'login.html');
     }
-  } catch(e) { window.location.replace('login.html'); }
+  } catch(e) { window.location.replace('/login.html'); }
 })();
 </script>
 </head>

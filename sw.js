@@ -3,7 +3,7 @@
    Frutos Tropicales Peru Export S.A.C.
    ════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'ftp-portal-v29';
+const CACHE_NAME = 'ftp-portal-v30';
 const STATIC_ASSETS = [
   '/',
   '/portal.html',
@@ -89,7 +89,8 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Fetch - Network first, fallback to cache
+// Fetch - Network first para navegacion (evita cache stale que rompe login/logout),
+//         cache first para assets estaticos (CSS/JS/imagenes).
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -100,7 +101,17 @@ self.addEventListener('fetch', (event) => {
   // Never cache external CDNs (fonts, chart.js, font-awesome)
   if (url.hostname !== location.hostname) return;
 
-  // For module HTML/JS files - network first (they change during dev)
+  // NAVEGACION (request.mode === 'navigate' cuando el browser pide un HTML):
+  // Network first -> si falla, cache fallback. Evita que cache stale de
+  // portal.html/login.html rompa el flujo auth tras un deploy nuevo.
+  if (request.mode === 'navigate') {
+    event.respondWith(
+      fetch(request).catch(() => caches.match(request) || caches.match('/portal.html'))
+    );
+    return;
+  }
+
+  // Module HTML/JS files - network first
   if (url.pathname.startsWith('/modules/')) {
     event.respondWith(
       fetch(request).catch(() => caches.match(request))
@@ -108,7 +119,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // For static assets - cache first, network fallback
+  // Static assets - cache first, network fallback
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) return cached;
@@ -120,7 +131,6 @@ self.addEventListener('fetch', (event) => {
         return response;
       });
     }).catch(() => {
-      // Offline fallback for navigation
       if (request.mode === 'navigate') {
         return caches.match('/portal.html');
       }

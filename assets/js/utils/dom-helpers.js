@@ -88,6 +88,47 @@ export function showConfirm(message) {
   });
 }
 
+// ── Sanitizacion XSS ──
+/**
+ * Escapa caracteres HTML peligrosos para prevenir XSS.
+ * Usar SIEMPRE al inyectar datos provenientes de Supabase, inputs de usuario,
+ * o cualquier fuente no confiable dentro de innerHTML / template literals.
+ *
+ * @example
+ * el.innerHTML = `<div>${escapeHtml(user.nombre)}</div>`;
+ *
+ * @param {*} value - Valor a escapar (se convierte a string)
+ * @returns {string} String seguro para HTML
+ */
+export function escapeHtml(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+/**
+ * Escapa para usar como valor de atributo HTML (p.ej. data-nombre="...").
+ * Mas estricto que escapeHtml: tambien escapa backtick y newlines.
+ *
+ * @param {*} value
+ * @returns {string}
+ */
+export function escapeAttr(value) {
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/`/g, '&#96;')
+    .replace(/\r?\n/g, ' ');
+}
+
 // ── Helpers DOM ──
 export function $(selector, parent = document) {
   return parent.querySelector(selector);

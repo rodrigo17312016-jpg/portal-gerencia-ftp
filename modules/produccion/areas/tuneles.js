@@ -6,6 +6,7 @@
 import { supabase } from '../../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today, fmtDateLong } from '../../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../../assets/js/utils/chart-helpers.js';
+import { subscribeToTable, createLiveIndicator } from '../../../assets/js/utils/realtime-helpers.js';
 import { escapeHtml } from '../../../assets/js/utils/dom-helpers.js';
 
 let allData = [];
@@ -13,6 +14,8 @@ let activeFilters = { tunel: 'TODOS', estado: 'TODOS' };
 let refreshInterval = null;
 let timerInterval = null;
 let activeProcesos = {}; // { tunel: { inicio: Date, record: {} } }
+let realtimeSub = null;
+let liveIndicator = null;
 
 const META_CICLOS = 12;
 const CAPACIDAD_CICLO_KG = 1500;
@@ -83,6 +86,24 @@ export async function init(container) {
   // Timer tick cada segundo para ciclos activos
   if (timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(() => updateTimers(container), 1000);
+
+  // Realtime: reaccionar a cambios en registro_tuneles
+  if (!realtimeSub) {
+    realtimeSub = subscribeToTable('registro_tuneles', (payload) => {
+      if (liveIndicator && liveIndicator.flash) liveIndicator.flash();
+      // Re-cargar datos cuando haya cambios
+      if (document.getElementById('panel-tuneles')) loadData(container);
+    });
+  }
+
+  // Agregar indicador Live al header si existe
+  if (!liveIndicator) {
+    const headerActions = container.querySelector('.area-header-actions') || container.querySelector('.area-header > div:last-child');
+    if (headerActions) {
+      liveIndicator = createLiveIndicator();
+      headerActions.insertBefore(liveIndicator, headerActions.firstChild);
+    }
+  }
 }
 
 // ─── Load data ───
@@ -408,6 +429,7 @@ export function refresh() {
 export function destroy() {
   if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
   if (timerInterval)   { clearInterval(timerInterval);   timerInterval = null; }
+  if (realtimeSub)     { realtimeSub.unsubscribe(); realtimeSub = null; }
   activeProcesos = {};
 }
 
@@ -415,6 +437,7 @@ export function destroy() {
 export function onHide() {
   if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
   if (timerInterval)   { clearInterval(timerInterval);   timerInterval = null; }
+  if (realtimeSub)     { realtimeSub.unsubscribe(); realtimeSub = null; }
 }
 
 // Reanudar al volver a mostrar

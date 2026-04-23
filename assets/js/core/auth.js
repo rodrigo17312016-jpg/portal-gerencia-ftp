@@ -92,6 +92,39 @@ export function hasAccess(panelId) {
   return permissions[role].panels.includes(panelId);
 }
 
+/**
+ * Verifica si el usuario puede ejecutar una accion sobre un recurso.
+ *
+ * @param {'view'|'edit'|'delete'|'export'|'config'} action
+ * @param {string} [resource] - Nombre del recurso (ej: 'registro_produccion').
+ *        Si no se pasa, chequea solo si tiene la accion en general.
+ * @returns {boolean}
+ *
+ * @example
+ * hasAction('edit', 'registro_produccion')   // true si rol puede editar esa tabla
+ * hasAction('delete')                        // true si rol puede borrar algo
+ * hasAction('export')                        // true si rol puede exportar
+ */
+export function hasAction(action, resource) {
+  const role = getCurrentRole();
+  if (!role) return false;
+  if (role === 'admin') return true;
+
+  const permissions = getPermissions();
+  if (!permissions[role]) return false;
+
+  const actions = permissions[role].actions;
+  if (!actions) return false;             // rol sin actions definidas
+  if (actions === '*') return true;        // rol con todos los actions
+
+  const allowed = actions[action];
+  if (allowed === undefined || allowed === null) return false;
+  if (allowed === '*') return true;
+  if (!Array.isArray(allowed)) return false;
+  if (!resource) return allowed.length > 0; // "puede hacer X en general"
+  return allowed.includes(resource);
+}
+
 let _permissions = null;
 function getPermissions() {
   if (_permissions) return _permissions;

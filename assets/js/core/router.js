@@ -7,7 +7,7 @@ import { destroyChartsIn } from '../utils/chart-helpers.js';
 
 // Version estatica del build - bump manualmente cuando se despliega
 // cambio a modulos. Esto permite al SW cachear correctamente.
-const BUILD_VERSION = '18';
+const BUILD_VERSION = '19';
 
 // Detectar base path (funciona en localhost Y GitHub Pages)
 function getBasePath() {
@@ -148,6 +148,7 @@ function updateBreadcrumb(panelId) {
     'resumen': 'General / Resumen Ejecutivo',
     'certificaciones': 'General / Certificaciones',
     'audit': 'General / Audit Log',
+    'seguridad': 'General / Seguridad',
     'indicadores': 'Produccion / Indicadores',
     'produccion-dia': 'Produccion / Produccion del Dia',
     'rendimientos': 'Produccion / Rendimientos',

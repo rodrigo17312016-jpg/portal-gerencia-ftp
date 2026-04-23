@@ -1,0 +1,83 @@
+<!-- Panel: Seguridad (2FA / MFA / Password) -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(234,88,12,0.08) 0%,rgba(234,88,12,0.02) 100%);border:1px solid rgba(234,88,12,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(234,88,12,0.12);border:1px solid rgba(234,88,12,0.12)">🔒</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Seguridad de Cuenta</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Configuracion de 2FA y cambio de contrasena · <span id="secUserEmail" style="color:var(--naranja);font-weight:700">Cargando...</span></p>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(360px,1fr));gap:18px">
+
+  <!-- 2FA Card -->
+  <div class="card" style="padding:22px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:22px">🛡️</span>
+      <h3 style="margin:0;font-size:16px;font-weight:800">Autenticacion de Dos Factores (2FA)</h3>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 16px">
+      Agrega una capa extra de seguridad. Cuando ingreses, se pedira un codigo de 6 digitos generado por tu app de autenticacion (Google Authenticator, Authy, 1Password).
+    </p>
+
+    <div id="sec2faStatus" style="padding:10px;border-radius:8px;background:var(--surface-alt,#f8fafc);font-size:13px;margin-bottom:14px">
+      Verificando estado...
+    </div>
+
+    <div id="sec2faEnrollSection" style="display:none">
+      <button id="sec2faEnrollBtn" type="button" class="btn" style="background:var(--verde);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer">
+        🔐 Activar 2FA
+      </button>
+    </div>
+
+    <div id="sec2faQrSection" style="display:none">
+      <p style="font-size:13px;font-weight:700;margin-bottom:8px">1. Escanea este QR con tu app de autenticacion:</p>
+      <div id="sec2faQrContainer" style="background:#fff;padding:16px;border-radius:12px;display:inline-block;margin-bottom:14px"></div>
+      <p style="font-size:11px;color:var(--muted);margin:0 0 6px">O ingresa manualmente el codigo:</p>
+      <code id="sec2faSecret" style="font-family:monospace;font-size:11px;background:var(--surface-alt,#f1f5f9);padding:6px 10px;border-radius:6px;display:block;margin-bottom:14px;word-break:break-all"></code>
+
+      <p style="font-size:13px;font-weight:700;margin-bottom:8px">2. Ingresa el codigo de 6 digitos:</p>
+      <input id="sec2faCode" type="text" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="000000" style="width:100%;padding:12px;border-radius:8px;border:1px solid var(--border);font-family:monospace;font-size:18px;text-align:center;letter-spacing:8px;margin-bottom:10px">
+
+      <div style="display:flex;gap:8px">
+        <button id="sec2faCancelBtn" type="button" class="btn" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border);background:transparent;font-weight:600;cursor:pointer">Cancelar</button>
+        <button id="sec2faVerifyBtn" type="button" class="btn" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--verde);color:#fff;font-weight:700;cursor:pointer">Verificar y activar</button>
+      </div>
+      <div id="sec2faMsg" style="margin-top:10px;font-size:12px;min-height:18px"></div>
+    </div>
+
+    <div id="sec2faActiveSection" style="display:none">
+      <div style="padding:12px;border-radius:8px;background:var(--verde-bg);color:var(--verde);font-size:13px;font-weight:700;margin-bottom:14px">
+        ✓ 2FA activado en tu cuenta
+      </div>
+      <button id="sec2faDisableBtn" type="button" class="btn" style="background:var(--rojo);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer">
+        Desactivar 2FA
+      </button>
+    </div>
+  </div>
+
+  <!-- Cambiar password Card -->
+  <div class="card" style="padding:22px">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+      <span style="font-size:22px">🔑</span>
+      <h3 style="margin:0;font-size:16px;font-weight:800">Cambiar Contrasena</h3>
+    </div>
+    <p style="font-size:13px;color:var(--muted);margin:0 0 16px">
+      Actualiza tu contrasena regularmente. Usa al menos 8 caracteres, combinacion de letras, numeros y simbolos.
+    </p>
+
+    <div style="margin-bottom:10px">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px">Nueva contrasena</label>
+      <input id="secPwdNew" type="password" autocomplete="new-password" placeholder="Minimo 8 caracteres" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);font-size:13px">
+    </div>
+    <div style="margin-bottom:14px">
+      <label style="display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:4px">Confirmar contrasena</label>
+      <input id="secPwdConfirm" type="password" autocomplete="new-password" placeholder="Repite la contrasena" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);font-size:13px">
+    </div>
+
+    <button id="secPwdUpdateBtn" type="button" class="btn" style="background:var(--azul);color:#fff;padding:10px 18px;border-radius:8px;font-size:13px;font-weight:700;border:none;cursor:pointer;width:100%">
+      Actualizar contrasena
+    </button>
+    <div id="secPwdMsg" style="margin-top:10px;font-size:12px;min-height:18px"></div>
+  </div>
+
+</div>

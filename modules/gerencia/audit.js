@@ -4,6 +4,7 @@
 
 import { supabase } from '../../assets/js/config/supabase.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 
 let allData = [];
 
@@ -13,7 +14,41 @@ export async function init(container) {
   container.querySelector('#auditFilterTable')?.addEventListener('change', () => renderTable(container));
   container.querySelector('#auditFilterOp')?.addEventListener('change', () => renderTable(container));
 
+  // Boton de export CSV/Excel (insertarlo antes del boton refresh)
+  const refreshBtn = container.querySelector('#auditRefresh');
+  if (refreshBtn && !container.querySelector('.ftp-export-btn')) {
+    const exportBtn = createExportButton({
+      getData: () => getFiltered(container),
+      filename: 'audit-log',
+      sheetName: 'Audit Log',
+      columns: [
+        { key: 'occurred_at', label: 'Fecha' },
+        { key: 'user_email', label: 'Usuario' },
+        { key: 'user_role', label: 'Rol' },
+        { key: 'table_name', label: 'Tabla' },
+        { key: 'operation', label: 'Operacion' },
+        { key: 'row_id', label: 'Row ID' },
+        { key: 'changed_fields_str', label: 'Campos Cambiados' }
+      ]
+    });
+    refreshBtn.parentNode.insertBefore(exportBtn, refreshBtn);
+  }
+
   await loadData(container);
+}
+
+// Retorna data filtrada + formatea fecha y campos para export
+function getFiltered(container) {
+  const tableFilter = container.querySelector('#auditFilterTable')?.value || '';
+  const opFilter = container.querySelector('#auditFilterOp')?.value || '';
+  let filtered = [...allData];
+  if (tableFilter) filtered = filtered.filter(r => r.table_name === tableFilter);
+  if (opFilter) filtered = filtered.filter(r => r.operation === opFilter);
+  return filtered.map(r => ({
+    ...r,
+    occurred_at: new Date(r.occurred_at).toLocaleString('es-PE'),
+    changed_fields_str: Array.isArray(r.changed_fields) ? r.changed_fields.join(', ') : ''
+  }));
 }
 
 async function loadData(container) {

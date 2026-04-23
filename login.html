@@ -158,7 +158,11 @@ const userInput = document.getElementById('loginUser');
 const passInput = document.getElementById('loginPass');
 const errorEl = document.getElementById('loginError');
 
+// Guard para prevenir multi-click / Enter-spam (causaba freeze en redes lentas)
+let _loginInProgress = false;
+
 async function handleLogin() {
+  if (_loginInProgress) return;
   errorEl.textContent = '';
 
   // ─── Rate limit check ───
@@ -169,43 +173,50 @@ async function handleLogin() {
     return;
   }
 
+  _loginInProgress = true;
   loginBtn.textContent = 'Verificando...';
   loginBtn.style.pointerEvents = 'none';
+  loginBtn.disabled = true;
 
-  setTimeout(async () => {
-    const result = await doLogin(userInput.value, passInput.value);
-    if (result.success) {
-      clearAttempts(username); // Reset counter al loguear OK
-      loginBtn.textContent = '✓ Bienvenido';
-      loginBtn.style.background = '#059669';
-      document.querySelector('.login-card').style.cssText = 'opacity:0;transform:scale(0.9) translateY(-30px);transition:all 0.6s ease;filter:blur(5px)';
-      document.querySelector('.login-bg').style.cssText = 'transform:scale(1.15);filter:brightness(1.4) saturate(1.5) blur(8px);transition:all 1s ease';
-      document.querySelectorAll('.particle').forEach(p => p.style.cssText += ';opacity:0;transition:opacity 0.5s');
-      setTimeout(() => { window.location.href = 'portal.html'; }, 600);
-    } else {
-      // Registrar intento fallido
-      const attempt = recordFailedAttempt(username);
-      loginBtn.textContent = 'Ingresar al Portal';
-      loginBtn.style.pointerEvents = '';
-      if (attempt.locked) {
-        errorEl.textContent = `Cuenta bloqueada ${Math.ceil(attempt.lockedForSec / 60)} min por ${5} intentos fallidos.`;
-      } else if (attempt.attemptsLeft <= 2) {
-        errorEl.textContent = `${result.error} (${attempt.attemptsLeft} intento${attempt.attemptsLeft === 1 ? '' : 's'} restante${attempt.attemptsLeft === 1 ? '' : 's'})`;
-      } else {
-        errorEl.textContent = result.error;
-      }
-      passInput.value = '';
-      passInput.focus();
-      const card = document.querySelector('.login-card');
-      card.style.animation = 'none';
-      card.offsetHeight;
-      card.style.animation = 'shake 0.5s ease';
-    }
-  }, 400);
+  // Sin setTimeout artificial de 400ms (agregaba latencia percibida)
+  const result = await doLogin(userInput.value, passInput.value);
+
+  if (result.success) {
+    clearAttempts(username);
+    loginBtn.textContent = '✓ Bienvenido';
+    loginBtn.style.background = '#059669';
+    // Animacion de salida corta + redirect (300ms es suficiente, antes 600ms)
+    const card = document.querySelector('.login-card');
+    if (card) card.style.cssText = 'opacity:0;transform:scale(0.95);transition:opacity .3s ease,transform .3s ease';
+    setTimeout(() => { window.location.replace('portal.html'); }, 300);
+    return;
+  }
+
+  // Error: re-habilitar UI
+  _loginInProgress = false;
+  const attempt = recordFailedAttempt(username);
+  loginBtn.textContent = 'Ingresar al Portal';
+  loginBtn.style.pointerEvents = '';
+  loginBtn.disabled = false;
+  if (attempt.locked) {
+    errorEl.textContent = `Cuenta bloqueada ${Math.ceil(attempt.lockedForSec / 60)} min por 5 intentos fallidos.`;
+  } else if (attempt.attemptsLeft <= 2) {
+    errorEl.textContent = `${result.error} (${attempt.attemptsLeft} intento${attempt.attemptsLeft === 1 ? '' : 's'} restante${attempt.attemptsLeft === 1 ? '' : 's'})`;
+  } else {
+    errorEl.textContent = result.error;
+  }
+  passInput.value = '';
+  passInput.focus();
+  const card = document.querySelector('.login-card');
+  if (card) {
+    card.style.animation = 'none';
+    void card.offsetHeight;
+    card.style.animation = 'shake 0.5s ease';
+  }
 }
 
 loginBtn.addEventListener('click', handleLogin);
-passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !_loginInProgress) handleLogin(); });
 userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
 
 // ═══════════════════════════════════════════

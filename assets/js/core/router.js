@@ -41,10 +41,16 @@ export async function showPanel(panelId, modulePath) {
     return;
   }
 
-  // Ocultar panel actual
+  // Ocultar panel actual + cleanup hook
   if (currentPanel) {
     const currentEl = document.getElementById(`panel-${currentPanel}`);
     if (currentEl) currentEl.style.display = 'none';
+
+    // Llamar cleanup() del modulo si existe (para detener intervalos, etc)
+    const currentModule = loadedPanels.get(currentPanel);
+    if (currentModule && typeof currentModule.onHide === 'function') {
+      try { currentModule.onHide(); } catch (e) { console.warn('onHide error:', e); }
+    }
   }
 
   // Si ya esta cargado, solo mostrar
@@ -57,8 +63,11 @@ export async function showPanel(panelId, modulePath) {
       updateBreadcrumb(panelId);
       updateActiveNav(panelId);
 
-      // Re-ejecutar refresh si existe
+      // Re-ejecutar refresh / onShow si existen
       const module = loadedPanels.get(panelId);
+      if (module && typeof module.onShow === 'function') {
+        try { module.onShow(); } catch (e) { console.warn('onShow error:', e); }
+      }
       if (module && module.refresh) module.refresh();
       return;
     }

@@ -232,3 +232,21 @@ function buildTable(container) {
 function setVal(c, id, v) { const el = c.querySelector('#' + id); if (el) el.textContent = v; }
 export function refresh() { const c = document.getElementById('panel-contenedores'); if (c) loadData(c); }
 export function destroy() { if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; } }
+
+// Lifecycle: pausar al ocultar
+export function onHide() {
+  if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+}
+
+// Reanudar al volver
+export function onShow() {
+  const c = document.getElementById('panel-contenedores');
+  if (!c) return;
+  loadData(c);
+  if (!refreshInterval) {
+    refreshInterval = setInterval(() => {
+      const cc = document.getElementById('panel-contenedores');
+      if (cc) loadData(cc);
+    }, 300000);
+  }
+}

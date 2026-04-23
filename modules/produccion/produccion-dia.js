@@ -8,11 +8,14 @@ import { fmt, fmtPct, today, fmtDateLong, currentTurno } from '../../assets/js/u
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { createExportButton } from '../../assets/js/utils/export-helpers.js';
+import { subscribeToTable, createLiveIndicator } from '../../assets/js/utils/realtime-helpers.js';
 
 let prodData = [];
 let persData = [];
 let costoVisible = false;
 let activeFilters = { turno: 'AMBOS', fruta: 'TODAS' };
+let realtimeSub = null;
+let liveIndicator = null;
 
 const FRUTA_COLORS = {
   'MANGO': { color: '#f59e0b', emoji: '🥭' },
@@ -48,6 +51,21 @@ export async function init(container) {
   injectExportButton(container);
 
   await loadData(container);
+
+  // Realtime: reaccionar a cambios en registro_produccion
+  if (!realtimeSub) {
+    realtimeSub = subscribeToTable('registro_produccion', (payload) => {
+      if (liveIndicator && liveIndicator.flash) liveIndicator.flash();
+      if (document.getElementById('panel-produccion-dia')) loadData(container);
+    });
+  }
+  if (!liveIndicator) {
+    const headerActions = container.querySelector('.area-header-actions') || container.querySelector('.card-header-actions') || container.querySelector('.area-header > div:last-child');
+    if (headerActions) {
+      liveIndicator = createLiveIndicator();
+      headerActions.insertBefore(liveIndicator, headerActions.firstChild);
+    }
+  }
 }
 
 function injectExportButton(container) {

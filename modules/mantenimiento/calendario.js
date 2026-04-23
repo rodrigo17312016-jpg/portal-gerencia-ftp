@@ -6,6 +6,7 @@
 import { fmt, fmtDate } from '../../assets/js/utils/formatters.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let state = {
   year: 0,
@@ -34,6 +35,7 @@ const TIPO_ICON = {
 // INIT / REFRESH
 // ════════════════════════════════════════════════════════
 export async function init(container) {
+  addDemoBanner(container);
   const now = new Date();
   state.year = now.getFullYear();
   state.month = now.getMonth();

@@ -6,13 +6,16 @@
 import { fmt, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 let filterEstado = 'all';
 let filterFrec = 'all';
 
 export async function init(container) {
+  addDemoBanner(container);
   // Filtros estado
   container.querySelectorAll('[data-filter-estado]').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -42,7 +45,57 @@ export async function init(container) {
   const btnRuta = container.querySelector('#btn-ejecutar-ruta');
   if (btnRuta) btnRuta.addEventListener('click', () => ejecutarRutaCompleta(container));
 
+  injectExportButton(container);
+
   loadAll(container);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const target = container.querySelector('.panel-header-right')
+    || container.querySelector('.panel-header')
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      const data = getMantData();
+      let lub = (data.lubricacion || []).slice();
+      if (filterEstado !== 'all') lub = lub.filter(l => l.estado === filterEstado);
+      if (filterFrec !== 'all') lub = lub.filter(l => l.frecuencia === filterFrec);
+      return lub.map(l => ({
+        id: l.id,
+        equipo: l.equipo,
+        equipo_nombre: l.equipoNombre,
+        area: l.area,
+        punto: l.puntoLubricacion,
+        lubricante: l.lubricante,
+        frecuencia: l.frecuencia,
+        cantidad: l.cantidad,
+        unidad: l.unidad,
+        proxima_fecha: l.proximaFecha,
+        dias_restantes: l.diasRestantes,
+        estado: l.estado
+      }));
+    },
+    filename: 'lubricacion',
+    sheetName: 'Lubricacion',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'equipo', label: 'Equipo' },
+      { key: 'equipo_nombre', label: 'Nombre Equipo' },
+      { key: 'area', label: 'Area' },
+      { key: 'punto', label: 'Punto Lubricacion' },
+      { key: 'lubricante', label: 'Lubricante' },
+      { key: 'frecuencia', label: 'Frecuencia' },
+      { key: 'cantidad', label: 'Cantidad' },
+      { key: 'unidad', label: 'Unidad' },
+      { key: 'proxima_fecha', label: 'Proxima Fecha' },
+      { key: 'dias_restantes', label: 'Dias Restantes' },
+      { key: 'estado', label: 'Estado' }
+    ]
+  });
+  target.appendChild(btn);
 }
 
 export function refresh() {

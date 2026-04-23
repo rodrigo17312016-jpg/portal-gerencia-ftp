@@ -45,6 +45,27 @@ async function initPortal() {
   initActivityListeners();
   initSessionAutoRefresh(); // JWT auto-renewal + logout cascade
 
+  // Listener para mensajes del SW (click en notificaciones)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'SHOW_PANEL' && event.data.panelId) {
+        // Buscar el nav-item y hacer click
+        const item = document.querySelector(`.nav-item[data-panel="${event.data.panelId}"]`);
+        if (item) item.click();
+      }
+    });
+  }
+
+  // Soporte para ?panel=X en URL (abierto desde notificacion)
+  const urlParams = new URLSearchParams(window.location.search);
+  const requestedPanel = urlParams.get('panel');
+  if (requestedPanel) {
+    setTimeout(() => {
+      const item = document.querySelector(`.nav-item[data-panel="${requestedPanel}"]`);
+      if (item) item.click();
+    }, 500);
+  }
+
   // 6. Verificar conexion Supabase
   const connected = await checkConnection();
   updateConnectionStatus(connected);

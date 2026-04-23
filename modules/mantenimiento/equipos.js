@@ -4,7 +4,9 @@
    ════════════════════════════════════════════════════════ */
 
 import { fmt } from '../../assets/js/utils/formatters.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let refreshTimer = null;
 let state = {
@@ -15,10 +17,12 @@ let state = {
 };
 
 export async function init(container) {
+  addDemoBanner(container);
   wireFilters(container);
   wireSearch(container);
   wireButtons(container);
   wireModal(container);
+  injectExportButton(container);
   loadAll(container);
 
   // Auto refresh 60s
@@ -27,6 +31,51 @@ export async function init(container) {
     const c = document.getElementById('panel-equipos') || container;
     if (c && c.isConnected) loadAll(c);
   }, 60000);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const legacyBtn = container.querySelector('#btn-export-equipos');
+  const target = legacyBtn?.parentElement
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      const data = getMantData();
+      return applyFilters(data.equipos).map(e => ({
+        codigo: e.codigo,
+        nombre: e.nombre,
+        area: e.area,
+        tipo: e.tipo,
+        criticidad: e.criticidad,
+        estado: e.estado,
+        horas_operacion: e.horasUso,
+        fabricante: e.fabricante || '',
+        modelo: e.modelo || '',
+        anio: e.anio || '',
+        ultimo_mant: e.ultimaFalla || ''
+      }));
+    },
+    filename: 'equipos',
+    sheetName: 'Equipos',
+    columns: [
+      { key: 'codigo', label: 'Codigo' },
+      { key: 'nombre', label: 'Nombre' },
+      { key: 'area', label: 'Area' },
+      { key: 'tipo', label: 'Tipo' },
+      { key: 'criticidad', label: 'Criticidad' },
+      { key: 'estado', label: 'Estado' },
+      { key: 'horas_operacion', label: 'Horas Operacion' },
+      { key: 'fabricante', label: 'Fabricante' },
+      { key: 'modelo', label: 'Modelo' },
+      { key: 'anio', label: 'Anio' },
+      { key: 'ultimo_mant', label: 'Ultimo Mant.' }
+    ]
+  });
+
+  if (legacyBtn) legacyBtn.parentNode.insertBefore(btn, legacyBtn);
+  else target.appendChild(btn);
 }
 
 export function refresh() {

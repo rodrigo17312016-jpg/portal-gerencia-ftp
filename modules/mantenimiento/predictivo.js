@@ -7,6 +7,7 @@ import { fmt, fmtPct, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 let refreshTimer = null;
@@ -39,6 +40,7 @@ const ESTADO_COLOR = {
 };
 
 export async function init(container) {
+  addDemoBanner(container);
   // Filtros tecnica
   container.querySelectorAll('[data-pd-tecnica]').forEach(chip => {
     chip.addEventListener('click', () => {

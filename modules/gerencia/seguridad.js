@@ -6,6 +6,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { updatePassword, getCurrentUser } from '../../assets/js/core/auth.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
+import { getPermissionState, requestPermission, notify, notifyInfo } from '../../assets/js/utils/notifications.js';
 
 let currentFactorId = null;
 
@@ -21,8 +22,68 @@ export async function init(container) {
   // Cambio password
   wirePasswordChange(container);
 
+  // Notificaciones
+  wireNotifications(container);
+
   // Cargar estado 2FA
   await refresh2FAStatus(container);
+}
+
+// ════════════════════════════════════════════════════════
+// Notificaciones
+// ════════════════════════════════════════════════════════
+
+function updateNotifStatus(container) {
+  const statusEl = container.querySelector('#secNotifStatus');
+  const enableBtn = container.querySelector('#secNotifEnableBtn');
+  if (!statusEl) return;
+  const state = getPermissionState();
+  if (state === 'unsupported') {
+    statusEl.textContent = '⚠️ Tu navegador no soporta notificaciones';
+    statusEl.style.color = 'var(--naranja)';
+    if (enableBtn) enableBtn.style.display = 'none';
+  } else if (state === 'granted') {
+    statusEl.textContent = '✓ Notificaciones activadas';
+    statusEl.style.color = 'var(--verde)';
+    statusEl.style.background = 'var(--verde-bg)';
+    if (enableBtn) enableBtn.style.display = 'none';
+  } else if (state === 'denied') {
+    statusEl.textContent = '✗ Notificaciones bloqueadas. Habilitalas desde la configuracion del navegador.';
+    statusEl.style.color = 'var(--rojo)';
+    if (enableBtn) enableBtn.style.display = 'none';
+  } else {
+    statusEl.textContent = 'Notificaciones no configuradas';
+    statusEl.style.color = 'var(--muted)';
+  }
+}
+
+function wireNotifications(container) {
+  const enableBtn = container.querySelector('#secNotifEnableBtn');
+  const testBtn = container.querySelector('#secNotifTestBtn');
+
+  updateNotifStatus(container);
+
+  enableBtn?.addEventListener('click', async () => {
+    enableBtn.disabled = true;
+    enableBtn.textContent = '⏳ Solicitando...';
+    const state = await requestPermission();
+    enableBtn.disabled = false;
+    enableBtn.textContent = 'Activar notificaciones';
+    updateNotifStatus(container);
+    if (state === 'granted') {
+      notifyInfo('Notificaciones activadas', 'Ahora recibiras alertas de temperatura y eventos criticos.');
+    }
+  });
+
+  testBtn?.addEventListener('click', async () => {
+    const state = getPermissionState();
+    if (state !== 'granted') {
+      const r = await requestPermission();
+      if (r !== 'granted') { alert('Permiso no concedido'); return; }
+      updateNotifStatus(container);
+    }
+    notifyInfo('Notificacion de prueba', 'Si ves esto, las notificaciones funcionan correctamente.', { tag: 'ftp-test' });
+  });
 }
 
 // ════════════════════════════════════════════════════════

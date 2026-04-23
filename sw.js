@@ -3,7 +3,7 @@
    Frutos Tropicales Peru Export S.A.C.
    ════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'ftp-portal-v19';
+const CACHE_NAME = 'ftp-portal-v20';
 const STATIC_ASSETS = [
   '/',
   '/portal.html',
@@ -57,6 +57,30 @@ self.addEventListener('activate', (event) => {
     })
   );
   self.clients.claim();
+});
+
+// ── Notificaciones: click para abrir/enfocar portal ──
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const panelId = event.notification.data?.panelId || '';
+  const targetUrl = panelId
+    ? `/portal-gerencia-ftp/portal.html?panel=${encodeURIComponent(panelId)}`
+    : '/portal-gerencia-ftp/portal.html';
+
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+      // Si ya hay una tab del portal abierta, enfocarla
+      for (const client of clients) {
+        if (client.url.includes('/portal-gerencia-ftp/') && 'focus' in client) {
+          // Postear mensaje al cliente para que navegue al panel
+          if (panelId) client.postMessage({ type: 'SHOW_PANEL', panelId });
+          return client.focus();
+        }
+      }
+      // Sino abrir una nueva
+      if (self.clients.openWindow) return self.clients.openWindow(targetUrl);
+    })
+  );
 });
 
 // Fetch - Network first, fallback to cache

@@ -7,6 +7,7 @@ import { fmt } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 
@@ -43,6 +44,7 @@ function estadoBadge(e) {
 // INIT / REFRESH
 // ════════════════════════════════════════════════════════
 export async function init(container) {
+  addDemoBanner(container);
   container.querySelector('#btn-nuevo-tecnico')?.addEventListener('click', () => {
     alert('Alta de nuevo técnico: pendiente de implementar.');
   });

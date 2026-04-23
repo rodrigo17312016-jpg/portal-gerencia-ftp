@@ -6,7 +6,9 @@
 import { fmt, fmtPct, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 let refreshTimer = null;
@@ -42,6 +44,7 @@ const DIAS_SIGUIENTE = {
 };
 
 export async function init(container) {
+  addDemoBanner(container);
   // Filtros frecuencia
   container.querySelectorAll('[data-pm-freq]').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -76,6 +79,8 @@ export async function init(container) {
     alert('Funcionalidad de creacion de rutinas en construccion. Por ahora cada equipo tiene rutinas generadas automaticamente.');
   });
 
+  injectExportButton(container);
+
   await loadAll(container);
 
   if (refreshTimer) clearInterval(refreshTimer);
@@ -83,6 +88,55 @@ export async function init(container) {
     const c = document.getElementById('panel-preventivo') || document.querySelector('.active-panel');
     if (c) loadAll(c);
   }, 60000);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const nuevaBtn = container.querySelector('#btn-nueva-rutina');
+  const target = nuevaBtn?.parentElement
+    || container.querySelector('.pm-header')
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      const data = getMantData();
+      let rutinas = (data.rutinas || []).slice();
+      if (filterFreq !== 'all') rutinas = rutinas.filter(r => r.frecuencia === filterFreq);
+      if (filterEstado !== 'all') rutinas = rutinas.filter(r => r.estado === filterEstado);
+      return rutinas.map(r => ({
+        id: r.id,
+        equipo: r.equipo,
+        equipo_nombre: r.equipoNombre,
+        area: r.area,
+        frecuencia: r.frecuencia,
+        descripcion: r.descripcion,
+        duracion_h: r.duracion,
+        ultima: r.ultima,
+        proxima: r.proxima,
+        dias_restantes: r.diasRestantes,
+        estado: r.estado
+      }));
+    },
+    filename: 'preventivo',
+    sheetName: 'Preventivo',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'equipo', label: 'Equipo' },
+      { key: 'equipo_nombre', label: 'Nombre Equipo' },
+      { key: 'area', label: 'Area' },
+      { key: 'frecuencia', label: 'Frecuencia' },
+      { key: 'descripcion', label: 'Descripcion' },
+      { key: 'duracion_h', label: 'Duracion (h)' },
+      { key: 'ultima', label: 'Ultima Ejecucion' },
+      { key: 'proxima', label: 'Proxima Ejecucion' },
+      { key: 'dias_restantes', label: 'Dias Restantes' },
+      { key: 'estado', label: 'Estado' }
+    ]
+  });
+
+  if (nuevaBtn) nuevaBtn.parentNode.insertBefore(btn, nuevaBtn);
+  else target.appendChild(btn);
 }
 
 export function refresh() {

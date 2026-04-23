@@ -27,7 +27,7 @@
   <div class="pl-glow"></div>
   <div class="pl-content">
     <div class="pl-logo-wrap">
-      <img src="assets/images/logo.png" alt="Frutos Tropicales" class="pl-logo">
+      <img src="assets/images/logo.png" alt="Frutos Tropicales" class="pl-logo" fetchpriority="high" decoding="async">
     </div>
     <div class="pl-brand">
       <div class="pl-eyebrow">AGROEXPORTACION PREMIUM</div>
@@ -88,7 +88,7 @@
      ══════════════════════════════════════════════════════════════ -->
 <nav class="navbar" id="navbar">
   <a href="#inicio" class="nav-logo" aria-label="Inicio">
-    <img src="assets/images/logo.png" alt="Frutos Tropicales">
+    <img src="assets/images/logo.png" alt="Frutos Tropicales" loading="lazy" decoding="async">
     <span class="nav-brand">
       <span class="nav-brand-main">Frutos Tropicales</span>
       <span class="nav-brand-sub">Peru Export S.A.C.</span>
@@ -108,7 +108,7 @@
 <div class="mobile-menu" id="mobileMenu">
   <button class="mobile-close" onclick="toggleMenu()" aria-label="Cerrar"><i class="fas fa-times"></i></button>
   <div class="mobile-brand">
-    <img src="assets/images/logo.png" alt="Frutos Tropicales">
+    <img src="assets/images/logo.png" alt="Frutos Tropicales" loading="lazy" decoding="async">
     <div>
       <div class="mobile-brand-main">Frutos Tropicales</div>
       <div class="mobile-brand-sub">Peru Export S.A.C.</div>
@@ -131,8 +131,9 @@
      SECTION 3: HERO CINEMATOGRAFICO
      ══════════════════════════════════════════════════════════════ -->
 <section class="hero" id="inicio">
-  <video class="hero-video" id="heroVideo" autoplay muted loop playsinline preload="metadata" poster="assets/images/products/mango.jpeg">
-    <source src="assets/video/video-ftp.mp4" type="video/mp4">
+  <!-- Video optimizado: preload=none + lazy play cuando sea visible (reduce freeze inicial de ~18MB) -->
+  <video class="hero-video" id="heroVideo" muted loop playsinline preload="none" poster="assets/images/products/mango.jpeg">
+    <source data-src="assets/video/video-ftp.mp4" type="video/mp4">
   </video>
   <div class="hero-overlay"></div>
   <div class="hero-mesh"></div>
@@ -1385,7 +1386,7 @@
 
   <div class="footer-grid">
     <div class="footer-brand">
-      <img src="assets/images/logo.png" alt="Frutos Tropicales">
+      <img src="assets/images/logo.png" alt="Frutos Tropicales" loading="lazy" decoding="async">
       <div class="footer-brand-text">
         <div class="footer-brand-main">Frutos Tropicales</div>
         <div class="footer-brand-sub">Peru Export S.A.C.</div>

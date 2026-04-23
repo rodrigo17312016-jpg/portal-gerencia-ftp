@@ -55,15 +55,26 @@
 
   // 3) Sin sesion: redirigir
   if (!hasSupabase) {
-    // Calcular path al login: las apps estan en /apps/<app>/
-    // El login esta en /<base>/login.html
+    // Calcular path al login de forma robusta:
+    // - Caso normal: las apps estan en /<base>/apps/<app>/  -> /<base>/login.html
+    // - Fallback: si no hay /apps/ en la URL (edge case), subir 2 niveles
+    //   desde el archivo actual hasta llegar a la raiz del portal
     var current = window.location.pathname;
-    var base = current.substring(0, current.indexOf('/apps/'));
+    var appsIdx = current.indexOf('/apps/');
+    var loginUrl;
+    if (appsIdx > -1) {
+      loginUrl = current.substring(0, appsIdx) + '/login.html';
+    } else {
+      // Fallback: subir 2 niveles (../../login.html) relativo al archivo actual
+      var parts = current.split('/').filter(Boolean);
+      if (parts.length >= 2) parts.splice(parts.length - 2, 2);
+      loginUrl = '/' + parts.join('/') + (parts.length ? '/' : '') + 'login.html';
+    }
     // Ocultar el body para evitar flash antes del redirect
     if (document.documentElement) {
       document.documentElement.style.visibility = 'hidden';
     }
-    window.location.replace(base + '/login.html');
+    window.location.replace(loginUrl);
     // Salir silenciosamente (en vez de throw, que ensucia la consola)
     window.__ftpAuthOk = false;
     return;

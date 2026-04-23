@@ -7,6 +7,7 @@ import { supabase } from '../../assets/js/config/supabase.js';
 import { updatePassword, getCurrentUser } from '../../assets/js/core/auth.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getPermissionState, requestPermission, notify, notifyInfo } from '../../assets/js/utils/notifications.js';
+import { validatePassword, attachPasswordMeter } from '../../assets/js/utils/password-policy.js';
 
 let currentFactorId = null;
 
@@ -228,12 +229,23 @@ function wirePasswordChange(container) {
   const btn = container.querySelector('#secPwdUpdateBtn');
   const msg = container.querySelector('#secPwdMsg');
 
+  // Agregar medidor de fortaleza en vivo
+  if (newInput) {
+    const meterDiv = document.createElement('div');
+    meterDiv.id = 'secPwdMeter';
+    newInput.parentNode.insertBefore(meterDiv, newInput.nextSibling);
+    attachPasswordMeter(newInput, meterDiv);
+  }
+
   btn?.addEventListener('click', async () => {
     msg.textContent = '';
     const p1 = newInput?.value || '';
     const p2 = confirmInput?.value || '';
-    if (p1.length < 8) {
-      msg.textContent = 'La contrasena debe tener al menos 8 caracteres';
+
+    // Validacion completa de complejidad (ISO 27001)
+    const validation = validatePassword(p1);
+    if (!validation.valid) {
+      msg.innerHTML = 'Contrasena debil: ' + validation.errors.map(e => escapeHtml(e)).join(', ');
       msg.style.color = 'var(--rojo)';
       return;
     }

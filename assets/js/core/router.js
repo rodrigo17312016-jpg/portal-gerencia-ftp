@@ -7,7 +7,7 @@ import { destroyChartsIn } from '../utils/chart-helpers.js';
 
 // Version estatica del build - bump manualmente cuando se despliega
 // cambio a modulos. Esto permite al SW cachear correctamente.
-const BUILD_VERSION = '20';
+const BUILD_VERSION = '22';
 
 // Detectar base path (funciona en localhost Y GitHub Pages)
 function getBasePath() {

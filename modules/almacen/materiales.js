@@ -1,4 +1,5 @@
 /* Materiales - Inventario de suministros */
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 
 const MATERIALES = [
   { id: 1, nombre: 'Bolsas PE 10kg', und: 'UND', stock: 12500, consumo: 8000, estado: 'ok' },
@@ -14,6 +15,8 @@ const MATERIALES = [
   { id: 11, nombre: 'Bandejas aluminio', und: 'UND', stock: 8000, consumo: 5000, estado: 'ok' },
   { id: 12, nombre: 'Bolsas vacio 5kg', und: 'UND', stock: 2000, consumo: 3000, estado: 'bajo' },
 ];
+
+let currentFilter = 'all';
 
 export async function init(container) {
   const critico = MATERIALES.filter(m => m.estado === 'critico').length;
@@ -33,10 +36,50 @@ export async function init(container) {
       container.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
       chip.classList.add('active');
       const f = chip.dataset.filter;
+      currentFilter = f;
       const filtered = f === 'all' ? MATERIALES : MATERIALES.filter(m => m.estado === f);
       renderTable(container, filtered);
     });
   });
+
+  injectExportButton(container);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const target = container.querySelector('.card-header')
+    || container.querySelector('h2')?.parentElement;
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      const data = currentFilter === 'all' ? MATERIALES : MATERIALES.filter(m => m.estado === currentFilter);
+      return data.map(m => {
+        const dias = m.consumo > 0 ? Math.round(m.stock / m.consumo * 30) : 999;
+        return {
+          id: m.id,
+          nombre: m.nombre,
+          unidad: m.und,
+          stock: m.stock,
+          consumo_mensual: m.consumo,
+          dias_restantes: dias,
+          estado: m.estado
+        };
+      });
+    },
+    filename: 'materiales',
+    sheetName: 'Materiales',
+    columns: [
+      { key: 'id', label: 'ID' },
+      { key: 'nombre', label: 'Material' },
+      { key: 'unidad', label: 'Unidad' },
+      { key: 'stock', label: 'Stock' },
+      { key: 'consumo_mensual', label: 'Consumo Mensual' },
+      { key: 'dias_restantes', label: 'Dias Restantes' },
+      { key: 'estado', label: 'Estado' }
+    ]
+  });
+  target.appendChild(btn);
 }
 
 function renderTable(container, data) {

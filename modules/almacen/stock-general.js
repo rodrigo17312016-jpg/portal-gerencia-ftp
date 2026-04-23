@@ -1,5 +1,6 @@
 /* Stock General */
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 
 export async function init(container) {
   const colors = getColors();
@@ -31,4 +32,47 @@ export async function init(container) {
     },
     options: getDefaultOptions('bar')
   });
+
+  injectExportButton(container);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const target = container.querySelector('.card-header')
+    || container.querySelector('h2')?.parentElement;
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      // Extraer filas de la tabla renderizada (tbody > tr)
+      const rows = Array.from(container.querySelectorAll('.data-table tbody tr'));
+      return rows.map(tr => {
+        const cells = tr.querySelectorAll('td');
+        if (cells.length < 8) return null;
+        return {
+          producto: cells[0].textContent.trim(),
+          planta: cells[1].textContent.trim(),
+          presentacion: cells[2].textContent.trim(),
+          tipo: cells[3].textContent.trim(),
+          cliente: cells[4].textContent.trim(),
+          cajas: cells[5].textContent.trim(),
+          kg: cells[6].textContent.trim(),
+          fcl: cells[7].textContent.trim()
+        };
+      }).filter(Boolean);
+    },
+    filename: 'stock-general',
+    sheetName: 'Stock',
+    columns: [
+      { key: 'producto', label: 'Producto' },
+      { key: 'planta', label: 'Planta' },
+      { key: 'presentacion', label: 'Presentacion' },
+      { key: 'tipo', label: 'Tipo' },
+      { key: 'cliente', label: 'Cliente' },
+      { key: 'cajas', label: 'Cajas' },
+      { key: 'kg', label: 'Kg' },
+      { key: 'fcl', label: 'FCL' }
+    ]
+  });
+  target.appendChild(btn);
 }

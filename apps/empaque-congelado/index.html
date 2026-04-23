@@ -47,6 +47,7 @@
   </div>
   <div class="topbar-right">
     <div id="supabaseStatus" style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(0,0,0,0.3);cursor:help;flex-shrink:0" title="Supabase: Verificando..."></div>
+    <span id="syncSlot" style="display:inline-flex;align-items:center"></span>
     <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="themeBtn">&#127769;</button>
     <div class="topbar-dev-signature">
       <div class="topbar-sig-label">Desarrollado por:</div>
@@ -448,5 +449,44 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=3"></script>
 <script src="app.js"></script>
+<script src="../_shared/sync-button.js"></script>
+<script>
+  (function(){
+    function tryMount(){
+      if (typeof mountSyncButton !== 'function') return setTimeout(tryMount, 200);
+      mountSyncButton({
+        container: '#syncSlot',
+        table: 'registro_empaque_congelado',
+        storageKey: 'empaque_congelado_registros',
+        requiredFields: ['fecha','hora','fruta'],
+        mapRecord: function(r){
+          return {
+            fecha: r.fecha,
+            hora: r.hora,
+            turno: r.turno || null,
+            turno_origen: r.turno_origen || null,
+            fruta: r.fruta,
+            tipo: r.tipo || null,
+            corte: r.corte || null,
+            cuts_detail: r.cuts_detail || null,
+            kg_presentacion: r.kg_presentacion || null,
+            cajas: r.cajas || null,
+            kg_pt: r.kg_pt || null,
+            cj_hr: r.cj_hr || null,
+            cj_hr_op: r.cj_hr_op || null,
+            operarios: r.operarios || null,
+            cliente: r.cliente || null,
+            lote_mp: r.lote_mp || null,
+            cod_trazabilidad: r.cod_trazabilidad || null,
+            supervisor: r.supervisor || null,
+            observacion: r.observacion || null
+          };
+        }
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tryMount);
+    else tryMount();
+  })();
+</script>
 </body>
 </html>

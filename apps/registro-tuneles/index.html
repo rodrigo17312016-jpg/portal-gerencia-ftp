@@ -53,6 +53,7 @@
     <a href="../../portal.html" class="topbar-back portal-back-link">&larr; Portal</a>
     <span id="supabaseStatus" class="supabase-status" title="Verificando..."></span>
     <span id="supabaseStatusLabel" class="supabase-status-label">Verificando...</span>
+    <span id="syncSlot" style="display:inline-flex;align-items:center"></span>
     <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">&#9790;</button>
     <div class="topbar-dev-signature">
       <div class="topbar-sig-label">Desarrollado por:</div>
@@ -490,5 +491,40 @@
 <script src="supabase-config.js?v=3"></script>
 
 <script src="app.js"></script>
+<script src="../_shared/sync-button.js"></script>
+<script>
+  (function(){
+    function tryMount(){
+      if (typeof mountSyncButton !== 'function') return setTimeout(tryMount, 200);
+      mountSyncButton({
+        container: '#syncSlot',
+        table: 'registro_tuneles',
+        storageKey: 'tuneles_registros',
+        onConflict: 'fecha,tunel,hora_inicio',
+        requiredFields: ['fecha','tunel','fruta'],
+        mapRecord: function(r){
+          return {
+            fecha: r.fecha,
+            turno: r.turno || null,
+            tunel: r.tunel,
+            fruta: r.fruta,
+            hora_inicio: r.hora_inicio || null,
+            hora_fin: r.hora_fin || null,
+            coches: r.coches || 0,
+            kg: r.kg || 0,
+            temp_ingreso: r.temp_ingreso || null,
+            temp_final: r.temp_final || null,
+            hrs_congelamiento: r.hrs_congelamiento || null,
+            eficiencia: r.eficiencia || null,
+            operador: r.operador || null,
+            observacion: r.observacion || null
+          };
+        }
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tryMount);
+    else tryMount();
+  })();
+</script>
 </body>
 </html>

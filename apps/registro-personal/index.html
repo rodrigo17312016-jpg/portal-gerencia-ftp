@@ -46,6 +46,7 @@
   </div>
   <div class="topbar-spacer"></div>
   <div id="supabaseStatus" style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(0,0,0,0.3);cursor:help;flex-shrink:0" title="Supabase: Verificando..."></div>
+  <span id="syncSlot" style="display:inline-flex;align-items:center"></span>
   <div class="live-badge"><span class="dot"></span> En vivo</div>
   <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema" id="themeBtn">🌙</button>
   <a class="topbar-back" href="../../portal.html">← Portal</a>
@@ -258,5 +259,36 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="supabase-config.js?v=3"></script>
 <script src="app.js"></script>
+<script src="../_shared/sync-button.js"></script>
+<script>
+  // Montar boton Sync cuando el DOM y supabaseClient esten listos
+  (function(){
+    function tryMount(){
+      if (typeof mountSyncButton !== 'function') return setTimeout(tryMount, 200);
+      mountSyncButton({
+        container: '#syncSlot',
+        table: 'registro_personal',
+        storageKey: 'personal_registros',
+        onConflict: 'fecha,hora,linea',
+        requiredFields: ['fecha','hora'],
+        mapRecord: function(r){
+          return {
+            fecha: r.fecha,
+            hora: r.hora,
+            turno: r.turno || null,
+            fruta: r.fruta || null,
+            linea: r.linea || 'Linea 1',
+            num_personal: r.num_personal || 0,
+            distribucion: r.distribucion || null,
+            observacion: r.observacion || null,
+            registrado_por: r.registrado_por || null
+          };
+        }
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tryMount);
+    else tryMount();
+  })();
+</script>
 </body>
 </html>

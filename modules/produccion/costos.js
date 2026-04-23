@@ -257,7 +257,6 @@ function buildCharts(container, prod, costs) {
   });
 
   charts = [c1, c2, c3, c4].filter(Boolean);
-  window.__activeCharts = [...(window.__activeCharts || []), ...charts];
 }
 
 function buildTable(container, prod, costs) {

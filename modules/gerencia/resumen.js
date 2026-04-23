@@ -201,8 +201,6 @@ async function loadCharts(container) {
   try { renderSecCamara(container, empaqueData); } catch (e) { console.error('Error renderSecCamara:', e); }
   try { renderSecCostos(container, consumosData); } catch (e) { console.error('Error renderSecCostos:', e); }
   try { renderTblTempAreas(container, tempsData); } catch (e) { console.error('Error renderTblTempAreas:', e); }
-
-  window.__activeCharts = charts;
 }
 
 // ════════════════════════════════════════════════════════

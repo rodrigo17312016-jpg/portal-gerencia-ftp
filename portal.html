@@ -28,11 +28,12 @@
   var t = localStorage.getItem('ftp_theme');
   if (t === 'dark') document.documentElement.classList.add('dark-mode');
   // Verificar sesion rapida para evitar flash
-  // Acepta ambos: sesion Supabase Auth (JWT real) o sesion legacy (USERS[])
+  // Post-Fase 9: solo acepta sesion Supabase Auth (JWT firmado).
+  // Legacy session (ftp_session) ya NO se considera valida.
   try {
-    var sLegacy = JSON.parse(localStorage.getItem('ftp_session') || 'null');
-    var hasLegacy = sLegacy && sLegacy.user && sLegacy.expires > Date.now();
-    // Buscar cualquier token de Supabase Auth (sb-<ref>-auth-token)
+    // Limpiar cualquier ftp_session residual para evitar confusion
+    try { localStorage.removeItem('ftp_session'); } catch(e2) {}
+
     var hasSupabase = false;
     for (var i = 0; i < localStorage.length; i++) {
       var k = localStorage.key(i);
@@ -41,7 +42,7 @@
         if (val && val.length > 100) { hasSupabase = true; break; }
       }
     }
-    if (!hasLegacy && !hasSupabase) {
+    if (!hasSupabase) {
       window.location.href = 'login.html';
     }
   } catch(e) { window.location.href = 'login.html'; }

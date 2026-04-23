@@ -1,38 +1,41 @@
 /* ════════════════════════════════════════════════════════
-   USERS - Definicion Unificada de Usuarios y Roles
+   USERS - Metadata UI-only (display info)
+   ════════════════════════════════════════════════════════
+   IMPORTANTE (post Fase 9):
+   - Este archivo YA NO contiene credenciales. Solo metadata
+     UI (name, role, roleLabel, initials).
+   - La autenticacion REAL se hace contra Supabase Auth.
+   - El role canonico viene del JWT en auth.users.app_metadata.
+   - Este diccionario se usa para mostrar avatar/nombre en UI
+     cuando el JWT solo trae el email.
    ════════════════════════════════════════════════════════ */
 
 export const USERS = {
   'gerencia': {
-    pass: 'frutos2026',
     name: 'Gerencia General',
     role: 'admin',
     roleLabel: 'Administrador',
     initials: 'GG'
   },
   'produccion': {
-    pass: 'prod2026',
     name: 'Jefe Produccion',
     role: 'produccion',
     roleLabel: 'Area de Produccion',
     initials: 'PR'
   },
   'calidad': {
-    pass: 'cal2026',
     name: 'Jefe Calidad',
     role: 'calidad',
     roleLabel: 'Area de Calidad',
     initials: 'CA'
   },
   'mantenimiento': {
-    pass: 'mant2026',
     name: 'Jefe Mantenimiento',
     role: 'mantenimiento',
     roleLabel: 'Area de Mantenimiento',
     initials: 'MT'
   },
   'rodrigo': {
-    pass: 'ftp2026',
     name: 'Rodrigo Garcia',
     role: 'admin',
     roleLabel: 'Systems Analyst & Developer',

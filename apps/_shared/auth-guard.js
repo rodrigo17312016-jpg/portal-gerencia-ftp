@@ -49,19 +49,12 @@
     }
   } catch (e) { /* localStorage bloqueado */ }
 
-  // 2) Fallback: sesion legacy
-  var hasLegacy = false;
-  try {
-    var s = JSON.parse(localStorage.getItem('ftp_session') || 'null');
-    if (s && s.user && s.expires > Date.now()) {
-      hasLegacy = true;
-      window.__ftpAuthMode = 'legacy';
-      window.__ftpAuthUser = s.user;
-    }
-  } catch (e) { /* noop */ }
+  // 2) Post-Fase 9: eliminado fallback legacy.
+  // Si no hay sesion Supabase valida, no hay sesion.
+  try { localStorage.removeItem('ftp_session'); } catch (e) { /* noop */ }
 
   // 3) Sin sesion: redirigir
-  if (!hasSupabase && !hasLegacy) {
+  if (!hasSupabase) {
     // Calcular path al login: las apps estan en /apps/<app>/
     // El login esta en /<base>/login.html
     var current = window.location.pathname;

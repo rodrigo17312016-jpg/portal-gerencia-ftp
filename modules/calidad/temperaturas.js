@@ -6,6 +6,7 @@ import { fetchSupabase } from '../../assets/js/config/supabase.js';
 import { today } from '../../assets/js/utils/formatters.js';
 import { createChart } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 
 const AREAS = [
   'CAMARA DE MATERIA PRIMA','ACONDICIONADO','EMBANDEJADO','LAVADO DE BANDEJAS',
@@ -27,7 +28,47 @@ export async function init(container) {
   const btn = container.querySelector('#btn-refresh-temp');
   if (btn) btn.addEventListener('click', () => loadTemperaturas(container));
 
+  injectExportButton(container);
+
   await loadTemperaturas(container);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const refreshBtn = container.querySelector('#btn-refresh-temp');
+  const target = refreshBtn?.parentElement
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      return tempData.map(r => ({
+        hora: r.hora ? String(r.hora).slice(0, 5) : '',
+        area: r.area || '',
+        temperatura: r.temperatura,
+        estado: r.estado || '',
+        turno: r.turno || '',
+        operario: r.operario || '',
+        observaciones: r.observaciones || '',
+        fecha: r.fecha || ''
+      }));
+    },
+    filename: 'temperaturas',
+    sheetName: 'Temperaturas',
+    columns: [
+      { key: 'fecha', label: 'Fecha' },
+      { key: 'hora', label: 'Hora' },
+      { key: 'area', label: 'Area' },
+      { key: 'temperatura', label: 'Temperatura (C)' },
+      { key: 'estado', label: 'Estado' },
+      { key: 'turno', label: 'Turno' },
+      { key: 'operario', label: 'Inspector' },
+      { key: 'observaciones', label: 'Observaciones' }
+    ]
+  });
+
+  if (refreshBtn) refreshBtn.parentNode.insertBefore(btn, refreshBtn);
+  else target.appendChild(btn);
 }
 
 async function loadTemperaturas(container) {

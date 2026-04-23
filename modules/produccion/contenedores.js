@@ -8,6 +8,7 @@ import { fmt } from '../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { subscribeToTable, createLiveIndicator } from '../../assets/js/utils/realtime-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 
 let empData = [];
 let activeFilters = { rango: '60' };
@@ -45,6 +46,8 @@ export async function init(container) {
     loadData(container);
   });
 
+  injectExportButton(container);
+
   await loadData(container);
 
   if (refreshInterval) clearInterval(refreshInterval);
@@ -67,6 +70,58 @@ export async function init(container) {
       headerActions.insertBefore(liveIndicator, headerActions.firstChild);
     }
   }
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const target = container.querySelector('.area-header > div:last-child')
+    || container.querySelector('.area-header')
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      // Agrupar por cliente (refleja lo que muestra la tabla)
+      const byC = {};
+      empData.forEach(r => {
+        const c = (r.cliente || 'SIN CLIENTE').trim().toUpperCase();
+        if (!byC[c]) byC[c] = { cajas: 0, kg: 0, frutas: new Set(), registros: 0, fechas: [] };
+        byC[c].cajas += +(r.cajas || 0);
+        byC[c].kg += +(r.kg_pt || 0);
+        if (r.fruta) byC[c].frutas.add(r.fruta.toUpperCase());
+        byC[c].registros++;
+        if (r.fecha) byC[c].fechas.push(r.fecha);
+      });
+      return Object.entries(byC)
+        .sort((a, b) => b[1].cajas - a[1].cajas)
+        .map(([cliente, v]) => {
+          const fechas = v.fechas.sort();
+          return {
+            cliente,
+            frutas: [...v.frutas].join(', '),
+            cajas: v.cajas,
+            kg_pt: v.kg,
+            toneladas: (v.kg / 1000).toFixed(2),
+            registros: v.registros,
+            primera_fecha: fechas[0] || '',
+            ultima_fecha: fechas[fechas.length - 1] || ''
+          };
+        });
+    },
+    filename: 'contenedores',
+    sheetName: 'Contenedores',
+    columns: [
+      { key: 'cliente', label: 'Cliente' },
+      { key: 'frutas', label: 'Frutas' },
+      { key: 'cajas', label: 'Cajas' },
+      { key: 'kg_pt', label: 'Kg PT' },
+      { key: 'toneladas', label: 'TN' },
+      { key: 'registros', label: 'Registros' },
+      { key: 'primera_fecha', label: 'Primera Fecha' },
+      { key: 'ultima_fecha', label: 'Ultima Fecha' }
+    ]
+  });
+  target.appendChild(btn);
 }
 
 async function loadData(container) {

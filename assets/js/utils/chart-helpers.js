@@ -81,24 +81,49 @@ export function getDefaultOptions(type = 'bar') {
   return base;
 }
 
+// Registry global de charts activos (para theme toggle y cleanup)
+if (!window.__activeCharts) window.__activeCharts = new Set();
+
 // Destruir chart existente y crear uno nuevo
 export function createChart(canvasId, config) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return null;
 
-  // Destruir chart anterior si existe
+  // Destruir chart anterior si existe (y des-registrarlo)
   const existing = Chart.getChart(canvas);
-  if (existing) existing.destroy();
+  if (existing) {
+    window.__activeCharts.delete(existing);
+    existing.destroy();
+  }
 
-  return new Chart(canvas, config);
+  const chart = new Chart(canvas, config);
+  window.__activeCharts.add(chart);
+  return chart;
+}
+
+// Destruir todos los charts dentro de un elemento DOM (para cleanup de paneles)
+export function destroyChartsIn(rootEl) {
+  if (!rootEl) return 0;
+  let count = 0;
+  rootEl.querySelectorAll('canvas').forEach(canvas => {
+    const chart = Chart.getChart(canvas);
+    if (chart) {
+      window.__activeCharts.delete(chart);
+      chart.destroy();
+      count++;
+    }
+  });
+  return count;
 }
 
 // Actualizar colores de todos los charts al cambiar tema
-export function updateChartsTheme(charts = []) {
+// Si no se pasa array, usa el registry global
+export function updateChartsTheme(charts) {
+  const list = charts || Array.from(window.__activeCharts);
   const textColor = getTextColor();
   const gridColor = getGridColor();
 
-  charts.forEach(chart => {
+  list.forEach(chart => {
     if (!chart) return;
 
     // Actualizar scales

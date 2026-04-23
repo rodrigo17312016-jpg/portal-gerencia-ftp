@@ -6,6 +6,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today, fmtDateLong, currentTurno } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let prodData = [];
 let persData = [];
@@ -104,8 +105,9 @@ function buildKpiFrutasInline(container, elementId, recs, field) {
   if (Object.keys(byFruta).length === 0) { el.innerHTML = ''; return; }
   el.innerHTML = Object.entries(byFruta).map(([f, v]) => {
     const fc = FRUTA_COLORS[f] || { color: '#64748b', emoji: '🍇' };
+    const fLabel = escapeHtml(f.charAt(0) + f.slice(1).toLowerCase());
     return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin:2px 0">
-      <span style="color:var(--muted)">${fc.emoji} ${f.charAt(0) + f.slice(1).toLowerCase()}</span>
+      <span style="color:var(--muted)">${fc.emoji} ${fLabel}</span>
       <span style="font-weight:700;color:${fc.color}">${fmt(v)}</span>
     </div>`;
   }).join('');
@@ -125,8 +127,9 @@ function buildKpiRendFrutas(container) {
   el.innerHTML = Object.entries(byFruta).map(([f, v]) => {
     const fc = FRUTA_COLORS[f] || { color: '#64748b', emoji: '🍇' };
     const rend = v.mp > 0 ? (v.pt / v.mp * 100).toFixed(1) : 0;
+    const fLabel = escapeHtml(f.charAt(0) + f.slice(1).toLowerCase());
     return `<div style="display:flex;justify-content:space-between;align-items:center;font-size:10px;margin:2px 0">
-      <span style="color:var(--muted)">${fc.emoji} ${f.charAt(0) + f.slice(1).toLowerCase()}</span>
+      <span style="color:var(--muted)">${fc.emoji} ${fLabel}</span>
       <span style="font-weight:700;color:${rend >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend}%</span>
     </div>`;
   }).join('');
@@ -151,7 +154,7 @@ function buildAvanceFrutas(container) {
     const rend = v.mp > 0 ? (v.pt / v.mp * 100).toFixed(0) : 0;
     return `<div class="card" style="padding:12px 16px;margin-bottom:8px;border-left:4px solid ${fc.color}">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-weight:700;font-size:13px">${fc.emoji} <strong>${f}</strong> <span style="font-weight:400;color:var(--muted);font-size:11px">Proy: ${v.proy || '—'} TN</span></div>
+        <div style="font-weight:700;font-size:13px">${fc.emoji} <strong>${escapeHtml(f)}</strong> <span style="font-weight:400;color:var(--muted);font-size:11px">Proy: ${v.proy || '—'} TN</span></div>
         <div style="font-size:20px;font-weight:900;color:${fc.color}">${pct}%</div>
       </div>
       <div class="progress-bar" style="height:10px;margin-bottom:4px">
@@ -230,16 +233,17 @@ function buildRow(r) {
   const fc = FRUTA_COLORS[(r.fruta || '').toUpperCase()] || { color: '#64748b', emoji: '' };
   const turnoColor = (r.turno || '').toUpperCase().includes('DIA') ? 'var(--amber)' : 'var(--azul)';
   const turnoLabel = (r.turno || '').toUpperCase().includes('DIA') ? 'DIA' : 'NOCHE';
+  // Datos de DB -> escapar para prevenir XSS
   return `<tr>
-    <td style="font-family:monospace;font-size:12px">${r.hora?.slice(0, 5) || '—'}</td>
+    <td style="font-family:monospace;font-size:12px">${escapeHtml(r.hora?.slice(0, 5) || '—')}</td>
     <td><span style="color:${turnoColor};font-weight:700;font-size:11px">${turnoLabel}</span></td>
-    <td style="font-size:12px">${fc.emoji} ${r.fruta || '—'}</td>
-    <td style="font-size:12px">${r.linea || 'L1'}</td>
+    <td style="font-size:12px">${fc.emoji} ${escapeHtml(r.fruta || '—')}</td>
+    <td style="font-size:12px">${escapeHtml(r.linea || 'L1')}</td>
     <td style="font-family:monospace;font-weight:600">${fmt(r.consumo_kg)}</td>
     <td style="font-family:monospace;font-weight:700">${fmt(r.pt_aprox_kg)}</td>
     <td style="font-weight:700;color:${parseFloat(rend) >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend}%</td>
-    <td>${r.personal || '—'}</td>
-    <td style="font-size:11px">${r.supervisor || '—'}</td>
+    <td>${escapeHtml(r.personal || '—')}</td>
+    <td style="font-size:11px">${escapeHtml(r.supervisor || '—')}</td>
   </tr>`;
 }
 

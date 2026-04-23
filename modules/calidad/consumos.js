@@ -6,6 +6,7 @@
 import { supabaseCalidad } from '../../assets/js/config/supabase.js';
 import { fmt } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
 
 let allData = [];
 
@@ -43,13 +44,13 @@ function populateFilters(container) {
   const semanas = [...new Set(allData.map(r => r.semana).filter(Boolean))].sort();
 
   const subEl = container.querySelector('#cFiltroSubgrupo');
-  if (subEl) subEl.innerHTML = '<option value="">Todos los subgrupos</option>' + subgrupos.map(s => `<option value="${s}">${s}</option>`).join('');
+  if (subEl) subEl.innerHTML = '<option value="">Todos los subgrupos</option>' + subgrupos.map(s => `<option value="${escapeAttr(s)}">${escapeHtml(s)}</option>`).join('');
 
   const cenEl = container.querySelector('#cFiltroCentro');
-  if (cenEl) cenEl.innerHTML = '<option value="">Todos los centros</option>' + centros.map(c => `<option value="${c}">${c}</option>`).join('');
+  if (cenEl) cenEl.innerHTML = '<option value="">Todos los centros</option>' + centros.map(c => `<option value="${escapeAttr(c)}">${escapeHtml(c)}</option>`).join('');
 
   const semEl = container.querySelector('#cFiltroSemana');
-  if (semEl) semEl.innerHTML = '<option value="">Todas las semanas</option>' + semanas.map(s => `<option value="${s}">Sem ${s}</option>`).join('');
+  if (semEl) semEl.innerHTML = '<option value="">Todas las semanas</option>' + semanas.map(s => `<option value="${escapeAttr(s)}">Sem ${escapeHtml(s)}</option>`).join('');
 }
 
 function getFiltered(container) {

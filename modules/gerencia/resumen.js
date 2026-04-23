@@ -56,14 +56,31 @@ export async function init(container) {
 }
 
 export function refresh() {
-  // Destroy all charts
+  // Destroy all charts (createChart se encarga del registry global)
   charts.forEach(c => { try { if (c) c.destroy(); } catch (_) { /* noop */ } });
   charts = [];
-  window.__activeCharts = [];
 
   const container = document.getElementById('panel-resumen');
   if (container) {
     Promise.all([loadKPIs(container), loadCharts(container)]);
+  }
+}
+
+// Lifecycle: pausar auto-refresh al ocultar panel
+export function onHide() {
+  if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+}
+
+// Reanudar al volver
+export function onShow() {
+  const c = document.getElementById('panel-resumen');
+  if (!c) return;
+  loadKPIs(c);
+  if (!refreshTimer) {
+    refreshTimer = setInterval(() => {
+      const cc = document.getElementById('panel-resumen');
+      if (cc) loadKPIs(cc);
+    }, 120000);
   }
 }
 

@@ -409,3 +409,24 @@ export function destroy() {
   if (timerInterval)   { clearInterval(timerInterval);   timerInterval = null; }
   activeProcesos = {};
 }
+
+// Lifecycle: pausar timers cuando el panel se oculta (ahorra CPU)
+export function onHide() {
+  if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; }
+  if (timerInterval)   { clearInterval(timerInterval);   timerInterval = null; }
+}
+
+// Reanudar al volver a mostrar
+export function onShow() {
+  const container = document.getElementById('panel-tuneles');
+  if (!container) return;
+  if (!refreshInterval) {
+    refreshInterval = setInterval(() => {
+      if (document.getElementById('panel-tuneles')) loadData(container);
+    }, 120000);
+  }
+  if (!timerInterval) {
+    timerInterval = setInterval(() => updateTimers(container), 1000);
+  }
+  loadData(container); // refresh inmediato
+}

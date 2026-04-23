@@ -48,10 +48,9 @@ async function initPortal() {
   const connected = await checkConnection();
   updateConnectionStatus(connected);
 
-  // 7. Suscribirse a cambios de tema para actualizar charts
+  // 7. Suscribirse a cambios de tema para actualizar charts (usa registry global)
   onThemeChange(() => {
-    const charts = window.__activeCharts || [];
-    updateChartsTheme(charts);
+    updateChartsTheme();
   });
 
   // 8. Remover loader inicial

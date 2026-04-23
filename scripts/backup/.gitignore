@@ -1,0 +1,5 @@
+# Backups locales (NO committear a git)
+backups/
+.env
+*.key
+*.gz

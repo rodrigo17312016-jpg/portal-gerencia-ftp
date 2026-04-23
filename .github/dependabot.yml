@@ -1,0 +1,16 @@
+# Dependabot config
+# Proyecto sin package.json, pero habilitamos monitoreo de GitHub Actions
+# si en el futuro se agregan. CDN deps se monitorean manualmente via
+# calendario trimestral (ver docs/COMPLIANCE.md).
+
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    commit-message:
+      prefix: "ci"
+    labels:
+      - "dependencies"
+      - "github-actions"

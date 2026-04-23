@@ -55,6 +55,7 @@
   </div>
   <div class="topbar-right">
     <div id="supabaseStatus" style="width:12px;height:12px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px rgba(0,0,0,0.3);cursor:help;flex-shrink:0" title="Supabase: Verificando..."></div>
+    <span id="syncSlot" style="display:inline-flex;align-items:center"></span>
     <button class="btn-moneda active-soles" id="btnMoneda" onclick="toggleMoneda()">💱 Mostrar en $</button>
     <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Cambiar tema"></div>
     <div class="topbar-dev-signature">
@@ -325,5 +326,33 @@
 <div class="toast" id="toast"></div>
 
 <script src="app.js"></script>
+<script src="../_shared/sync-button.js"></script>
+<script>
+  (function(){
+    function tryMount(){
+      if (typeof mountSyncButton !== 'function') return setTimeout(tryMount, 200);
+      mountSyncButton({
+        container: '#syncSlot',
+        table: 'config_costos',
+        storageKey: 'costos_registros',
+        requiredFields: ['fecha'],
+        mapRecord: function(r){
+          return {
+            fecha: r.fecha,
+            tarifa_almuerzo_sol: r.tarifa_almuerzo_sol || null,
+            tarifa_almuerzo_dolar: r.tarifa_almuerzo_dolar || null,
+            costo_hora_sol: r.costo_hora_sol || null,
+            costo_hora_dolar: r.costo_hora_dolar || null,
+            tipo_cambio: r.tipo_cambio || null,
+            registrado_por: r.registrado_por || null,
+            observacion: r.observacion || null
+          };
+        }
+      });
+    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', tryMount);
+    else tryMount();
+  })();
+</script>
 </body>
 </html>

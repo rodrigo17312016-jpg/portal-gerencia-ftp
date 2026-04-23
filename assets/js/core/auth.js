@@ -163,6 +163,23 @@ export async function doLogin(username, password) {
 // ─── Logout ───
 // Previene doble-click y garantiza redirect aunque la red este caida
 let _logoutInProgress = false;
+
+// Calcula URL absoluta del login relativa al directorio del documento actual.
+// En GitHub Pages la pagina esta en /portal-gerencia-ftp/portal.html → /portal-gerencia-ftp/login.html
+// En serve local la pagina esta en /portal (rewrite de .html) → resolve manual a /login.html
+function _buildLoginUrl() {
+  try {
+    const path = window.location.pathname;
+    // Tomar el directorio (quitar ultimo segmento). Si pathname termina sin slash,
+    // lastIndex+1 da el directory. Si termina con slash, se queda igual.
+    const lastSlash = path.lastIndexOf('/');
+    const dir = lastSlash >= 0 ? path.substring(0, lastSlash + 1) : '/';
+    return window.location.origin + dir + 'login.html';
+  } catch (e) {
+    return '/login.html'; // fallback seguro
+  }
+}
+
 export async function doLogout() {
   if (_logoutInProgress) return;
   _logoutInProgress = true;
@@ -207,10 +224,9 @@ export async function doLogout() {
     }
   } catch (e) {}
 
-  // Redirect inmediato - no esperamos al signOut remote
-  // (si falla, el anti-flash de login.html detectara que no hay session)
+  // Redirect inmediato con URL ABSOLUTO (evita ambiguedades del SW/serve con rewrite)
   signOutPromise.finally(() => { /* cleanup ya hecho */ });
-  window.location.replace('login.html');
+  window.location.replace(_buildLoginUrl());
 }
 
 // ─── Timer de inactividad ───
@@ -265,8 +281,8 @@ export async function requireAuth() {
   // Limpiar sesion legacy residual si existe (puede causar loops si anti-flash la detecta)
   try { localStorage.removeItem('ftp_session'); } catch {}
 
-  // No hay sesion - redirigir a login
-  window.location.href = 'login.html';
+  // No hay sesion - redirigir a login con URL ABSOLUTA
+  window.location.replace(_buildLoginUrl());
   return false;
 }
 

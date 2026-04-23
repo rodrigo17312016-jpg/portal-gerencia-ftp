@@ -5,6 +5,7 @@
 
 import { fmt, fmtSoles, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
 
 let charts = [];
@@ -293,7 +294,7 @@ function renderTabla(container) {
       ejecucion: '<span class="badge badge-amber">Ejecucion</span>',
       completada: '<span class="badge badge-verde">Completada</span>',
       pausada: '<span class="badge badge-rose">Pausada</span>'
-    }[o.estado] || o.estado;
+    }[o.estado] || escapeHtml(o.estado);
 
     const causa = o.causaRaiz || clasificarCausa(o.descripcion);
     const causaColor = CAUSA_COLORS[causa] || 'azul';
@@ -303,11 +304,11 @@ function renderTabla(container) {
     const costo = o.costoReal != null ? o.costoReal : o.costoEstimado;
 
     return `<tr>
-      <td><strong>${o.codigo}</strong></td>
+      <td><strong>${escapeHtml(o.codigo)}</strong></td>
       <td style="white-space:nowrap;font-size:12px">${fmtDate(o.fecha)}</td>
-      <td>${o.equipoCodigo}<br><span style="font-size:11px;color:var(--muted)">${(o.equipo || '').replace(o.equipoCodigo + ' ', '')}</span></td>
-      <td style="font-size:12px">${o.descripcion}</td>
-      <td style="font-size:12px">${o.tecnico}</td>
+      <td>${escapeHtml(o.equipoCodigo)}<br><span style="font-size:11px;color:var(--muted)">${escapeHtml((o.equipo || '').replace(o.equipoCodigo + ' ', ''))}</span></td>
+      <td style="font-size:12px">${escapeHtml(o.descripcion)}</td>
+      <td style="font-size:12px">${escapeHtml(o.tecnico)}</td>
       <td style="text-align:center">${horas}</td>
       <td style="text-align:right">${fmt(costo, 0)}</td>
       <td>${causaBadge}</td>
@@ -327,7 +328,7 @@ function openModal(container) {
   const sel = container.querySelector('#cm-f-equipo');
   if (sel) {
     sel.innerHTML = '<option value="">-- Seleccionar equipo --</option>' +
-      equipos.map(e => `<option value="${e.codigo}">${e.codigo} - ${e.nombre}</option>`).join('');
+      equipos.map(e => `<option value="${escapeAttr(e.codigo)}">${escapeHtml(e.codigo)} - ${escapeHtml(e.nombre)}</option>`).join('');
   }
   const desc = container.querySelector('#cm-f-descripcion');
   if (desc) desc.value = '';

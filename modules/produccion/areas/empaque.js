@@ -6,6 +6,7 @@
 import { supabase } from '../../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today, fmtDateLong } from '../../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../../assets/js/utils/dom-helpers.js';
 
 let empData = [];
 let activeFilters = { turno: 'DIA', fruta: 'TODAS', tipo: 'TODOS' };
@@ -190,7 +191,7 @@ function buildDesgloseFrutas(container, recs) {
           const fc = FRUTA_COLORS[f] || { color: '#64748b', emoji: '🍇' };
           return `<div style="padding:10px 14px;border-radius:10px;border-left:3px solid ${fc.color};background:var(--surface3)">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-              <div style="font-weight:700;font-size:13px;color:var(--texto)">${fc.emoji} ${f}</div>
+              <div style="font-weight:700;font-size:13px;color:var(--texto)">${fc.emoji} ${escapeHtml(f)}</div>
               <div style="font-size:11px;color:var(--muted)">${v.count} reg</div>
             </div>
             <div style="display:flex;justify-content:space-between;font-size:11px">
@@ -228,18 +229,18 @@ function buildTable(container, recs) {
     const isDia = (r.turno || '').toUpperCase().includes('DIA');
 
     return `<tr>
-      <td style="font-family:monospace;font-size:11.5px;font-weight:600">${r.hora || '—'}</td>
+      <td style="font-family:monospace;font-size:11.5px;font-weight:600">${escapeHtml(r.hora || '—')}</td>
       <td><span style="color:${isDia ? 'var(--amber)' : 'var(--azul)'};font-weight:700;font-size:11px">${isDia ? '☀️ DIA' : '🌙 NOCHE'}</span></td>
-      <td style="font-size:12px;font-weight:600">${fc.emoji} ${r.fruta || '—'}</td>
-      <td><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:${tipoColor}15;color:${tipoColor};border:1px solid ${tipoColor}40">${r.tipo || '—'}</span></td>
-      <td style="font-size:11px;color:var(--muted)">${r.corte || '—'}</td>
-      <td style="font-family:monospace;font-size:11px">${r.kg_presentacion ? r.kg_presentacion + ' kg' : '—'}</td>
+      <td style="font-size:12px;font-weight:600">${fc.emoji} ${escapeHtml(r.fruta || '—')}</td>
+      <td><span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:${tipoColor}15;color:${tipoColor};border:1px solid ${tipoColor}40">${escapeHtml(r.tipo || '—')}</span></td>
+      <td style="font-size:11px;color:var(--muted)">${escapeHtml(r.corte || '—')}</td>
+      <td style="font-family:monospace;font-size:11px">${r.kg_presentacion ? fmt(r.kg_presentacion) + ' kg' : '—'}</td>
       <td style="font-family:monospace;font-weight:700;color:var(--verde)">${fmt(r.cajas)}</td>
       <td style="font-family:monospace;font-weight:600">${fmt(r.kg_pt)}</td>
       <td style="font-family:monospace;color:var(--naranja);font-weight:600">${fmt(r.cj_hr)}</td>
       <td style="font-family:monospace;color:var(--cyan);font-weight:600">${r.cj_hr_op != null ? (+r.cj_hr_op).toFixed(2) : '—'}</td>
       <td style="text-align:center;font-weight:600">${r.operarios || '—'}</td>
-      <td style="font-size:11px;color:var(--muted)">${r.cliente || '—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${escapeHtml(r.cliente || '—')}</td>
     </tr>`;
   }).join('');
 

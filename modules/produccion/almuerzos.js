@@ -5,6 +5,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtSoles, today } from '../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let persData = [];
 let costData = [];
@@ -186,7 +187,7 @@ function buildTable(container) {
     const areas = [...new Set(dayPers.map(r => r.area).filter(Boolean))];
     const areasLbl = areas.map(a => {
       const color = AREA_COLORS[(a || '').toUpperCase()] || '#64748b';
-      return `<span style="padding:2px 6px;border-radius:4px;font-size:10px;background:${color}15;color:${color};border:1px solid ${color}33;margin-right:3px">${a}</span>`;
+      return `<span style="padding:2px 6px;border-radius:4px;font-size:10px;background:${color}15;color:${color};border:1px solid ${color}33;margin-right:3px">${escapeHtml(a)}</span>`;
     }).join('') || '—';
     const fechaD = new Date(f + 'T00:00:00');
     const fechaLbl = fechaD.toLocaleDateString('es-PE', { weekday: 'short', day: '2-digit', month: '2-digit' });

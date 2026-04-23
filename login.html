@@ -528,13 +528,13 @@ const userInput = document.getElementById('loginUser');
 const passInput = document.getElementById('loginPass');
 const errorEl = document.getElementById('loginError');
 
-function handleLogin() {
+async function handleLogin() {
   errorEl.textContent = '';
   loginBtn.textContent = 'Verificando...';
   loginBtn.style.pointerEvents = 'none';
 
-  setTimeout(() => {
-    const result = doLogin(userInput.value, passInput.value);
+  setTimeout(async () => {
+    const result = await doLogin(userInput.value, passInput.value);
     if (result.success) {
       loginBtn.textContent = '✓ Bienvenido';
       loginBtn.style.background = '#059669';

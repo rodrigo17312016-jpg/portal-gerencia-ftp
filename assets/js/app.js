@@ -12,8 +12,8 @@ import { updateChartsTheme } from './utils/chart-helpers.js';
 
 // ── Inicializacion ──
 async function initPortal() {
-  // 1. Verificar autenticacion
-  if (!requireAuth()) return;
+  // 1. Verificar autenticacion (ahora async: consulta Supabase Auth + fallback)
+  if (!(await requireAuth())) return;
 
   const user = getCurrentUser();
 

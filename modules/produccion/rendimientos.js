@@ -7,6 +7,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtPct } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 const OBJECTIVES = { mango: 50, arandano: 85, granada: 45 };
 
@@ -263,9 +264,9 @@ function buildTable(container, data) {
     const rend = r.mp > 0 ? (r.pt / r.mp * 100) : 0;
     const status = getRendStatus(rend);
     return `<tr>
-      <td style="font-family:monospace;font-size:12px;font-weight:600">${r.lote}</td>
-      <td style="font-size:12px">${r.proveedor}</td>
-      <td style="font-size:12px">${r.variedad}</td>
+      <td style="font-family:monospace;font-size:12px;font-weight:600">${escapeHtml(r.lote)}</td>
+      <td style="font-size:12px">${escapeHtml(r.proveedor)}</td>
+      <td style="font-size:12px">${escapeHtml(r.variedad)}</td>
       <td style="font-family:monospace">${fmt(r.mp)}</td>
       <td style="font-family:monospace;font-weight:700">${fmt(r.pt)}</td>
       <td style="font-weight:700;color:${rend >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${fmtPct(rend)}</td>

@@ -5,6 +5,7 @@
 
 import { fmt, fmtSoles, fmtPct } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
 
 let charts = [];
@@ -288,8 +289,8 @@ function renderTopEquipos(container, data) {
 
     return `<tr>
       <td>${medalla}</td>
-      <td><strong>${e.codigo}</strong><br><small style="color:var(--muted)">${nombre}</small></td>
-      <td>${e.area || '-'}</td>
+      <td><strong>${escapeHtml(e.codigo)}</strong><br><small style="color:var(--muted)">${escapeHtml(nombre)}</small></td>
+      <td>${escapeHtml(e.area || '-')}</td>
       <td>${e.otCount}</td>
       <td><strong>${fmtSoles(e.costoTotal, 0)}</strong></td>
       <td>${fmtSoles(costoHora, 2)}</td>
@@ -337,8 +338,8 @@ function renderOportunidades(container, data) {
     const ahorro = Math.round(e.corr * 0.35);
     oportunidades.push({
       type: 'high', icon: '🔨',
-      title: `${e.codigo}: ${pct}% costo correctivo`,
-      desc: `${eq?.nombre || e.codigo} acumula ${fmtSoles(e.corr, 0)} en OT correctivas. Considerar reemplazo o overhaul programado.`,
+      title: `${escapeHtml(e.codigo)}: ${pct}% costo correctivo`,
+      desc: `${escapeHtml(eq?.nombre || e.codigo)} acumula ${fmtSoles(e.corr, 0)} en OT correctivas. Considerar reemplazo o overhaul programado.`,
       ahorro: `Ahorro potencial: ${fmtSoles(ahorro, 0)}/año`
     });
   });
@@ -352,7 +353,7 @@ function renderOportunidades(container, data) {
     if (pctArea > 25) {
       oportunidades.push({
         type: 'medium', icon: '🏭',
-        title: `Área ${areaTop[0]} concentra ${pctArea}% del gasto`,
+        title: `Área ${escapeHtml(areaTop[0])} concentra ${pctArea}% del gasto`,
         desc: `Revisar rutinas preventivas y plan de criticidad. Auditoría de procesos recomendada.`,
         ahorro: `Ahorro potencial: ${fmtSoles(areaTop[1] * 0.15, 0)}`
       });

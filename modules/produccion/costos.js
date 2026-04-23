@@ -8,6 +8,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtUSD, fmtSoles, today } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let charts = [];
 let currency = 'USD';
@@ -306,7 +307,7 @@ function buildTable(container, prod, costs) {
     sumCostoMOD += costoMODHora;
 
     return `<tr>
-      <td style="font-family:monospace;font-size:12px;font-weight:600">${h}</td>
+      <td style="font-family:monospace;font-size:12px;font-weight:600">${escapeHtml(h)}</td>
       <td>${fmt(avgPers)}</td>
       <td style="font-family:monospace;font-weight:700">${fmt(d.pt)}</td>
       <td>${costoHHHora > 0 ? fmtCurrency(costoHHHora) : '—'}</td>

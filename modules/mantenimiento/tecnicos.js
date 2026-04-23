@@ -5,6 +5,7 @@
 
 import { fmt } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
 
 let charts = [];
@@ -35,7 +36,7 @@ function nivelBadge(nivel) {
 function estadoBadge(e) {
   if (e === 'activo') return '<span class="badge badge-verde">● Activo</span>';
   if (e === 'vacaciones') return '<span class="badge badge-amber">🏖️ Vacaciones</span>';
-  return `<span class="badge badge-rose">${e}</span>`;
+  return `<span class="badge badge-rose">${escapeHtml(e)}</span>`;
 }
 
 // ════════════════════════════════════════════════════════
@@ -142,7 +143,7 @@ function renderLeyenda(container, tecs) {
     return `<div class="mant-tec-leg-row">
       <div class="mant-tec-leg-row-label">
         <div class="mant-tec-leg-dot" style="background:${colorEspecialidad(esp)}"></div>
-        <div>${esp}</div>
+        <div>${escapeHtml(esp)}</div>
       </div>
       <div class="mant-tec-leg-count">${n}</div>
     </div>`;
@@ -167,12 +168,12 @@ function renderGrid(container, tecs) {
     const cargaColor = carga >= 95 ? 'var(--danger)' : carga >= 80 ? 'var(--warn)' : 'var(--verde)';
     const promedio = t.otCompletadas > 0 ? (t.horasMes / t.otCompletadas).toFixed(1) : '-';
 
-    return `<div class="mant-tec-card" data-tec-id="${t.id}">
+    return `<div class="mant-tec-card" data-tec-id="${escapeAttr(t.id)}">
       <div class="mant-tec-head">
-        <div class="mant-tec-avatar" style="background:${color}">${t.avatar || '??'}</div>
+        <div class="mant-tec-avatar" style="background:${color}">${escapeHtml(t.avatar || '??')}</div>
         <div style="flex:1;min-width:0">
-          <div class="mant-tec-name">${t.nombre}</div>
-          <div class="mant-tec-esp">🛠️ ${t.especialidad}</div>
+          <div class="mant-tec-name">${escapeHtml(t.nombre)}</div>
+          <div class="mant-tec-esp">🛠️ ${escapeHtml(t.especialidad)}</div>
         </div>
         <div class="mant-tec-nivel">${nivelBadge(t.nivel)}</div>
       </div>
@@ -204,10 +205,10 @@ function renderGrid(container, tecs) {
 
       <div class="mant-tec-footer">
         <div>${estadoBadge(t.estado)}</div>
-        <div class="mant-tec-tel">📞 <strong>${t.telefono}</strong></div>
+        <div class="mant-tec-tel">📞 <strong>${escapeHtml(t.telefono)}</strong></div>
       </div>
 
-      <button class="btn btn-secondary btn-sm" data-ver-ot="${t.id}">Ver OT asignadas</button>
+      <button class="btn btn-secondary btn-sm" data-ver-ot="${escapeAttr(t.id)}">Ver OT asignadas</button>
     </div>`;
   }).join('');
 
@@ -324,16 +325,16 @@ function openOtModal(container, tecnicoId) {
           'ejecucion': '<span class="badge badge-amber">Ejecución</span>',
           'completada': '<span class="badge badge-verde">Completada</span>',
           'pausada': '<span class="badge badge-rose">Pausada</span>'
-        }[o.estado] || o.estado;
+        }[o.estado] || escapeHtml(o.estado);
         const tipoIcon = { preventivo: '🗓️', correctivo: '🔨', predictivo: '📡' }[o.tipo] || '•';
         return `<tr>
-          <td><strong>${o.codigo}</strong></td>
-          <td>${o.equipo}</td>
-          <td>${o.area}</td>
-          <td>${tipoIcon} ${o.tipo[0].toUpperCase() + o.tipo.slice(1)}</td>
+          <td><strong>${escapeHtml(o.codigo)}</strong></td>
+          <td>${escapeHtml(o.equipo)}</td>
+          <td>${escapeHtml(o.area)}</td>
+          <td>${tipoIcon} ${escapeHtml(o.tipo[0].toUpperCase() + o.tipo.slice(1))}</td>
           <td>${prio}</td>
           <td>${est}</td>
-          <td style="white-space:nowrap">${o.fecha}</td>
+          <td style="white-space:nowrap">${escapeHtml(o.fecha)}</td>
         </tr>`;
       }).join('');
     }

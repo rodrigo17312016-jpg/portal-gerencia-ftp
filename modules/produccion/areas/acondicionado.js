@@ -6,6 +6,7 @@
 import { supabase } from '../../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today, fmtDateLong } from '../../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../../assets/js/utils/dom-helpers.js';
 
 let prodData = [];
 let persData = [];
@@ -204,7 +205,7 @@ function buildKpiFrutas(container, elId, recs, field) {
   if (!Object.keys(byF).length) { el.innerHTML = ''; return; }
   el.innerHTML = Object.entries(byF).map(([f, v]) => {
     const fc = FRUTA_COLORS[f] || { color: '#64748b', emoji: '🍇' };
-    return `<div style="display:flex;justify-content:space-between;font-size:10px;margin:2px 0"><span style="color:var(--muted)">${fc.emoji} ${f.charAt(0) + f.slice(1).toLowerCase()}</span><span style="font-weight:700;color:${fc.color}">${fmt(v)}</span></div>`;
+    return `<div style="display:flex;justify-content:space-between;font-size:10px;margin:2px 0"><span style="color:var(--muted)">${fc.emoji} ${escapeHtml(f.charAt(0) + f.slice(1).toLowerCase())}</span><span style="font-weight:700;color:${fc.color}">${fmt(v)}</span></div>`;
   }).join('');
 }
 
@@ -222,7 +223,7 @@ function buildKpiRendFrutas(container, elId, recs) {
   el.innerHTML = Object.entries(byF).map(([f, v]) => {
     const fc = FRUTA_COLORS[f] || { color: '#64748b', emoji: '🍇' };
     const r = v.mp > 0 ? (v.pt / v.mp * 100).toFixed(1) : 0;
-    return `<div style="display:flex;justify-content:space-between;font-size:10px;margin:2px 0"><span style="color:var(--muted)">${fc.emoji} ${f.charAt(0) + f.slice(1).toLowerCase()}</span><span style="font-weight:700;color:${r >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${r}%</span></div>`;
+    return `<div style="display:flex;justify-content:space-between;font-size:10px;margin:2px 0"><span style="color:var(--muted)">${fc.emoji} ${escapeHtml(f.charAt(0) + f.slice(1).toLowerCase())}</span><span style="font-weight:700;color:${r >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${r}%</span></div>`;
   }).join('');
 }
 
@@ -248,7 +249,7 @@ function buildAvanceFrutas(container, recs) {
     return `
       <div class="card" style="padding:12px 18px;margin-bottom:8px;border-left:4px solid ${fc.color};background:var(--surface)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
-          <div style="font-weight:700;font-size:13px;color:var(--texto)">${fc.emoji} <strong>${f}</strong> <span style="font-weight:500;color:var(--muted);font-size:11px">Proy: ${v.proy || '—'} TN</span></div>
+          <div style="font-weight:700;font-size:13px;color:var(--texto)">${fc.emoji} <strong>${escapeHtml(f)}</strong> <span style="font-weight:500;color:var(--muted);font-size:11px">Proy: ${v.proy ? fmt(v.proy) : '—'} TN</span></div>
           <div style="font-size:20px;font-weight:900;color:${fc.color}">${pct}%</div>
         </div>
         <div style="height:8px;background:var(--surface3);border-radius:4px;overflow:hidden;margin-bottom:4px"><div style="width:${pct}%;height:100%;background:${fc.color};transition:width .6s ease"></div></div>
@@ -338,15 +339,15 @@ function buildRow(r) {
   const costoKg = r.costo_kg || DEFAULT_COSTS[fruta] || 2.5;
 
   return `<tr>
-    <td style="font-family:monospace;font-size:12px;font-weight:600">${r.hora?.slice(0, 5) || '—'}</td>
+    <td style="font-family:monospace;font-size:12px;font-weight:600">${escapeHtml(r.hora?.slice(0, 5) || '—')}</td>
     <td><span style="color:${isDia ? 'var(--amber)' : 'var(--azul)'};font-weight:700;font-size:11px">${isDia ? 'DIA' : 'NOCHE'}</span></td>
-    <td style="font-size:12px;font-weight:600">${fc.emoji} ${r.fruta || '—'}</td>
-    <td style="font-size:12px">${r.linea || 'L1'}</td>
+    <td style="font-size:12px;font-weight:600">${fc.emoji} ${escapeHtml(r.fruta || '—')}</td>
+    <td style="font-size:12px">${escapeHtml(r.linea || 'L1')}</td>
     <td style="font-family:monospace;font-weight:600">${fmt(r.consumo_kg)}</td>
     <td style="font-family:monospace;font-weight:700">${fmt(r.pt_aprox_kg)}</td>
     <td style="font-weight:700;color:${parseFloat(rend) >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend}%</td>
-    <td>${r.personal || '—'}</td>
-    <td style="font-size:11px;color:var(--muted)">${r.supervisor || '—'}</td>
+    <td>${escapeHtml(r.personal || '—')}</td>
+    <td style="font-size:11px;color:var(--muted)">${escapeHtml(r.supervisor || '—')}</td>
     <td class="aco-costo-col" style="display:${costoVisible ? 'table-cell' : 'none'};font-family:monospace;color:var(--cyan);font-weight:600">S/ ${fmt(costoKg, 2)}</td>
   </tr>`;
 }

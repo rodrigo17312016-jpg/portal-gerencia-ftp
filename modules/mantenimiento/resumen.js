@@ -5,6 +5,7 @@
 
 import { fmt, fmtPct, fmtSoles } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { showPanel } from '../../assets/js/core/router.js';
 import { getMantData } from './data-mock.js';
 
@@ -252,19 +253,19 @@ function renderOtTable(container) {
       'ejecucion': '<span class="badge badge-amber">En Ejecucion</span>',
       'completada': '<span class="badge badge-verde">Completada</span>',
       'pausada': '<span class="badge badge-rose">Pausada</span>'
-    }[o.estado] || o.estado;
+    }[o.estado] || escapeHtml(o.estado);
 
     const tipoIcon = { preventivo: '🗓️', correctivo: '🔨', predictivo: '📡' }[o.tipo] || '•';
 
     return `<tr>
-      <td><strong>${o.codigo}</strong></td>
-      <td>${o.equipo}</td>
-      <td>${o.area}</td>
-      <td>${tipoIcon} ${o.tipo[0].toUpperCase() + o.tipo.slice(1)}</td>
+      <td><strong>${escapeHtml(o.codigo)}</strong></td>
+      <td>${escapeHtml(o.equipo)}</td>
+      <td>${escapeHtml(o.area)}</td>
+      <td>${tipoIcon} ${escapeHtml(o.tipo[0].toUpperCase() + o.tipo.slice(1))}</td>
       <td>${prioridadBadge}</td>
-      <td>${o.tecnico}</td>
+      <td>${escapeHtml(o.tecnico)}</td>
       <td>${estadoBadge}</td>
-      <td style="white-space:nowrap">${o.fecha}</td>
+      <td style="white-space:nowrap">${escapeHtml(o.fecha)}</td>
     </tr>`;
   }).join('');
 }
@@ -289,11 +290,11 @@ function renderAlertasCriticas(container, data) {
     return `<div class="mant-alert">
       <div class="mant-alert-icon">${icon}</div>
       <div class="mant-alert-body">
-        <div class="mant-alert-title">${e.codigo} — ${e.nombre}</div>
-        <div class="mant-alert-desc">${e.ultimaFalla || 'Requiere intervencion inmediata'}</div>
+        <div class="mant-alert-title">${escapeHtml(e.codigo)} — ${escapeHtml(e.nombre)}</div>
+        <div class="mant-alert-desc">${escapeHtml(e.ultimaFalla || 'Requiere intervencion inmediata')}</div>
         <div class="mant-alert-meta">
-          <span class="mant-alert-chip">${e.area}</span>
-          <span class="mant-alert-chip">${e.tipo}</span>
+          <span class="mant-alert-chip">${escapeHtml(e.area)}</span>
+          <span class="mant-alert-chip">${escapeHtml(e.tipo)}</span>
           <span class="mant-alert-chip" style="background:var(--rose-bg);color:var(--danger)">${estadoChip}</span>
         </div>
       </div>

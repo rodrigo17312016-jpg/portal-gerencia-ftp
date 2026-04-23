@@ -5,6 +5,7 @@
 
 import { fmt, fmtPct, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
 
 let charts = [];
@@ -329,23 +330,23 @@ function renderTabla(container) {
       normal: '<span class="badge badge-verde">Normal</span>',
       alerta: '<span class="badge badge-amber">Alerta</span>',
       critico: '<span class="badge badge-rose">Critico</span>'
-    }[i.estado] || i.estado;
+    }[i.estado] || escapeHtml(i.estado);
 
     const tecSlug = TECNICA_MAP_INV[i.tecnica] || 'vibraciones';
     const tecColor = { vibraciones: 'azul', termografia: 'rose', aceite: 'amber', ultrasonido: 'purple' }[tecSlug];
-    const tecBadge = `<span class="badge badge-${tecColor}">${i.tecnica.replace('Analisis de ', '').replace('Termografia ', 'Termo. ')}</span>`;
+    const tecBadge = `<span class="badge badge-${tecColor}">${escapeHtml(i.tecnica.replace('Analisis de ', '').replace('Termografia ', 'Termo. '))}</span>`;
 
     return `<tr>
-      <td><strong>${i.id}</strong></td>
-      <td>${i.equipo}<br><span style="font-size:11px;color:var(--muted)">${i.equipoNombre}</span></td>
-      <td>${i.area}</td>
+      <td><strong>${escapeHtml(i.id)}</strong></td>
+      <td>${escapeHtml(i.equipo)}<br><span style="font-size:11px;color:var(--muted)">${escapeHtml(i.equipoNombre)}</span></td>
+      <td>${escapeHtml(i.area)}</td>
       <td>${tecBadge}</td>
-      <td style="text-align:right;font-weight:700">${i.valor.toFixed(2)} <span style="font-size:10px;color:var(--muted)">${i.unidad}</span></td>
+      <td style="text-align:right;font-weight:700">${i.valor.toFixed(2)} <span style="font-size:10px;color:var(--muted)">${escapeHtml(i.unidad)}</span></td>
       <td style="text-align:right;font-size:12px;color:var(--muted)">${i.limiteOk.toFixed(1)}</td>
       <td style="text-align:right;font-size:12px;color:var(--muted)">${i.limiteAlerta.toFixed(1)}</td>
       <td>${estadoBadge}</td>
       <td style="white-space:nowrap;font-size:12px">${fmtDate(i.fecha)}</td>
-      <td style="font-size:12px">${i.tecnico}</td>
+      <td style="font-size:12px">${escapeHtml(i.tecnico)}</td>
     </tr>`;
   }).join('');
 }

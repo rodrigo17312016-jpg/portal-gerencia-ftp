@@ -3,6 +3,7 @@
    ════════════════════════════════════════════════════════ */
 import { createChart, getColors, getDefaultOptions, getTextColor, getGridColor } from '../../assets/js/utils/chart-helpers.js';
 import { fmt } from '../../assets/js/utils/formatters.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 /* ── Static data: 26 reclamos ── */
 const RECLAMOS = [
@@ -372,7 +373,7 @@ function renderFilterChips() {
     .filter(f => document.getElementById(f.id)?.value)
     .map(f => {
       const val = document.getElementById(f.id).value;
-      return `<span class="badge badge-azul" style="cursor:pointer;padding:4px 10px" data-filter="${f.id}" title="Click para limpiar">${f.label}: ${val} &times;</span>`;
+      return `<span class="badge badge-azul" style="cursor:pointer;padding:4px 10px" data-filter="${f.id}" title="Click para limpiar">${f.label}: ${escapeHtml(val)} &times;</span>`;
     });
 
   container.innerHTML = chips.join('');

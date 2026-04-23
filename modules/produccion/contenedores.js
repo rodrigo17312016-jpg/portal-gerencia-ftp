@@ -6,6 +6,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt } from '../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let empData = [];
 let activeFilters = { rango: '60' };
@@ -200,11 +201,11 @@ function buildTable(container) {
     const frutasArr = [...v.frutas];
     const frutasLbl = frutasArr.map(f => {
       const fc = FRUTA_COLORS[f] || '#64748b';
-      return `<span style="padding:2px 6px;border-radius:4px;font-size:10px;background:${fc}15;color:${fc};border:1px solid ${fc}40;margin-right:3px">${f}</span>`;
+      return `<span style="padding:2px 6px;border-radius:4px;font-size:10px;background:${fc}15;color:${fc};border:1px solid ${fc}40;margin-right:3px">${escapeHtml(f)}</span>`;
     }).join('') || '—';
 
     return `<tr>
-      <td style="font-weight:700;color:${color}">🚢 ${c}</td>
+      <td style="font-weight:700;color:${color}">🚢 ${escapeHtml(c)}</td>
       <td>${frutasLbl}</td>
       <td style="font-family:monospace;font-weight:700;color:var(--verde)">${fmt(v.cajas)}</td>
       <td style="font-family:monospace;font-weight:600">${fmt(v.kg)}</td>

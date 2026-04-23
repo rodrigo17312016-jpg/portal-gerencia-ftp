@@ -4,7 +4,7 @@
 
 import { supabase } from '../../assets/js/config/supabase.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
-import { createExportButton } from '../../assets/js/utils/export-helpers.js';
+import { createExportButton, exportToExcel } from '../../assets/js/utils/export-helpers.js';
 
 let allData = [];
 
@@ -32,6 +32,43 @@ export async function init(container) {
       ]
     });
     refreshBtn.parentNode.insertBefore(exportBtn, refreshBtn);
+
+    // Boton dedicado BRCGS/FDA: usa vista con hash integridad
+    const brcgsBtn = document.createElement('button');
+    brcgsBtn.type = 'button';
+    brcgsBtn.className = 'btn btn-sm';
+    brcgsBtn.style.cssText = 'background:var(--azul);color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer;margin-right:8px';
+    brcgsBtn.innerHTML = '📋 Exportar BRCGS';
+    brcgsBtn.title = 'Descarga formato BRCGS/FDA con hash de integridad por registro';
+    brcgsBtn.addEventListener('click', async () => {
+      brcgsBtn.disabled = true;
+      brcgsBtn.textContent = '⏳ Generando...';
+      try {
+        const { data, error } = await supabase
+          .from('audit_log_brcgs')
+          .select('*')
+          .limit(5000);
+        if (error) throw error;
+        await exportToExcel(data || [], 'audit-brcgs-compliance', [
+          { key: 'evento_id', label: 'ID Evento' },
+          { key: 'timestamp_peru', label: 'Fecha/Hora (Peru)' },
+          { key: 'timestamp_utc', label: 'Timestamp UTC' },
+          { key: 'usuario', label: 'Usuario' },
+          { key: 'rol', label: 'Rol' },
+          { key: 'tabla', label: 'Tabla' },
+          { key: 'operacion', label: 'Operacion' },
+          { key: 'registro_id', label: 'Registro ID' },
+          { key: 'descripcion', label: 'Descripcion' },
+          { key: 'integrity_hash', label: 'Hash SHA-256 Integridad' }
+        ], 'Audit Trail BRCGS');
+      } catch (e) {
+        alert('Error exportando: ' + e.message);
+      } finally {
+        brcgsBtn.disabled = false;
+        brcgsBtn.innerHTML = '📋 Exportar BRCGS';
+      }
+    });
+    refreshBtn.parentNode.insertBefore(brcgsBtn, refreshBtn);
   }
 
   await loadData(container);
@@ -58,7 +95,7 @@ async function loadData(container) {
   try {
     const { data, error } = await supabase
       .from('audit_log')
-      .select('occurred_at, user_email, user_role, table_name, operation, row_id, changed_fields')
+      .select('id, occurred_at, user_email, user_role, table_name, operation, row_id, changed_fields')
       .order('occurred_at', { ascending: false })
       .limit(500);
 

@@ -7,6 +7,7 @@ import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today, fmtDateLong, currentTurno } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 
 let prodData = [];
 let persData = [];
@@ -43,7 +44,41 @@ export async function init(container) {
     });
   });
 
+  // Inyectar boton de export si hay un header con acciones
+  injectExportButton(container);
+
   await loadData(container);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const target = container.querySelector('.card-header-actions, .area-header-actions, .filters-bar')
+    || container.querySelector('.card-header, .area-header, h2, h3')?.parentElement;
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => prodData.map(r => ({
+      fecha: r.fecha, hora: r.hora, turno: r.turno, fruta: r.fruta, linea: r.linea,
+      consumo_kg: r.consumo_kg, pt_aprox_kg: r.pt_aprox_kg,
+      rendimiento_pct: r.consumo_kg > 0 ? ((r.pt_aprox_kg / r.consumo_kg) * 100).toFixed(1) : '',
+      personal: r.personal, supervisor: r.supervisor
+    })),
+    filename: 'produccion-dia',
+    sheetName: 'Produccion del Dia',
+    columns: [
+      { key: 'fecha', label: 'Fecha' },
+      { key: 'hora', label: 'Hora' },
+      { key: 'turno', label: 'Turno' },
+      { key: 'fruta', label: 'Fruta' },
+      { key: 'linea', label: 'Linea' },
+      { key: 'consumo_kg', label: 'Consumo MP (kg)' },
+      { key: 'pt_aprox_kg', label: 'PT Aprox (kg)' },
+      { key: 'rendimiento_pct', label: 'Rendimiento %' },
+      { key: 'personal', label: 'Personal' },
+      { key: 'supervisor', label: 'Supervisor' }
+    ]
+  });
+  target.appendChild(btn);
 }
 
 async function loadData(container) {

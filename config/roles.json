@@ -3,7 +3,8 @@
     "modules": ["gerencia", "produccion", "calidad", "almacen", "rrhh", "mantenimiento"],
     "panels": "*",
     "apps": "*",
-    "dashboards": "*"
+    "dashboards": "*",
+    "actions": "*"
   },
   "produccion": {
     "modules": ["produccion", "almacen"],
@@ -20,7 +21,14 @@
     ],
     "dashboards": [
       "consumos", "consumo-diario", "analisis"
-    ]
+    ],
+    "actions": {
+      "view": "*",
+      "edit": ["registro_produccion", "registro_personal", "registro_tuneles", "registro_empaque_congelado"],
+      "delete": [],
+      "export": "*",
+      "config": []
+    }
   },
   "calidad": {
     "modules": ["calidad", "almacen"],
@@ -33,7 +41,14 @@
     "dashboards": [
       "temperaturas", "laboratorio", "reporte-frio",
       "consumos", "consumo-diario"
-    ]
+    ],
+    "actions": {
+      "view": "*",
+      "edit": ["registros_temperatura", "consumos_insumos"],
+      "delete": [],
+      "export": "*",
+      "config": []
+    }
   },
   "mantenimiento": {
     "modules": ["mantenimiento", "almacen"],
@@ -45,6 +60,13 @@
       "materiales", "stock-general"
     ],
     "apps": [],
-    "dashboards": ["mantenimiento"]
+    "dashboards": ["mantenimiento"],
+    "actions": {
+      "view": "*",
+      "edit": [],
+      "delete": [],
+      "export": "*",
+      "config": []
+    }
   }
 }

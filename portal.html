@@ -138,7 +138,9 @@
   <!-- Service Worker -->
   <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(function(err) {
+    // Path relativo para funcionar tanto en GitHub Pages (/portal-gerencia-ftp/)
+    // como en localhost (raiz del proyecto)
+    navigator.serviceWorker.register('sw.js').catch(function(err) {
       console.warn('SW registration failed:', err);
     });
   }

@@ -3,6 +3,7 @@
    ════════════════════════════════════════════════════════ */
 
 import { hasAccess, getCurrentRole } from './auth.js';
+import { destroyChartsIn } from '../utils/chart-helpers.js';
 
 // Detectar base path (funciona en localhost Y GitHub Pages)
 function getBasePath() {
@@ -44,7 +45,12 @@ export async function showPanel(panelId, modulePath) {
   // Ocultar panel actual + cleanup hook
   if (currentPanel) {
     const currentEl = document.getElementById(`panel-${currentPanel}`);
-    if (currentEl) currentEl.style.display = 'none';
+    if (currentEl) {
+      currentEl.style.display = 'none';
+      // Destruir charts del panel oculto (libera memoria, evita leak)
+      // Cuando se re-muestre, refresh() o onShow() los recreara
+      try { destroyChartsIn(currentEl); } catch (_) { /* noop */ }
+    }
 
     // Llamar cleanup() del modulo si existe (para detener intervalos, etc)
     const currentModule = loadedPanels.get(currentPanel);
@@ -64,6 +70,7 @@ export async function showPanel(panelId, modulePath) {
       updateActiveNav(panelId);
 
       // Re-ejecutar refresh / onShow si existen
+      // (los charts fueron destruidos al ocultar, refresh los recrea)
       const module = loadedPanels.get(panelId);
       if (module && typeof module.onShow === 'function') {
         try { module.onShow(); } catch (e) { console.warn('onShow error:', e); }

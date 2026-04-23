@@ -3,7 +3,7 @@
    Frutos Tropicales Peru Export S.A.C.
    ════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'ftp-portal-v26';
+const CACHE_NAME = 'ftp-portal-v27';
 const STATIC_ASSETS = [
   '/',
   '/portal.html',
@@ -36,7 +36,9 @@ const STATIC_ASSETS = [
   '/apps/_shared/auth-guard.js',
   '/apps/_shared/supabase-config.js',
   '/apps/_shared/app-utils.js',
-  '/apps/_shared/app-base.css'
+  '/apps/_shared/app-base.css',
+  '/apps/_shared/data-sync.js',
+  '/apps/_shared/chart-helpers.js'
 ];
 
 // Install - cache static assets

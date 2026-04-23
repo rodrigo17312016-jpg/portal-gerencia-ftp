@@ -118,6 +118,7 @@ export function destroyChartsIn(rootEl) {
 
 // Actualizar colores de todos los charts al cambiar tema
 // Si no se pasa array, usa el registry global
+// Filtra charts huerfanos (canvas removido del DOM) y los des-registra
 export function updateChartsTheme(charts) {
   const list = charts || Array.from(window.__activeCharts);
   const textColor = getTextColor();
@@ -125,6 +126,15 @@ export function updateChartsTheme(charts) {
 
   list.forEach(chart => {
     if (!chart) return;
+
+    // Verificar que el canvas aun existe en el DOM
+    const canvas = chart.canvas || chart.ctx?.canvas;
+    if (!canvas || !canvas.isConnected) {
+      // Canvas huerfano: limpiar del registry y saltar
+      window.__activeCharts.delete(chart);
+      try { chart.destroy(); } catch (_) { /* noop */ }
+      return;
+    }
 
     // Actualizar scales
     if (chart.options.scales) {
@@ -139,6 +149,6 @@ export function updateChartsTheme(charts) {
       chart.options.plugins.legend.labels.color = textColor;
     }
 
-    chart.update('none');
+    try { chart.update('none'); } catch (_) { /* chart corrompido, ignorar */ }
   });
 }

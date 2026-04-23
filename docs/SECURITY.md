@@ -169,8 +169,16 @@ Implementadas en `assets/js/utils/notifications.js`:
 | 2 | Leaked Password Protection (HIBP) | Baja | Manual: Authentication > Policies > toggle (requiere plan Pro) |
 | 3 | Content Security Policy headers | Baja | Agregar a portal.html `<meta http-equiv="Content-Security-Policy">` |
 | 4 | Rate limit server-side custom | Baja | Supabase tiene nativo, custom via Edge Function si se requiere |
-| 5 | Fallback legacy en auth.js | Baja | Remover cuando Supabase Auth pruebe estable por 2+ semanas |
-| 6 | Bus factor (solo Rodrigo conoce el sistema) | Alta | Organizacional: documentar, cross-training con otro tecnico |
+| 5 | Bus factor (solo Rodrigo conoce el sistema) | Alta | Organizacional: documentar, cross-training con otro tecnico |
+
+### 7.1 Tablas out-of-scope (aceptadas)
+
+Las siguientes tablas coexisten en el proyecto Supabase por razones historicas pero NO son parte del portal FTP. Tienen RLS habilitada + policy `DENY ALL TO public` explicita. Solo `service_role` puede accederlas desde backends propios.
+
+- `aresbet_debug` — proyecto aresbet (debug)
+- `finance_transactions`, `finance_budgets`, `finance_categories`, `finance_payment_methods`, `finance_savings_goals` — proyecto personal de finanzas
+
+**Recomendacion futura:** migrar a proyecto Supabase separado para limpieza total del scope de auditoria FTP.
 
 ---
 
@@ -215,10 +223,27 @@ En caso de sospecha de compromiso:
 
 ---
 
-## 10. Revisiones
+## 10. Estado de Advisors Supabase
+
+Ejecutar `get_advisors(type='security')` via MCP en ambos proyectos Supabase.
+
+**Estado actual (Fase 10):**
+
+| Proyecto | Total lints | ERROR | WARN | INFO |
+|---|---|---|---|---|
+| Principal (rslzosmeteyzxmgfkppe) | 1 | 0 | 1 (HIBP) | 0 |
+| Calidad (obnvrfvcujsrmifvlqni) | 1 | 0 | 1 (HIBP) | 0 |
+
+**De 52 hallazgos iniciales -> 2 hallazgos** (ambos el mismo lint: HIBP, requiere plan Pro).
+
+**0 hallazgos criticos / 0 hallazgos mayores / 0 hallazgos menores.**
+
+## 11. Revisiones
 
 | Fecha | Revisor | Cambios |
 |---|---|---|
-| 2026-04-23 | Rodrigo Garcia | Version inicial |
+| 2026-04-23 | Rodrigo Garcia | Version inicial (Fase 8) |
+| 2026-04-23 | Rodrigo Garcia | Fase 9: cerrados 8 hallazgos criticos post-auditoria |
+| 2026-04-23 | Rodrigo Garcia | Fase 10: cerrados hallazgos INFO (prueba sync, materia_prima, out-of-scope) |
 
 **Proxima revision:** 2026-10-23 (semestral)

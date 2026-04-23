@@ -33,19 +33,22 @@ function emailToUsername(email) {
 }
 
 // Construir objeto user a partir de session de Supabase
+// Post-Fase 9: role SIEMPRE se lee de app_metadata (no editable por usuario).
+// user_metadata solo para display info no-privilegiada (name, initials).
 function userFromSupabaseSession(sbSession) {
   if (!sbSession || !sbSession.user) return null;
-  const meta = sbSession.user.user_metadata || {};
-  const username = meta.username || emailToUsername(sbSession.user.email);
-  // Combinar metadata con USERS[] (USERS tiene los datos legacy)
-  const legacy = USERS[username] || {};
+  const userMeta = sbSession.user.user_metadata || {};     // editable por usuario (DISPLAY ONLY)
+  const appMeta = sbSession.user.app_metadata || {};       // solo service_role (AUTORIDAD)
+  const username = appMeta.username || userMeta.username || emailToUsername(sbSession.user.email);
+  const uiDefaults = USERS[username] || {};                // solo nombres/iniciales/labels
   return {
     username,
-    name: meta.name || legacy.name || username,
-    role: meta.role || legacy.role || 'admin',
-    roleLabel: legacy.roleLabel || meta.role || '',
-    initials: meta.initials || legacy.initials || username.slice(0, 2).toUpperCase(),
-    _supabase: true  // marca: sesion Supabase real
+    name: userMeta.name || uiDefaults.name || username,
+    // role SIEMPRE desde app_metadata (no manipulable). Fallback UI-only si no existe.
+    role: appMeta.role || uiDefaults.role || null,
+    roleLabel: uiDefaults.roleLabel || appMeta.role || '',
+    initials: userMeta.initials || uiDefaults.initials || username.slice(0, 2).toUpperCase(),
+    _supabase: true
   };
 }
 
@@ -137,55 +140,42 @@ export function setPermissions(roles) {
   window.__ROLES = roles;
 }
 
-// ─── Login (Supabase + fallback resiliente) ───
+// ─── Login (Supabase Auth exclusivo) ───
+// Post-Fase 9: eliminado el fallback legacy. Si Supabase no responde,
+// el login falla con error claro en vez de aceptar credenciales hardcoded.
 export async function doLogin(username, password) {
   const u = username.toLowerCase().trim();
 
-  // 1) Intento Supabase Auth (real, JWT firmado) con timeout 4s
-  // Si tarda mas o falla por cualquier razon, caemos al legacy
-  let supabaseOk = false;
   try {
     const loginPromise = supabase.auth.signInWithPassword({
       email: usernameToEmail(u),
       password
     });
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Supabase timeout')), 4000)
+      setTimeout(() => reject(new Error('Supabase timeout - reintentar en unos segundos')), 6000)
     );
     const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
 
-    if (!error && data && data.session) {
-      currentUser = userFromSupabaseSession(data.session);
-      sessionStorage.setItem('ftp_logged_in', 'true');
-      startSessionTimer();
-      console.info('[auth] Login OK via Supabase Auth');
-      return { success: true, user: currentUser, mode: 'supabase' };
+    if (error) {
+      // Bad credentials o email no confirmado
+      console.info('[auth] Login fallido:', error.message);
+      return { success: false, error: 'Usuario o contrasena incorrectos' };
     }
-    // Error explicito (bad credentials u otro): logueamos y caemos al fallback
-    if (error) console.info('[auth] Supabase rechazo:', error.message, '- usando fallback');
-    else supabaseOk = true; // No hay error pero no hay session, raro
+
+    if (!data || !data.session) {
+      return { success: false, error: 'No se pudo establecer la sesion' };
+    }
+
+    currentUser = userFromSupabaseSession(data.session);
+    sessionStorage.setItem('ftp_logged_in', 'true');
+    startSessionTimer();
+    console.info('[auth] Login OK via Supabase Auth');
+    return { success: true, user: currentUser, mode: 'supabase' };
   } catch (err) {
-    // Network error, timeout, dominio invalido, cualquier cosa
-    console.warn('[auth] Supabase no disponible:', err.message, '- usando fallback');
+    // Network error, timeout, etc.
+    console.error('[auth] Error de red:', err.message);
+    return { success: false, error: 'Error de conexion: ' + err.message };
   }
-
-  // 2) Fallback: sistema legacy USERS[]
-  const user = USERS[u];
-  if (!user || user.pass !== password) {
-    return { success: false, error: 'Usuario o contrasena incorrectos' };
-  }
-
-  const sessionData = {
-    user: u,
-    loginTime: Date.now(),
-    expires: Date.now() + SESSION_TIMEOUT
-  };
-  localStorage.setItem('ftp_session', JSON.stringify(sessionData));
-  sessionStorage.setItem('ftp_logged_in', 'true');
-  currentUser = { ...user, username: u };
-  startSessionTimer();
-  console.info('[auth] Login OK via fallback legacy');
-  return { success: true, user: currentUser, mode: 'legacy' };
 }
 
 // ─── Logout ───
@@ -251,13 +241,12 @@ export function initActivityListeners() {
 }
 
 // ─── Guard: verificar sesion al cargar portal.html ───
-// Async pero con timeout corto para no bloquear si Supabase no responde
+// Post-Fase 9: solo Supabase Auth. Sin fallback legacy.
 export async function requireAuth() {
-  // 1) Probar sesion Supabase (JWT en localStorage del SDK) con timeout 2s
   try {
     const sessionPromise = supabase.auth.getSession();
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('Supabase getSession timeout')), 2000)
+      setTimeout(() => reject(new Error('Supabase getSession timeout')), 3000)
     );
     const { data } = await Promise.race([sessionPromise, timeoutPromise]);
     const sbSession = data?.session;
@@ -267,18 +256,14 @@ export async function requireAuth() {
       return true;
     }
   } catch (err) {
-    console.warn('[auth] Supabase getSession fallo:', err.message, '- usando legacy');
+    console.warn('[auth] Supabase getSession fallo:', err.message);
+    // NO fallback a legacy (requerimiento Fase 9 hallazgo H4)
   }
 
-  // 2) Fallback: sesion legacy en localStorage manual
-  const session = getSession();
-  if (session && USERS[session.user]) {
-    currentUser = { ...USERS[session.user], username: session.user };
-    startSessionTimer();
-    return true;
-  }
+  // Limpiar sesion legacy residual si existe (puede causar loops si anti-flash la detecta)
+  try { localStorage.removeItem('ftp_session'); } catch {}
 
-  // 3) No hay sesion - redirigir a login
+  // No hay sesion - redirigir a login
   window.location.href = 'login.html';
   return false;
 }

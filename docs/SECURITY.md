@@ -9,10 +9,10 @@
 ## 1. Autenticacion
 
 ### 1.1 Sistema
-- **Proveedor:** Supabase Auth (JWT firmado con HS256)
+- **Proveedor:** Supabase Auth (JWT firmado con HS256) — **unico mecanismo**
 - **Algoritmo hash:** bcrypt (via gotrue server-side)
 - **Session token:** JWT con refresh token automatico
-- **Fallback legacy:** users.js hardcoded (en proceso de deprecacion - solo de emergencia)
+- **Fallback legacy:** ELIMINADO (Fase 9). `users.js` solo contiene metadata UI (name, initials, roleLabel). NO hay contrasenas en el codigo.
 
 ### 1.2 Politica de contrasenas (ISO 27001 A.9.4.3)
 Implementada en `assets/js/utils/password-policy.js`:
@@ -47,11 +47,17 @@ Implementado en `assets/js/utils/rate-limit.js`:
 
 ## 2. Control de Acceso (RBAC)
 
+### 2.0 Ubicacion canonica del rol
+**CRITICO:** el rol autoritativo se almacena en `auth.users.raw_app_meta_data->>'role'` (inmutable por el usuario final, solo service_role lo modifica). El `user_metadata` **nunca** se usa para decisiones de autorizacion — solo para display UI (name, initials).
+
+Todas las policies RLS leen `auth.jwt()->'app_metadata'->>'role'`.
+
 ### 2.1 Roles definidos
 - **admin** - acceso total (gerencia, rodrigo)
 - **produccion** - modulos produccion + almacen
 - **calidad** - modulos calidad + almacen
 - **mantenimiento** - modulos mantenimiento + almacen (read-only)
+- **rrhh** - acceso a Employee/AttendanceRecord/MealRecord/TareoRecord (datos personales)
 
 ### 2.2 Permisos granulares
 Definidos en `config/roles.json` con acciones especificas:

@@ -4,6 +4,30 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal Gerencia — Frutos Tropicales Peru Export S.A.C.</title>
+
+<!-- ═══════════ SECURITY HEADERS (via meta) ═══════════ -->
+<!-- Content Security Policy - OWASP A05
+     default-src self: nada carga por defecto excepto del mismo origen
+     script-src self + CDNs autorizados (jsdelivr, Supabase)
+     connect-src self + Supabase (REST + Realtime WebSocket)
+     img-src self + data: (qr generado inline) + qrserver.com (2FA QR) -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src 'self' https://fonts.gstatic.com data:;
+  img-src 'self' data: https://api.qrserver.com https://cdn.jsdelivr.net;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://cdn.jsdelivr.net;
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
+  object-src 'none';
+  upgrade-insecure-requests;
+">
+<meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
 <link rel="icon" href="assets/images/logo.png" type="image/png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#16a34a">
@@ -11,8 +35,18 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="apple-touch-icon" href="assets/icons/icon-192x192.png">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+
+<!-- ═══════════ SRI (Subresource Integrity) para CDN scripts ═══════════ -->
+<!-- Si jsdelivr se compromete, el browser rechaza los scripts con hash incorrecto -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+        integrity="sha384-e6nUZLBkQ86NJ6TVVKAeSaK8jWa3NhkYWZFomE39AvDbQWeie9PlQqM3pmYW5d1g"
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"
+        integrity="sha384-y49Zu59jZHJL/PLKgZPv3k2WI9c0Yp3pWB76V8OBVCb0QBKS8l4Ff3YslzHVX76Y"
+        crossorigin="anonymous"></script>
+
+<!-- Production guard: sanitiza console.* y window.onerror si estamos en produccion -->
+<script src="assets/js/utils/production-guard.js"></script>
 
 <!-- CSS Modular -->
 <link rel="stylesheet" href="assets/css/variables.css">

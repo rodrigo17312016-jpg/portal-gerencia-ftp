@@ -19,7 +19,7 @@ import { USERS } from '../config/users.js';
 import { SESSION_TIMEOUT } from '../config/constants.js';
 import { supabase } from '../config/supabase.js';
 
-const EMAIL_DOMAIN = '@frutos.local';
+const EMAIL_DOMAIN = '@frutos-tropicales.pe';
 let sessionTimer = null;
 let currentUser = null;
 
@@ -104,32 +104,39 @@ export function setPermissions(roles) {
   window.__ROLES = roles;
 }
 
-// ─── Login (Supabase + fallback) ───
+// ─── Login (Supabase + fallback resiliente) ───
 export async function doLogin(username, password) {
   const u = username.toLowerCase().trim();
 
-  // 1) Intento Supabase Auth (real, JWT firmado)
+  // 1) Intento Supabase Auth (real, JWT firmado) con timeout 4s
+  // Si tarda mas o falla por cualquier razon, caemos al legacy
+  let supabaseOk = false;
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const loginPromise = supabase.auth.signInWithPassword({
       email: usernameToEmail(u),
       password
     });
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Supabase timeout')), 4000)
+    );
+    const { data, error } = await Promise.race([loginPromise, timeoutPromise]);
 
     if (!error && data && data.session) {
       currentUser = userFromSupabaseSession(data.session);
       sessionStorage.setItem('ftp_logged_in', 'true');
-      // No guardamos en localStorage porque Supabase ya lo hace
-      // (sb-<ref>-auth-token) y es un JWT firmado
       startSessionTimer();
+      console.info('[auth] Login OK via Supabase Auth');
       return { success: true, user: currentUser, mode: 'supabase' };
     }
-    // Si error existe, no es excepcion - es bad credentials
+    // Error explicito (bad credentials u otro): logueamos y caemos al fallback
+    if (error) console.info('[auth] Supabase rechazo:', error.message, '- usando fallback');
+    else supabaseOk = true; // No hay error pero no hay session, raro
   } catch (err) {
-    // Network error o supabase caido. Cae al fallback
-    console.warn('[auth] Supabase Auth no disponible, usando fallback:', err.message);
+    // Network error, timeout, dominio invalido, cualquier cosa
+    console.warn('[auth] Supabase no disponible:', err.message, '- usando fallback');
   }
 
-  // 2) Fallback: sistema legacy USERS[] (deuda tecnica)
+  // 2) Fallback: sistema legacy USERS[]
   const user = USERS[u];
   if (!user || user.pass !== password) {
     return { success: false, error: 'Usuario o contrasena incorrectos' };
@@ -144,7 +151,7 @@ export async function doLogin(username, password) {
   sessionStorage.setItem('ftp_logged_in', 'true');
   currentUser = { ...user, username: u };
   startSessionTimer();
-
+  console.info('[auth] Login OK via fallback legacy');
   return { success: true, user: currentUser, mode: 'legacy' };
 }
 
@@ -211,17 +218,24 @@ export function initActivityListeners() {
 }
 
 // ─── Guard: verificar sesion al cargar portal.html ───
-// Esta version es ASINCRONA porque ahora consulta Supabase
+// Async pero con timeout corto para no bloquear si Supabase no responde
 export async function requireAuth() {
-  // 1) Probar sesion Supabase (JWT en localStorage del SDK)
+  // 1) Probar sesion Supabase (JWT en localStorage del SDK) con timeout 2s
   try {
-    const { data: { session: sbSession } } = await supabase.auth.getSession();
+    const sessionPromise = supabase.auth.getSession();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Supabase getSession timeout')), 2000)
+    );
+    const { data } = await Promise.race([sessionPromise, timeoutPromise]);
+    const sbSession = data?.session;
     if (sbSession) {
       currentUser = userFromSupabaseSession(sbSession);
       startSessionTimer();
       return true;
     }
-  } catch (_) { /* noop */ }
+  } catch (err) {
+    console.warn('[auth] Supabase getSession fallo:', err.message, '- usando legacy');
+  }
 
   // 2) Fallback: sesion legacy en localStorage manual
   const session = getSession();

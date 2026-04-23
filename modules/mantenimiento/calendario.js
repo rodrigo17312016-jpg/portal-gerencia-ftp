@@ -4,6 +4,7 @@
    ════════════════════════════════════════════════════════ */
 
 import { fmt, fmtDate } from '../../assets/js/utils/formatters.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
 
 let state = {
@@ -452,11 +453,6 @@ function closeDetail(container) {
 // ════════════════════════════════════════════════════════
 // UTILS
 // ════════════════════════════════════════════════════════
-function escapeHtml(s) {
-  if (s == null) return '';
-  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-}
-
 function truncate(s, n) {
   if (!s) return '';
   return s.length > n ? s.substring(0, n - 1) + '…' : s;

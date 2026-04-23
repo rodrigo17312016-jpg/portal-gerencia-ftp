@@ -66,9 +66,14 @@
     // El login esta en /<base>/login.html
     var current = window.location.pathname;
     var base = current.substring(0, current.indexOf('/apps/'));
+    // Ocultar el body para evitar flash antes del redirect
+    if (document.documentElement) {
+      document.documentElement.style.visibility = 'hidden';
+    }
     window.location.replace(base + '/login.html');
-    // Bloquear ejecucion del resto del script
-    throw new Error('FTP_AUTH_GUARD: redirigiendo a login');
+    // Salir silenciosamente (en vez de throw, que ensucia la consola)
+    window.__ftpAuthOk = false;
+    return;
   }
 
   // OK: sesion valida, exponer flag global por si la app necesita

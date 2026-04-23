@@ -259,3 +259,61 @@ export function restoreSession() {
   }
   return false;
 }
+
+// ─── Auto-refresh de sesion Supabase ───
+// Supabase SDK renueva JWT automaticamente antes de expirar,
+// pero si el refresh falla (token revocado, red caida >1hr),
+// hay que detectarlo y hacer logout limpio.
+let _authSubscription = null;
+export function initSessionAutoRefresh() {
+  if (_authSubscription) return; // idempotente
+  try {
+    const { data } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'TOKEN_REFRESHED') {
+        console.info('[auth] JWT refrescado automaticamente');
+        if (session) currentUser = userFromSupabaseSession(session);
+      } else if (event === 'SIGNED_OUT') {
+        console.info('[auth] Sesion terminada (SIGNED_OUT)');
+        doLogout();
+      } else if (event === 'USER_UPDATED') {
+        if (session) currentUser = userFromSupabaseSession(session);
+      }
+    });
+    _authSubscription = data?.subscription;
+  } catch (err) {
+    console.warn('[auth] No se pudo inicializar auto-refresh:', err.message);
+  }
+}
+
+// ─── Password recovery: enviar email con link de reset ───
+export async function requestPasswordReset(username) {
+  const u = (username || '').toLowerCase().trim();
+  if (!u) return { success: false, error: 'Ingresa tu usuario' };
+
+  const email = usernameToEmail(u);
+  try {
+    // URL de redireccion: puede ser absolute o relative
+    const baseUrl = window.location.origin + window.location.pathname.replace(/[^/]+$/, '');
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: baseUrl + 'login.html?reset=1'
+    });
+    if (error) return { success: false, error: error.message };
+    return { success: true, message: 'Revisa tu email (' + email + ') para el link de recuperacion.' };
+  } catch (err) {
+    return { success: false, error: 'Error de red: ' + err.message };
+  }
+}
+
+// ─── Password update (desde flow de recovery) ───
+export async function updatePassword(newPassword) {
+  if (!newPassword || newPassword.length < 8) {
+    return { success: false, error: 'La contrasena debe tener al menos 8 caracteres' };
+  }
+  try {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    if (error) return { success: false, error: error.message };
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+}

@@ -3,7 +3,7 @@
    Frutos Tropicales Peru Export S.A.C.
    ════════════════════════════════════════════════════════ */
 
-import { requireAuth, getCurrentUser, setPermissions, initActivityListeners } from './core/auth.js';
+import { requireAuth, getCurrentUser, setPermissions, initActivityListeners, initSessionAutoRefresh } from './core/auth.js';
 import { initRouter, showPanel, getDefaultPanel } from './core/router.js';
 import { initTheme, toggleTheme, onThemeChange } from './core/theme.js';
 import { startClock } from './core/clock.js';
@@ -43,6 +43,7 @@ async function initPortal() {
   initRouter();
   startClock();
   initActivityListeners();
+  initSessionAutoRefresh(); // JWT auto-renewal + logout cascade
 
   // 6. Verificar conexion Supabase
   const connected = await checkConnection();

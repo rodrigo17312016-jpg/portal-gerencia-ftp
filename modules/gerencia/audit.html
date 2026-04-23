@@ -1,0 +1,41 @@
+<!-- Panel: Audit Log (Trazabilidad) -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(124,58,237,0.08) 0%,rgba(124,58,237,0.02) 100%);border:1px solid rgba(124,58,237,0.15);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(124,58,237,0.12);border:1px solid rgba(124,58,237,0.12)">📜</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Audit Log</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">Trazabilidad de cambios en tablas operacionales · <span id="auditCount" style="color:var(--purple);font-weight:700">Cargando…</span></p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <select id="auditFilterTable" class="filter-select" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px">
+      <option value="">Todas las tablas</option>
+    </select>
+    <select id="auditFilterOp" class="filter-select" style="padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--surface);color:var(--texto);font-size:12px">
+      <option value="">Todas las operaciones</option>
+      <option value="INSERT">INSERT</option>
+      <option value="UPDATE">UPDATE</option>
+      <option value="DELETE">DELETE</option>
+    </select>
+    <button id="auditRefresh" class="btn btn-sm" style="background:var(--purple);color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;border:none;cursor:pointer">🔄 Actualizar</button>
+  </div>
+</div>
+
+<div class="card" style="padding:0;overflow:hidden">
+  <div style="overflow-x:auto;max-height:70vh">
+    <table style="width:100%;border-collapse:collapse;font-size:12.5px" id="auditTable">
+      <thead style="background:var(--surface-alt,#f8fafc);position:sticky;top:0;z-index:10">
+        <tr>
+          <th style="padding:10px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;letter-spacing:0.3px">FECHA</th>
+          <th style="padding:10px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;letter-spacing:0.3px">USUARIO</th>
+          <th style="padding:10px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;letter-spacing:0.3px">ROL</th>
+          <th style="padding:10px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;letter-spacing:0.3px">TABLA</th>
+          <th style="padding:10px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;letter-spacing:0.3px">OP</th>
+          <th style="padding:10px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;letter-spacing:0.3px">ROW ID</th>
+          <th style="padding:10px;text-align:left;font-weight:700;color:var(--muted);font-size:11px;letter-spacing:0.3px">CAMPOS</th>
+        </tr>
+      </thead>
+      <tbody id="auditTbody">
+        <tr><td colspan="7" style="padding:40px;text-align:center;color:var(--muted)">Cargando…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

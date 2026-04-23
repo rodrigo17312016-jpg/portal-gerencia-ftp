@@ -8,12 +8,14 @@ import { createChart, getColors, getDefaultOptions, getTextColor } from '../../a
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { showPanel } from '../../assets/js/core/router.js';
 import { getMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 let refreshTimer = null;
 let currentOtFilter = 'all';
 
 export async function init(container) {
+  addDemoBanner(container);
   // Wire quick access buttons
   container.querySelectorAll('.mant-quick').forEach(btn => {
     btn.addEventListener('click', () => {

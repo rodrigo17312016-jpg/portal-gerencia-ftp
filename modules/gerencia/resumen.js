@@ -6,10 +6,29 @@
 import { supabase, supabaseCalidad } from '../../assets/js/config/supabase.js';
 import { fmt, fmtPct, fmtSoles, today, currentTurno } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { subscribeToTable, createLiveIndicator } from '../../assets/js/utils/realtime-helpers.js';
+import { notifyAlert, getPermissionState } from '../../assets/js/utils/notifications.js';
 
 // ── Module state ──
 let charts = [];
 let refreshTimer = null;
+let realtimeSub = null;
+let liveIndicator = null;
+// Tracking de notificaciones disparadas (evitar spam)
+let notifiedAlertKeys = new Set();
+
+// Dispara notify() solo para alertas NUEVAS (no notificadas aun en esta sesion)
+function maybeNotifyAlerts(alertas) {
+  if (getPermissionState() !== 'granted') return;
+  alertas.forEach(a => {
+    // Key unica por fecha+area+registro para no re-notificar el mismo evento
+    const key = (a.created_at || '') + '|' + (a.area || '') + '|' + (a.id || '');
+    if (notifiedAlertKeys.has(key)) return;
+    notifiedAlertKeys.add(key);
+    const body = `${a.area || 'Area'}: ${a.temperatura}°C (umbral ${TEMP_THRESHOLD}°C)`;
+    notifyAlert('Temperatura fuera de rango', body, { tag: 'temp-' + key, data: { panelId: 'temperaturas' } });
+  });
+}
 const TEMP_THRESHOLD = -15;
 
 // ── Exec-style chart palette ──
@@ -53,6 +72,21 @@ export async function init(container) {
       // Charts don't need to refresh as often
     }
   }, 120000);
+
+  // Realtime: reaccionar a cambios en registro_produccion
+  if (!realtimeSub) {
+    realtimeSub = subscribeToTable('registro_produccion', (payload) => {
+      if (liveIndicator && liveIndicator.flash) liveIndicator.flash();
+      if (document.getElementById('panel-resumen')) loadKPIs(container);
+    });
+  }
+  if (!liveIndicator) {
+    const headerActions = container.querySelector('.area-header-actions') || container.querySelector('.card-header-actions') || container.querySelector('.area-header > div:last-child');
+    if (headerActions) {
+      liveIndicator = createLiveIndicator();
+      headerActions.insertBefore(liveIndicator, headerActions.firstChild);
+    }
+  }
 }
 
 export function refresh() {
@@ -69,6 +103,7 @@ export function refresh() {
 // Lifecycle: pausar auto-refresh al ocultar panel
 export function onHide() {
   if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+  if (realtimeSub) { realtimeSub.unsubscribe(); realtimeSub = null; }
 }
 
 // Reanudar al volver
@@ -99,10 +134,10 @@ async function loadKPIs(container) {
       .select('id, consumo_kg, pt_aprox_kg, fruta')
       .eq('fecha', hoy),
 
-    // 2. Temperaturas hoy
+    // 2. Temperaturas hoy (incluir area + created_at para notificaciones)
     supabaseCalidad
       .from('registros_temperatura')
-      .select('id, temperatura')
+      .select('id, temperatura, area, created_at')
       .gte('created_at', hoy + 'T00:00:00'),
 
     // 3. Empaque acumulado (TN exportadas)
@@ -126,8 +161,10 @@ async function loadKPIs(container) {
   if (tempResult.status === 'fulfilled' && tempResult.value.data) {
     const temps = tempResult.value.data;
     setKPI(container, 'kpi-registros-temp', String(temps.length));
-    const alertas = temps.filter(r => (r.temperatura || -99) > TEMP_THRESHOLD).length;
-    setKPI(container, 'kpi-alertas-activas', String(alertas));
+    const alertasArr = temps.filter(r => (r.temperatura || -99) > TEMP_THRESHOLD);
+    setKPI(container, 'kpi-alertas-activas', String(alertasArr.length));
+    // Disparar notificacion desktop si hay alertas y no se mostro ya
+    maybeNotifyAlerts(alertasArr);
   } else {
     setKPI(container, 'kpi-registros-temp', '0');
     setKPI(container, 'kpi-alertas-activas', '0');

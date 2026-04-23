@@ -7,10 +7,12 @@ import { fmt, fmtPct } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 
 export async function init(container) {
+  addDemoBanner(container);
   const sel = container.querySelector('#periodo-select');
   if (sel) sel.addEventListener('change', () => loadAll(container));
   loadAll(container);

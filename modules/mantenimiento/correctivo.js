@@ -6,7 +6,9 @@
 import { fmt, fmtSoles, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 let refreshTimer = null;
@@ -42,6 +44,7 @@ const CAUSA_COLORS = {
 };
 
 export async function init(container) {
+  addDemoBanner(container);
   // Filtros estado
   container.querySelectorAll('[data-cm-estado]').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -70,6 +73,8 @@ export async function init(container) {
   container.querySelector('#cm-modal-save')?.addEventListener('click', () => saveFalla(container));
   modal?.addEventListener('click', (e) => { if (e.target === modal) closeModal(container); });
 
+  injectExportButton(container);
+
   await loadAll(container);
 
   if (refreshTimer) clearInterval(refreshTimer);
@@ -77,6 +82,62 @@ export async function init(container) {
     const c = document.getElementById('panel-correctivo') || document.querySelector('.active-panel');
     if (c) loadAll(c);
   }, 60000);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const reportarBtn = container.querySelector('#btn-reportar-falla');
+  const target = reportarBtn?.parentElement
+    || container.querySelector('.cm-header')
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      const data = getMantData();
+      let ots = (data.ordenes || []).filter(o => o.tipo === 'correctivo');
+      if (filterEstado !== 'all') ots = ots.filter(o => o.estado === filterEstado);
+      if (filterPrioridad !== 'all') ots = ots.filter(o => o.prioridad === filterPrioridad);
+      ots.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+      return ots.map(o => ({
+        codigo: o.codigo,
+        fecha: o.fecha,
+        equipo_codigo: o.equipoCodigo,
+        equipo: o.equipo,
+        area: o.area,
+        descripcion: o.descripcion,
+        tecnico: o.tecnico,
+        prioridad: o.prioridad,
+        estado: o.estado,
+        causa_raiz: o.causaRaiz || clasificarCausa(o.descripcion),
+        horas_estimadas: o.horasEstimadas,
+        horas_reales: o.horasReales != null ? Number(o.horasReales).toFixed(2) : '',
+        costo_estimado: o.costoEstimado,
+        costo_real: o.costoReal != null ? Number(o.costoReal).toFixed(2) : ''
+      }));
+    },
+    filename: 'correctivo',
+    sheetName: 'Correctivo',
+    columns: [
+      { key: 'codigo', label: 'OT' },
+      { key: 'fecha', label: 'Fecha' },
+      { key: 'equipo_codigo', label: 'Equipo Cod.' },
+      { key: 'equipo', label: 'Equipo' },
+      { key: 'area', label: 'Area' },
+      { key: 'descripcion', label: 'Descripcion' },
+      { key: 'tecnico', label: 'Tecnico' },
+      { key: 'prioridad', label: 'Prioridad' },
+      { key: 'estado', label: 'Estado' },
+      { key: 'causa_raiz', label: 'Causa Raiz' },
+      { key: 'horas_estimadas', label: 'Horas Est.' },
+      { key: 'horas_reales', label: 'Horas Real' },
+      { key: 'costo_estimado', label: 'Costo Est.' },
+      { key: 'costo_real', label: 'Costo Real' }
+    ]
+  });
+
+  if (reportarBtn) reportarBtn.parentNode.insertBefore(btn, reportarBtn);
+  else target.appendChild(btn);
 }
 
 export function refresh() {

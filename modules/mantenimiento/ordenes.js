@@ -5,7 +5,9 @@
 
 import { fmt, fmtSoles, fmtPct, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 let refreshTimer = null;
@@ -16,9 +18,11 @@ let state = {
 };
 
 export async function init(container) {
+  addDemoBanner(container);
   wireFilters(container);
   wireButtons(container);
   wireModals(container);
+  injectExportButton(container);
   loadAll(container);
 
   if (refreshTimer) clearInterval(refreshTimer);
@@ -26,6 +30,59 @@ export async function init(container) {
     const c = document.getElementById('panel-ordenes-trabajo') || container;
     if (c && c.isConnected) loadAll(c);
   }, 60000);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const legacyBtn = container.querySelector('#btn-export-ot');
+  const target = legacyBtn?.parentElement
+    || container.querySelector('.card-header, .panel-header-right')
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      const data = getMantData();
+      return applyFilters(data.ordenes)
+        .slice()
+        .sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
+        .map(o => ({
+          codigo: o.codigo,
+          equipo: o.equipo,
+          area: o.area,
+          tipo: o.tipo,
+          prioridad: o.prioridad,
+          estado: o.estado,
+          tecnico: o.tecnico,
+          descripcion: o.descripcion,
+          fecha_creacion: o.fecha,
+          horas_estimadas: o.horasEstimadas,
+          horas_reales: o.horasReales != null ? Number(o.horasReales).toFixed(2) : '',
+          costo_estimado: o.costoEstimado,
+          costo_real: o.costoReal != null ? Number(o.costoReal).toFixed(2) : ''
+        }));
+    },
+    filename: 'ordenes-trabajo',
+    sheetName: 'Ordenes',
+    columns: [
+      { key: 'codigo', label: 'OT' },
+      { key: 'equipo', label: 'Equipo' },
+      { key: 'area', label: 'Area' },
+      { key: 'tipo', label: 'Tipo' },
+      { key: 'prioridad', label: 'Prioridad' },
+      { key: 'estado', label: 'Estado' },
+      { key: 'tecnico', label: 'Tecnico' },
+      { key: 'descripcion', label: 'Descripcion' },
+      { key: 'fecha_creacion', label: 'Fecha Creacion' },
+      { key: 'horas_estimadas', label: 'Horas Est.' },
+      { key: 'horas_reales', label: 'Horas Real' },
+      { key: 'costo_estimado', label: 'Costo Est.' },
+      { key: 'costo_real', label: 'Costo Real' }
+    ]
+  });
+
+  if (legacyBtn) legacyBtn.parentNode.insertBefore(btn, legacyBtn);
+  else target.appendChild(btn);
 }
 
 export function refresh() {

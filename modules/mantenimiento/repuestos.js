@@ -6,7 +6,9 @@
 import { fmt, fmtSoles } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
 import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
+import { createExportButton } from '../../assets/js/utils/export-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
+import { addDemoBanner } from '../../assets/js/utils/demo-banner.js';
 
 let charts = [];
 let state = {
@@ -21,10 +23,69 @@ let state = {
 // INIT / REFRESH
 // ════════════════════════════════════════════════════════
 export async function init(container) {
+  addDemoBanner(container);
   wireHeader(container);
   wireFilters(container);
   wireModal(container);
+  injectExportButton(container);
   await loadAll(container);
+}
+
+function injectExportButton(container) {
+  if (container.querySelector('.ftp-export-btn')) return;
+  const legacyBtn = container.querySelector('#btn-export-rep');
+  const target = legacyBtn?.parentElement
+    || container.querySelector('.card-header');
+  if (!target) return;
+
+  const btn = createExportButton({
+    getData: () => {
+      const data = getMantData();
+      let reps = data.repuestos || [];
+      if (state.filterEstado !== 'todos') {
+        reps = reps.filter(r => {
+          const est = r.stock < r.minimo ? 'critico' : r.stock <= r.minimo * 1.5 ? 'bajo' : 'ok';
+          return est === state.filterEstado;
+        });
+      }
+      if (state.filterCategoria !== 'todas') {
+        reps = reps.filter(r => r.categoria === state.filterCategoria);
+      }
+      if (state.search) {
+        const q = state.search;
+        reps = reps.filter(r => r.codigo.toLowerCase().includes(q) || r.nombre.toLowerCase().includes(q));
+      }
+      return reps.map(r => ({
+        codigo: r.codigo,
+        nombre: r.nombre,
+        categoria: r.categoria,
+        stock: r.stock,
+        minimo: r.minimo,
+        unidad: r.unidad,
+        ubicacion: r.ubicacion,
+        precio_unitario: Number(r.precio).toFixed(2),
+        valor_total: Number(r.stock * r.precio).toFixed(2),
+        estado: r.stock < r.minimo ? 'critico' : r.stock <= r.minimo * 1.5 ? 'bajo' : 'ok'
+      }));
+    },
+    filename: 'repuestos',
+    sheetName: 'Repuestos',
+    columns: [
+      { key: 'codigo', label: 'Codigo' },
+      { key: 'nombre', label: 'Nombre' },
+      { key: 'categoria', label: 'Categoria' },
+      { key: 'stock', label: 'Stock' },
+      { key: 'minimo', label: 'Minimo' },
+      { key: 'unidad', label: 'Unidad' },
+      { key: 'ubicacion', label: 'Ubicacion' },
+      { key: 'precio_unitario', label: 'Precio Unit. (S/)' },
+      { key: 'valor_total', label: 'Valor Total (S/)' },
+      { key: 'estado', label: 'Estado' }
+    ]
+  });
+
+  if (legacyBtn) legacyBtn.parentNode.insertBefore(btn, legacyBtn);
+  else target.appendChild(btn);
 }
 
 export function refresh() {

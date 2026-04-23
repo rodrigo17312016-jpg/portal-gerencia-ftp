@@ -6,6 +6,7 @@
 import { supabase } from '../../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today, fmtDateLong } from '../../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../../assets/js/utils/dom-helpers.js';
 
 let allData = [];
 let activeFilters = { tunel: 'TODOS', estado: 'TODOS' };
@@ -289,15 +290,15 @@ function buildTable(container, recs) {
     const tempOk = tempFinal != null && tempFinal <= -18;
 
     return `<tr>
-      <td style="font-weight:800;color:${tunelColor}">❄️ Tunel ${tunelNum}</td>
-      <td style="font-size:12px;font-weight:600">${r.fruta || '—'}</td>
-      <td style="font-family:monospace;font-weight:600;text-align:center">${r.coches || r.num_coches || '—'}</td>
+      <td style="font-weight:800;color:${tunelColor}">❄️ Tunel ${escapeHtml(tunelNum)}</td>
+      <td style="font-size:12px;font-weight:600">${escapeHtml(r.fruta || '—')}</td>
+      <td style="font-family:monospace;font-weight:600;text-align:center">${escapeHtml(r.coches || r.num_coches || '—')}</td>
       <td style="font-family:monospace;font-weight:700">${fmt(kgVal)}</td>
-      <td style="font-family:monospace;color:var(--muted)">${r.hora_inicio?.slice(0, 5) || '—'}</td>
-      <td style="font-family:monospace;color:var(--muted)">${r.hora_fin?.slice(0, 5) || '—'}</td>
+      <td style="font-family:monospace;color:var(--muted)">${escapeHtml(r.hora_inicio?.slice(0, 5) || '—')}</td>
+      <td style="font-family:monospace;color:var(--muted)">${escapeHtml(r.hora_fin?.slice(0, 5) || '—')}</td>
       <td style="font-family:monospace;font-weight:600;color:var(--amber)">${duracion > 0 ? duracion + ' min' : '—'}</td>
-      <td style="font-family:monospace;color:var(--naranja)">${r.temp_ingreso != null ? r.temp_ingreso + '°' : '—'}</td>
-      <td style="font-family:monospace;color:${tempOk ? 'var(--verde)' : 'var(--azul)'};font-weight:700">${tempFinal != null ? tempFinal + '°' : '—'}</td>
+      <td style="font-family:monospace;color:var(--naranja)">${r.temp_ingreso != null ? escapeHtml(r.temp_ingreso) + '°' : '—'}</td>
+      <td style="font-family:monospace;color:${tempOk ? 'var(--verde)' : 'var(--azul)'};font-weight:700">${tempFinal != null ? escapeHtml(tempFinal) + '°' : '—'}</td>
       <td><span class="tun-status-badge" style="${badgeStyle};padding:3px 8px;font-size:9.5px">${estadoLabel}</span></td>
     </tr>`;
   }).join('');

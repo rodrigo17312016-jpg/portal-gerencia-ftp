@@ -5,6 +5,7 @@
 
 import { fmt, fmtPct, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
 
 let charts = [];
@@ -229,26 +230,26 @@ function renderTabla(container) {
 
   tbody.innerHTML = rutinas.map(r => {
     const freqColor = FREQ_COLORS[r.frecuencia] || 'azul';
-    const freqBadge = `<span class="badge badge-${freqColor}">${FREQ_LABELS[r.frecuencia] || r.frecuencia}</span>`;
+    const freqBadge = `<span class="badge badge-${freqColor}">${FREQ_LABELS[r.frecuencia] || escapeHtml(r.frecuencia)}</span>`;
 
     const estadoBadge = {
       'vencida': '<span class="badge badge-rose">Vencida</span>',
       'proxima': '<span class="badge badge-amber">Proxima</span>',
       'programada': '<span class="badge badge-verde">Programada</span>'
-    }[r.estado] || r.estado;
+    }[r.estado] || escapeHtml(r.estado);
 
     return `<tr>
-      <td><strong>${r.id}</strong></td>
-      <td>${r.equipo}<br><span style="font-size:11px;color:var(--muted)">${r.equipoNombre}</span></td>
-      <td>${r.area}</td>
+      <td><strong>${escapeHtml(r.id)}</strong></td>
+      <td>${escapeHtml(r.equipo)}<br><span style="font-size:11px;color:var(--muted)">${escapeHtml(r.equipoNombre)}</span></td>
+      <td>${escapeHtml(r.area)}</td>
       <td>${freqBadge}</td>
-      <td style="font-size:12px">${r.descripcion}</td>
+      <td style="font-size:12px">${escapeHtml(r.descripcion)}</td>
       <td style="text-align:center">${r.duracion}</td>
       <td style="white-space:nowrap;font-size:12px">${fmtDate(r.ultima)}</td>
       <td style="white-space:nowrap;font-size:12px">${fmtDate(r.proxima)}</td>
       <td>${estadoBadge}</td>
       <td style="text-align:center">
-        <button class="pm-btn-ejecutar" data-exec="${r.id}">▶ Ejecutar</button>
+        <button class="pm-btn-ejecutar" data-exec="${escapeAttr(r.id)}">▶ Ejecutar</button>
       </td>
     </tr>`;
   }).join('');

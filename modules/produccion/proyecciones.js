@@ -5,6 +5,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtPct } from '../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let histData = [];
 let activeFilters = { hist: '30' };
@@ -196,7 +197,7 @@ function buildFrutasTable(container) {
     const proyMes = promDia * 30;
 
     return `<tr>
-      <td style="font-weight:700;color:${color}">${f}</td>
+      <td style="font-weight:700;color:${color}">${escapeHtml(f)}</td>
       <td style="font-family:monospace;color:var(--naranja)">${fmt(v.mp)}</td>
       <td style="font-family:monospace;font-weight:700;color:var(--verde)">${fmt(v.pt)}</td>
       <td style="font-weight:700;color:${rend >= 50 ? 'var(--verde)' : 'var(--naranja)'}">${rend.toFixed(1)}%</td>

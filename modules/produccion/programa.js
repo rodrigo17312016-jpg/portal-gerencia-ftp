@@ -5,6 +5,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today } from '../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let weekData = [];
 let refreshInterval = null;
@@ -206,7 +207,7 @@ function buildTable(container) {
     const frutasArr = [...d.frutas];
     const frutasLbl = frutasArr.map(f => {
       const c = FRUTA_COLORS[f] || '#64748b';
-      return `<span style="padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:${c}18;color:${c};border:1px solid ${c}40;margin-right:3px">${f}</span>`;
+      return `<span style="padding:2px 7px;border-radius:5px;font-size:10px;font-weight:700;background:${c}18;color:${c};border:1px solid ${c}40;margin-right:3px">${escapeHtml(f)}</span>`;
     }).join('') || '—';
 
     // Turnos
@@ -215,7 +216,7 @@ function buildTable(container) {
       return `<span style="color:${isDia ? 'var(--amber)' : 'var(--azul)'};font-weight:700;font-size:11px;margin-right:4px">${isDia ? '☀️ DIA' : '🌙 NOCHE'}</span>`;
     }).join('') || '—';
 
-    const lineasLbl = [...d.lineas].join(', ') || '—';
+    const lineasLbl = escapeHtml([...d.lineas].join(', ') || '—');
 
     return `<tr>
       <td style="font-size:12px;font-family:monospace;font-weight:600">${fechaLbl}</td>

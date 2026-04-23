@@ -72,16 +72,16 @@ function renderTable(container, data) {
     const critBadge = critToBadge(e.criticidad);
     const estadoBadge = estadoToBadge(e.estado);
     return `<tr>
-      <td><strong>${e.codigo}</strong></td>
+      <td><strong>${escapeHtml(e.codigo)}</strong></td>
       <td>${escapeHtml(e.nombre)}</td>
-      <td>${e.area}</td>
-      <td>${e.tipo}</td>
+      <td>${escapeHtml(e.area)}</td>
+      <td>${escapeHtml(e.tipo)}</td>
       <td>${critBadge}</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums">${fmt(e.horasUso)}</td>
       <td><div style="font-weight:600">${escapeHtml(e.fabricante || '-')}</div><div style="font-size:12px;color:var(--muted)">${escapeHtml(e.modelo || '-')}</div></td>
-      <td>${e.anio || '-'}</td>
+      <td>${escapeHtml(e.anio || '-')}</td>
       <td>${estadoBadge}</td>
-      <td style="text-align:center"><button class="btn btn-sm btn-secondary" data-eq-ver="${e.codigo}">📄 Ver ficha</button></td>
+      <td style="text-align:center"><button class="btn btn-sm btn-secondary" data-eq-ver="${escapeHtml(e.codigo)}">📄 Ver ficha</button></td>
     </tr>`;
   }).join('');
 
@@ -214,7 +214,7 @@ function openFicha(container, codigo) {
   if (!modal || !body) return;
 
   title.innerHTML = `🔧 ${escapeHtml(eq.nombre)}`;
-  sub.innerHTML = `<strong>${eq.codigo}</strong> · ${eq.area} · ${eq.tipo}`;
+  sub.innerHTML = `<strong>${escapeHtml(eq.codigo)}</strong> · ${escapeHtml(eq.area)} · ${escapeHtml(eq.tipo)}`;
 
   // Historial: ultimas 5 OT
   const ot = data.ordenes
@@ -237,11 +237,11 @@ function openFicha(container, codigo) {
       </div>
       <div class="eq-ficha-item">
         <div class="eq-ficha-label">Area</div>
-        <div class="eq-ficha-value">${eq.area}</div>
+        <div class="eq-ficha-value">${escapeHtml(eq.area)}</div>
       </div>
       <div class="eq-ficha-item">
         <div class="eq-ficha-label">Tipo</div>
-        <div class="eq-ficha-value">${eq.tipo}</div>
+        <div class="eq-ficha-value">${escapeHtml(eq.tipo)}</div>
       </div>
       <div class="eq-ficha-item">
         <div class="eq-ficha-label">Horas de uso</div>
@@ -257,7 +257,7 @@ function openFicha(container, codigo) {
       </div>
       <div class="eq-ficha-item">
         <div class="eq-ficha-label">Año fabricacion</div>
-        <div class="eq-ficha-value">${eq.anio || '-'}</div>
+        <div class="eq-ficha-value">${escapeHtml(eq.anio || '-')}</div>
       </div>
     </div>
 
@@ -273,10 +273,10 @@ function openFicha(container, codigo) {
       const tipoIcon = { preventivo: '🗓️', correctivo: '🔨', predictivo: '📡' }[o.tipo] || '•';
       const estadoB = otEstadoBadge(o.estado);
       return `<div class="eq-hist-row">
-        <div class="eq-hist-code">${o.codigo}</div>
+        <div class="eq-hist-code">${escapeHtml(o.codigo)}</div>
         <div class="eq-hist-desc">${tipoIcon} ${escapeHtml(o.descripcion)}</div>
         <div>${estadoB}</div>
-        <div class="eq-hist-date">${o.fecha}</div>
+        <div class="eq-hist-date">${escapeHtml(o.fecha)}</div>
       </div>`;
     }).join('') : '<div style="text-align:center;color:var(--muted);padding:16px">Sin OT registradas para este equipo</div>'}
   `;
@@ -403,7 +403,7 @@ function estadoToBadge(e) {
   if (e === 'operativo') return '<span class="badge badge-verde">✅ Operativo</span>';
   if (e === 'alerta') return '<span class="badge badge-amber">⚠️ Alerta</span>';
   if (e === 'falla') return '<span class="badge badge-rose">🔴 Falla</span>';
-  return `<span class="badge">${e}</span>`;
+  return `<span class="badge">${escapeHtml(e)}</span>`;
 }
 
 function otEstadoBadge(e) {
@@ -411,7 +411,7 @@ function otEstadoBadge(e) {
   if (e === 'ejecucion') return '<span class="badge badge-amber">En ejecucion</span>';
   if (e === 'completada') return '<span class="badge badge-verde">Completada</span>';
   if (e === 'pausada') return '<span class="badge badge-rose">Pausada</span>';
-  return `<span class="badge">${e}</span>`;
+  return `<span class="badge">${escapeHtml(e)}</span>`;
 }
 
 function escapeHtml(s) {

@@ -6,6 +6,7 @@
 import { supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtPct, today } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let charts = [];
 let allData = [];
@@ -297,8 +298,8 @@ function buildTable(container, data) {
     const fechaFmt = fechaParts.length === 3 ? `${fechaParts[2]}/${fechaParts[1]}/${fechaParts[0]}` : r.fecha;
 
     return `<tr>
-      <td style="font-size:12px;white-space:nowrap;font-family:monospace;font-weight:600">${fechaFmt}</td>
-      <td><span class="badge badge-${getFrutaBadge(r.fruta)}">${r.fruta}</span></td>
+      <td style="font-size:12px;white-space:nowrap;font-family:monospace;font-weight:600">${escapeHtml(fechaFmt)}</td>
+      <td><span class="badge badge-${getFrutaBadge(r.fruta)}">${escapeHtml(r.fruta)}</span></td>
       <td style="font-family:monospace">${fmt(r.t1mp)}</td>
       <td style="font-family:monospace">${fmt(r.t1pt)}</td>
       <td style="color:var(--verde);font-weight:600">${t1r !== '-' ? t1r + '%' : '-'}</td>

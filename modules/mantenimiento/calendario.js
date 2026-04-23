@@ -374,7 +374,7 @@ function renderTimeline(container, eventos) {
       </div>
       <div class="cal-tl-body">
         <div class="cal-tl-title">${icon} ${escapeHtml(e.titulo)}</div>
-        <div class="cal-tl-meta">${escapeHtml(e.area || '—')} · ${capitalize(e.tipo)}</div>
+        <div class="cal-tl-meta">${escapeHtml(e.area || '—')} · ${capitalize(escapeHtml(e.tipo))}</div>
       </div>
     </div>`;
   }).join('');
@@ -413,11 +413,11 @@ function openDetail(container, fecha, eventos) {
           'media': '<span class="badge badge-amber">Prioridad Media</span>',
           'baja': '<span class="badge badge-verde">Prioridad Baja</span>'
         }[e.prioridad] || '' : '';
-        const codigo = e.codigo ? `<span class="badge badge-azul">${e.codigo}</span>` : '';
-        const tec = e.tecnico ? `<span class="badge badge-purple">👷 ${e.tecnico}</span>` : '';
-        const area = e.area ? `<span class="badge badge-cyan">${e.area}</span>` : '';
-        const cantidad = e.cantidad ? `<span class="badge badge-amber">${e.cantidad}</span>` : '';
-        const freq = e.frecuencia ? `<span class="badge badge-naranja">${e.frecuencia}</span>` : '';
+        const codigo = e.codigo ? `<span class="badge badge-azul">${escapeHtml(e.codigo)}</span>` : '';
+        const tec = e.tecnico ? `<span class="badge badge-purple">👷 ${escapeHtml(e.tecnico)}</span>` : '';
+        const area = e.area ? `<span class="badge badge-cyan">${escapeHtml(e.area)}</span>` : '';
+        const cantidad = e.cantidad ? `<span class="badge badge-amber">${escapeHtml(e.cantidad)}</span>` : '';
+        const freq = e.frecuencia ? `<span class="badge badge-naranja">${escapeHtml(e.frecuencia)}</span>` : '';
 
         return `<div class="cal-ev-row" style="border-left-color:${color}">
           <div class="cal-ev-icon">${icon}</div>

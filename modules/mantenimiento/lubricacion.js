@@ -5,6 +5,7 @@
 
 import { fmt, fmtDate } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
 
 let charts = [];
@@ -203,7 +204,7 @@ function renderMapa(container, lub) {
     const cls = s.vencidos > 0 ? 'has-vencidos' : s.proximos > 0 ? 'has-proximos' : '';
     return `<div class="mapa-area-card ${cls}">
       <div class="mapa-area-icon">${iconArea[nombre] || '🏭'}</div>
-      <div class="mapa-area-nombre">${nombre}</div>
+      <div class="mapa-area-nombre">${escapeHtml(nombre)}</div>
       <div style="display:flex;align-items:baseline;gap:6px">
         <div class="mapa-area-total">${s.total}</div>
         <div class="mapa-area-label">puntos</div>
@@ -246,25 +247,25 @@ function renderTabla(container) {
       'vencido': '<span class="badge badge-rose">⚠️ Vencido</span>',
       'proximo': '<span class="badge badge-amber">⏰ Próximo</span>',
       'programado': '<span class="badge badge-verde">✓ Programado</span>'
-    }[l.estado] || l.estado;
+    }[l.estado] || escapeHtml(l.estado);
 
     const diasClass = l.diasRestantes < 0 ? 'dias-neg' : l.diasRestantes < 7 ? 'dias-amber' : 'dias-pos';
     const diasText = l.diasRestantes < 0 ? `${l.diasRestantes}d` : `${l.diasRestantes}d`;
 
-    const lubBadge = `<span class="badge badge-${l.color || 'azul'}"><span class="lub-dot" style="background:currentColor"></span>${l.lubricante}</span>`;
+    const lubBadge = `<span class="badge badge-${l.color || 'azul'}"><span class="lub-dot" style="background:currentColor"></span>${escapeHtml(l.lubricante)}</span>`;
 
     return `<tr>
-      <td><strong>${l.id}</strong></td>
-      <td>${l.equipo}<br><small style="color:var(--muted)">${l.equipoNombre}</small></td>
-      <td>${l.area}</td>
-      <td>${l.puntoLubricacion}</td>
+      <td><strong>${escapeHtml(l.id)}</strong></td>
+      <td>${escapeHtml(l.equipo)}<br><small style="color:var(--muted)">${escapeHtml(l.equipoNombre)}</small></td>
+      <td>${escapeHtml(l.area)}</td>
+      <td>${escapeHtml(l.puntoLubricacion)}</td>
       <td>${lubBadge}</td>
-      <td>${l.frecuencia}</td>
-      <td><strong>${l.cantidad} ${l.unidad}</strong></td>
+      <td>${escapeHtml(l.frecuencia)}</td>
+      <td><strong>${fmt(l.cantidad)} ${escapeHtml(l.unidad)}</strong></td>
       <td style="white-space:nowrap">${fmtDate(l.proximaFecha)}</td>
       <td class="${diasClass}">${diasText}</td>
       <td>${estadoBadge}</td>
-      <td><button class="btn-ejecutar-lub" data-lub-id="${l.id}">▶ Ejecutar</button></td>
+      <td><button class="btn-ejecutar-lub" data-lub-id="${escapeAttr(l.id)}">▶ Ejecutar</button></td>
     </tr>`;
   }).join('');
 

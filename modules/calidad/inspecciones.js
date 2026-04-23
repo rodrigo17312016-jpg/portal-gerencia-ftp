@@ -5,6 +5,7 @@
 import { fetchSupabase } from '../../assets/js/config/supabase.js';
 import { today } from '../../assets/js/utils/formatters.js';
 import { createChart, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 
 let tempData = [];
 
@@ -61,13 +62,13 @@ function renderTable(container) {
   }
 
   tbody.innerHTML = tempData.map(r => `<tr>
-    <td style="font-family:monospace;font-size:12px">${r.fecha}</td>
-    <td style="font-family:monospace;font-size:12px">${r.hora.slice(0, 5)}</td>
-    <td style="font-size:12px">${r.area}</td>
-    <td style="font-weight:700;color:var(--${estadoColor(r.estado)})">${r.temperatura}°C</td>
+    <td style="font-family:monospace;font-size:12px">${escapeHtml(r.fecha)}</td>
+    <td style="font-family:monospace;font-size:12px">${escapeHtml(r.hora.slice(0, 5))}</td>
+    <td style="font-size:12px">${escapeHtml(r.area)}</td>
+    <td style="font-weight:700;color:var(--${estadoColor(r.estado)})">${escapeHtml(r.temperatura)}°C</td>
     <td><span class="badge badge-${estadoColor(r.estado)}">${estadoLabel(r.estado)}</span></td>
-    <td style="font-size:12px">${r.turno || '—'}</td>
-    <td style="font-size:12px">${r.operario || '—'}</td>
+    <td style="font-size:12px">${escapeHtml(r.turno || '—')}</td>
+    <td style="font-size:12px">${escapeHtml(r.operario || '—')}</td>
   </tr>`).join('');
 }
 

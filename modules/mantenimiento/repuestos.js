@@ -5,6 +5,7 @@
 
 import { fmt, fmtSoles } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml, escapeAttr } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData, saveMantData } from './data-mock.js';
 
 let charts = [];
@@ -138,7 +139,7 @@ function renderCategoriaFilter(container, reps) {
   if (!wrap) return;
   const cats = [...new Set(reps.map(r => r.categoria))].sort();
   wrap.innerHTML = `<div class="filter-chip ${state.filterCategoria === 'todas' ? 'active' : ''}" data-cat="todas">Todas categorías</div>` +
-    cats.map(c => `<div class="filter-chip ${state.filterCategoria === c ? 'active' : ''}" data-cat="${c}">${c}</div>`).join('');
+    cats.map(c => `<div class="filter-chip ${state.filterCategoria === c ? 'active' : ''}" data-cat="${escapeAttr(c)}">${escapeHtml(c)}</div>`).join('');
 
   wrap.querySelectorAll('.filter-chip').forEach(chip => {
     chip.addEventListener('click', () => {
@@ -248,10 +249,10 @@ function renderAlertas(container, reps) {
     const clase = est === 'bajo' ? 'bajo' : '';
     return `<div class="rep-alerta-item ${clase}">
       <div class="rep-alerta-info">
-        <div class="rep-alerta-title">${r.codigo} — ${r.nombre}</div>
-        <div class="rep-alerta-meta">${r.categoria} · Ubicación ${r.ubicacion} · Stock <span class="rep-stock-label">${r.stock} ${r.unidad}</span> / Mín ${r.minimo} ${r.unidad}</div>
+        <div class="rep-alerta-title">${escapeHtml(r.codigo)} — ${escapeHtml(r.nombre)}</div>
+        <div class="rep-alerta-meta">${escapeHtml(r.categoria)} · Ubicación ${escapeHtml(r.ubicacion)} · Stock <span class="rep-stock-label">${fmt(r.stock)} ${escapeHtml(r.unidad)}</span> / Mín ${fmt(r.minimo)} ${escapeHtml(r.unidad)}</div>
       </div>
-      <button class="btn btn-primary btn-sm" data-generar-oc="${r.codigo}">Generar Orden de Compra</button>
+      <button class="btn btn-primary btn-sm" data-generar-oc="${escapeAttr(r.codigo)}">Generar Orden de Compra</button>
     </div>`;
   }).join('');
 
@@ -292,19 +293,19 @@ function renderTable(container) {
     const est = stockEstado(r);
     const valor = r.stock * r.precio;
     return `<tr>
-      <td><strong>${r.codigo}</strong></td>
-      <td>${r.nombre}</td>
-      <td>${r.categoria}</td>
+      <td><strong>${escapeHtml(r.codigo)}</strong></td>
+      <td>${escapeHtml(r.nombre)}</td>
+      <td>${escapeHtml(r.categoria)}</td>
       <td style="text-align:right"><strong style="color:${est === 'critico' ? 'var(--danger)' : est === 'bajo' ? 'var(--warn)' : 'var(--texto)'}">${fmt(r.stock)}</strong></td>
       <td style="text-align:right;color:var(--muted)">${fmt(r.minimo)}</td>
-      <td>${r.unidad}</td>
+      <td>${escapeHtml(r.unidad)}</td>
       <td style="text-align:right">${fmtSoles(r.precio, 2)}</td>
       <td style="text-align:right"><strong>${fmtSoles(valor, 2)}</strong></td>
-      <td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px">${r.ubicacion}</code></td>
+      <td><code style="font-size:11px;background:var(--surface2);padding:2px 6px;border-radius:4px">${escapeHtml(r.ubicacion)}</code></td>
       <td>${estadoBadge(est)}</td>
       <td style="white-space:nowrap">
-        <button class="rep-accion-btn entrada" data-row-entrada="${r.codigo}" title="Entrada de stock">📥 Entrada</button>
-        <button class="rep-accion-btn salida" data-row-salida="${r.codigo}" title="Salida de stock">📤 Salida</button>
+        <button class="rep-accion-btn entrada" data-row-entrada="${escapeAttr(r.codigo)}" title="Entrada de stock">📥 Entrada</button>
+        <button class="rep-accion-btn salida" data-row-salida="${escapeAttr(r.codigo)}" title="Salida de stock">📤 Salida</button>
       </td>
     </tr>`;
   }).join('');
@@ -335,7 +336,7 @@ function openModal(container, tipo, codigo = null) {
   const data = getMantData();
   const reps = data.repuestos || [];
   if (select) {
-    select.innerHTML = reps.map(r => `<option value="${r.codigo}" ${codigo === r.codigo ? 'selected' : ''}>${r.codigo} - ${r.nombre} (stock: ${r.stock} ${r.unidad})</option>`).join('');
+    select.innerHTML = reps.map(r => `<option value="${escapeAttr(r.codigo)}" ${codigo === r.codigo ? 'selected' : ''}>${escapeHtml(r.codigo)} - ${escapeHtml(r.nombre)} (stock: ${fmt(r.stock)} ${escapeHtml(r.unidad)})</option>`).join('');
   }
   if (cantInp) cantInp.value = 1;
   if (motivoInp) motivoInp.value = '';

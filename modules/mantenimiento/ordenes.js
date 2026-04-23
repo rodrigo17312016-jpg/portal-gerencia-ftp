@@ -179,10 +179,10 @@ function renderTable(container, data) {
     const puedeCompletar = o.estado === 'abierta' || o.estado === 'ejecucion' || o.estado === 'pausada';
 
     return `<tr>
-      <td><strong>${o.codigo}</strong></td>
+      <td><strong>${escapeHtml(o.codigo)}</strong></td>
       <td>${escapeHtml(o.equipo)}</td>
-      <td>${o.area}</td>
-      <td>${tipoIcon} ${cap(o.tipo)}</td>
+      <td>${escapeHtml(o.area)}</td>
+      <td>${tipoIcon} ${cap(escapeHtml(o.tipo))}</td>
       <td>${prioBadge}</td>
       <td>${escapeHtml(o.tecnico)}</td>
       <td style="text-align:right;font-variant-numeric:tabular-nums">${horas}</td>
@@ -191,8 +191,8 @@ function renderTable(container, data) {
       <td style="white-space:nowrap">${fmtDate(o.fecha)}</td>
       <td>
         <div class="ot-row-actions">
-          <button class="btn btn-sm btn-secondary" data-ot-ver="${o.codigo}">📄 Ver</button>
-          ${puedeCompletar ? `<button class="btn btn-sm btn-primary" data-ot-completar="${o.codigo}">✅ Completar</button>` : ''}
+          <button class="btn btn-sm btn-secondary" data-ot-ver="${escapeHtml(o.codigo)}">📄 Ver</button>
+          ${puedeCompletar ? `<button class="btn btn-sm btn-primary" data-ot-completar="${escapeHtml(o.codigo)}">✅ Completar</button>` : ''}
         </div>
       </td>
     </tr>`;
@@ -303,8 +303,8 @@ function openDetalle(container, codigo) {
   if (!modal || !body) return;
 
   const tipoIcon = { preventivo: '🗓️', correctivo: '🔨', predictivo: '📡' }[o.tipo] || '•';
-  title.innerHTML = `${tipoIcon} ${o.codigo}`;
-  sub.innerHTML = `${escapeHtml(o.equipo)} · ${o.area}`;
+  title.innerHTML = `${tipoIcon} ${escapeHtml(o.codigo)}`;
+  sub.innerHTML = `${escapeHtml(o.equipo)} · ${escapeHtml(o.area)}`;
 
   body.innerHTML = `
     <div class="ot-detail-grid">
@@ -318,7 +318,7 @@ function openDetalle(container, codigo) {
       </div>
       <div class="ot-detail-item">
         <div class="ot-detail-label">Tipo</div>
-        <div class="ot-detail-value">${tipoIcon} ${cap(o.tipo)}</div>
+        <div class="ot-detail-value">${tipoIcon} ${cap(escapeHtml(o.tipo))}</div>
       </div>
       <div class="ot-detail-item">
         <div class="ot-detail-label">Fecha</div>
@@ -330,7 +330,7 @@ function openDetalle(container, codigo) {
       </div>
       <div class="ot-detail-item">
         <div class="ot-detail-label">Area</div>
-        <div class="ot-detail-value">${o.area}</div>
+        <div class="ot-detail-value">${escapeHtml(o.area)}</div>
       </div>
       <div class="ot-detail-item">
         <div class="ot-detail-label">Horas estimadas</div>
@@ -383,13 +383,13 @@ function populateSelects(container, data) {
     equipoSel.innerHTML = data.equipos
       .slice()
       .sort((a, b) => a.codigo.localeCompare(b.codigo))
-      .map(e => `<option value="${e.codigo}">${e.codigo} — ${escapeHtml(e.nombre)}</option>`)
+      .map(e => `<option value="${escapeHtml(e.codigo)}">${escapeHtml(e.codigo)} — ${escapeHtml(e.nombre)}</option>`)
       .join('');
   }
   if (tecnicoSel && !tecnicoSel.options.length) {
     tecnicoSel.innerHTML = data.tecnicos
       .filter(t => t.estado === 'activo')
-      .map(t => `<option value="${t.id}">${escapeHtml(t.nombre)} (${t.especialidad})</option>`)
+      .map(t => `<option value="${escapeHtml(t.id)}">${escapeHtml(t.nombre)} (${escapeHtml(t.especialidad)})</option>`)
       .join('');
   }
   if (fechaInp && !fechaInp.value) {
@@ -557,7 +557,7 @@ function otEstadoBadge(e) {
   if (e === 'ejecucion') return '<span class="badge badge-amber">🔧 En ejecucion</span>';
   if (e === 'completada') return '<span class="badge badge-verde">✅ Completada</span>';
   if (e === 'pausada') return '<span class="badge badge-rose">⏸️ Pausada</span>';
-  return `<span class="badge">${e}</span>`;
+  return `<span class="badge">${escapeHtml(e)}</span>`;
 }
 
 function cap(s) {

@@ -5,6 +5,7 @@
 
 import { fmt, fmtPct } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions, getTextColor } from '../../assets/js/utils/chart-helpers.js';
+import { escapeHtml } from '../../assets/js/utils/dom-helpers.js';
 import { getMantData } from './data-mock.js';
 
 let charts = [];
@@ -409,7 +410,7 @@ function renderInsights(container, data) {
     insights.push({
       type: 'warn', icon: '🎯',
       title: `${top3Pct}% de fallas en 3 equipos`,
-      desc: `Top: ${ranked.slice(0, 3).map(r => r[0]).join(', ')}. Enfocar análisis de causa raíz aquí.`
+      desc: `Top: ${escapeHtml(ranked.slice(0, 3).map(r => r[0]).join(', '))}. Enfocar análisis de causa raíz aquí.`
     });
   }
 

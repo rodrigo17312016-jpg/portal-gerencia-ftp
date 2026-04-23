@@ -9,6 +9,15 @@
 
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // ─── Detectar hardware limitado (reduce freeze en equipos viejos) ───
+  // Criterio: CPU <=4 cores y/o RAM <=2GB, o saveData activo
+  var hwCores = (navigator.hardwareConcurrency || 8);
+  var hwMem = (navigator.deviceMemory || 8); // chrome/edge only
+  var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  var saveData = conn && conn.saveData;
+  var lowPerf = hwCores <= 4 || hwMem <= 2 || saveData;
+  if (lowPerf) document.body.classList.add('low-perf');
+
   /* ════════════════════════════════════════════════════════════════
      1. PRELOADER EJECUTIVO (duration 4500ms, intacto)
      ════════════════════════════════════════════════════════════════ */
@@ -52,11 +61,20 @@
   /* ════════════════════════════════════════════════════════════════
      2. FLOATING FRUITS + HERO PARTICLES
      ════════════════════════════════════════════════════════════════ */
+  // Ajustar cantidad de decoraciones segun perfil del dispositivo
+  // - prefers-reduced-motion: 0 (desactivado)
+  // - Mobile (<= 768px): 40% del base
+  // - Desktop: 100%
+  var isMobile = window.innerWidth <= 768;
+  var decoScale = prefersReduced ? 0 : (isMobile ? 0.4 : 1);
+
   (function initFloating(){
+    if (decoScale === 0) return;
     var fruits = ['&#127827;','&#129389;','&#127821;','&#127820;','&#129361;','&#127815;','&#129388;','&#127819;'];
     var container = document.getElementById('floatingFruits');
     if(!container) return;
-    for(var i = 0; i < 12; i++){
+    var count = Math.round(12 * decoScale);
+    for(var i = 0; i < count; i++){
       var el = document.createElement('div');
       el.className = 'float-fruit';
       el.innerHTML = fruits[i % fruits.length];
@@ -66,9 +84,11 @@
   })();
 
   (function initHeroParticles(){
+    if (decoScale === 0) return;
     var c = document.getElementById('heroParticles');
     if(!c) return;
-    for(var i = 0; i < 22; i++){
+    var count = Math.round(22 * decoScale);
+    for(var i = 0; i < count; i++){
       var p = document.createElement('div');
       p.className = 'particle';
       var s = Math.random() * 18 + 5;
@@ -91,9 +111,33 @@
   (function videoAutoPause(){
     var video = document.getElementById('heroVideo');
     if(!video || !('IntersectionObserver' in window)) return;
+
+    // Si prefers-reduced-motion o data-saver activo, no cargar video (ahorra 18MB)
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var saveData = connection && connection.saveData;
+    var slowNet = connection && /2g|slow/i.test(connection.effectiveType || '');
+    if (prefersReduced || saveData || slowNet) {
+      video.style.display = 'none';
+      return;
+    }
+
+    // Cargar source recien cuando sea visible (lazy video load)
+    var loaded = false;
+    function activate() {
+      if (loaded) return;
+      var src = video.querySelector('source[data-src]');
+      if (src) {
+        src.setAttribute('src', src.getAttribute('data-src'));
+        src.removeAttribute('data-src');
+        video.load();
+      }
+      loaded = true;
+    }
+
     new IntersectionObserver(function(entries){
       entries.forEach(function(e){
         if(e.isIntersecting){
+          activate();
           e.target.play().catch(function(){});
         } else {
           e.target.pause();

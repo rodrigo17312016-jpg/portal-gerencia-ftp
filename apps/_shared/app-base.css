@@ -1,0 +1,213 @@
+/* ══════════════════════════════════════════════════════════════════════
+   APP BASE CSS - Estilos compartidos para las 5 apps standalone
+   Frutos Tropicales Peru Export S.A.C.
+
+   Incluye variables de tema, scrollbar custom, KPI cards, topbar, firma
+   dev y utilitarios comunes. Los estilos inline de cada app siguen
+   sobrescribiendo estos defaults si asi lo necesitan.
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Respeto a prefers-reduced-motion ─── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── Variables base (se pueden sobreescribir por app) ─── */
+:root {
+  --ftp-verde: #16a34a;
+  --ftp-verde-oscuro: #0e7c3a;
+  --ftp-amber: #f59e0b;
+  --ftp-rojo: #ef4444;
+  --ftp-azul: #3b82f6;
+
+  --ftp-bg: #f8fafc;
+  --ftp-surface: #ffffff;
+  --ftp-text: #0f172a;
+  --ftp-muted: #64748b;
+  --ftp-border: #e2e8f0;
+
+  --ftp-radius: 12px;
+  --ftp-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+  --ftp-shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="dark"], body[data-theme="dark"] {
+  --ftp-bg: #0b1220;
+  --ftp-surface: #111a2c;
+  --ftp-text: #f1f5f9;
+  --ftp-muted: #94a3b8;
+  --ftp-border: #1f2937;
+  --ftp-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --ftp-shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* ─── Scrollbar custom ─── */
+.ftp-scroll::-webkit-scrollbar,
+body::-webkit-scrollbar { width: 10px; height: 10px; }
+.ftp-scroll::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track { background: transparent; }
+.ftp-scroll::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: var(--ftp-border);
+  border-radius: 8px;
+}
+.ftp-scroll::-webkit-scrollbar-thumb:hover,
+body::-webkit-scrollbar-thumb:hover {
+  background: var(--ftp-muted);
+}
+
+/* ─── KPI Card base (alineado con variants por app) ─── */
+.ftp-kpi-card {
+  background: var(--ftp-surface);
+  border: 1px solid var(--ftp-border);
+  border-radius: var(--ftp-radius);
+  padding: 16px 20px;
+  box-shadow: var(--ftp-shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.ftp-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--ftp-shadow-lg);
+}
+.ftp-kpi-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ftp-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ftp-kpi-value {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--ftp-text);
+  line-height: 1.1;
+}
+
+/* ─── Topbar base ─── */
+.ftp-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  background: var(--ftp-surface);
+  border-bottom: 1px solid var(--ftp-border);
+  box-shadow: var(--ftp-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.ftp-topbar-brand { display: flex; align-items: center; gap: 12px; }
+.ftp-topbar-brand img { height: 36px; width: auto; }
+.ftp-topbar-title {
+  font-weight: 800;
+  color: var(--ftp-text);
+  font-size: 16px;
+  line-height: 1.1;
+}
+.ftp-topbar-sub {
+  font-size: 11px;
+  color: var(--ftp-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* ─── Firma dev compartida ─── */
+.ftp-dev-signature {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 6px 14px;
+  border-left: 2px solid var(--ftp-verde);
+  font-size: 11px;
+  line-height: 1.3;
+}
+.ftp-dev-signature-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--ftp-muted);
+  letter-spacing: 0.08em;
+}
+.ftp-dev-signature-name {
+  font-weight: 700;
+  color: var(--ftp-text);
+}
+.ftp-dev-signature-role {
+  font-size: 10px;
+  color: var(--ftp-muted);
+}
+
+/* ─── Indicador de conexion Supabase ─── */
+.ftp-conn-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: var(--ftp-bg);
+  border: 1px solid var(--ftp-border);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--ftp-muted);
+}
+.ftp-conn-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #9ca3af;
+  transition: background .3s ease, box-shadow .3s ease;
+}
+.ftp-conn-dot.ok { background: var(--ftp-verde); box-shadow: 0 0 6px var(--ftp-verde); }
+.ftp-conn-dot.err { background: var(--ftp-rojo); }
+
+/* ─── Tabla base ─── */
+.ftp-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--ftp-surface);
+  border-radius: var(--ftp-radius);
+  overflow: hidden;
+  box-shadow: var(--ftp-shadow);
+}
+.ftp-table th,
+.ftp-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--ftp-border);
+}
+.ftp-table th {
+  background: var(--ftp-bg);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ftp-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.ftp-table tbody tr:hover { background: var(--ftp-bg); }
+
+/* ─── Utilitarios ─── */
+.ftp-hidden { display: none !important; }
+.ftp-sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+}
+.ftp-loader {
+  width: 36px; height: 36px;
+  border: 3px solid var(--ftp-border);
+  border-top-color: var(--ftp-verde);
+  border-radius: 50%;
+  animation: ftp-spin 0.8s linear infinite;
+}
+@keyframes ftp-spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 768px) {
+  .ftp-topbar { padding: 10px 16px; }
+  .ftp-topbar-title { font-size: 14px; }
+  .ftp-dev-signature { display: none; }
+  .ftp-kpi-value { font-size: 22px; }
+}

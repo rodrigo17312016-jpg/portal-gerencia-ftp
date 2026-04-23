@@ -1143,7 +1143,23 @@ body.dark .input-float select{color:#e2e8f0}
 }
 
 @media (prefers-reduced-motion:reduce){
-  *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important}
+  /* Ocultar decoraciones costosas en lugar de solo acelerarlas (evita freeze en CPU debil) */
+  .aurora-bg,.hero-particles,.floating-fruits,.particle,.float-fruit,
+  .hero-mesh,.hero-grain,.cursor,.cursor-trail,.light-rays{display:none!important}
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+    animation-iteration-count:1!important;
+  }
+  html{scroll-behavior:auto!important}
   .reveal{opacity:1;transform:none}
   .split-text{transform:none}
 }
+
+/* Fallback: si el JS detecta device lento, agrega class 'low-perf' al body */
+body.low-perf .aurora-bg,
+body.low-perf .hero-particles,
+body.low-perf .floating-fruits,
+body.low-perf .cursor,
+body.low-perf .cursor-trail{display:none!important}
+body.low-perf .hero-video{display:none!important}

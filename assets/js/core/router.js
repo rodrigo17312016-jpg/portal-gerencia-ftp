@@ -5,6 +5,10 @@
 import { hasAccess, getCurrentRole } from './auth.js';
 import { destroyChartsIn } from '../utils/chart-helpers.js';
 
+// Version estatica del build - bump manualmente cuando se despliega
+// cambio a modulos. Esto permite al SW cachear correctamente.
+const BUILD_VERSION = '18';
+
 // Detectar base path (funciona en localhost Y GitHub Pages)
 function getBasePath() {
   const path = window.location.pathname;
@@ -89,7 +93,7 @@ export async function showPanel(panelId, modulePath) {
     `;
 
     // Cargar HTML template
-    const htmlPath = `${BASE}modules/${modulePath}.html?v=${Date.now()}`;
+    const htmlPath = `${BASE}modules/${modulePath}.html?v=${BUILD_VERSION}`;
     const htmlRes = await fetch(htmlPath);
 
     if (!htmlRes.ok) {
@@ -103,7 +107,7 @@ export async function showPanel(panelId, modulePath) {
 
     // Cargar JS module
     try {
-      const jsPath = `${BASE}modules/${modulePath}.js?v=${Date.now()}`;
+      const jsPath = `${BASE}modules/${modulePath}.js?v=${BUILD_VERSION}`;
       const module = await import(jsPath);
 
       if (module.init) {
@@ -143,6 +147,7 @@ function updateBreadcrumb(panelId) {
   const labels = {
     'resumen': 'General / Resumen Ejecutivo',
     'certificaciones': 'General / Certificaciones',
+    'audit': 'General / Audit Log',
     'indicadores': 'Produccion / Indicadores',
     'produccion-dia': 'Produccion / Produccion del Dia',
     'rendimientos': 'Produccion / Rendimientos',

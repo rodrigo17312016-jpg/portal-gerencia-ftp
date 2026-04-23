@@ -483,10 +483,28 @@ body.login-minimized .login-overlay{background:linear-gradient(135deg,rgba(0,0,0
     <button class="login-btn" id="loginBtn">Ingresar al Portal</button>
     <div class="login-error" id="loginError"></div>
 
+    <a href="#" id="loginForgotLink" class="login-back" style="margin-top:8px;font-size:12px;color:var(--azul,#60a5fa);text-decoration:none" title="Recuperar contrasena">
+      <span>¿Olvidaste tu contrasena?</span>
+    </a>
+
     <a href="index.html" class="login-back" title="Regresar al sitio web">
       <span class="login-back-arrow">←</span>
       <span>Volver al sitio web</span>
     </a>
+  </div>
+</div>
+
+<!-- Modal de recuperacion de password -->
+<div id="loginResetModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(6px)">
+  <div style="background:#1a1f2e;border-radius:16px;padding:32px;max-width:400px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.6);color:#fff">
+    <h3 style="margin:0 0 8px;font-size:20px;font-weight:800">Recuperar Contrasena</h3>
+    <p style="margin:0 0 20px;font-size:13px;color:#94a3b8">Ingresa tu usuario. Te enviaremos un link por email.</p>
+    <input type="text" id="loginResetUser" placeholder="Tu usuario" style="width:100%;padding:12px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#fff;font-size:14px;margin-bottom:12px" autocomplete="username">
+    <div id="loginResetMsg" style="font-size:12px;margin-bottom:12px;min-height:18px"></div>
+    <div style="display:flex;gap:8px">
+      <button id="loginResetCancel" type="button" style="flex:1;padding:10px;border-radius:8px;border:1px solid #334155;background:transparent;color:#fff;font-weight:600;cursor:pointer">Cancelar</button>
+      <button id="loginResetSubmit" type="button" style="flex:1;padding:10px;border-radius:8px;border:none;background:#16a34a;color:#fff;font-weight:700;cursor:pointer">Enviar link</button>
+    </div>
   </div>
 </div>
 
@@ -518,7 +536,7 @@ body.login-minimized .login-overlay{background:linear-gradient(135deg,rgba(0,0,0
 <div class="login-clock" id="loginClock"></div>
 
 <script type="module">
-import { doLogin, getSession } from './assets/js/core/auth.js';
+import { doLogin, getSession, requestPasswordReset, updatePassword } from './assets/js/core/auth.js';
 
 // Verificar sesion existente: legacy (ftp_session) o Supabase (sb-*-auth-token)
 function _hasAnySession() {
@@ -570,6 +588,61 @@ async function handleLogin() {
 loginBtn.addEventListener('click', handleLogin);
 passInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
 userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') passInput.focus(); });
+
+// ═══════════════════════════════════════════
+// PASSWORD RECOVERY FLOW
+// ═══════════════════════════════════════════
+const resetModal = document.getElementById('loginResetModal');
+const resetUser = document.getElementById('loginResetUser');
+const resetMsg = document.getElementById('loginResetMsg');
+const resetCancel = document.getElementById('loginResetCancel');
+const resetSubmit = document.getElementById('loginResetSubmit');
+const forgotLink = document.getElementById('loginForgotLink');
+
+forgotLink.addEventListener('click', (e) => {
+  e.preventDefault();
+  resetMsg.textContent = '';
+  resetMsg.style.color = '#94a3b8';
+  resetUser.value = userInput.value || '';
+  resetModal.style.display = 'flex';
+  resetUser.focus();
+});
+resetCancel.addEventListener('click', () => { resetModal.style.display = 'none'; });
+resetModal.addEventListener('click', (e) => { if (e.target === resetModal) resetModal.style.display = 'none'; });
+
+resetSubmit.addEventListener('click', async () => {
+  resetSubmit.disabled = true;
+  resetSubmit.textContent = 'Enviando...';
+  const r = await requestPasswordReset(resetUser.value);
+  resetSubmit.disabled = false;
+  resetSubmit.textContent = 'Enviar link';
+  if (r.success) {
+    resetMsg.style.color = '#22c55e';
+    resetMsg.textContent = r.message;
+    setTimeout(() => { resetModal.style.display = 'none'; }, 3000);
+  } else {
+    resetMsg.style.color = '#ef4444';
+    resetMsg.textContent = r.error;
+  }
+});
+
+// Si venimos del link de email (?reset=1), mostrar prompt para nueva password
+(async () => {
+  const params = new URLSearchParams(window.location.search);
+  const urlHash = window.location.hash || '';
+  if (params.get('reset') === '1' || urlHash.includes('type=recovery')) {
+    const newPwd = window.prompt('Ingresa tu nueva contrasena (min 8 caracteres):');
+    if (newPwd && newPwd.length >= 8) {
+      const r = await updatePassword(newPwd);
+      if (r.success) {
+        alert('Contrasena actualizada. Ingresa con la nueva.');
+        window.location.href = 'login.html';
+      } else {
+        alert('Error: ' + r.error);
+      }
+    }
+  }
+})();
 
 // ═══════════════════════════════════════════
 // MINIMIZE / MAXIMIZE con animacion elegante

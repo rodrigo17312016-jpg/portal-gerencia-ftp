@@ -252,7 +252,7 @@ function renderTabla(container) {
     const diasClass = l.diasRestantes < 0 ? 'dias-neg' : l.diasRestantes < 7 ? 'dias-amber' : 'dias-pos';
     const diasText = l.diasRestantes < 0 ? `${l.diasRestantes}d` : `${l.diasRestantes}d`;
 
-    const lubBadge = `<span class="badge badge-${l.color || 'azul'}"><span class="lub-dot" style="background:currentColor"></span>${escapeHtml(l.lubricante)}</span>`;
+    const lubBadge = `<span class="badge badge-${escapeAttr(l.color || 'azul')}"><span class="lub-dot" style="background:currentColor"></span>${escapeHtml(l.lubricante)}</span>`;
 
     return `<tr>
       <td><strong>${escapeHtml(l.id)}</strong></td>

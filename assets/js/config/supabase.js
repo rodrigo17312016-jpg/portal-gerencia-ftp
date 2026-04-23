@@ -15,10 +15,28 @@ const SB_PROD_URL = 'https://rslzosmeteyzxmgfkppe.supabase.co';
 const SB_PROD_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJzbHpvc21ldGV5enhtZ2ZrcHBlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0OTc5NTgsImV4cCI6MjA5MDA3Mzk1OH0.XwitsLRWq10UsYshg_m2ViZh4BnV48zkJCK-JsRa9cs';
 
 // Cliente Calidad (temperaturas, consumos_insumos)
-export const supabaseCalidad = createClient(SB_URL, SB_KEY);
+// Solo lectura publica con anon key - no requiere auth persistente
+// (auth: persistSession:false evita el warning "Multiple GoTrueClient instances")
+export const supabaseCalidad = createClient(SB_URL, SB_KEY, {
+  auth: {
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
+    storageKey: 'sb-obnvrfvcujsrmifvlqni-anon'
+  }
+});
 
-// Cliente Produccion (registro_produccion, registro_personal, config_costos, registro_tuneles, registro_empaque_congelado)
-export const supabase = createClient(SB_PROD_URL, SB_PROD_KEY);
+// Cliente Produccion (principal - lleva el JWT de login)
+// registro_produccion, registro_personal, config_costos, registro_tuneles,
+// registro_empaque_congelado, labores_custom, audit_log
+export const supabase = createClient(SB_PROD_URL, SB_PROD_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true,
+    storageKey: 'sb-rslzosmeteyzxmgfkppe-auth-token'
+  }
+});
 
 // Estado de conexion
 export let isConnected = false;

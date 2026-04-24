@@ -189,16 +189,11 @@
     return { synced: synced, failed: failed, error: firstError };
   }
 
-  // ─── Badge con contador ───
+  // ─── Badge con contador (desactivado por preferencia UX) ───
+  // Se mantiene la funcion como no-op para compatibilidad con consumidores
+  // externos que invoquen refreshBadge(). No renderiza nada visible.
   function updateBadge(badge, storageKey) {
-    var records = getLocalRecords(storageKey);
-    var count = records.length;
-    if (count > 0) {
-      badge.textContent = count;
-      badge.style.display = 'inline-block';
-    } else {
-      badge.style.display = 'none';
-    }
+    if (badge) badge.style.display = 'none';
   }
 
   // ─── Mount ───
@@ -239,23 +234,15 @@
       btn.style.borderColor = 'rgba(37,99,235,0.35)';
     });
 
-    // Badge (contador pendientes)
-    var badge = document.createElement('span');
-    badge.className = 'ftp-sync-badge';
-    badge.style.cssText =
-      'background:#dc2626;color:#fff;border-radius:10px;' +
-      'padding:1px 6px;font-size:10px;font-weight:800;' +
-      'margin-left:4px;min-width:18px;text-align:center;' +
-      'box-shadow:0 0 0 2px rgba(220,38,38,0.2);animation:ftpSyncPulse 2s ease-in-out infinite';
-    btn.appendChild(badge);
-    updateBadge(badge, config.storageKey);
+    // Badge desactivado (se mantiene la variable en null para que el resto del
+    // codigo siga funcionando sin mostrar el contador numerico)
+    var badge = null;
 
-    // Animacion del badge (injectar keyframes si no existen)
+    // Estilos del boton (spin y disabled). Keyframes del badge eliminados.
     if (!document.getElementById('ftpSyncStyles')) {
       var style = document.createElement('style');
       style.id = 'ftpSyncStyles';
       style.textContent =
-        '@keyframes ftpSyncPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}' +
         '@keyframes ftpSyncSpin{to{transform:rotate(360deg)}}' +
         '.ftp-sync-btn:disabled{opacity:0.7;cursor:wait}';
       document.head.appendChild(style);

@@ -33,7 +33,7 @@
 <script src="../_shared/app-utils.js"></script>
 <script src="../_shared/data-sync.js"></script>
 <script src="../_shared/chart-helpers.js"></script>
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
 
@@ -80,6 +80,14 @@
           </select>
         </div>
         <div class="form-group">
+          <label>Proceso</label>
+          <select id="fTipoRegistro" onchange="onTipoRegistroChange()">
+            <option value="PROCESO">EMPAQUE</option>
+            <option value="REEMPAQUE">REEMPAQUE</option>
+          </select>
+          <span class="tooltip-text">EMPAQUE: proceso del dia. REEMPAQUE: producto ya congelado</span>
+        </div>
+        <div class="form-group">
           <label>Turno Origen Producto</label>
           <select id="fTurnoOrigen">
             <option value="DIA">PROCESO TURNO DIA</option>
@@ -98,6 +106,13 @@
             <option value="GRANADA">GRANADA</option>
             <option value="PIÑA">PIÑA</option>
           </select>
+        </div>
+        <div class="form-group">
+          <label>Corte</label>
+          <select id="fCorte" disabled>
+            <option value="">-- Selecciona fruta primero --</option>
+          </select>
+          <span class="tooltip-text">Se llena segun la fruta seleccionada</span>
         </div>
         <div class="form-group">
           <label>Tipo</label>
@@ -180,14 +195,6 @@
         </div>
       </div>
 
-      <!-- DYNAMIC CUTS SECTION -->
-      <div class="cuts-section hidden" id="cutsSection">
-        <div class="cuts-title">&#127860; Cortes por Fruta: <span id="cutsFrutaName">—</span></div>
-        <div class="cuts-grid" id="cutsGrid">
-          <!-- Dynamic cut inputs injected here -->
-        </div>
-      </div>
-
       <!-- CALC PREVIEW -->
       <div class="calc-preview" id="calcPreview" style="display:none">
         <div class="calc-item">
@@ -253,20 +260,37 @@
     <div class="card">
       <div class="card-title" style="justify-content:space-between;flex-wrap:wrap;gap:10px;">
         <span>&#127919; Rendimiento por Fruta y Corte</span>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
           <div class="rend-toggle-group" id="rendPeriodGroup">
             <button class="rend-toggle active" data-period="day" onclick="setRendPeriod('day')">Hoy</button>
             <button class="rend-toggle" data-period="week" onclick="setRendPeriod('week')">Semana</button>
+          </div>
+          <div class="rend-toggle-group" id="rendTipoGroup">
+            <button class="rend-toggle active" data-tipo="PROCESO" onclick="setRendTipo('PROCESO')">Proceso</button>
+            <button class="rend-toggle" data-tipo="REEMPAQUE" onclick="setRendTipo('REEMPAQUE')">Reempaque</button>
+            <button class="rend-toggle" data-tipo="TODOS" onclick="setRendTipo('TODOS')">Todos</button>
           </div>
           <div class="rend-toggle-group" id="rendTurnoGroup">
             <button class="rend-toggle active" data-turno="TODOS" onclick="setRendTurno('TODOS')">Todos</button>
             <button class="rend-toggle" data-turno="DIA" onclick="setRendTurno('DIA')">D&iacute;a</button>
             <button class="rend-toggle" data-turno="NOCHE" onclick="setRendTurno('NOCHE')">Noche</button>
           </div>
+          <select id="rendFrutaFilter" class="rend-fruta-select" onchange="setRendFruta(this.value)">
+            <option value="TODAS">Todas las frutas</option>
+            <option value="MANGO">Mango</option>
+            <option value="FRESA">Fresa</option>
+            <option value="PALTA">Palta</option>
+            <option value="ARANDANO">Arandano</option>
+            <option value="GRANADA">Granada</option>
+            <option value="PIÑA">Pi&ntilde;a</option>
+          </select>
         </div>
       </div>
       <div class="rend-summary" id="rendSummary"></div>
       <div class="chart-wrap" style="height:300px;"><canvas id="chartRendimiento"></canvas></div>
+      <div class="rend-reempaque-notice" id="rendReempaqueNotice" style="display:none;">
+        &#128230; Los datos visualizados corresponden a <b>REEMPAQUE</b> &mdash; no aplica c&aacute;lculo de rendimiento (no hubo proceso de MP en esta fecha/filtro).
+      </div>
     </div>
     <div class="card">
       <div class="card-title">&#128200; KG PT por Hora</div>
@@ -275,14 +299,10 @@
   </div>
 
   <!-- ═══════════ CHARTS ROW 2 ═══════════ -->
-  <div class="grid-2">
+  <div class="grid-1">
     <div class="card">
       <div class="card-title">&#128202; Produccion Acumulada (Cajas)</div>
       <div class="chart-wrap"><canvas id="chartAcumulado"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">&#128202; Cajas Ejecutadas vs Proyectadas por Hora</div>
-      <div class="chart-wrap"><canvas id="chartCajas"></canvas></div>
     </div>
   </div>
 
@@ -301,6 +321,7 @@
         <thead>
           <tr>
             <th>Hora</th>
+            <th>Proceso</th>
             <th>Producto</th>
             <th>Corte</th>
             <th>Tipo</th>
@@ -341,6 +362,13 @@
         <select id="mTurno">
           <option value="DIA">TURNO DIA</option>
           <option value="NOCHE">TURNO NOCHE</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Proceso</label>
+        <select id="mTipoRegistro">
+          <option value="PROCESO">EMPAQUE</option>
+          <option value="REEMPAQUE">REEMPAQUE</option>
         </select>
       </div>
       <div class="form-group">
@@ -447,8 +475,8 @@
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="supabase-config.js?v=3"></script>
-<script src="app.js"></script>
+<script src="supabase-config.js?v=4"></script>
+<script src="app.js?v=2"></script>
 <script src="../_shared/sync-button.js"></script>
 <script>
   (function(){

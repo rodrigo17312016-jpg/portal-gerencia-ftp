@@ -36,29 +36,28 @@ function toggleSection(bodyId, chevronId) {
   document.getElementById(chevronId).classList.toggle('collapsed');
 }
 
-// ═══════════════ FRUIT CHANGE — DYNAMIC CUTS ═══════════════
+// ═══════════════ FRUIT CHANGE → poblar dropdown de Corte ═══════════════
 function onFrutaChange() {
   const fruta = document.getElementById('fFruta').value;
-  const section = document.getElementById('cutsSection');
-  const grid = document.getElementById('cutsGrid');
-  const nameEl = document.getElementById('cutsFrutaName');
+  const corteSel = document.getElementById('fCorte');
+  if (!corteSel) return;
 
   if (!fruta || !CORTES_POR_FRUTA[fruta]) {
-    section.classList.add('hidden');
-    grid.innerHTML = '';
+    corteSel.innerHTML = '<option value="">-- Selecciona fruta primero --</option>';
+    corteSel.disabled = true;
     return;
   }
 
-  section.classList.remove('hidden');
-  nameEl.textContent = fruta;
   const cortes = CORTES_POR_FRUTA[fruta];
+  corteSel.disabled = false;
+  corteSel.innerHTML = cortes.map(c => `<option value="${c}">${c}</option>`).join('');
+}
 
-  grid.innerHTML = cortes.map(c => `
-    <div class="cut-item">
-      <label>${c}</label>
-      <input type="number" id="cut_${c.replace(/\s+/g,'_')}" placeholder="Cajas" min="0" step="1" oninput="calcCutsTotals()">
-    </div>
-  `).join('');
+// ═══════════════ TIPO REGISTRO CHANGE (PROCESO / REEMPAQUE) ═══════════════
+function onTipoRegistroChange() {
+  // Hook para lecciones futuras (ej: esconder campos que no aplican a reempaque).
+  // Por ahora solo actualiza el preview si hay datos.
+  calcPreview();
 }
 
 // ═══════════════ PRESENTATION CHANGE ═══════════════
@@ -75,15 +74,10 @@ function getKgPresentacion() {
   return parseFloat(val) || 0;
 }
 
-// ═══════════════ CALC CUTS TOTALS ═══════════════
-function calcCutsTotals() {
-  // Sum all cut inputs to populate fCajas
-  const inputs = document.querySelectorAll('#cutsGrid input[type="number"]');
-  let total = 0;
-  inputs.forEach(inp => { total += parseInt(inp.value) || 0; });
-  document.getElementById('fCajas').value = total || '';
-  calcPreview();
-}
+// ═══════════════ CALC CUTS TOTALS (LEGACY NO-OP) ═══════════════
+// Ya no existen inputs multiples por corte. Se mantiene la funcion por si algun
+// HTML legacy aun la invoca (no-op).
+function calcCutsTotals() { calcPreview(); }
 
 // ═══════════════ CALC PREVIEW ═══════════════
 function calcPreview() {
@@ -122,29 +116,28 @@ function saveRecords(records) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
 }
 
-// ═══════════════ GET ACTIVE CORTE FROM CUTS ═══════════════
+// ═══════════════ GET CORTE (dropdown unico) ═══════════════
+// Toma el corte seleccionado en el dropdown. Si la fruta tiene un solo corte
+// valido y el dropdown esta vacio, devuelve ese default.
 function getCorteFromCuts() {
+  const corteSel = document.getElementById('fCorte');
+  const selected = corteSel && corteSel.value ? corteSel.value.trim() : '';
+  if (selected) return selected;
   const fruta = document.getElementById('fFruta').value;
-  if (!fruta || !CORTES_POR_FRUTA[fruta]) return '';
-  const cortes = CORTES_POR_FRUTA[fruta];
-  const parts = [];
-  cortes.forEach(c => {
-    const inp = document.getElementById('cut_' + c.replace(/\s+/g,'_'));
-    if (inp && parseInt(inp.value) > 0) {
-      parts.push(c);
-    }
-  });
-  return parts.join(', ') || cortes[0] || '';
+  if (fruta && CORTES_POR_FRUTA[fruta]) return CORTES_POR_FRUTA[fruta][0] || '';
+  return '';
 }
 
+// Genera cuts_detail para compatibilidad con registros existentes. Asigna TODAS
+// las cajas al corte seleccionado (ya no hay distribucion multi-corte).
 function getCutsDetail() {
   const fruta = document.getElementById('fFruta').value;
   if (!fruta || !CORTES_POR_FRUTA[fruta]) return {};
+  const cajas = parseInt(document.getElementById('fCajas').value) || 0;
+  const corte = getCorteFromCuts();
   const detail = {};
-  CORTES_POR_FRUTA[fruta].forEach(c => {
-    const inp = document.getElementById('cut_' + c.replace(/\s+/g,'_'));
-    if (inp) detail[c] = parseInt(inp.value) || 0;
-  });
+  CORTES_POR_FRUTA[fruta].forEach(c => { detail[c] = 0; });
+  if (corte && detail.hasOwnProperty(corte)) detail[corte] = cajas;
   return detail;
 }
 
@@ -178,6 +171,7 @@ async function registrarEmpaque() {
     hora: document.getElementById('fHora').value,
     turno: document.getElementById('fTurno').value,
     turno_origen: document.getElementById('fTurnoOrigen').value,
+    tipo_registro: document.getElementById('fTipoRegistro').value || 'PROCESO',
     fruta: fruta,
     tipo: document.getElementById('fTipo').value,
     corte: corte,
@@ -219,6 +213,7 @@ async function syncToSupabase(record) {
         hora: record.hora,
         turno: record.turno,
         turno_origen: record.turno_origen,
+        tipo_registro: record.tipo_registro || 'PROCESO',
         fruta: record.fruta,
         tipo: record.tipo,
         corte: record.corte,
@@ -255,8 +250,7 @@ function limpiarForm() {
   document.getElementById('fLoteMP').value = '';
   document.getElementById('fCodTraz').value = '';
   document.getElementById('calcPreview').style.display = 'none';
-  // Clear cut inputs
-  document.querySelectorAll('#cutsGrid input').forEach(i => i.value = '');
+  // No hay mas cutsGrid inputs que limpiar (corte ahora es dropdown unico).
 }
 
 function avanzarHora() {
@@ -288,6 +282,7 @@ function openEditModal(id) {
 
   document.getElementById('mFecha').value = r.fecha || '';
   document.getElementById('mTurno').value = r.turno || 'DIA';
+  document.getElementById('mTipoRegistro').value = r.tipo_registro || 'PROCESO';
   document.getElementById('mTurnoOrigen').value = r.turno_origen || 'DIA';
   document.getElementById('mHora').value = r.hora || '';
   document.getElementById('mFruta').value = r.fruta || '';
@@ -331,6 +326,7 @@ async function guardarEdicion() {
     hora: document.getElementById('mHora').value,
     turno: document.getElementById('mTurno').value,
     turno_origen: document.getElementById('mTurnoOrigen').value,
+    tipo_registro: document.getElementById('mTipoRegistro').value || 'PROCESO',
     fruta: document.getElementById('mFruta').value,
     corte: document.getElementById('mCorte').value,
     tipo: document.getElementById('mTipo').value,
@@ -457,9 +453,13 @@ function updateTable(recs) {
     const cajasColor = r.cajas >= 90 ? 'color:var(--verde)' : r.cajas >= 70 ? 'color:var(--amber)' : 'color:var(--rojo)';
     const cjhrColor = r.cj_hr >= 90 ? 'color:var(--verde)' : r.cj_hr >= 70 ? 'color:var(--amber)' : 'color:var(--rojo)';
     const tipoBadge = r.tipo === 'ORGANICO' ? 'badge-green' : 'badge-purple';
+    const isReempaque = (r.tipo_registro || 'PROCESO') === 'REEMPAQUE';
+    const procBadgeClass = isReempaque ? 'badge-reempaque' : 'badge-proceso';
+    const procBadgeLabel = isReempaque ? 'REEMPAQUE' : 'EMPAQUE';
 
     rows += '<tr>' +
       '<td style="font-weight:700">' + r.hora + '</td>' +
+      '<td><span class="' + procBadgeClass + '">' + procBadgeLabel + '</span></td>' +
       '<td>' + r.fruta + '</td>' +
       '<td>' + (r.corte || '—') + '</td>' +
       '<td><span class="badge ' + tipoBadge + '">' + (r.tipo || 'CONV') + '</span></td>' +
@@ -486,9 +486,13 @@ function updateTable(recs) {
   const totOp = recs.reduce((s, r) => s + (r.operarios || 0), 0);
   const avgOp = recs.length > 0 ? Math.round(totOp / recs.length) : 0;
   const avgCjHrOp = avgOp > 0 ? (avgCjHr / avgOp).toFixed(1) : '—';
+  const cntProc = recs.filter(r => (r.tipo_registro || 'PROCESO') === 'PROCESO').length;
+  const cntReemp = recs.length - cntProc;
+  const mixLbl = cntReemp === 0 ? 'Todo proceso' : cntProc === 0 ? 'Todo reempaque' : (cntProc + ' proc / ' + cntReemp + ' reemp');
 
   tfoot.innerHTML = '<tr class="table-footer">' +
     '<td style="font-weight:800">TOTAL</td>' +
+    '<td style="font-size:10.5px;color:var(--muted)">' + mixLbl + '</td>' +
     '<td>' + recs.length + ' hrs</td>' +
     '<td></td><td></td>' +
     '<td class="num">' + formatNum(totCajas) + '</td>' +
@@ -501,7 +505,7 @@ function updateTable(recs) {
 }
 
 // ═══════════════ CHARTS ═══════════════
-let chartCajas = null, chartKgPT = null, chartAcumulado = null, chartRendimiento = null;
+let chartKgPT = null, chartAcumulado = null, chartRendimiento = null;
 
 function rebuildCharts(recs) {
   if (!recs) {
@@ -515,40 +519,6 @@ function rebuildCharts(recs) {
 
   const sorted = [...recs].sort((a, b) => a.hora.localeCompare(b.hora));
   const labels = sorted.map(r => r.hora.split('-')[0]);
-
-  // ── BAR: Cajas Ejecutadas ──
-  if (chartCajas) chartCajas.destroy();
-  chartCajas = new Chart(document.getElementById('chartCajas').getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: 'Cajas Ejecutadas',
-        data: sorted.map(r => r.cajas),
-        backgroundColor: sorted.map(r => r.cajas >= 90 ? 'rgba(22,163,74,0.75)' : r.cajas >= 70 ? 'rgba(245,158,11,0.75)' : 'rgba(239,68,68,0.75)'),
-        borderColor: sorted.map(r => r.cajas >= 90 ? '#16a34a' : r.cajas >= 70 ? '#f59e0b' : '#ef4444'),
-        borderWidth: 1,
-        borderRadius: 6,
-        barPercentage: 0.7
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { labels: { color: textColor, font: { family: 'Plus Jakarta Sans', weight: '600', size: 11 } } },
-        datalabels: {
-          align: 'top', color: textColor,
-          font: { weight: '800', size: 11, family: 'Plus Jakarta Sans' },
-          formatter: v => v || ''
-        }
-      },
-      scales: {
-        x: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor } },
-        y: { ticks: { color: textColor, font: { size: 10 } }, grid: { color: gridColor }, beginAtZero: true }
-      }
-    },
-    plugins: [ChartDataLabels]
-  });
 
   // ── BAR: KG PT por Hora ──
   if (chartKgPT) chartKgPT.destroy();
@@ -657,8 +627,10 @@ function colorForCorte(c) {
   return 'hsl(' + (h % 360) + ',65%,55%)';
 }
 
-let rendPeriod = 'day';   // 'day' | 'week'
-let rendTurno = 'TODOS';  // 'TODOS' | 'DIA' | 'NOCHE'
+let rendPeriod = 'day';       // 'day' | 'week'
+let rendTurno = 'TODOS';      // 'TODOS' | 'DIA' | 'NOCHE'
+let rendTipo = 'PROCESO';     // 'PROCESO' | 'REEMPAQUE' | 'TODOS'
+let rendFruta = 'TODAS';      // 'TODAS' | 'MANGO' | 'FRESA' | ...
 
 function setRendPeriod(p) {
   rendPeriod = p;
@@ -670,6 +642,16 @@ function setRendTurno(t) {
   rendTurno = t;
   document.querySelectorAll('#rendTurnoGroup .rend-toggle').forEach(b =>
     b.classList.toggle('active', b.dataset.turno === t));
+  renderRendimiento();
+}
+function setRendTipo(t) {
+  rendTipo = t;
+  document.querySelectorAll('#rendTipoGroup .rend-toggle').forEach(b =>
+    b.classList.toggle('active', b.dataset.tipo === t));
+  renderRendimiento();
+}
+function setRendFruta(f) {
+  rendFruta = f || 'TODAS';
   renderRendimiento();
 }
 
@@ -694,7 +676,9 @@ function turnoMatches(regTurno) {
 async function renderRendimiento() {
   const chartEl = document.getElementById('chartRendimiento');
   const summaryEl = document.getElementById('rendSummary');
+  const noticeEl = document.getElementById('rendReempaqueNotice');
   if (!chartEl || !summaryEl) return;
+  if (noticeEl) noticeEl.style.display = 'none';
 
   if (typeof supabaseClient === 'undefined' || !supabaseClient) {
     summaryEl.innerHTML = '<div class="rend-empty">Supabase no disponible</div>';
@@ -720,7 +704,7 @@ async function renderRendimiento() {
         .select('fecha,hora,turno,fruta,consumo_kg,pt_aprox_kg')
         .gte('fecha', desde).lte('fecha', hasta),
       supabaseClient.from('registro_empaque_congelado')
-        .select('fecha,hora,turno,fruta,cajas,kg_pt,kg_presentacion,corte,cuts_detail')
+        .select('fecha,hora,turno,fruta,tipo_registro,cajas,kg_pt,kg_presentacion,corte,cuts_detail')
         .gte('fecha', desde).lte('fecha', hasta)
     ]);
     if (prodRes.error) console.warn('rend prod err:', prodRes.error);
@@ -734,6 +718,40 @@ async function renderRendimiento() {
     return;
   }
 
+  // Filtro fruta
+  if (rendFruta && rendFruta !== 'TODAS') {
+    prodRows = prodRows.filter(r => normFruta(r.fruta) === rendFruta);
+    empRows  = empRows.filter(r => normFruta(r.fruta) === rendFruta);
+  }
+
+  // Filtro tipo_registro (PROCESO / REEMPAQUE / TODOS)
+  // PROCESO  → solo empaque directo del dia (cuenta para rendimiento).
+  // REEMPAQUE → solo re-empaque (NO aplica rendimiento: se muestra notice).
+  // TODOS    → mezcla ambos pero solo el PROCESO cuenta para el calculo.
+  const empProceso  = empRows.filter(r => (r.tipo_registro || 'PROCESO') === 'PROCESO');
+  const empReempaque = empRows.filter(r => r.tipo_registro === 'REEMPAQUE');
+
+  let empForRend;
+  if (rendTipo === 'PROCESO') empForRend = empProceso;
+  else if (rendTipo === 'REEMPAQUE') empForRend = []; // no se calcula rendimiento
+  else empForRend = empProceso; // TODOS → usa solo PROCESO para el calculo
+
+  // Caso reempaque: mostrar notice y no calcular
+  const isReempaqueView = (rendTipo === 'REEMPAQUE') || (rendTipo !== 'PROCESO' && empProceso.length === 0 && empReempaque.length > 0);
+  if (isReempaqueView) {
+    if (noticeEl) {
+      const totKg = empReempaque.reduce((s,r) => s + (parseFloat(r.kg_pt) || 0), 0);
+      const totCj = empReempaque.reduce((s,r) => s + (parseInt(r.cajas) || 0), 0);
+      noticeEl.innerHTML = '&#128230; Datos de <b>REEMPAQUE</b> en ' + rangeLabel +
+        ' &mdash; ' + formatNum(totCj) + ' cajas / ' + formatNum(totKg) + ' kg. ' +
+        'No aplica c&aacute;lculo de rendimiento (no es proceso de MP).';
+      noticeEl.style.display = 'block';
+    }
+    summaryEl.innerHTML = '';
+    if (chartRendimiento) { chartRendimiento.destroy(); chartRendimiento = null; }
+    return;
+  }
+
   const mpByFruit = {};
   prodRows.forEach(r => {
     const f = normFruta(r.fruta);
@@ -742,7 +760,7 @@ async function renderRendimiento() {
   });
 
   const kgByFruitCorte = {};
-  empRows.forEach(r => {
+  empForRend.forEach(r => {
     const f = normFruta(r.fruta);
     if (!f) return;
     kgByFruitCorte[f] = kgByFruitCorte[f] || {};
@@ -778,7 +796,12 @@ async function renderRendimiento() {
   const frutas = [...frutasConMP, ...frutasSoloEmp];
 
   if (frutas.length === 0) {
-    summaryEl.innerHTML = '<div class="rend-empty">Sin datos de producci\u00f3n ni empaque en ' + rangeLabel + '</div>';
+    let filtros = [];
+    if (rendFruta !== 'TODAS') filtros.push('Fruta: ' + rendFruta);
+    if (rendTurno !== 'TODOS') filtros.push('Turno: ' + rendTurno);
+    if (rendTipo !== 'TODOS') filtros.push('Tipo: ' + (rendTipo === 'PROCESO' ? 'PROCESO' : rendTipo));
+    const extra = filtros.length ? ' (' + filtros.join(', ') + ')' : '';
+    summaryEl.innerHTML = '<div class="rend-empty">Sin datos de proceso en ' + rangeLabel + extra + '</div>';
     if (chartRendimiento) { chartRendimiento.destroy(); chartRendimiento = null; }
     return;
   }

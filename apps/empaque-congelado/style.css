@@ -444,7 +444,68 @@ body {
 
 /* ═══════════════ CHARTS ═══════════════ */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+.grid-1 { display: grid; grid-template-columns: 1fr; gap: 18px; margin-bottom: 18px; }
 .chart-wrap { height: 280px; position: relative; }
+
+/* ═══════════════ RENDIMIENTO: fruta filter + reempaque notice ═══════════════ */
+.rend-fruta-select {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--texto);
+  font: 600 11px 'Plus Jakarta Sans', system-ui;
+  padding: 6px 10px;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.2s;
+}
+[data-theme="light"] .rend-fruta-select { background: rgba(0,0,0,0.04); }
+.rend-fruta-select:hover { border-color: var(--border-hover); }
+.rend-fruta-select:focus { border-color: var(--verde); box-shadow: 0 0 0 2px rgba(22,163,74,0.2); }
+
+.rend-reempaque-notice {
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(234,88,12,0.08);
+  border: 1px dashed rgba(234,88,12,0.4);
+  border-radius: 10px;
+  color: var(--naranja);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+[data-theme="light"] .rend-reempaque-notice {
+  background: rgba(234,88,12,0.06);
+  color: #c2410c;
+}
+
+/* ═══════════════ Badge PROCESO / REEMPAQUE en tabla y cards ═══════════════ */
+.badge-proceso {
+  background: rgba(22,163,74,0.14);
+  color: var(--verde-light);
+  padding: 3px 9px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(22,163,74,0.3);
+  display: inline-block;
+  white-space: nowrap;
+}
+.badge-reempaque {
+  background: rgba(234,88,12,0.14);
+  color: var(--naranja);
+  padding: 3px 9px;
+  border-radius: 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  border: 1px solid rgba(234,88,12,0.3);
+  display: inline-block;
+  white-space: nowrap;
+}
+[data-theme="light"] .badge-proceso { color: #15803d; background: rgba(22,163,74,0.1); }
+[data-theme="light"] .badge-reempaque { color: #c2410c; background: rgba(234,88,12,0.1); }
 
 /* ═══════════════ RENDIMIENTO CARD ═══════════════ */
 .rend-toggle-group {

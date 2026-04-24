@@ -458,6 +458,7 @@
         container: '#syncSlot',
         table: 'registro_empaque_congelado',
         storageKey: 'empaque_congelado_registros',
+        onConflict: 'fecha,hora,turno',
         requiredFields: ['fecha','hora','fruta'],
         mapRecord: function(r){
           return {

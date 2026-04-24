@@ -178,6 +178,9 @@
       // Mensaje especifico si es RLS
       if (errMsg && (errMsg.indexOf('policy') >= 0 || errMsg.indexOf('row-level') >= 0 || errMsg.indexOf('RLS') >= 0)) {
         toast('🚫 Sin permiso para escribir. Tu usuario necesita rol adecuado. Contacta a Rodrigo.', '#dc2626', 10000);
+      } else if (errMsg && (errMsg.indexOf('duplicate key') >= 0 || errMsg.indexOf('unique constraint') >= 0)) {
+        // Estos registros ya existen en Supabase y el upsert no tuvo onConflict configurado.
+        toast('ℹ️ ' + failed + ' registros ya existen en Supabase (duplicados). El boton Sync necesita configurar onConflict para esta tabla.', '#f59e0b', 8000);
       } else {
         toast('❌ ' + failed + ' registros no se pudieron sincronizar. ' + errMsg, '#dc2626', 7000);
       }

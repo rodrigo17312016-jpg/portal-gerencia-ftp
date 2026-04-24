@@ -335,6 +335,7 @@
         container: '#syncSlot',
         table: 'config_costos',
         storageKey: 'costos_registros',
+        onConflict: 'fecha,turno',
         requiredFields: ['fecha'],
         mapRecord: function(r){
           return {

@@ -139,19 +139,74 @@
 import { doLogin, getSession, requestPasswordReset, updatePassword } from './assets/js/core/auth.js';
 import { checkLockout, recordFailedAttempt, clearAttempts } from './assets/js/utils/rate-limit.js';
 
+// ═══════════════════════════════════════════
+// CIRCUIT BREAKER anti-loop login<->portal
+// Si llegamos a login >= 3 veces en < 8 segundos, asumimos loop y
+// limpiamos TODO el auth state para cortar el ciclo.
+// ═══════════════════════════════════════════
+(function circuitBreaker() {
+  try {
+    const now = Date.now();
+    const raw = sessionStorage.getItem('ftp_login_visits') || '[]';
+    const visits = JSON.parse(raw).filter(t => now - t < 8000);
+    visits.push(now);
+    sessionStorage.setItem('ftp_login_visits', JSON.stringify(visits));
+    if (visits.length >= 3) {
+      console.warn('[login] Circuit breaker: loop detectado, limpiando tokens corruptos');
+      // Limpiar todos los tokens Supabase
+      const toRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith('sb-') && k.endsWith('-auth-token')) toRemove.push(k);
+      }
+      toRemove.forEach(k => { try { localStorage.removeItem(k); } catch(e) {} });
+      try { localStorage.removeItem('ftp_session'); } catch(e) {}
+      sessionStorage.setItem('ftp_login_loop_cleaned', '1');
+      sessionStorage.removeItem('ftp_login_visits');
+    }
+  } catch(e) { /* sessionStorage bloqueado, noop */ }
+})();
+
 // Verificar sesion existente: legacy (ftp_session) o Supabase (sb-*-auth-token)
+// IMPORTANTE: debe validar expiracion para evitar loop login<->portal con tokens expirados
 function _hasAnySession() {
   if (getSession()) return true;
   for (let i = 0; i < localStorage.length; i++) {
     const k = localStorage.key(i);
     if (k && k.startsWith('sb-') && k.endsWith('-auth-token')) {
       const v = localStorage.getItem(k);
-      if (v && v.length > 100) return true;
+      if (!v || v.length < 100) continue;
+      // Validar expiracion (mismo criterio que portal.html)
+      try {
+        const parsed = JSON.parse(v);
+        const exp = parsed.expires_at ||
+                    (parsed.currentSession && parsed.currentSession.expires_at);
+        if (!exp) return true;                       // sin expires_at, asumimos valido
+        if (exp * 1000 > Date.now()) return true;    // no expirado
+        // Token expirado: limpiar para evitar loop y seguir al login
+        try { localStorage.removeItem(k); } catch(e) {}
+        console.warn('[login] Token Supabase expirado removido:', k);
+      } catch(e) {
+        // Formato desconocido pero >100 chars: tratar como valido
+        return true;
+      }
     }
   }
   return false;
 }
-if (_hasAnySession()) window.location.href = 'portal.html';
+if (_hasAnySession()) window.location.replace('portal.html');
+
+// Si el circuit breaker limpio tokens, mostrar mensaje al usuario
+if (sessionStorage.getItem('ftp_login_loop_cleaned') === '1') {
+  sessionStorage.removeItem('ftp_login_loop_cleaned');
+  setTimeout(() => {
+    const errEl = document.getElementById('loginError');
+    if (errEl) {
+      errEl.textContent = 'Tu sesion anterior estaba corrupta y fue limpiada. Ingresa tu usuario y contrasena de nuevo.';
+      errEl.style.color = '#f59e0b';
+    }
+  }, 500);
+}
 
 const loginBtn = document.getElementById('loginBtn');
 const userInput = document.getElementById('loginUser');

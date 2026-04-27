@@ -1097,7 +1097,8 @@ function renderCharts(data, forceRebuild) {
             const std = STD_HRS[rec.fruta] || 1.5;
             const delta = v - std;
             const deltaStr = (delta >= 0 ? '+' : '') + delta.toFixed(1);
-            return v.toFixed(1) + 'h\n(' + deltaStr + ')';
+            const tunelLabel = (rec.tunel || '').replace(' ESTATICO', '');
+            return tunelLabel + '\n' + v.toFixed(1) + 'h\n(' + deltaStr + ')';
           },
           textAlign: 'center',
           backgroundColor: (ctx) => {

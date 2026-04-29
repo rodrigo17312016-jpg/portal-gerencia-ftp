@@ -1,4 +1,3 @@
-
 // ═══════════════ THEME ═══════════════
 function toggleTheme() {
   const current = document.documentElement.getAttribute('data-theme');
@@ -807,12 +806,12 @@ function updateKPIs(recs) {
   document.getElementById('kpiConsumo').innerHTML = formatNum(totalConsumo) + ' <span class="kpi-unit">kg</span>';
   document.getElementById('kpiPT').innerHTML = formatNum(totalPT) + ' <span class="kpi-unit">kg</span>';
   document.getElementById('kpiRend').innerHTML = rendProm.toFixed(1) + '<span class="kpi-unit">%</span>';
-  // Contar las horas únicas (intervalos distintos)
-const uniqueHours = new Set(recs.map(r => r.hora)).size;
-const kgHora = uniqueHours > 0 ? (totalConsumo / uniqueHours) : 0;
+  // Contar horas únicas (cada franja horaria distinta)
+const horasUnicas = new Set(recs.map(r => r.hora)).size;
+const kgHora = horasUnicas > 0 ? (totalConsumo / horasUnicas) : 0;
 document.getElementById('kpiCount').innerHTML = formatNum(kgHora) + ' <span class="kpi-unit">kg/h</span>';
 const metaEl = document.getElementById('kpiCountMeta');
-if (metaEl) metaEl.textContent = uniqueHours + ' hrs registradas';
+if (metaEl) metaEl.textContent = horasUnicas + ' hrs registradas';
 
   // Mejor Hora
   if (recs.length > 0) {

@@ -202,6 +202,10 @@ async function registrarHora() {
 
   const supervisor = document.getElementById('fSupervisor').value.trim();
   if (supervisor) localStorage.setItem('prod_reg_supervisor', supervisor);
+    // 🔥 PREGUNTAR ANTES DE GUARDAR
+  if (!confirm('¿Confirma que desea registrar esta hora?\n\nHora: ' + hora + '\nFruta: ' + document.getElementById('fFruta').value + '\nLínea: ' + linea + '\nConsumo: ' + consumo + ' kg\nRendimiento: ' + rendInput + '%\nP. Terminado: ' + pt + ' kg')) {
+    return; // Si cancela, sale de la función sin guardar nada
+  }
 
   // El rendimiento REAL que se guarda debe coincidir con el DB (generado = pt/consumo*100)
   // Así si el usuario override-ó PT, el rend local queda consistente con lo que Supabase calcule.

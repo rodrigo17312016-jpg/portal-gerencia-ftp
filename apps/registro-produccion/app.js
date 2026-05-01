@@ -107,14 +107,52 @@ function calcPreview() {
 }
 
 // ═══════════════ STORAGE ═══════════════
+// Lee los registros de localStorage. Si encuentra duplicados (mismo fecha+hora+linea+fruta)
+// los colapsa quedándose con el MÁS RECIENTE (created_at o _localTs). Esto protege
+// contra duplicidades históricas si alguna vez se metieron por bugs anteriores.
 function getRecords() {
-  try { return JSON.parse(localStorage.getItem('prod_registros') || '[]'); }
+  let raw;
+  try { raw = JSON.parse(localStorage.getItem('prod_registros') || '[]'); }
   catch { return []; }
+  return _dedupeRecords(raw);
 }
+
+// Genera la clave compuesta que define unicidad: fecha + hora + linea + fruta.
+// Si dos registros comparten esta clave, el mas reciente sobreescribe.
+function _dedupeKey(r) {
+  return [r.fecha || '', r.hora || '', r.linea || '', r.fruta || ''].join('||');
+}
+
+// Compara dos registros y devuelve el mas reciente segun created_at o _localTs.
+function _mostRecent(a, b) {
+  const at = a._localTs || (a.created_at ? new Date(a.created_at).getTime() : 0);
+  const bt = b._localTs || (b.created_at ? new Date(b.created_at).getTime() : 0);
+  return bt >= at ? b : a;
+}
+
+// Deduplica un array de registros usando la clave compuesta.
+function _dedupeRecords(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return [];
+  const map = new Map();
+  arr.forEach(r => {
+    if (!r || !r.fecha || !r.hora) return; // descartar corruptos
+    const k = _dedupeKey(r);
+    const prev = map.get(k);
+    map.set(k, prev ? _mostRecent(prev, r) : r);
+  });
+  return Array.from(map.values());
+}
+
 function saveRecords(records) {
-  localStorage.setItem('prod_registros', JSON.stringify(records));
+  // Siempre guardar deduplicado para que el localStorage nunca tenga basura
+  const clean = _dedupeRecords(records);
+  localStorage.setItem('prod_registros', JSON.stringify(clean));
   window.dispatchEvent(new Event('storage'));
 }
+
+// Guard global anti doble-click. Mientras se este registrando una hora, los siguientes
+// clicks se ignoran hasta que la operacion termine (success o error).
+let _registrandoHora = false;
 
 // ═══════════════ SYNC LOCAL -> SUPABASE ═══════════════
 async function syncLocalToSupabase() {
@@ -183,105 +221,181 @@ async function syncLocalToSupabase() {
 }
 
 // ═══════════════ REGISTER ═══════════════
+// Helper: deshabilita / habilita el boton "Registrar Hora" para evitar dobles clicks.
+function _setRegistrarBtnEnabled(enabled, label) {
+  const btn = document.querySelector('.btn-primary[onclick="registrarHora()"]');
+  if (!btn) return;
+  btn.disabled = !enabled;
+  btn.style.opacity = enabled ? '1' : '0.6';
+  btn.style.cursor = enabled ? 'pointer' : 'not-allowed';
+  if (label) btn.innerHTML = label;
+  else if (enabled) btn.innerHTML = '✅ Registrar Hora';
+}
+
 async function registrarHora() {
+  // ── GUARD ANTI-DOBLE-CLICK ──
+  // Si ya hay una operacion en curso, ignoramos el click adicional.
+  if (_registrandoHora) {
+    console.warn('registrarHora: ya hay un guardado en curso, ignorando click duplicado');
+    return;
+  }
+
   if (typeof supabaseClient === 'undefined' || !supabaseClient) {
     showToast('ERROR: Supabase no conectado', true);
     return;
   }
+
+  // ── VALIDACIONES ──
   const consumo = parseFloat(document.getElementById('fConsumo').value);
   const rendInput = parseFloat(document.getElementById('fRend').value);
   let pt = parseFloat(document.getElementById('fPT').value);
   const personas = parseInt(document.getElementById('fPersonas').value) || 0;
   if (!consumo || isNaN(consumo) || consumo <= 0) { showToast('Ingresa el consumo de MP', true); return; }
   if (!rendInput || isNaN(rendInput) || rendInput <= 0) { showToast('Ingresa el rendimiento %', true); return; }
-  // Si no hay PT, auto-calcular
+
   if (!pt || isNaN(pt) || pt <= 0) {
     pt = parseFloat((consumo * rendInput / 100).toFixed(1));
     document.getElementById('fPT').value = pt;
   }
 
+  const fecha = document.getElementById('fFecha').value;
+  const hora = document.getElementById('fHora').value;
+  const turno = document.getElementById('fTurno').value;
+  const fruta = document.getElementById('fFruta').value;
+  const linea = document.getElementById('fLinea').value;
+  if (!hora || hora.trim() === '') { showToast('Selecciona la hora del registro', true); return; }
+  if (!fecha) { showToast('Selecciona la fecha', true); return; }
+
   const supervisor = document.getElementById('fSupervisor').value.trim();
   if (supervisor) localStorage.setItem('prod_reg_supervisor', supervisor);
-  
-  console.log('Archivo app.js cargado correctamente');
-  if (!confirm('¿Confirma que desea registrar esta hora?...
-    // 🔥 PREGUNTAR ANTES DE GUARDAR
-  if (!confirm('¿Confirma que desea registrar esta hora?\n\nHora: ' + hora + '\nFruta: ' + document.getElementById('fFruta').value + '\nLínea: ' + linea + '\nConsumo: ' + consumo + ' kg\nRendimiento: ' + rendInput + '%\nP. Terminado: ' + pt + ' kg')) {
-    return; // Si cancela, sale de la función sin guardar nada
-  }
 
-  // El rendimiento REAL que se guarda debe coincidir con el DB (generado = pt/consumo*100)
-  // Así si el usuario override-ó PT, el rend local queda consistente con lo que Supabase calcule.
-  const rend = (pt / consumo * 100).toFixed(1);
-  const hora = document.getElementById('fHora').value;
-  if (!hora || hora.trim() === '') { showToast('Selecciona la hora del registro', true); return; }
-  // Obtener almuerzo guardado del dia
-  const fecha = document.getElementById('fFecha').value;
-  const almGuardado = JSON.parse(localStorage.getItem('almuerzo_' + fecha) || 'null');
-
-  const record = {
-    id: Date.now().toString(36) + Math.random().toString(36).substr(2,5),
-    fecha: fecha,
-    hora: hora,
-    turno: document.getElementById('fTurno').value,
-    fruta: document.getElementById('fFruta').value,
-    linea: document.getElementById('fLinea').value,
-    proyectado_tn: parseFloat(document.getElementById('fProyectado').value) || 16,
-    consumo_kg: consumo,
-    pt_aprox_kg: pt,
-    rendimiento: parseFloat(rend),
-    personas: personas,
-    hora_inicio_turno: (document.getElementById('fHoraInicio') || {}).value || null,
-    hora_fin_turno: (document.getElementById('fHoraFin') || {}).value || null,
-    almuerzo_inicio: (almGuardado && almGuardado.inicio) || '',
-    almuerzo_fin: (almGuardado && almGuardado.fin) || '',
-    supervisor: supervisor,
-    observacion: document.getElementById('fObs').value.trim(),
-    created_at: (function(){const _d=new Date();return _d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0')+' '+String(_d.getHours()).padStart(2,'0')+':'+String(_d.getMinutes()).padStart(2,'0')+':'+String(_d.getSeconds()).padStart(2,'0')})()
-  };
-
-  const records = getRecords();
-  records.push(record);
-  saveRecords(records);
-
-  // Save to Supabase (cloud sync)
-  try {
-    const { data, error } = await supabaseClient
-      .from('registro_produccion')
-      .upsert({
-        fecha: record.fecha,
-        hora: record.hora,
-        turno: record.turno,
-        fruta: record.fruta,
-        linea: record.linea,
-        proyectado_tn: record.proyectado_tn,
-        consumo_kg: record.consumo_kg,
-        pt_aprox_kg: record.pt_aprox_kg,
-        personas: record.personas || 0,
-        hora_inicio_turno: record.hora_inicio_turno || null,
-        hora_fin_turno: record.hora_fin_turno || null,
-        almuerzo_inicio: record.almuerzo_inicio || null,
-        almuerzo_fin: record.almuerzo_fin || null,
-        supervisor: record.supervisor,
-        observacion: record.observacion
-      }, { onConflict: 'fecha,hora,linea' });
-
-    if (error) {
-      console.error('Supabase error:', error);
-      showSupabaseToast('ERROR Supabase: ' + error.message, '#ef4444');
-    } else {
-      showSupabaseToast('Registrado en Supabase', '#16a34a');
+  // ── PRE-CHECK DE DUPLICADO ──
+  // Buscamos si ya existe un registro con la misma combinacion fecha+hora+linea+fruta.
+  // Si existe, preguntamos al usuario si quiere REEMPLAZAR (sobreescribir) o cancelar.
+  const recordsActuales = getRecords();
+  const existente = recordsActuales.find(r =>
+    r.fecha === fecha && r.hora === hora && r.linea === linea && r.fruta === fruta
+  );
+  if (existente) {
+    const seguir = confirm(
+      '⚠️ YA EXISTE UN REGISTRO PARA ESTA FRANJA\n\n' +
+      'Fecha: ' + fecha + '\n' +
+      'Hora: ' + hora + '\n' +
+      'Linea: ' + linea + '\n' +
+      'Fruta: ' + fruta + '\n\n' +
+      'Datos guardados:\n' +
+      '   - Consumo: ' + (existente.consumo_kg || 0) + ' kg\n' +
+      '   - P. Terminado: ' + (existente.pt_aprox_kg || 0) + ' kg\n\n' +
+      '¿Desea REEMPLAZAR el registro existente con los nuevos datos?'
+    );
+    if (!seguir) {
+      showToast('Registro cancelado por el usuario', true);
+      return;
     }
-  } catch(e) {
-    console.error('Supabase offline:', e);
-    showSupabaseToast('Supabase sin conexion - guardado local', '#ef4444');
   }
 
-  showToast('Registro guardado exitosamente');
-  limpiarForm();
-  refreshAll();
-  // Auto-avanzar a la siguiente hora
-  avanzarHora();
+  // ── CONFIRMACION FINAL CON RESUMEN ──
+  const confirmado = confirm(
+    '¿Confirma que desea registrar esta hora?\n\n' +
+    'Fecha: ' + fecha + '\n' +
+    'Hora: ' + hora + '\n' +
+    'Turno: ' + turno + '\n' +
+    'Fruta: ' + fruta + '\n' +
+    'Linea: ' + linea + '\n' +
+    'Consumo MP: ' + consumo + ' kg\n' +
+    'Rendimiento: ' + rendInput + '%\n' +
+    'P. Terminado: ' + pt + ' kg\n' +
+    'N° Personas: ' + (personas || '—')
+  );
+  if (!confirmado) {
+    showToast('Registro cancelado', true);
+    return;
+  }
+
+  // ── ACTIVAR GUARD + DESHABILITAR BOTON ──
+  _registrandoHora = true;
+  _setRegistrarBtnEnabled(false, '⏳ Guardando...');
+
+  try {
+    // El rendimiento REAL que se guarda debe coincidir con el DB (generado = pt/consumo*100)
+    const rend = (pt / consumo * 100).toFixed(1);
+    const almGuardado = JSON.parse(localStorage.getItem('almuerzo_' + fecha) || 'null');
+
+    const record = {
+      // ID determinista para evitar duplicados por id si el mismo click se dispara dos veces
+      id: existente ? existente.id : (Date.now().toString(36) + Math.random().toString(36).substr(2,5)),
+      fecha: fecha,
+      hora: hora,
+      turno: turno,
+      fruta: fruta,
+      linea: linea,
+      proyectado_tn: parseFloat(document.getElementById('fProyectado').value) || 16,
+      consumo_kg: consumo,
+      pt_aprox_kg: pt,
+      rendimiento: parseFloat(rend),
+      personas: personas,
+      hora_inicio_turno: (document.getElementById('fHoraInicio') || {}).value || null,
+      hora_fin_turno: (document.getElementById('fHoraFin') || {}).value || null,
+      almuerzo_inicio: (almGuardado && almGuardado.inicio) || '',
+      almuerzo_fin: (almGuardado && almGuardado.fin) || '',
+      supervisor: supervisor,
+      observacion: document.getElementById('fObs').value.trim(),
+      created_at: (function(){const _d=new Date();return _d.getFullYear()+'-'+String(_d.getMonth()+1).padStart(2,'0')+'-'+String(_d.getDate()).padStart(2,'0')+' '+String(_d.getHours()).padStart(2,'0')+':'+String(_d.getMinutes()).padStart(2,'0')+':'+String(_d.getSeconds()).padStart(2,'0')})(),
+      _localTs: Date.now()
+    };
+
+    // Guardar en local (saveRecords ya deduplica internamente)
+    const records = recordsActuales.filter(r =>
+      !(r.fecha === fecha && r.hora === hora && r.linea === linea && r.fruta === fruta)
+    );
+    records.push(record);
+    saveRecords(records);
+
+    // Guardar en Supabase
+    try {
+      const { error } = await supabaseClient
+        .from('registro_produccion')
+        .upsert({
+          fecha: record.fecha,
+          hora: record.hora,
+          turno: record.turno,
+          fruta: record.fruta,
+          linea: record.linea,
+          proyectado_tn: record.proyectado_tn,
+          consumo_kg: record.consumo_kg,
+          pt_aprox_kg: record.pt_aprox_kg,
+          personas: record.personas || 0,
+          hora_inicio_turno: record.hora_inicio_turno || null,
+          hora_fin_turno: record.hora_fin_turno || null,
+          almuerzo_inicio: record.almuerzo_inicio || null,
+          almuerzo_fin: record.almuerzo_fin || null,
+          supervisor: record.supervisor,
+          observacion: record.observacion
+        }, { onConflict: 'fecha,hora,linea' });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        if (typeof showSupabaseToast === 'function') showSupabaseToast('ERROR Supabase: ' + error.message, '#ef4444');
+      } else {
+        if (typeof showSupabaseToast === 'function') showSupabaseToast('Registrado en Supabase', '#16a34a');
+      }
+    } catch(e) {
+      console.error('Supabase offline:', e);
+      if (typeof showSupabaseToast === 'function') showSupabaseToast('Supabase sin conexion - guardado local', '#ef4444');
+    }
+
+    showToast(existente ? 'Registro REEMPLAZADO exitosamente' : 'Registro guardado exitosamente');
+    limpiarForm();
+    await refreshAll();
+    avanzarHora();
+  } catch (e) {
+    console.error('registrarHora exception:', e);
+    showToast('Error al registrar: ' + (e.message || 'desconocido'), true);
+  } finally {
+    // SIEMPRE liberar el guard y rehabilitar el boton, incluso si hubo error.
+    _registrandoHora = false;
+    _setRegistrarBtnEnabled(true);
+  }
 }
 
 function limpiarForm() {
@@ -636,8 +750,16 @@ document.getElementById('editModal').addEventListener('click', function(e) {
   if (e.target === this) closeEditModal();
 });
 
+// Guard anti doble-click para edicion
+let _editandoRegistro = false;
+
 async function guardarEdicion() {
+  if (_editandoRegistro) {
+    console.warn('guardarEdicion: ya hay edicion en curso, ignorando click duplicado');
+    return;
+  }
   if (!editingProdId) return;
+
   const records = getRecords();
   const idx = records.findIndex(r => r.id === editingProdId);
   if (idx === -1) { closeEditModal(); return; }
@@ -648,51 +770,92 @@ async function guardarEdicion() {
   if (consumo <= 0) { showToast('Ingresa el consumo de MP', true); return; }
   const pt = parseFloat(document.getElementById('mPT').value) || 0;
   if (pt <= 0) { showToast('Ingresa el P. Terminado', true); return; }
-  // El rendimiento en DB es generado (pt/consumo*100). Guardamos el mismo valor
-  // en localStorage para mantener consistencia al volver a leer de Supabase.
-  const rend = consumo > 0 ? parseFloat((pt / consumo * 100).toFixed(1)) : 0;
-  const personas = parseInt(document.getElementById('mPersonas').value) || 0;
-  const proyectado = parseFloat(document.getElementById('mProyectado').value) || 16;
 
-  records[idx] = {
-    ...records[idx],
-    fecha: document.getElementById('mFecha').value,
-    turno: document.getElementById('mTurno').value,
-    hora: document.getElementById('mHora').value,
-    fruta: document.getElementById('mFruta').value,
-    linea: document.getElementById('mLinea').value,
-    consumo_kg: consumo,
-    pt_aprox_kg: pt,
-    rendimiento: rend,
-    personas: personas,
-    proyectado_tn: proyectado,
-    supervisor: document.getElementById('mSupervisor').value.trim(),
-    observacion: document.getElementById('mObs').value.trim()
-  };
+  const nuevaFecha = document.getElementById('mFecha').value;
+  const nuevaHora = document.getElementById('mHora').value;
+  const nuevaLinea = document.getElementById('mLinea').value;
+  const nuevaFruta = document.getElementById('mFruta').value;
 
-  saveRecords(records);
-
-  // Sync to Supabase (await para que termine antes de refrescar)
-  if (typeof supabaseClient !== 'undefined' && supabaseClient) {
-    try {
-      const r = records[idx];
-      await supabaseClient.from('registro_produccion').upsert({
-        fecha: r.fecha, hora: r.hora, turno: r.turno, fruta: r.fruta, linea: r.linea,
-        proyectado_tn: r.proyectado_tn, consumo_kg: r.consumo_kg, pt_aprox_kg: r.pt_aprox_kg,
-        personas: r.personas || 0,
-        supervisor: r.supervisor, observacion: r.observacion
-      }, { onConflict: 'fecha,hora,linea' });
-    } catch(e) { console.error('Supabase sync error', e); }
+  // Pre-check: si al editar se cambio la combinacion fecha+hora+linea+fruta y eso
+  // colisiona con OTRO registro existente, advertir.
+  const colision = records.find(r =>
+    r.id !== editingProdId &&
+    r.fecha === nuevaFecha && r.hora === nuevaHora &&
+    r.linea === nuevaLinea && r.fruta === nuevaFruta
+  );
+  if (colision) {
+    const seguir = confirm(
+      '⚠️ EXISTE OTRO REGISTRO CON ESTA COMBINACION\n\n' +
+      'Si confirmas, el otro registro se ELIMINARA y este lo reemplaza.\n\n' +
+      '¿Deseas continuar?'
+    );
+    if (!seguir) { showToast('Edicion cancelada', true); return; }
   }
 
-  closeEditModal();
-  // Refrescar localmente sin sobreescribir desde Supabase
-  const filterDate = document.getElementById('filterDate').value;
-  const todayRecs = records.filter(r => r.fecha === filterDate);
-  updateKPIs(todayRecs);
-  updateTable(todayRecs);
-  rebuildCharts(todayRecs);
-  showToast('Registro actualizado');
+  _editandoRegistro = true;
+  const btnGuardar = document.querySelector('#editModal button[onclick="guardarEdicion()"]');
+  if (btnGuardar) { btnGuardar.disabled = true; btnGuardar.style.opacity = '0.6'; btnGuardar.innerHTML = '⏳ Guardando...'; }
+
+  try {
+    const rend = consumo > 0 ? parseFloat((pt / consumo * 100).toFixed(1)) : 0;
+    const personas = parseInt(document.getElementById('mPersonas').value) || 0;
+    const proyectado = parseFloat(document.getElementById('mProyectado').value) || 16;
+
+    records[idx] = {
+      ...records[idx],
+      fecha: nuevaFecha,
+      turno: document.getElementById('mTurno').value,
+      hora: nuevaHora,
+      fruta: nuevaFruta,
+      linea: nuevaLinea,
+      consumo_kg: consumo,
+      pt_aprox_kg: pt,
+      rendimiento: rend,
+      personas: personas,
+      proyectado_tn: proyectado,
+      supervisor: document.getElementById('mSupervisor').value.trim(),
+      observacion: document.getElementById('mObs').value.trim(),
+      _localTs: Date.now()
+    };
+
+    // Si hay colision, eliminar el otro
+    let cleaned = records;
+    if (colision) cleaned = records.filter(r => r.id !== colision.id);
+
+    saveRecords(cleaned);
+
+    // Sync to Supabase
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+      try {
+        // Si habia colision, primero eliminamos el otro registro de Supabase
+        if (colision) {
+          await supabaseClient.from('registro_produccion').delete()
+            .eq('fecha', colision.fecha).eq('hora', colision.hora).eq('linea', colision.linea);
+        }
+        const r = records[idx];
+        await supabaseClient.from('registro_produccion').upsert({
+          fecha: r.fecha, hora: r.hora, turno: r.turno, fruta: r.fruta, linea: r.linea,
+          proyectado_tn: r.proyectado_tn, consumo_kg: r.consumo_kg, pt_aprox_kg: r.pt_aprox_kg,
+          personas: r.personas || 0,
+          supervisor: r.supervisor, observacion: r.observacion
+        }, { onConflict: 'fecha,hora,linea' });
+      } catch(e) { console.error('Supabase sync error', e); }
+    }
+
+    closeEditModal();
+    const filterDate = document.getElementById('filterDate').value;
+    const todayRecs = cleaned.filter(r => r.fecha === filterDate);
+    updateKPIs(todayRecs);
+    updateTable(todayRecs);
+    rebuildCharts(todayRecs);
+    showToast('Registro actualizado');
+  } catch (e) {
+    console.error('guardarEdicion exception:', e);
+    showToast('Error al actualizar: ' + (e.message || 'desconocido'), true);
+  } finally {
+    _editandoRegistro = false;
+    if (btnGuardar) { btnGuardar.disabled = false; btnGuardar.style.opacity = '1'; btnGuardar.innerHTML = '💾 Guardar Cambios'; }
+  }
 }
 
 function cargarCenaGuardada() {

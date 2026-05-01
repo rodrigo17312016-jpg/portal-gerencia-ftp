@@ -91,8 +91,9 @@
 </div>
 
 <!-- ── Footnote ── -->
-<div style="margin-top:24px;padding:14px 18px;background:var(--surface3);border-left:3px solid var(--amber);border-radius:8px;font-size:12.5px;color:var(--muted);line-height:1.6">
-  <strong style="color:var(--texto)">⚠️ Nota PoC:</strong>
-  Los valores de Piura y PRC se calculan a partir de Huaura aplicando un factor de escala (definido en <code>config/sedes.json</code>).
-  Cuando se complete la <strong>Fase 5</strong> del plan, cada planta tendrá su propio <code>sede_id</code> en Supabase con datos reales.
+<div style="margin-top:24px;padding:14px 18px;background:var(--surface3);border-left:3px solid var(--verde);border-radius:8px;font-size:12.5px;color:var(--muted);line-height:1.6">
+  <strong style="color:var(--texto)">✅ Datos reales:</strong>
+  Cada planta agrupa sus registros via <code>plantId</code> (FK a tabla <code>Plant</code> de Supabase).
+  Producción, cajas y personal vienen de queries reales filtradas por sede.
+  Costos/Calidad usan estimaciones hasta integrar <code>config_costos</code> y métricas de inspección por sede.
 </div>

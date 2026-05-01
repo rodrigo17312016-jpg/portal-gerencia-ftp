@@ -62,8 +62,7 @@
 <script type="module">
   import { initSedeContext, getSedeActiva, onSedeChange, isConsolidado } from '../assets/js/core/sede-context.js';
   import { mountSelectorSede } from '../assets/js/core/selector-sede.js';
-  import { getScaleFactor, totalsBySede } from '../assets/js/utils/sede-mock-helper.js';
-  import { getSedes, getAllSedesIncludingConsolidado } from '../assets/js/config/sedes.js';
+  import { getSedes, getAllSedesIncludingConsolidado, getPlantIdByCodigo } from '../assets/js/config/sedes.js';
 
   const results = document.getElementById('results');
   const live = document.getElementById('live-values');
@@ -80,10 +79,11 @@
   }
 
   async function runTests() {
-    // Test 1: load sedes
+    // Test 1: carga sedes desde Supabase Plant
     try {
       const sedes = await getSedes();
-      row('Carga de sedes (3 esperadas)', sedes.length === 3, `count=${sedes.length}`);
+      const ok = sedes.length === 3 && sedes.every(s => s.id && s.codigo);
+      row('Carga de sedes desde Plant (3 con UUID)', ok, `count=${sedes.length} ids=${sedes.filter(s => s.id).length}`);
     } catch (e) { row('Carga de sedes', false, e.message); }
 
     // Test 2: consolidado disponible
@@ -99,18 +99,24 @@
       row('Init contexto → sede default', sede?.codigo === 'FTP-HUA', `activa=${sede?.codigo}`);
     } catch (e) { row('Init contexto', false, e.message); }
 
-    // Test 4: factor escala
+    // Test 4: mapping codigo → plantId UUID
     try {
-      const f = await getScaleFactor();
-      row('Factor de escala FTP-HUA = 1', f === 1, `factor=${f}`);
-    } catch (e) { row('Factor escala', false, e.message); }
+      const huaId = await getPlantIdByCodigo('FTP-HUA');
+      const piuId = await getPlantIdByCodigo('FTP-PIU');
+      const prcId = await getPlantIdByCodigo('PRC-MAQ');
+      const ok = huaId && piuId && prcId && huaId !== piuId && huaId !== prcId;
+      row('Mapping codigo → plantId UUID (3 distintos)', ok, `HUA=${huaId?.substring(0,8)} PIU=${piuId?.substring(0,8)} PRC=${prcId?.substring(0,8)}`);
+    } catch (e) { row('Mapping codigo→UUID', false, e.message); }
 
-    // Test 5: totals by sede
+    // Test 5: scale factor desde Plant.scale_factor
     try {
-      const t = await totalsBySede([{x: 1000}], 'x');
-      const ok = t.length === 3 && t[0].total === 1000 && t[1].total === 720 && t[2].total === 410;
-      row('totalsBySede(1000) = [1000, 720, 410]', ok, JSON.stringify(t.map(r => r.total)));
-    } catch (e) { row('totalsBySede', false, e.message); }
+      const sedes = await getSedes();
+      const hua = sedes.find(s => s.codigo === 'FTP-HUA');
+      const piu = sedes.find(s => s.codigo === 'FTP-PIU');
+      const prc = sedes.find(s => s.codigo === 'PRC-MAQ');
+      const ok = hua?.scaleFactor === 1.0 && piu?.scaleFactor === 0.72 && prc?.scaleFactor === 0.41;
+      row('scaleFactor desde Plant.scale_factor', ok, `HUA=${hua?.scaleFactor} PIU=${piu?.scaleFactor} PRC=${prc?.scaleFactor}`);
+    } catch (e) { row('scaleFactor', false, e.message); }
 
     // Test 6: montar selector
     try {
@@ -123,8 +129,14 @@
 
   async function renderLive() {
     const sede = getSedeActiva();
-    const factor = await getScaleFactor();
     const isCons = isConsolidado();
+    let factor;
+    if (isCons) {
+      const sedes = await getSedes();
+      factor = sedes.reduce((s, x) => s + (x.scaleFactor || 1), 0);
+    } else {
+      factor = sede?.scaleFactor || 1;
+    }
 
     live.innerHTML = `
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">

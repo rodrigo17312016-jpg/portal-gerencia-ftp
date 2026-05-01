@@ -1,6 +1,6 @@
 # PLAN MULTI-PLANTA / MULTI-SEDE
 
-**Estado:** Fases 1-4 implementadas como PoC con mock data. Fases 5-7 pendientes (cableado real a Supabase).
+**Estado:** ✅ Fases 1-6 COMPLETADAS con datos REALES de Supabase. Fase 7 (RLS por sede) pendiente.
 **Fecha:** 2026-04-30
 **Autor:** Rodrigo García
 
@@ -112,21 +112,34 @@ create policy "usuarios solo ven su sede"
 - [x] Dashboard con 3-4 charts cross-sede
 - [x] Aparece solo para rol admin
 
-### Fase 5 — Schema Supabase (siguiente PR)
-- [ ] Migration: tabla `sedes` + seed 3 filas
-- [ ] Migration: `alter table ... add column sede_id` en 14 tablas
-- [ ] Migration: backfill de datos existentes a `FTP-HUA`
-- [ ] Migration: índices `(sede_id, fecha)`
+### Fase 5 — Schema Supabase (✅ COMPLETADA 2026-04-30)
+- [x] Reusar tabla `Plant` existente (extender, no crear nueva)
+- [x] Migration 001: extender `Plant` con `tipo`, `color`, `icono`, `activa`, `principal`, `scale_factor`, `ubicacion`, `empresa`
+- [x] Renombrar P1→FTP-HUA, P2→FTP-PIU, insertar PRC-MAQ
+- [x] Migration 002: `plantId` en `registro_produccion`, `registro_personal`, `registro_tuneles`, `registro_empaque_congelado`, `config_costos`
+- [x] Backfill: 474 filas existentes → FTP-HUA (UUID `6d8707af-...`)
+- [x] Índices `(plantId, fecha)` en las 4 tablas con fecha
+- [x] Migration 003: tabla `sedes` espejo en proyecto Calidad + `sede_codigo` en `registros_temperatura` (5837 filas) y `consumos_insumos` (428 filas)
+- [x] Migration 004: política `anon_read_Plant` para que el frontend pueda llenar el selector
 
-### Fase 6 — Cableo real (siguiente PR)
-- [ ] Patch a 14 paneles para filtrar por `sede_id`
-- [ ] Patch a 5 sub-apps (registro-*) para etiquetar la sede al guardar
-- [ ] Apps de registro: pedir sede al abrir si rol no la tiene fijada
+SQL files: `proyecto/sql/multi-sede/{001..004}_*.sql`
 
-### Fase 7 — Roles por sede (siguiente PR)
-- [ ] Tabla `usuarios_sedes`
-- [ ] RLS policies en 14 tablas
-- [ ] Roles nuevos: `jefe_planta_huaura`, `jefe_planta_piura`, `supervisor_maquila`
+### Fase 6 — Cableo real (✅ COMPLETADA 2026-04-30)
+- [x] `assets/js/config/sedes.js` lee Plant desde Supabase (con fallback JSON si offline)
+- [x] `assets/js/core/sede-context.js` expone `applyPlantFilter()` (UUID para Prod) y `applySedeFilter()` (TEXT para Calidad)
+- [x] `modules/gerencia/resumen.js` usa filtros reales — KPIs y charts cambian con la sede activa
+- [x] `modules/gerencia/comparativo-plantas.js` agrega por `plantId` con datos reales (verificado: HUA=175.2 TN, PIU=0, PRC=0)
+- [x] `apps/_shared/plant-context.js` helper opcional para sub-apps
+- [x] DEFAULT en columna `plantId` cubre el caso actual: INSERTs sin plantId van automáticamente a FTP-HUA
+- [x] Helper `sede-mock-helper.js` ELIMINADO (ya no se necesita)
+
+### Fase 7 — Roles por sede (PENDIENTE)
+- [ ] Tabla `usuarios_sedes(user_id, plant_id)`
+- [ ] Modificar RLS de las 5 tablas operativas: `WHERE plantId IN (sedes del usuario) OR role='admin'`
+- [ ] Roles nuevos en `app_metadata`: `jefe_planta_huaura`, `jefe_planta_piura`, `supervisor_maquila`
+- [ ] UI: el selector solo muestra sedes permitidas para el rol actual
+
+**Nota Fase 7:** Antes de aplicar, decidir si el cliente necesita aislamiento estricto (jefe Huaura no debe ver datos de Piura) o solo segmentación visual (todos ven todo, pero usan el selector para filtrar). Si es solo visual, Fase 7 no es necesaria.
 - [ ] UI muestra solo sedes permitidas en el selector
 
 ---

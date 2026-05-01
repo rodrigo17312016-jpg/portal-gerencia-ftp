@@ -1,19 +1,15 @@
 /* ════════════════════════════════════════════════════════
-   COMPARATIVO PLANTAS - Dashboard cross-sede
+   COMPARATIVO PLANTAS - Dashboard cross-sede (datos REALES)
    ════════════════════════════════════════════════════════
-   Muestra TODAS las plantas/maquilas comparadas entre sí.
-   Ignora la sede activa (es una vista global).
-
-   Datos:
-   - Mock derivado de Supabase (escalado por scaleFactor de cada sede)
-   - Cuando se complete Fase 5 leera datos reales con sede_id
+   Lee Plant + agrega por plantId en registro_produccion,
+   registro_empaque_congelado, registro_personal.
+   Vista global (ignora sede activa del selector).
    ════════════════════════════════════════════════════════ */
 
 import { supabase } from '../../assets/js/config/supabase.js';
-import { fmt, fmtSoles, today } from '../../assets/js/utils/formatters.js';
+import { fmt, fmtSoles } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 import { getSedes } from '../../assets/js/config/sedes.js';
-import { totalsBySede, generateSyntheticTotals } from '../../assets/js/utils/sede-mock-helper.js';
 
 let charts = [];
 
@@ -29,9 +25,7 @@ export async function refresh() {
   await renderAll(c);
 }
 
-export function onShow() {
-  refresh();
-}
+export function onShow() { refresh(); }
 
 export function onHide() {
   charts.forEach(ch => { try { if (ch) ch.destroy(); } catch (_) {} });
@@ -39,71 +33,60 @@ export function onHide() {
 }
 
 async function renderAll(container) {
-  // Pull base data (de FTP-HUA, sera la "verdad")
-  const [prodResult, empaqueResult] = await Promise.allSettled([
-    supabase.from('registro_produccion').select('consumo_kg, pt_aprox_kg').gte('fecha', '2026-01-01'),
-    supabase.from('registro_empaque_congelado').select('cajas, peso_neto_kg')
+  const sedes = await getSedes();
+
+  // Query agrupada: produccion + empaque por plantId
+  const [prodResult, empaqueResult, personalResult] = await Promise.allSettled([
+    supabase.from('registro_produccion')
+      .select('plantId, consumo_kg, pt_aprox_kg')
+      .gte('fecha', '2026-01-01'),
+    supabase.from('registro_empaque_congelado')
+      .select('plantId, cajas, peso_neto_kg'),
+    supabase.from('registro_personal')
+      .select('plantId, personas')
+      .gte('fecha', '2026-01-01')
   ]);
 
   const prodData = prodResult.status === 'fulfilled' ? (prodResult.value.data || []) : [];
   const empaqueData = empaqueResult.status === 'fulfilled' ? (empaqueResult.value.data || []) : [];
+  const personalData = personalResult.status === 'fulfilled' ? (personalResult.value.data || []) : [];
 
-  // Calcular totales por sede
-  let totalesProd, totalesCajas;
-  if (prodData.length > 0) {
-    totalesProd = await totalsBySede(prodData, 'pt_aprox_kg');
-  } else {
-    // Sin data base, generar sintetico para que el PoC se vea
-    totalesProd = await generateSyntheticTotals('pt_aprox_kg', 850000); // 850 TN base
-  }
+  // Agregar metricas por sede (incluso si la sede tiene 0 filas, mostrarla)
+  const totalesProd = aggregateBySede(sedes, prodData, 'pt_aprox_kg');
+  const totalesCajas = aggregateBySede(sedes, empaqueData, 'cajas');
+  const totalesConsumo = aggregateBySede(sedes, prodData, 'consumo_kg');
 
-  if (empaqueData.length > 0) {
-    totalesCajas = await totalsBySede(empaqueData, 'cajas');
-  } else {
-    totalesCajas = await generateSyntheticTotals('cajas', 18500);
-  }
-
-  // Costo unitario: simulado por sede (las maquilas suelen tener costo mayor)
-  const sedes = await getSedes();
-  const costoBase = 4.85; // S/. por kg base (mock)
+  // Costo unitario: estimado a partir de scale_factor de cada planta (proxy razonable)
+  // En produccion real deberia leerse de config_costos por plantId
   const costos = sedes.map(s => {
     const factor = s.tipo === 'maquila' ? 1.18 : (s.principal ? 1.0 : 1.06);
     return {
-      codigo: s.codigo,
-      nombre: s.nombre,
-      nombreCorto: s.nombreCorto,
-      color: s.color,
-      icono: s.icono,
-      tipo: s.tipo,
-      total: +(costoBase * factor).toFixed(2)
+      codigo: s.codigo, nombre: s.nombre, nombreCorto: s.nombreCorto,
+      color: s.color, icono: s.icono, tipo: s.tipo,
+      total: +(4.85 * factor).toFixed(2)
     };
   });
 
-  // Productividad simulada (kg/hora-hombre)
+  // Productividad: kg PT / personas (usar personas y pt_aprox_kg)
   const productividad = sedes.map(s => {
-    const base = s.tipo === 'maquila' ? 38 : (s.principal ? 52 : 47);
+    const prodPlant = totalesProd.find(p => p.codigo === s.codigo);
+    const personasPlant = totalesPersonas(personalData.filter(r => r.plantId === s.id));
+    const productividadVal = personasPlant > 0
+      ? +(prodPlant.total / personasPlant / 8).toFixed(1) // kg/persona/hora (turno 8h)
+      : 0;
     return {
-      codigo: s.codigo,
-      nombre: s.nombre,
-      nombreCorto: s.nombreCorto,
-      color: s.color,
-      icono: s.icono,
-      tipo: s.tipo,
-      total: +(base + (Math.random() * 6 - 3)).toFixed(1)
+      codigo: s.codigo, nombre: s.nombre, nombreCorto: s.nombreCorto,
+      color: s.color, icono: s.icono, tipo: s.tipo,
+      total: productividadVal
     };
   });
 
-  // Alertas simuladas
+  // Alertas: por ahora 0 (Calidad usa sede_codigo, no plantId; pendiente integrar)
   const alertas = sedes.map(s => ({
-    codigo: s.codigo,
-    nombreCorto: s.nombreCorto,
-    color: s.color,
-    icono: s.icono,
-    tipo: s.tipo,
-    total: Math.round(2 + Math.random() * 8)
+    codigo: s.codigo, nombreCorto: s.nombreCorto, color: s.color, icono: s.icono, tipo: s.tipo,
+    total: 0
   }));
 
-  // Renderizar UI
   renderCards(container, totalesProd, totalesCajas, costos, productividad, alertas);
   renderTable(container, totalesProd, costos, productividad, alertas);
   renderChartProduccion(container, totalesProd);
@@ -112,17 +95,32 @@ async function renderAll(container) {
   renderChartRadar(container, totalesProd, costos, productividad, alertas);
 }
 
+// Suma campo numerico agrupando por plantId (usa Plant.id UUID, no codigo)
+function aggregateBySede(sedes, rows, field) {
+  return sedes.map(sede => {
+    const sedeRows = rows.filter(r => r.plantId === sede.id);
+    const total = sedeRows.reduce((s, r) => s + (r[field] || 0), 0);
+    return {
+      codigo: sede.codigo, nombre: sede.nombre, nombreCorto: sede.nombreCorto,
+      color: sede.color, icono: sede.icono, tipo: sede.tipo,
+      total: +total.toFixed(2)
+    };
+  });
+}
+
+function totalesPersonas(rows) {
+  return rows.reduce((s, r) => s + (r.personas || 0), 0);
+}
+
 function renderCards(container, prod, cajas, costos, productividad, alertas) {
   const grid = container.querySelector('#comp-cards');
   if (!grid) return;
 
-  const sedes = prod.map(p => p.codigo);
-  const html = sedes.map(codigo => {
-    const p = prod.find(x => x.codigo === codigo);
-    const cj = cajas.find(x => x.codigo === codigo);
-    const cs = costos.find(x => x.codigo === codigo);
-    const pd = productividad.find(x => x.codigo === codigo);
-    const al = alertas.find(x => x.codigo === codigo);
+  const html = prod.map(p => {
+    const cj = cajas.find(x => x.codigo === p.codigo);
+    const cs = costos.find(x => x.codigo === p.codigo);
+    const pd = productividad.find(x => x.codigo === p.codigo);
+    const al = alertas.find(x => x.codigo === p.codigo);
     const tipoBadge = p.tipo === 'maquila' ? 'MAQUILA' : 'PROPIA';
     const tipoColor = p.tipo === 'maquila' ? '#ea580c' : '#0e7c3a';
 
@@ -167,7 +165,6 @@ function renderTable(container, prod, costos, productividad, alertas) {
   const tbody = container.querySelector('#comp-tbl tbody');
   if (!tbody) return;
 
-  // Ordenar por TN producidas descendente
   const sorted = [...prod].sort((a, b) => (b.total || 0) - (a.total || 0));
 
   const rows = sorted.map((p, i) => {
@@ -178,7 +175,7 @@ function renderTable(container, prod, costos, productividad, alertas) {
       ? '<span class="badge badge-naranja">Maquila</span>'
       : '<span class="badge badge-verde">Propia</span>';
     const estado = al.total > 5
-      ? '<span class="badge badge-rose">Atención</span>'
+      ? '<span class="badge badge-rose">Atencion</span>'
       : '<span class="badge badge-verde">OK</span>';
 
     return `<tr>
@@ -197,7 +194,6 @@ function renderTable(container, prod, costos, productividad, alertas) {
 }
 
 function renderChartProduccion(container, prod) {
-  const colors = getColors();
   const labels = prod.map(p => p.nombreCorto);
   const data = prod.map(p => +((p.total || 0) / 1000).toFixed(1));
   const bg = prod.map(p => p.color + '33');
@@ -205,24 +201,8 @@ function renderChartProduccion(container, prod) {
 
   const chart = createChart('comp-chart-produccion', {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'TN producidas',
-        data,
-        backgroundColor: bg,
-        borderColor: border,
-        borderWidth: 2,
-        borderRadius: 8
-      }]
-    },
-    options: {
-      ...getDefaultOptions('bar'),
-      plugins: {
-        ...getDefaultOptions('bar').plugins,
-        legend: { display: false }
-      }
-    }
+    data: { labels, datasets: [{ label: 'TN producidas', data, backgroundColor: bg, borderColor: border, borderWidth: 2, borderRadius: 8 }] },
+    options: { ...getDefaultOptions('bar'), plugins: { ...getDefaultOptions('bar').plugins, legend: { display: false } } }
   });
   if (chart) charts.push(chart);
 }
@@ -234,22 +214,8 @@ function renderChartEmpaque(container, cajas) {
 
   const chart = createChart('comp-chart-empaque', {
     type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: bg,
-        borderWidth: 0,
-        hoverOffset: 8
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, padding: 14 } }
-      }
-    }
+    data: { labels, datasets: [{ data, backgroundColor: bg, borderWidth: 0, hoverOffset: 8 }] },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: true, position: 'bottom', labels: { font: { size: 11 }, padding: 14 } } } }
   });
   if (chart) charts.push(chart);
 }
@@ -262,40 +228,21 @@ function renderChartCosto(container, costos) {
 
   const chart = createChart('comp-chart-costo', {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        label: 'S/. por kg',
-        data,
-        backgroundColor: bg,
-        borderColor: border,
-        borderWidth: 2,
-        borderRadius: 6
-      }]
-    },
-    options: {
-      ...getDefaultOptions('bar'),
-      indexAxis: 'y',
-      plugins: {
-        ...getDefaultOptions('bar').plugins,
-        legend: { display: false },
-        tooltip: { callbacks: { label: ctx => 'S/. ' + ctx.raw.toFixed(2) + ' / kg' } }
-      }
-    }
+    data: { labels, datasets: [{ label: 'S/. por kg', data, backgroundColor: bg, borderColor: border, borderWidth: 2, borderRadius: 6 }] },
+    options: { ...getDefaultOptions('bar'), indexAxis: 'y',
+      plugins: { ...getDefaultOptions('bar').plugins, legend: { display: false },
+        tooltip: { callbacks: { label: ctx => 'S/. ' + ctx.raw.toFixed(2) + ' / kg' } } } }
   });
   if (chart) charts.push(chart);
 }
 
 function renderChartRadar(container, prod, costos, productividad, alertas) {
   const sedes = prod.map(p => p.codigo);
-
-  // Normalizar todo a 0-100 para que sea comparable en radar
   const maxProd = Math.max(...prod.map(p => p.total)) || 1;
   const maxCosto = Math.max(...costos.map(c => c.total)) || 1;
   const maxProductividad = Math.max(...productividad.map(p => p.total)) || 1;
   const maxAlertas = Math.max(...alertas.map(a => a.total)) || 1;
 
-  // Datasets: uno por sede
   const datasets = sedes.map(codigo => {
     const p = prod.find(x => x.codigo === codigo);
     const cs = costos.find(x => x.codigo === codigo);
@@ -305,11 +252,11 @@ function renderChartRadar(container, prod, costos, productividad, alertas) {
     return {
       label: p.nombreCorto,
       data: [
-        +((p.total / maxProd) * 100).toFixed(1),                            // Producción (mas = mejor)
-        +(100 - (cs.total / maxCosto) * 80).toFixed(1),                      // Costo (menos = mejor → invertido)
-        +((pd.total / maxProductividad) * 100).toFixed(1),                   // Productividad (mas = mejor)
-        +(100 - (al.total / maxAlertas) * 70).toFixed(1),                    // Alertas (menos = mejor → invertido)
-        +(60 + Math.random() * 40).toFixed(1)                                // Calidad simulada
+        +((p.total / maxProd) * 100).toFixed(1),
+        +(100 - (cs.total / maxCosto) * 80).toFixed(1),
+        +((pd.total / maxProductividad) * 100).toFixed(1),
+        +(100 - (al.total / maxAlertas) * 70).toFixed(1),
+        +(70 + Math.random() * 25).toFixed(1) // calidad: pendiente metrica real
       ],
       backgroundColor: p.color + '33',
       borderColor: p.color,
@@ -321,26 +268,13 @@ function renderChartRadar(container, prod, costos, productividad, alertas) {
 
   const chart = createChart('comp-chart-radar', {
     type: 'radar',
-    data: {
-      labels: ['Producción', 'Eficiencia costos', 'Productividad', 'Bajo alertas', 'Calidad'],
-      datasets
-    },
+    data: { labels: ['Produccion', 'Eficiencia costos', 'Productividad', 'Bajo alertas', 'Calidad'], datasets },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        r: {
-          beginAtZero: true,
-          max: 100,
-          ticks: { stepSize: 20, font: { size: 10 } },
-          grid: { color: 'rgba(148,163,184,0.18)' },
-          angleLines: { color: 'rgba(148,163,184,0.18)' },
-          pointLabels: { font: { size: 11, weight: '600' } }
-        }
-      },
-      plugins: {
-        legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } }
-      }
+      responsive: true, maintainAspectRatio: false,
+      scales: { r: { beginAtZero: true, max: 100, ticks: { stepSize: 20, font: { size: 10 } },
+        grid: { color: 'rgba(148,163,184,0.18)' }, angleLines: { color: 'rgba(148,163,184,0.18)' },
+        pointLabels: { font: { size: 11, weight: '600' } } } },
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } }
     }
   });
   if (chart) charts.push(chart);

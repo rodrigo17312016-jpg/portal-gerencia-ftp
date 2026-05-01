@@ -8,8 +8,7 @@ import { fmt, fmtPct, fmtSoles, today, currentTurno } from '../../assets/js/util
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 import { subscribeToTable, createLiveIndicator } from '../../assets/js/utils/realtime-helpers.js';
 import { notifyAlert, getPermissionState } from '../../assets/js/utils/notifications.js';
-import { onSedeChange, getSedeActiva, isConsolidado } from '../../assets/js/core/sede-context.js';
-import { getScaleFactor } from '../../assets/js/utils/sede-mock-helper.js';
+import { onSedeChange, getSedeActiva, isConsolidado, applyPlantFilter, applySedeFilter } from '../../assets/js/core/sede-context.js';
 
 // ── Module state ──
 let charts = [];
@@ -171,39 +170,27 @@ export function onShow() {
 async function loadKPIs(container) {
   const hoy = today();
 
-  // 3 parallel queries
-  const [prodResult, tempResult, empaqueResult] = await Promise.allSettled([
-    // 1. Produccion hoy
-    supabase
-      .from('registro_produccion')
-      .select('id, consumo_kg, pt_aprox_kg, fruta')
-      .eq('fecha', hoy),
+  // Aplicar filtro de sede a cada query (Prod usa plantId UUID, Calidad usa sede_codigo TEXT)
+  const qProd = await applyPlantFilter(
+    supabase.from('registro_produccion').select('id, consumo_kg, pt_aprox_kg, fruta').eq('fecha', hoy)
+  );
+  const qTemp = applySedeFilter(
+    supabaseCalidad.from('registros_temperatura')
+      .select('id, temperatura, area, created_at, sede_codigo')
+      .gte('created_at', hoy + 'T00:00:00')
+  );
+  const qEmpaque = await applyPlantFilter(
+    supabase.from('registro_empaque_congelado').select('cajas, peso_neto_kg')
+  );
 
-    // 2. Temperaturas hoy (incluir area + created_at para notificaciones)
-    supabaseCalidad
-      .from('registros_temperatura')
-      .select('id, temperatura, area, created_at')
-      .gte('created_at', hoy + 'T00:00:00'),
-
-    // 3. Empaque acumulado (TN exportadas)
-    supabase
-      .from('registro_empaque_congelado')
-      .select('cajas, peso_neto_kg')
-  ]);
-
-  // Factor de escala segun sede activa (Fase PoC: simulado)
-  const sedeFactor = await getScaleFactor();
+  const [prodResult, tempResult, empaqueResult] = await Promise.allSettled([qProd, qTemp, qEmpaque]);
 
   // --- KPI 1 & 2: Produccion hoy + Lotes activos ---
   if (prodResult.status === 'fulfilled' && prodResult.value.data) {
     const prod = prodResult.value.data;
-    const totalPT = prod.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0) * sedeFactor;
-    const lotes = Math.max(prod.length, 0);
-    const lotesEscalados = isConsolidado()
-      ? Math.round(lotes * sedeFactor)
-      : Math.round(lotes * sedeFactor);
+    const totalPT = prod.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
     setKPI(container, 'kpi-produccion-hoy', fmt(totalPT) + ' kg');
-    setKPI(container, 'kpi-lotes-activos', String(lotesEscalados));
+    setKPI(container, 'kpi-lotes-activos', String(prod.length));
   } else {
     setKPI(container, 'kpi-produccion-hoy', '0 kg');
     setKPI(container, 'kpi-lotes-activos', '0');
@@ -212,10 +199,9 @@ async function loadKPIs(container) {
   // --- KPI 3 & 4: Registros temp + Alertas ---
   if (tempResult.status === 'fulfilled' && tempResult.value.data) {
     const temps = tempResult.value.data;
-    setKPI(container, 'kpi-registros-temp', String(Math.round(temps.length * sedeFactor)));
+    setKPI(container, 'kpi-registros-temp', String(temps.length));
     const alertasArr = temps.filter(r => (r.temperatura || -99) > TEMP_THRESHOLD);
-    setKPI(container, 'kpi-alertas-activas', String(Math.round(alertasArr.length * sedeFactor)));
-    // Disparar notificacion desktop solo en sede principal (no consolidado/maquila)
+    setKPI(container, 'kpi-alertas-activas', String(alertasArr.length));
     if (!isConsolidado()) maybeNotifyAlerts(alertasArr);
   } else {
     setKPI(container, 'kpi-registros-temp', '0');
@@ -225,7 +211,7 @@ async function loadKPIs(container) {
   // --- KPI 5: TN exportadas ---
   if (empaqueResult.status === 'fulfilled' && empaqueResult.value.data) {
     const emp = empaqueResult.value.data;
-    const totalKg = emp.reduce((s, r) => s + (r.peso_neto_kg || 0), 0) * sedeFactor;
+    const totalKg = emp.reduce((s, r) => s + (r.peso_neto_kg || 0), 0);
     const tn = totalKg / 1000;
     setKPI(container, 'kpi-tn-exportadas', fmt(tn, 1) + ' TN');
   } else {
@@ -238,53 +224,43 @@ async function loadKPIs(container) {
 // ════════════════════════════════════════════════════════
 
 async function loadCharts(container) {
-  // 5 parallel data queries
-  const [prodResult, empaqueResult, consumosResult, alertasResult, tempsResult] = await Promise.allSettled([
-    // 1. Produccion campana 2026
-    supabase
-      .from('registro_produccion')
+  // 5 parallel data queries (con filtro por sede activa)
+  const qProd = await applyPlantFilter(
+    supabase.from('registro_produccion')
       .select('fecha, fruta, consumo_kg, pt_aprox_kg')
       .gte('fecha', '2026-01-01')
-      .order('fecha', { ascending: true }),
-
-    // 2. Empaque congelado (exportacion + camara)
-    supabase
-      .from('registro_empaque_congelado')
+      .order('fecha', { ascending: true })
+  );
+  const qEmpaque = await applyPlantFilter(
+    supabase.from('registro_empaque_congelado')
       .select('cliente, destino, cajas, peso_neto_kg, fruta, tipo_empaque, fecha')
-      .order('fecha', { ascending: true }),
-
-    // 3. Consumos insumos (laboratorio + consumo + costos)
-    supabaseCalidad
-      .from('consumos_insumos')
-      .select('*'),
-
-    // 4. Alertas temperatura (ultimas 6 fuera de rango)
-    supabaseCalidad
-      .from('registros_temperatura')
+      .order('fecha', { ascending: true })
+  );
+  const qConsumos = applySedeFilter(supabaseCalidad.from('consumos_insumos').select('*'));
+  const qAlertas = applySedeFilter(
+    supabaseCalidad.from('registros_temperatura')
       .select('area, temperatura, created_at')
       .gt('temperatura', TEMP_THRESHOLD)
       .order('created_at', { ascending: false })
-      .limit(6),
-
-    // 5. Temperaturas hoy (para tabla por area)
-    supabaseCalidad
-      .from('registros_temperatura')
+      .limit(6)
+  );
+  const qTemps = applySedeFilter(
+    supabaseCalidad.from('registros_temperatura')
       .select('area, temperatura, created_at')
       .gte('created_at', today() + 'T00:00:00')
       .order('created_at', { ascending: false })
+  );
+
+  const [prodResult, empaqueResult, consumosResult, alertasResult, tempsResult] = await Promise.allSettled([
+    qProd, qEmpaque, qConsumos, qAlertas, qTemps
   ]);
 
-  const prodDataRaw = prodResult.status === 'fulfilled' ? (prodResult.value.data || []) : [];
-  const empaqueDataRaw = empaqueResult.status === 'fulfilled' ? (empaqueResult.value.data || []) : [];
-  const consumosDataRaw = consumosResult.status === 'fulfilled' ? (consumosResult.value.data || []) : [];
+  // Datos REALES por sede (filtrados via applyPlantFilter / applySedeFilter)
+  const prodData = prodResult.status === 'fulfilled' ? (prodResult.value.data || []) : [];
+  const empaqueData = empaqueResult.status === 'fulfilled' ? (empaqueResult.value.data || []) : [];
+  const consumosData = consumosResult.status === 'fulfilled' ? (consumosResult.value.data || []) : [];
   const alertasData = alertasResult.status === 'fulfilled' ? (alertasResult.value.data || []) : [];
   const tempsData = tempsResult.status === 'fulfilled' ? (tempsResult.value.data || []) : [];
-
-  // Multi-sede: escalar campos numericos por factor de la planta activa (PoC mock)
-  const sedeFactor = await getScaleFactor();
-  const prodData = scaleRows(prodDataRaw, ['consumo_kg', 'pt_aprox_kg'], sedeFactor);
-  const empaqueData = scaleRows(empaqueDataRaw, ['cajas', 'peso_neto_kg'], sedeFactor);
-  const consumosData = scaleRows(consumosDataRaw, ['cantidad', 'consumo', 'costo_total', 'precio_unitario', 'stock_actual'], sedeFactor);
 
   // Render each section in try/catch so one failure doesn't break others
   try { renderSecProduccion(container, prodData); } catch (e) { console.error('Error renderSecProduccion:', e); }
@@ -823,21 +799,6 @@ function renderTblTempAreas(container, temps) {
 function setKPI(container, id, value) {
   const el = container.querySelector('#' + id);
   if (el) el.textContent = typeof value === 'number' ? String(value) : value;
-}
-
-// Multi-sede helper: escala campos numericos sin mutar el original
-function scaleRows(rows, fields, factor) {
-  if (!Array.isArray(rows) || !rows.length) return rows;
-  if (!factor || factor === 1) return rows.slice();
-  return rows.map(row => {
-    const out = { ...row };
-    fields.forEach(f => {
-      if (typeof out[f] === 'number' && isFinite(out[f])) {
-        out[f] = +(out[f] * factor).toFixed(2);
-      }
-    });
-    return out;
-  });
 }
 
 function capitalize(str) {

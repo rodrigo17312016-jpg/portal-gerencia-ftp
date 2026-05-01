@@ -8,7 +8,7 @@
    - El consolidado es un caso especial (codigo: 'CONSOLIDADO')
    ════════════════════════════════════════════════════════ */
 
-import { getDefaultSede, getSedeByCodigo, getSedes } from '../config/sedes.js';
+import { getDefaultSede, getSedeByCodigo, getSedes, getPlantIdByCodigo } from '../config/sedes.js';
 
 const STORAGE_KEY = 'ftp_sede_activa';
 const EVENT_NAME = 'sede-changed';
@@ -97,17 +97,38 @@ export function onSedeChange(callback) {
   return () => _bus.removeEventListener(EVENT_NAME, handler);
 }
 
-// ── Util: aplicar filtro a query Supabase ──
+// ── Util: aplicar filtro a query Supabase (Calidad usa sede_codigo TEXT) ──
 // Si la sede es CONSOLIDADO devuelve query sin filtro.
-// Si es una sede especifica, agrega .eq('sede_id', codigo).
-// El llamador puede pasar una columna distinta a 'sede_id' si la tabla usa otro nombre.
-export function applySedeFilter(query, columna = 'sede_id') {
+// Si es una sede especifica, agrega .eq('sede_codigo', codigo).
+export function applySedeFilter(query, columna = 'sede_codigo') {
   if (!query) return query;
   if (isConsolidado()) return query;
   if (typeof query.eq === 'function') {
     return query.eq(columna, _currentCodigo);
   }
   return query;
+}
+
+// ── Util: aplicar filtro a query Supabase (Produccion usa plantId UUID) ──
+// Necesita resolver el UUID a partir del codigo de la sede activa.
+export async function applyPlantFilter(query, columna = 'plantId') {
+  if (!query) return query;
+  if (isConsolidado()) return query;
+  const plantId = await getPlantIdByCodigo(_currentCodigo);
+  if (!plantId) {
+    console.warn('[sede-context] No se encontro plantId para codigo', _currentCodigo);
+    return query; // sin filtro - mejor mostrar todo que romper
+  }
+  if (typeof query.eq === 'function') {
+    return query.eq(columna, plantId);
+  }
+  return query;
+}
+
+// ── Util: obtener plantId UUID de la sede activa (para INSERT/UPDATE) ──
+export async function getPlantIdActivo() {
+  if (isConsolidado()) return null; // no se puede insertar en consolidado
+  return await getPlantIdByCodigo(_currentCodigo);
 }
 
 // ── Util: obtener lista de sedes para iterar (admin/consolidado) ──

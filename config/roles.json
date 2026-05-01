@@ -17,7 +17,7 @@
     ],
     "apps": [
       "registro-produccion", "registro-personal", "registro-costos",
-      "registro-tuneles", "empaque-congelado"
+      "registro-tuneles", "empaque-congelado", "temperaturas-pwa"
     ],
     "dashboards": [
       "consumos", "consumo-diario", "analisis"
@@ -37,7 +37,7 @@
       "costos-analisis", "reclamos",
       "materiales", "stock-general", "contenedores"
     ],
-    "apps": [],
+    "apps": ["temperaturas-pwa"],
     "dashboards": [
       "temperaturas", "laboratorio", "reporte-frio",
       "consumos", "consumo-diario"

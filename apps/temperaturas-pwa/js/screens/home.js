@@ -177,7 +177,7 @@
     });
 
     document.querySelectorAll('[data-action="open-settings"]').forEach(btn =>
-      btn.addEventListener('click', () => window.App.navigate('setup'))
+      btn.addEventListener('click', () => window.App.navigate('select-inspector'))
     );
 
     document.querySelectorAll('[data-action="quick-capture"]').forEach(btn =>

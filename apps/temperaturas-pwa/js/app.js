@@ -7,6 +7,7 @@
   'use strict';
 
   const SCREENS = {
+    'select-inspector': () => window.ScreenSelectInspector,
     setup:   () => window.ScreenSetup,
     home:    () => window.ScreenHome,
     capture: () => window.ScreenCapture,
@@ -103,11 +104,12 @@
 
   // ============ INIT ============
   function init() {
-    // Conectar splash inicial al estado
-    if (window.SBClient && window.SBClient.isConfigured()) {
+    // Flow nuevo: la PWA siempre tiene config (defaults hardcoded).
+    // Lo único que falta es elegir inspector.
+    if (window.SBClient && window.SBClient.isOperarioSet()) {
       navigate('home');
     } else {
-      navigate('setup');
+      navigate('select-inspector');
     }
     registerSW();
   }

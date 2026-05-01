@@ -1,16 +1,38 @@
 /* ============================================================
    Supabase client wrapper.
-   Config se guarda en localStorage (no hardcodeada por política
-   de seguridad: ver memory feedback_no_hardcoded_secrets).
 
-   La config se inicializa via setup.js o se importa desde el
-   portal si la PWA se sirve desde el mismo origen.
+   La PWA arranca con config "default" hardcodeada (URL + anon key
+   pública del proyecto FTP). El operario solo elige su nombre.
+
+   La anon key es PÚBLICA por diseño (RLS la protege), igual que en
+   el dashboard legacy dashboards/temperaturas.html linea 1440. NO es
+   un secreto, NO viola la regla feedback_no_hardcoded_secrets que
+   aplica a credenciales privadas (postgres password, service_role).
    ============================================================ */
 
 (function () {
   'use strict';
 
   const STORAGE_KEY = 'temperaturas_pwa.config_v1';
+
+  // Config por defecto — la PWA arranca lista para usar
+  const DEFAULT_CONFIG = {
+    url: 'https://obnvrfvcujsrmifvlqni.supabase.co',
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9ibnZyZnZjdWpzcm1pZnZscW5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM1MDY3OTUsImV4cCI6MjA4OTA4Mjc5NX0.A7BilSrDzqe2rqz1Kh8fg5t-GVNxrLGYJK4IaMlVtBs',
+    sedeCodigo: 'FTP-HUA',
+    operario: ''
+  };
+
+  // Lista oficial de inspectores de calidad (igual que dashboard legacy)
+  const INSPECTORES = [
+    'LUIS APONTE',
+    'MAYDA APONTE',
+    'SHEYLA CAMONES',
+    'JOHNNY PAJUELO',
+    'BLANCA MALVACEDA',
+    'CHRISTY JIMENEZ',
+    'CORAYMA CHANGANA'
+  ];
 
   const state = {
     client: null,
@@ -20,13 +42,21 @@
   function loadConfig() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return null;
+      if (!raw) {
+        // Sin config guardada → usar defaults (sin operario)
+        return { ...DEFAULT_CONFIG };
+      }
       const parsed = JSON.parse(raw);
-      if (parsed && parsed.url && parsed.anonKey) return parsed;
-      return null;
+      // Mergear con defaults para casos donde solo se guardó operario
+      return {
+        url: parsed.url || DEFAULT_CONFIG.url,
+        anonKey: parsed.anonKey || DEFAULT_CONFIG.anonKey,
+        sedeCodigo: parsed.sedeCodigo || DEFAULT_CONFIG.sedeCodigo,
+        operario: parsed.operario || ''
+      };
     } catch (e) {
       console.error('[supabase-client] loadConfig failed', e);
-      return null;
+      return { ...DEFAULT_CONFIG };
     }
   }
 
@@ -61,6 +91,17 @@
   function isConfigured() {
     const c = getConfig();
     return !!(c && c.url && c.anonKey);
+  }
+
+  /** El inspector está elegido (config básica completa para arrancar) */
+  function isOperarioSet() {
+    const c = getConfig();
+    return !!(c && c.operario && c.operario.trim());
+  }
+
+  /** Lista oficial de inspectores */
+  function getInspectores() {
+    return INSPECTORES.slice();
   }
 
   function getClient() {
@@ -223,6 +264,8 @@
     saveConfig,
     getConfig,
     isConfigured,
+    isOperarioSet,
+    getInspectores,
     getClient,
     clearConfig,
     updateOperario,

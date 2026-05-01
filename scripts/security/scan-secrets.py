@@ -57,6 +57,8 @@ SCAN_EXTENSIONS = {'.sql', '.js', '.ts', '.json', '.html', '.py', '.sh', '.env',
 ALLOWLIST = {
     # supabase.js tiene anon keys publicas (JWT con role=anon, no secret)
     'assets/js/config/supabase.js': ['Possible JWT'],
+    # PWA Temperaturas: la anon key default es la misma publica que el portal
+    'apps/temperaturas-pwa/js/supabase-client.js': ['Possible JWT'],
     # Este mismo scanner contiene los patrones - obviamente
     'scripts/security/scan-secrets.py': ['__all__'],
     # Documentacion de incidentes referencia los nombres redactados

@@ -1,3 +1,16 @@
+<!-- Header destacado: link a la PWA de captura -->
+<div class="area-header" style="background:linear-gradient(135deg,rgba(14,165,233,0.10) 0%,rgba(30,64,175,0.04) 100%);border:1px solid rgba(14,165,233,0.20);border-radius:var(--radius-lg);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+  <div style="width:56px;height:56px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 2px 8px rgba(14,165,233,0.15);border:1px solid rgba(14,165,233,0.18)">🌡️</div>
+  <div style="flex:1;min-width:220px">
+    <h2 style="font-size:22px;font-weight:900;color:var(--texto);margin:0;letter-spacing:-0.3px">Captura de Temperaturas</h2>
+    <p style="font-size:12.5px;color:var(--muted);margin:3px 0 0">PWA con OCR para visores, termómetros y termoregistros · <span style="color:#0EA5E9;font-weight:700">Instalable en celular</span></p>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+    <div class="badge badge-azul" style="background:rgba(14,165,233,0.12);color:#0EA5E9;border:1px solid rgba(14,165,233,0.25);padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:6px">📷 OCR · OFFLINE</div>
+    <a href="apps/temperaturas-pwa/index.html" target="_blank" class="btn btn-sm" style="background:linear-gradient(135deg,#0EA5E9,#1E40AF);color:#fff;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:6px;box-shadow:0 2px 6px rgba(14,165,233,0.30)">🌡️ Registrar Temperatura</a>
+  </div>
+</div>
+
 <!-- Panel: Monitoreo de Temperaturas -->
 <div class="card">
   <div class="card-header">
@@ -24,8 +37,8 @@
 <div class="card" style="margin-top:20px">
   <div class="card-header">
     <div class="card-title">📋 Todos los registros de hoy</div>
-    <a href="dashboards/temperaturas.html" target="_blank" class="btn btn-sm btn-primary">
-      ➕ Ir a la app de registro
+    <a href="apps/temperaturas-pwa/index.html" target="_blank" class="btn btn-sm btn-primary">
+      ➕ Abrir PWA de captura
     </a>
   </div>
   <div class="table-container">

@@ -6,6 +6,7 @@
       "roles": ["admin"],
       "items": [
         { "id": "resumen", "label": "Resumen Ejecutivo", "icon": "\uD83D\uDCCA", "module": "gerencia/resumen" },
+        { "id": "diagrama-procesos", "label": "Diagrama de Procesos", "icon": "\uD83D\uDCD0", "module": "gerencia/diagrama-procesos" },
         { "id": "comparativo-plantas", "label": "Comparativo Plantas", "icon": "\u26A1", "module": "gerencia/comparativo-plantas" },
         { "id": "sedes-health", "label": "Health Multi-Sede", "icon": "\uD83D\uDC9A", "module": "gerencia/sedes-health" },
         { "id": "admin-sedes", "label": "Admin Sedes", "icon": "\uD83C\uDFD7\uFE0F", "module": "gerencia/admin-sedes" },

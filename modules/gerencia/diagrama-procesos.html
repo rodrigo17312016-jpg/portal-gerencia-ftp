@@ -1,0 +1,146 @@
+<!-- Panel: Diagrama de Procesos -->
+<style>
+.dp-hero{
+  background:linear-gradient(135deg,#0d3d15 0%,#1a5c25 50%,#15803d 100%);
+  border-radius:16px;padding:32px 28px;color:#fff;margin-bottom:24px;
+  position:relative;overflow:hidden;
+}
+.dp-hero::before{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(circle at 15% 25%,rgba(212,175,55,0.18),transparent 50%),
+    radial-gradient(circle at 85% 75%,rgba(74,222,128,0.18),transparent 50%);
+}
+.dp-hero-inner{position:relative;display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.dp-hero h2{font-size:28px;font-weight:900;letter-spacing:-0.5px;margin-bottom:6px;line-height:1.1}
+.dp-hero p{font-size:14px;color:rgba(255,255,255,0.85);max-width:600px;line-height:1.5}
+.dp-hero-icon{
+  width:80px;height:80px;border-radius:18px;
+  background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;
+  font-size:42px;flex-shrink:0;backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.2);
+}
+
+.dp-cta{
+  display:inline-flex;align-items:center;gap:10px;
+  margin-top:18px;padding:13px 24px;border-radius:30px;
+  background:#fff;color:#15803d;font-weight:800;font-size:14px;
+  text-decoration:none;letter-spacing:0.3px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.25);
+  transition:all 0.3s ease;border:none;cursor:pointer;
+}
+.dp-cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(0,0,0,0.3)}
+.dp-cta-arrow{transition:transform 0.3s ease}
+.dp-cta:hover .dp-cta-arrow{transform:translateX(4px)}
+
+.dp-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-top:24px;
+}
+.dp-card{
+  background:var(--card-bg,#fff);border:1px solid var(--border,#e2e8f0);
+  border-radius:14px;padding:24px;
+  transition:all 0.3s ease;position:relative;overflow:hidden;
+  cursor:pointer;text-decoration:none;color:inherit;display:block;
+}
+.dp-card:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(0,0,0,0.08)}
+.dp-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(to bottom,#16a34a,#15803d);
+}
+.dp-card.tobe::before{background:linear-gradient(to bottom,#3b82f6,#1e40af)}
+.dp-card.compare::before{background:linear-gradient(to bottom,#a855f7,#7e22ce)}
+.dp-card-icon{
+  width:54px;height:54px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  margin-bottom:14px;
+}
+.dp-card.asis .dp-card-icon{background:rgba(245,158,11,0.15);color:#b45309}
+.dp-card.tobe .dp-card-icon{background:rgba(59,130,246,0.15);color:#1e40af}
+.dp-card.compare .dp-card-icon{background:rgba(168,85,247,0.15);color:#7e22ce}
+.dp-card h3{font-size:16px;font-weight:800;margin-bottom:6px;color:var(--texto,#0f172a)}
+.dp-card p{font-size:12.5px;color:var(--muted,#64748b);line-height:1.5}
+.dp-card-link{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:14px;color:#15803d;font-weight:700;font-size:12px;
+  letter-spacing:0.3px;
+}
+.dp-card.tobe .dp-card-link{color:#1e40af}
+.dp-card.compare .dp-card-link{color:#7e22ce}
+
+.dp-info-box{
+  margin-top:24px;padding:18px 22px;
+  background:rgba(59,130,246,0.06);border-left:4px solid #3b82f6;
+  border-radius:10px;font-size:13px;color:var(--texto,#0f172a);
+}
+.dp-info-box b{color:#1e40af}
+
+.dp-stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));
+  gap:12px;margin-top:20px;
+}
+.dp-stat{
+  background:rgba(255,255,255,0.1);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,0.15);border-radius:12px;
+  padding:14px;text-align:center;color:#fff;
+}
+.dp-stat-num{font-size:24px;font-weight:900;line-height:1}
+.dp-stat-lbl{font-size:10px;font-weight:700;letter-spacing:0.6px;text-transform:uppercase;opacity:0.85;margin-top:4px}
+</style>
+
+<!-- Hero -->
+<div class="dp-hero">
+  <div class="dp-hero-inner">
+    <div class="dp-hero-icon">📐</div>
+    <div style="flex:1;min-width:280px">
+      <h2>Diagrama de Procesos del Sistema</h2>
+      <p>Documento estrategico que muestra el estado actual del sistema y la vision del ERP integral hacia el cual evolucionamos. Disenado para revision de gerencia.</p>
+      <a href="docs/diagrama-procesos.html" target="_blank" rel="noopener" class="dp-cta" id="dpOpenFull">
+        <span>Abrir Documento Completo</span>
+        <span class="dp-cta-arrow">→</span>
+      </a>
+      <div class="dp-stats">
+        <div class="dp-stat"><div class="dp-stat-num">5</div><div class="dp-stat-lbl">Apps Planta</div></div>
+        <div class="dp-stat"><div class="dp-stat-num">12</div><div class="dp-stat-lbl">Mods Mantto</div></div>
+        <div class="dp-stat"><div class="dp-stat-num">10</div><div class="dp-stat-lbl">Certificaciones</div></div>
+        <div class="dp-stat"><div class="dp-stat-num">17</div><div class="dp-stat-lbl">Tablas BD</div></div>
+        <div class="dp-stat"><div class="dp-stat-num">100%</div><div class="dp-stat-lbl">PWA Offline</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Vistas disponibles -->
+<div class="card">
+  <div class="card-header">
+    <div class="card-title">📋 Contenido del Documento</div>
+    <span class="badge badge-verde">3 vistas</span>
+  </div>
+
+  <div class="dp-grid">
+    <a href="docs/diagrama-procesos.html#asis" target="_blank" rel="noopener" class="dp-card asis">
+      <div class="dp-card-icon">🏗️</div>
+      <h3>Estado Actual</h3>
+      <p>Cuales modulos estan operando hoy. Flujo de proceso productivo desde recepcion MP hasta despacho. Arquitectura tecnica actual con Supabase + GitHub Pages.</p>
+      <span class="dp-card-link">Ver vista 1 →</span>
+    </a>
+
+    <a href="docs/diagrama-procesos.html#tobe" target="_blank" rel="noopener" class="dp-card tobe">
+      <div class="dp-card-icon">🚀</div>
+      <h3>Vision ERP Integral</h3>
+      <p>A donde queremos llegar: 12 modulos cubriendo todo el ciclo de negocio (CRM, Compras, Pronostico, SUNAT, Tesoreria, Contabilidad, Trazabilidad, Logistica, IA, Compliance Hub).</p>
+      <span class="dp-card-link">Ver vista 2 →</span>
+    </a>
+
+    <a href="docs/diagrama-procesos.html#compare" target="_blank" rel="noopener" class="dp-card compare">
+      <div class="dp-card-icon">📊</div>
+      <h3>Comparacion + Roadmap</h3>
+      <p>Tabla comparativa modulo por modulo (tenemos vs falta). Roadmap por fases (0-3m, 3-6m, 6-12m, 12-18m). Beneficios esperados al completar la vision.</p>
+      <span class="dp-card-link">Ver vista 3 →</span>
+    </a>
+  </div>
+
+  <div class="dp-info-box">
+    <b>💡 Tip para presentacion a Gerencia:</b> El documento es totalmente imprimible y tiene un boton de "🖨️ Imprimir / PDF" en la esquina superior derecha. Se puede exportar a PDF en formato A4 horizontal para enviar por correo o presentar en reuniones.
+  </div>
+</div>

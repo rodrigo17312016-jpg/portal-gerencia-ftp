@@ -77,12 +77,6 @@
               `;
             }).join('')}
           </div>
-
-          <div style="margin-top: 24px; text-align: center;">
-            <button class="btn btn--ghost" data-action="advanced">
-              ⚙️ Configuración avanzada
-            </button>
-          </div>
         </div>
       </div>
     `;
@@ -112,9 +106,6 @@
       });
     });
 
-    document.querySelectorAll('[data-action="advanced"]').forEach(b =>
-      b.addEventListener('click', () => window.App.navigate('setup'))
-    );
   }
 
   window.ScreenSelectInspector = { render, bind };

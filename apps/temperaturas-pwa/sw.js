@@ -7,7 +7,7 @@
    - Imágenes locales: stale-while-revalidate
    ============================================================ */
 
-const SW_VERSION = 'v4';
+const SW_VERSION = 'v5';
 const APP_SHELL_CACHE = `temperaturas-shell-${SW_VERSION}`;
 const RUNTIME_CACHE   = `temperaturas-runtime-${SW_VERSION}`;
 const TESSERACT_CACHE = `temperaturas-tesseract-${SW_VERSION}`;
@@ -26,6 +26,7 @@ const APP_SHELL = [
   './js/ocr.js',
   './js/offline-queue.js',
   './js/reminders.js',
+  './js/share-card.js',
   './js/screens/home.js',
   './js/screens/capture.js',
   './js/screens/confirm.js',

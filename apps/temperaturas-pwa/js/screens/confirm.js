@@ -289,6 +289,9 @@
       sync_offline_id: syncOfflineId
     };
 
+    // Capturamos la referencia al blob ANTES de cleanup() para pasarla a success
+    const fotoBlobRef = state.photoBlob;
+
     // 1) Guardar en queue offline (siempre, para tener garantía)
     await window.OfflineQueue.addPending(payload, state.photoBlob);
 
@@ -298,7 +301,8 @@
       saveBtn.textContent = '⏳ Guardando…';
     }
 
-    cleanup();
+    // No revocamos el photoURL aquí — success lo necesita.
+    // El cleanup() se hace cuando success se desmonta o expira el auto-return.
 
     // 2) Intento inmediato de sync (si hay red)
     let synced = false;
@@ -313,7 +317,10 @@
       estado,
       hora,
       turno,
-      synced
+      synced,
+      fotoBlob: fotoBlobRef,
+      observaciones: state.observaciones,
+      accionTomada: state.accionTomada
     });
   }
 

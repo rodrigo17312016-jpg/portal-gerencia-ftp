@@ -4,3 +4,23 @@ node_modules/
 .DS_Store
 Thumbs.db
 scripts/config_reportes.json
+
+# ═══════════════════════════════════════════════
+# SECURITY - NEVER commit these (post incidente 2026-05-01)
+# ═══════════════════════════════════════════════
+.env
+.env.*
+!.env.example
+.env.local
+.env.production
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+*-secrets.json
+credentials.json
+service-account*.json
+.git-redact-patterns.txt
+*-passwords.txt
+*-creds.txt

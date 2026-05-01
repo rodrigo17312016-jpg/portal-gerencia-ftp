@@ -39,6 +39,45 @@
     `;
   }
 
+  /**
+   * Intenta detección con Gemini Vision API (Edge Function 'detect-temperatura').
+   * Llamada cuando OCR local falla o tiene baja confianza.
+   * Actualiza state.ocrResult si AI da mejor resultado.
+   */
+  async function tryAIDetection() {
+    if (!state.photoBlob) return;
+    // Mostrar estado en pantalla de processing
+    const titleEl = document.querySelector('.ocr-processing__title');
+    const hintEl = document.querySelector('.ocr-processing__hint');
+    if (titleEl) titleEl.innerHTML = '✨ Consultando IA Vision…';
+    if (hintEl) hintEl.textContent = 'Modelo Gemini analizando la imagen';
+
+    try {
+      const ai = await window.SBClient.detectTemperaturaAI(state.photoBlob);
+      if (ai.ok && ai.value !== null) {
+        // Si tenemos un resultado AI mejor, lo usamos
+        const localValue = state.ocrResult?.value;
+        const aiValue = ai.value;
+        // AI siempre prefiere si OCR local no tenía valor o tenía baja confianza
+        const aiConf = ({ high: 95, medium: 80, low: 60 })[ai.confidence] || 70;
+        state.ocrResult = {
+          value: aiValue,
+          raw: ai.raw || String(aiValue),
+          confidence: aiConf,
+          provider: ai.provider || 'gemini',
+          source: 'ai',
+          aiConfidenceLabel: ai.confidence
+        };
+        state.tempInput = String(aiValue);
+        console.log('[confirm] AI Vision detectó', aiValue, '(conf:', ai.confidence, ')');
+      } else {
+        console.warn('[confirm] AI Vision no detectó valor', ai);
+      }
+    } catch (e) {
+      console.warn('[confirm] AI Vision falló', e);
+    }
+  }
+
   function statusBannerHtml(temp) {
     if (temp === '' || temp === null || isNaN(parseFloat(temp))) {
       return `
@@ -74,6 +113,8 @@
     const ocrLabel = ocr && ocr.value !== null
       ? `${ocr.value.toFixed(1)} °C`
       : (ocr ? 'No se pudo leer' : 'Foto omitida');
+    const isAI = ocr && ocr.source === 'ai';
+    const sourceLabel = isAI ? '✨ DETECTADO POR IA' : 'DETECTADO POR OCR';
     const ocrConfidence = ocr && ocr.value !== null ? ` · ${Math.round(ocr.confidence)}% confianza` : '';
 
     return `
@@ -89,9 +130,14 @@
               ${state.photoURL ? `<img class="confirm-photo-row__thumb" src="${state.photoURL}" alt="Captura" data-action="open-crop" style="cursor:pointer;" />`
                 : `<div class="confirm-photo-row__thumb" style="display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--color-text-soft);">📷</div>`}
               <div class="confirm-photo-row__info">
-                <div class="confirm-photo-row__label">Detectado por OCR${escapeHtml(ocrConfidence)}</div>
+                <div class="confirm-photo-row__label" ${isAI ? 'style="color: var(--color-primary); font-weight: 700;"' : ''}>${sourceLabel}${escapeHtml(ocrConfidence)}</div>
                 <div class="confirm-photo-row__value">${escapeHtml(ocrLabel)}</div>
-                ${state.photoURL ? `<button class="btn btn--ghost" style="padding: 6px 12px; min-height: 32px; font-size: 12px; margin-top: 6px;" data-action="open-crop">🎯 Ajustar área del display</button>` : ''}
+                ${state.photoURL ? `
+                  <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;">
+                    <button class="btn btn--ghost" style="padding: 6px 12px; min-height: 32px; font-size: 12px;" data-action="open-crop">🎯 Ajustar área</button>
+                    <button class="btn btn--ghost" style="padding: 6px 12px; min-height: 32px; font-size: 12px; color: var(--color-primary);" data-action="retry-ai" id="btn-retry-ai">✨ Detectar con IA</button>
+                  </div>
+                ` : ''}
               </div>
             </div>
           ` : ''}
@@ -161,10 +207,19 @@
         });
         state.ocrResult = result;
         state.tempInput = (result && result.value !== null) ? String(result.value) : '';
+
+        // FALLBACK AUTOMÁTICO con Gemini AI:
+        // Si OCR local no detectó nada O detectó con baja confianza (<55%) → AI Vision
+        const localFailed = !result || result.value === null;
+        const localLowConf = result && result.confidence < 55;
+        if ((localFailed || localLowConf) && navigator.onLine) {
+          await tryAIDetection();
+        }
       } catch (e) {
         console.warn('[confirm] OCR falló', e);
         state.ocrResult = { value: null, raw: '', confidence: 0, error: e.message };
-        window.App.toast('No se pudo leer el número, digitalo manualmente', 'warning');
+        // Intentar AI Vision como respaldo si hay red
+        if (navigator.onLine) await tryAIDetection();
       }
     }
 
@@ -204,6 +259,32 @@
 
     document.querySelectorAll('[data-action="open-crop"]').forEach(b =>
       b.addEventListener('click', openCropModal));
+
+    document.querySelectorAll('[data-action="retry-ai"]').forEach(b =>
+      b.addEventListener('click', async () => {
+        if (!navigator.onLine) {
+          window.App.toast('Sin conexión — IA Vision requiere internet', 'warning');
+          return;
+        }
+        b.disabled = true;
+        b.textContent = '⏳ Consultando…';
+        try {
+          await tryAIDetection();
+          // Re-render con el nuevo valor
+          document.getElementById('app').innerHTML = renderConfirmScreen();
+          bindEvents();
+          if (state.ocrResult?.source === 'ai' && state.ocrResult?.value !== null) {
+            window.App.toast(`✨ IA detectó ${state.ocrResult.value}°C`, 'success');
+          } else {
+            window.App.toast('No se pudo leer la foto, digita manualmente', 'warning');
+          }
+        } catch (e) {
+          window.App.toast('Error: ' + (e.message || 'IA falló'), 'error');
+          b.disabled = false;
+          b.textContent = '✨ Detectar con IA';
+        }
+      })
+    );
   }
 
   // ============== CROP MANUAL ==============

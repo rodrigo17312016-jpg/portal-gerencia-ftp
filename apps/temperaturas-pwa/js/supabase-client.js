@@ -168,6 +168,33 @@
     return 'OK';
   }
 
+  /**
+   * Llama al Edge Function 'detect-temperatura' (Gemini Vision AI) para
+   * detectar la temperatura de una foto. Es el fallback cuando OCR local falla.
+   * Devuelve { ok, value, confidence, raw, elapsed_ms, provider } o { ok: false, error }.
+   */
+  async function detectTemperaturaAI(blob) {
+    const client = getClient();
+    if (!client) return { ok: false, error: new Error('Supabase no configurado') };
+    try {
+      // Convertir blob a base64
+      const base64 = await new Promise((resolve, reject) => {
+        const r = new FileReader();
+        r.onloadend = () => resolve((r.result || '').toString().split(',')[1] || '');
+        r.onerror = () => reject(r.error);
+        r.readAsDataURL(blob);
+      });
+      const { data, error } = await client.functions.invoke('detect-temperatura', {
+        body: { image_base64: base64, mime_type: blob.type || 'image/jpeg' }
+      });
+      if (error) return { ok: false, error };
+      if (data?.error) return { ok: false, error: new Error(data.error) };
+      return { ok: true, ...data };
+    } catch (e) {
+      return { ok: false, error: e };
+    }
+  }
+
   /** Insert directo. Devuelve {ok, data, error}. */
   async function insertRegistro(payload) {
     const client = getClient();
@@ -275,6 +302,7 @@
     insertRegistro,
     uploadFoto,
     fetchAreasActivas,
-    fetchRegistrosHoy
+    fetchRegistrosHoy,
+    detectTemperaturaAI
   };
 })();

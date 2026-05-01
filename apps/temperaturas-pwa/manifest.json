@@ -1,6 +1,6 @@
 {
   "name": "Temperaturas FTP",
-  "short_name": "Temperaturas",
+  "short_name": "Temperaturas FTP",
   "description": "Captura rápida de temperaturas con OCR para Frutos Tropicales Perú Export S.A.C",
   "start_url": "./index.html",
   "scope": "./",

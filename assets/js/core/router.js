@@ -8,7 +8,7 @@ import { getSedeActiva, isConsolidado } from './sede-context.js';
 
 // Version estatica del build - bump manualmente cuando se despliega
 // cambio a modulos. Esto permite al SW cachear correctamente.
-const BUILD_VERSION = '34';
+const BUILD_VERSION = '35';
 
 // Detectar base path (funciona en localhost Y GitHub Pages)
 function getBasePath() {
@@ -229,6 +229,29 @@ export function getCurrentPanel() {
 // Re-renderizar breadcrumb con la sede actual (lo llama app.js cuando cambia la sede)
 export function refreshBreadcrumb() {
   if (currentPanel) updateBreadcrumb(currentPanel);
+}
+
+// Recargar el panel actual desde cero (lo llama app.js cuando cambia la sede)
+// Este es el mecanismo que hace que TODOS los paneles muestren datos de la
+// nueva sede sin necesidad de modificar cada modulo individualmente.
+// Estrategia: destruir charts + llamar refresh()/onShow() del modulo activo,
+// que vuelve a hacer todas sus queries (ahora auto-filtradas por la nueva sede).
+export function reloadCurrentPanel() {
+  if (!currentPanel) return;
+  const panelEl = document.getElementById(`panel-${currentPanel}`);
+  if (!panelEl) return;
+  // Destruir charts previos para evitar memory leaks
+  try { destroyChartsIn(panelEl); } catch (_) { /* noop */ }
+  // Re-ejecutar refresh / onShow del modulo
+  const module = loadedPanels.get(currentPanel);
+  if (module && typeof module.refresh === 'function') {
+    try { module.refresh(); } catch (e) { console.warn('[router] reload refresh error:', e); }
+  } else if (module && typeof module.onShow === 'function') {
+    try { module.onShow(); } catch (e) { console.warn('[router] reload onShow error:', e); }
+  } else if (module && typeof module.init === 'function') {
+    // Modulos sin refresh/onShow: re-init
+    try { module.init(panelEl); } catch (e) { console.warn('[router] reload init error:', e); }
+  }
 }
 
 // Panel por defecto segun rol

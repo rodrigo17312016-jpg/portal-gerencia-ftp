@@ -6,7 +6,8 @@
    Vista global (ignora sede activa del selector).
    ════════════════════════════════════════════════════════ */
 
-import { supabase } from '../../assets/js/config/supabase.js';
+// Usa supabaseRaw para hacer agregación cross-sede sin que el wrapper aplique filtro
+import { supabaseRaw as supabase } from '../../assets/js/config/supabase.js';
 import { fmt, fmtSoles } from '../../assets/js/utils/formatters.js';
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 import { getSedes } from '../../assets/js/config/sedes.js';

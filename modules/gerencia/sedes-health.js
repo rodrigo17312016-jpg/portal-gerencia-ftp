@@ -5,7 +5,8 @@
    Auto-refresh cada 60s.
    ════════════════════════════════════════════════════════ */
 
-import { supabase } from '../../assets/js/config/supabase.js';
+// Health check muestra TODAS las sedes - no aplica filtro de sede activa
+import { supabaseRaw as supabase } from '../../assets/js/config/supabase.js';
 
 let refreshTimer = null;
 

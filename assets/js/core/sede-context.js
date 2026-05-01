@@ -21,6 +21,24 @@ let _initialized = false;
 // EventTarget interno para emitir eventos sin contaminar window
 const _bus = new EventTarget();
 
+// ── Hidratar globals que lee el wrapper de supabase.from() ──
+// Estas globals son leidas por makeFilteredClient en supabase.js para
+// auto-aplicar .eq('plantId', X) o .eq('sede_codigo', X) a SELECTs.
+async function syncGlobals(codigo) {
+  if (typeof window === 'undefined') return;
+  if (!codigo || codigo === 'CONSOLIDADO') {
+    window.__ftpActivePlantId = null;
+    window.__ftpActiveSedeCodigo = null;
+    return;
+  }
+  window.__ftpActiveSedeCodigo = codigo;
+  try {
+    window.__ftpActivePlantId = await getPlantIdByCodigo(codigo);
+  } catch (_) {
+    window.__ftpActivePlantId = null;
+  }
+}
+
 // ── Init ──
 export async function initSedeContext() {
   if (_initialized) return _currentSede;
@@ -45,6 +63,9 @@ export async function initSedeContext() {
   _currentCodigo = codigo;
   _currentSede = await getSedeByCodigo(codigo);
   _initialized = true;
+
+  // 4. Hidratar globals para el auto-filtro de supabase.from()
+  await syncGlobals(codigo);
 
   return _currentSede;
 }
@@ -80,6 +101,10 @@ export async function setSedeActiva(codigo) {
   try {
     localStorage.setItem(STORAGE_KEY, codigo);
   } catch (_) { /* noop */ }
+
+  // CRITICO: hidratar globals ANTES de emitir evento (los listeners
+  // hacen queries que dependen del filtro auto)
+  await syncGlobals(codigo);
 
   // BONUS 1: auditar el cambio de sede en background (no bloquea la UI).
   // Si el usuario es anon o no hay sesion, la funcion devuelve null sin error.

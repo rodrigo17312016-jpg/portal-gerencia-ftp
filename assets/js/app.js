@@ -4,7 +4,7 @@
    ════════════════════════════════════════════════════════ */
 
 import { requireAuth, getCurrentUser, setPermissions, initActivityListeners, initSessionAutoRefresh } from './core/auth.js';
-import { initRouter, showPanel, getDefaultPanel, refreshBreadcrumb } from './core/router.js';
+import { initRouter, showPanel, getDefaultPanel, refreshBreadcrumb, reloadCurrentPanel } from './core/router.js';
 import { initTheme, toggleTheme, onThemeChange } from './core/theme.js';
 import { startClock } from './core/clock.js';
 import { checkConnection } from './config/supabase.js';
@@ -46,7 +46,12 @@ async function initPortal() {
     await initSedeContext();
     const topbarRight = document.querySelector('.topbar-right');
     if (topbarRight) await mountSelectorSede(topbarRight);
-    onSedeChange(() => refreshBreadcrumb());
+    // Cuando cambia la sede: actualizar breadcrumb + recargar panel actual
+    // El reload re-ejecuta las queries (ahora auto-filtradas por la nueva sede)
+    onSedeChange(() => {
+      refreshBreadcrumb();
+      reloadCurrentPanel();
+    });
     // Bonus 3: vigilante de sedes inactivas (toast notifications)
     startSedesWatcher();
   } catch (err) {

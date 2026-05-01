@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0EA5E9" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0F172A" media="(prefers-color-scheme: dark)" />
+  <meta name="description" content="Captura rápida de temperaturas con OCR — Frutos Tropicales Perú Export S.A.C" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Temperaturas" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+  <link rel="icon" type="image/png" href="icons/icon-192.png" />
+
+  <title>Temperaturas FTP</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/tokens.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/screens.css" />
+
+  <!-- Supabase JS via CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Tesseract.js (cargado on-demand desde ocr.js) -->
+</head>
+<body>
+  <div id="app" aria-live="polite">
+    <!-- Splash inicial mientras carga JS -->
+    <div class="setup-wrap" role="status" aria-label="Cargando">
+      <div class="setup-wrap__logo">🌡️</div>
+      <h1 class="setup-wrap__title">Temperaturas</h1>
+      <p class="setup-wrap__subtitle">Cargando…</p>
+      <div class="spinner" style="margin: 0 auto;"></div>
+    </div>
+  </div>
+
+  <!-- Toast container (montado siempre) -->
+  <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- JS modules (orden importante: dependencias primero) -->
+  <script defer src="js/supabase-client.js"></script>
+  <script defer src="js/offline-queue.js"></script>
+  <script defer src="js/areas.js"></script>
+  <script defer src="js/camera.js"></script>
+  <script defer src="js/ocr.js"></script>
+  <script defer src="js/screens/setup.js"></script>
+  <script defer src="js/screens/home.js"></script>
+  <script defer src="js/screens/capture.js"></script>
+  <script defer src="js/screens/confirm.js"></script>
+  <script defer src="js/screens/success.js"></script>
+  <script defer src="js/app.js"></script>
+</body>
+</html>

@@ -92,6 +92,13 @@
     navigator.serviceWorker.register('./sw.js').catch(err => {
       console.warn('[app] SW register failed', err);
     });
+    // Mensajes desde el SW (ej: CHECK_REMINDER tras periodicsync)
+    navigator.serviceWorker.addEventListener('message', (ev) => {
+      if (!ev.data || !ev.data.type) return;
+      if (ev.data.type === 'CHECK_REMINDER' && window.RemindersService) {
+        window.RemindersService.maybeShowReminder('periodic_sync_relay');
+      }
+    });
   }
 
   // ============ INIT ============

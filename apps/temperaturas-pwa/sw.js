@@ -7,7 +7,7 @@
    - Imágenes locales: stale-while-revalidate
    ============================================================ */
 
-const SW_VERSION = 'v1';
+const SW_VERSION = 'v2';
 const APP_SHELL_CACHE = `temperaturas-shell-${SW_VERSION}`;
 const RUNTIME_CACHE   = `temperaturas-runtime-${SW_VERSION}`;
 const TESSERACT_CACHE = `temperaturas-tesseract-${SW_VERSION}`;
@@ -25,6 +25,7 @@ const APP_SHELL = [
   './js/camera.js',
   './js/ocr.js',
   './js/offline-queue.js',
+  './js/reminders.js',
   './js/screens/home.js',
   './js/screens/capture.js',
   './js/screens/confirm.js',
@@ -155,4 +156,50 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+// =========== PERIODIC BACKGROUND SYNC (recordatorios horarios) ===========
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'temperaturas-hourly-reminder') {
+    event.waitUntil(handleHourlyReminder());
+  }
+});
+
+async function handleHourlyReminder() {
+  // Si hay un client abierto, le delegamos la decisión (sabe del config + áreas)
+  const clients = await self.clients.matchAll({ includeUncontrolled: true, type: 'window' });
+  if (clients.length > 0) {
+    clients.forEach(c => c.postMessage({ type: 'CHECK_REMINDER' }));
+    return;
+  }
+  // Sin client abierto: notificación genérica
+  return self.registration.showNotification('🌡️ Recordatorio de temperaturas', {
+    body: 'Toca para registrar las temperaturas pendientes de esta hora.',
+    icon: 'icons/icon-192.png',
+    badge: 'icons/icon-192.png',
+    tag: 'hourly-reminder',
+    renotify: true,
+    requireInteraction: false,
+    data: { source: 'periodic_sync', url: self.location.origin + self.location.pathname.replace(/sw\.js$/, '') }
+  });
+}
+
+// =========== NOTIFICATION CLICK ===========
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) ||
+                    self.location.origin + self.location.pathname.replace(/sw\.js$/, '');
+  event.waitUntil((async () => {
+    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    // Reusar tab si ya está abierta
+    for (const client of clients) {
+      if (client.url.startsWith(targetUrl) && 'focus' in client) {
+        return client.focus();
+      }
+    }
+    // Abrir nueva
+    if (self.clients.openWindow) {
+      return self.clients.openWindow(targetUrl);
+    }
+  })());
 });

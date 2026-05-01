@@ -87,6 +87,20 @@
         } else {
           window.App.toast(`✓ Conectado — ${areas.length} áreas cargadas`, 'success');
         }
+        // Solicitar permiso de notificaciones en BACKGROUND (no bloquea navegación).
+        // Si el operario no responde el prompt, la app igual avanza a home.
+        if (window.RemindersService && !window.RemindersService.wasPermissionAsked()) {
+          const state = window.RemindersService.permissionState();
+          if (state === 'default') {
+            window.RemindersService.requestPermission().then(granted => {
+              if (granted === 'granted') {
+                window.App.toast('🔔 Recordatorios horarios activados', 'success');
+                window.RemindersService.registerPeriodicSync();
+                window.RemindersService.startForegroundReminder();
+              }
+            }).catch(() => {});
+          }
+        }
         window.App.navigate('home');
       } catch (e) {
         document.getElementById('app').innerHTML = render({ error: e.message });

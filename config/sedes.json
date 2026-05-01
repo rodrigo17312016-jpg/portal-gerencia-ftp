@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "default": "FTP-HUA",
+  "sedes": [
+    {
+      "codigo": "FTP-HUA",
+      "nombre": "FTP Huaura",
+      "nombreCorto": "Huaura",
+      "tipo": "propia",
+      "ubicacion": "Huaura, Lima",
+      "empresa": "Frutos Tropicales Peru Export S.A.C.",
+      "color": "#0e7c3a",
+      "icono": "🏭",
+      "activa": true,
+      "principal": true,
+      "scaleFactor": 1.0
+    },
+    {
+      "codigo": "FTP-PIU",
+      "nombre": "FTP Piura",
+      "nombreCorto": "Piura",
+      "tipo": "propia",
+      "ubicacion": "Piura",
+      "empresa": "Frutos Tropicales Peru Export S.A.C.",
+      "color": "#1e40af",
+      "icono": "🏭",
+      "activa": true,
+      "principal": false,
+      "scaleFactor": 0.72
+    },
+    {
+      "codigo": "PRC-MAQ",
+      "nombre": "PRC (Maquila)",
+      "nombreCorto": "PRC",
+      "tipo": "maquila",
+      "ubicacion": "Lima",
+      "empresa": "Procesadora PRC S.A.C. (servicio de maquila)",
+      "color": "#ea580c",
+      "icono": "🤝",
+      "activa": true,
+      "principal": false,
+      "scaleFactor": 0.41
+    }
+  ],
+  "consolidado": {
+    "codigo": "CONSOLIDADO",
+    "nombre": "Consolidado (todas las sedes)",
+    "nombreCorto": "Consolidado",
+    "tipo": "agregado",
+    "color": "#6d28d9",
+    "icono": "⚡"
+  }
+}

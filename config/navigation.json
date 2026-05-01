@@ -6,6 +6,7 @@
       "roles": ["admin"],
       "items": [
         { "id": "resumen", "label": "Resumen Ejecutivo", "icon": "\uD83D\uDCCA", "module": "gerencia/resumen" },
+        { "id": "comparativo-plantas", "label": "Comparativo Plantas", "icon": "\u26A1", "module": "gerencia/comparativo-plantas" },
         { "id": "certificaciones", "label": "Certificaciones", "icon": "\uD83D\uDCC4", "module": "gerencia/certificaciones" },
         { "id": "audit", "label": "Audit Log", "icon": "\uD83D\uDCDC", "module": "gerencia/audit" },
         { "id": "seguridad", "label": "Seguridad (2FA)", "icon": "\uD83D\uDD12", "module": "gerencia/seguridad" }

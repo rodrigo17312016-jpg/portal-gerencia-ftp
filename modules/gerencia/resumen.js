@@ -8,12 +8,15 @@ import { fmt, fmtPct, fmtSoles, today, currentTurno } from '../../assets/js/util
 import { createChart, getColors, getDefaultOptions } from '../../assets/js/utils/chart-helpers.js';
 import { subscribeToTable, createLiveIndicator } from '../../assets/js/utils/realtime-helpers.js';
 import { notifyAlert, getPermissionState } from '../../assets/js/utils/notifications.js';
+import { onSedeChange, getSedeActiva, isConsolidado } from '../../assets/js/core/sede-context.js';
+import { getScaleFactor } from '../../assets/js/utils/sede-mock-helper.js';
 
 // ── Module state ──
 let charts = [];
 let refreshTimer = null;
 let realtimeSub = null;
 let liveIndicator = null;
+let unsubscribeSede = null;
 // Tracking de notificaciones disparadas (evitar spam)
 let notifiedAlertKeys = new Set();
 
@@ -80,6 +83,20 @@ export async function init(container) {
       if (document.getElementById('panel-resumen')) loadKPIs(container);
     });
   }
+
+  // Multi-sede: recargar KPIs y charts cuando cambia la planta activa
+  if (!unsubscribeSede) {
+    unsubscribeSede = onSedeChange(() => {
+      const c = document.getElementById('panel-resumen');
+      if (!c) return;
+      // Destruir charts y recargar todo
+      charts.forEach(ch => { try { if (ch) ch.destroy(); } catch (_) {} });
+      charts = [];
+      Promise.all([loadKPIs(c), loadCharts(c)]);
+      updateSedeIndicator(c);
+    });
+  }
+  updateSedeIndicator(container);
   if (!liveIndicator) {
     const headerActions = container.querySelector('.area-header-actions') || container.querySelector('.card-header-actions') || container.querySelector('.area-header > div:last-child');
     if (headerActions) {
@@ -104,6 +121,34 @@ export function refresh() {
 export function onHide() {
   if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
   if (realtimeSub) { realtimeSub.unsubscribe(); realtimeSub = null; }
+  if (unsubscribeSede) { try { unsubscribeSede(); } catch (_) {} unsubscribeSede = null; }
+}
+
+// ── Indicador visual de sede activa en el panel ──
+function updateSedeIndicator(container) {
+  if (!container) return;
+  const sede = getSedeActiva();
+  if (!sede) return;
+
+  let badge = container.querySelector('#resumen-sede-indicator');
+  if (!badge) {
+    // Insertar el badge cerca del header del area
+    const header = container.querySelector('.area-header') || container.querySelector('.card-header');
+    if (!header) return;
+    badge = document.createElement('div');
+    badge.id = 'resumen-sede-indicator';
+    badge.className = 'resumen-sede-indicator';
+    badge.style.cssText = 'display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:0.4px;text-transform:uppercase;margin-left:12px;border:1.5px solid;';
+    header.appendChild(badge);
+  }
+
+  const color = sede.color || '#0e7c3a';
+  const consolidado = isConsolidado();
+  badge.style.background = color + '18';
+  badge.style.borderColor = color + '55';
+  badge.style.color = color;
+  badge.innerHTML = `<span aria-hidden="true">${sede.icono || '🏭'}</span>
+    <span>${consolidado ? 'Consolidado' : 'Viendo: ' + (sede.nombreCorto || sede.nombre)}</span>`;
 }
 
 // Reanudar al volver
@@ -146,12 +191,19 @@ async function loadKPIs(container) {
       .select('cajas, peso_neto_kg')
   ]);
 
+  // Factor de escala segun sede activa (Fase PoC: simulado)
+  const sedeFactor = await getScaleFactor();
+
   // --- KPI 1 & 2: Produccion hoy + Lotes activos ---
   if (prodResult.status === 'fulfilled' && prodResult.value.data) {
     const prod = prodResult.value.data;
-    const totalPT = prod.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0);
+    const totalPT = prod.reduce((s, r) => s + (r.pt_aprox_kg || 0), 0) * sedeFactor;
+    const lotes = Math.max(prod.length, 0);
+    const lotesEscalados = isConsolidado()
+      ? Math.round(lotes * sedeFactor)
+      : Math.round(lotes * sedeFactor);
     setKPI(container, 'kpi-produccion-hoy', fmt(totalPT) + ' kg');
-    setKPI(container, 'kpi-lotes-activos', String(prod.length));
+    setKPI(container, 'kpi-lotes-activos', String(lotesEscalados));
   } else {
     setKPI(container, 'kpi-produccion-hoy', '0 kg');
     setKPI(container, 'kpi-lotes-activos', '0');
@@ -160,11 +212,11 @@ async function loadKPIs(container) {
   // --- KPI 3 & 4: Registros temp + Alertas ---
   if (tempResult.status === 'fulfilled' && tempResult.value.data) {
     const temps = tempResult.value.data;
-    setKPI(container, 'kpi-registros-temp', String(temps.length));
+    setKPI(container, 'kpi-registros-temp', String(Math.round(temps.length * sedeFactor)));
     const alertasArr = temps.filter(r => (r.temperatura || -99) > TEMP_THRESHOLD);
-    setKPI(container, 'kpi-alertas-activas', String(alertasArr.length));
-    // Disparar notificacion desktop si hay alertas y no se mostro ya
-    maybeNotifyAlerts(alertasArr);
+    setKPI(container, 'kpi-alertas-activas', String(Math.round(alertasArr.length * sedeFactor)));
+    // Disparar notificacion desktop solo en sede principal (no consolidado/maquila)
+    if (!isConsolidado()) maybeNotifyAlerts(alertasArr);
   } else {
     setKPI(container, 'kpi-registros-temp', '0');
     setKPI(container, 'kpi-alertas-activas', '0');
@@ -173,7 +225,7 @@ async function loadKPIs(container) {
   // --- KPI 5: TN exportadas ---
   if (empaqueResult.status === 'fulfilled' && empaqueResult.value.data) {
     const emp = empaqueResult.value.data;
-    const totalKg = emp.reduce((s, r) => s + (r.peso_neto_kg || 0), 0);
+    const totalKg = emp.reduce((s, r) => s + (r.peso_neto_kg || 0), 0) * sedeFactor;
     const tn = totalKg / 1000;
     setKPI(container, 'kpi-tn-exportadas', fmt(tn, 1) + ' TN');
   } else {
@@ -222,11 +274,17 @@ async function loadCharts(container) {
       .order('created_at', { ascending: false })
   ]);
 
-  const prodData = prodResult.status === 'fulfilled' ? (prodResult.value.data || []) : [];
-  const empaqueData = empaqueResult.status === 'fulfilled' ? (empaqueResult.value.data || []) : [];
-  const consumosData = consumosResult.status === 'fulfilled' ? (consumosResult.value.data || []) : [];
+  const prodDataRaw = prodResult.status === 'fulfilled' ? (prodResult.value.data || []) : [];
+  const empaqueDataRaw = empaqueResult.status === 'fulfilled' ? (empaqueResult.value.data || []) : [];
+  const consumosDataRaw = consumosResult.status === 'fulfilled' ? (consumosResult.value.data || []) : [];
   const alertasData = alertasResult.status === 'fulfilled' ? (alertasResult.value.data || []) : [];
   const tempsData = tempsResult.status === 'fulfilled' ? (tempsResult.value.data || []) : [];
+
+  // Multi-sede: escalar campos numericos por factor de la planta activa (PoC mock)
+  const sedeFactor = await getScaleFactor();
+  const prodData = scaleRows(prodDataRaw, ['consumo_kg', 'pt_aprox_kg'], sedeFactor);
+  const empaqueData = scaleRows(empaqueDataRaw, ['cajas', 'peso_neto_kg'], sedeFactor);
+  const consumosData = scaleRows(consumosDataRaw, ['cantidad', 'consumo', 'costo_total', 'precio_unitario', 'stock_actual'], sedeFactor);
 
   // Render each section in try/catch so one failure doesn't break others
   try { renderSecProduccion(container, prodData); } catch (e) { console.error('Error renderSecProduccion:', e); }
@@ -765,6 +823,21 @@ function renderTblTempAreas(container, temps) {
 function setKPI(container, id, value) {
   const el = container.querySelector('#' + id);
   if (el) el.textContent = typeof value === 'number' ? String(value) : value;
+}
+
+// Multi-sede helper: escala campos numericos sin mutar el original
+function scaleRows(rows, fields, factor) {
+  if (!Array.isArray(rows) || !rows.length) return rows;
+  if (!factor || factor === 1) return rows.slice();
+  return rows.map(row => {
+    const out = { ...row };
+    fields.forEach(f => {
+      if (typeof out[f] === 'number' && isFinite(out[f])) {
+        out[f] = +(out[f] * factor).toFixed(2);
+      }
+    });
+    return out;
+  });
 }
 
 function capitalize(str) {

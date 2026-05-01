@@ -4,11 +4,13 @@
    ════════════════════════════════════════════════════════ */
 
 import { requireAuth, getCurrentUser, setPermissions, initActivityListeners, initSessionAutoRefresh } from './core/auth.js';
-import { initRouter, showPanel, getDefaultPanel } from './core/router.js';
+import { initRouter, showPanel, getDefaultPanel, refreshBreadcrumb } from './core/router.js';
 import { initTheme, toggleTheme, onThemeChange } from './core/theme.js';
 import { startClock } from './core/clock.js';
 import { checkConnection } from './config/supabase.js';
 import { updateChartsTheme } from './utils/chart-helpers.js';
+import { initSedeContext, onSedeChange } from './core/sede-context.js';
+import { mountSelectorSede } from './core/selector-sede.js';
 
 // ── Inicializacion ──
 async function initPortal() {
@@ -37,6 +39,16 @@ async function initPortal() {
 
   // 4. Actualizar UI con datos del usuario
   updateUserUI(user);
+
+  // 4.5. Init sede context + montar selector multi-planta
+  try {
+    await initSedeContext();
+    const topbarRight = document.querySelector('.topbar-right');
+    if (topbarRight) await mountSelectorSede(topbarRight);
+    onSedeChange(() => refreshBreadcrumb());
+  } catch (err) {
+    console.error('[app] Error inicializando multi-sede:', err);
+  }
 
   // 5. Inicializar subsistemas
   initTheme();

@@ -4,10 +4,11 @@
 
 import { hasAccess, getCurrentRole } from './auth.js';
 import { destroyChartsIn } from '../utils/chart-helpers.js';
+import { getSedeActiva, isConsolidado } from './sede-context.js';
 
 // Version estatica del build - bump manualmente cuando se despliega
 // cambio a modulos. Esto permite al SW cachear correctamente.
-const BUILD_VERSION = '30';
+const BUILD_VERSION = '31';
 
 // Detectar base path (funciona en localhost Y GitHub Pages)
 function getBasePath() {
@@ -183,10 +184,32 @@ function updateBreadcrumb(panelId) {
     'calendario-mant': 'Mantenimiento / Calendario',
     'lubricacion': 'Mantenimiento / Lubricacion',
     'indicadores-mant': 'Mantenimiento / Indicadores KPI',
-    'costos-mant': 'Mantenimiento / Costos'
+    'costos-mant': 'Mantenimiento / Costos',
+    'comparativo-plantas': 'General / Comparativo Plantas'
   };
 
-  breadcrumb.textContent = labels[panelId] || panelId;
+  const baseText = labels[panelId] || panelId;
+  const sede = getSedeActiva();
+  if (sede) {
+    const color = sede.color || '#0e7c3a';
+    const tag = isConsolidado() ? 'Consolidado' : (sede.nombreCorto || sede.nombre);
+    breadcrumb.innerHTML = `${escapeBreadcrumb(baseText)}
+      <span class="sede-active-badge" style="background:${color}1f;color:${color}">
+        ${escapeBreadcrumb(sede.icono || '🏭')} ${escapeBreadcrumb(tag)}
+      </span>`;
+  } else {
+    breadcrumb.textContent = baseText;
+  }
+}
+
+function escapeBreadcrumb(str) {
+  if (str == null) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // Actualizar item activo en sidebar
@@ -199,6 +222,11 @@ function updateActiveNav(panelId) {
 // Obtener panel actual
 export function getCurrentPanel() {
   return currentPanel;
+}
+
+// Re-renderizar breadcrumb con la sede actual (lo llama app.js cuando cambia la sede)
+export function refreshBreadcrumb() {
+  if (currentPanel) updateBreadcrumb(currentPanel);
 }
 
 // Panel por defecto segun rol

@@ -3,879 +3,1255 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagrama de Procesos — Frutos Tropicales Peru Export S.A.C.</title>
+<title>Diagrama de Procesos — Producción y Calidad — Frutos Tropicales Peru Export S.A.C.</title>
 <link rel="icon" href="../assets/images/logo.png" type="image/png">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-body{
-  font-family:'Plus Jakarta Sans','Inter',sans-serif;
-  background:#f8fafc;color:#0f172a;line-height:1.6;
-  -webkit-font-smoothing:antialiased;
+:root{
+  --bg:#fafbfc;
+  --surface:#fff;
+  --ink-1:#0a1628;
+  --ink-2:#1e293b;
+  --ink-3:#475569;
+  --ink-4:#94a3b8;
+  --line:#e5e9ef;
+  --line-soft:#f1f5f9;
+  --brand:#0d4d2c;
+  --brand-2:#15803d;
+  --brand-3:#16a34a;
+  --gold:#b8860b;
+  --gold-light:#d4af37;
+  --tech-blue:#1e3a8a;
+  --tech-cyan:#0e7490;
+  --warn:#b45309;
+  --danger:#991b1b;
+  --shadow-sm:0 1px 2px rgba(15,23,42,0.04), 0 1px 3px rgba(15,23,42,0.06);
+  --shadow-md:0 4px 6px -1px rgba(15,23,42,0.06), 0 10px 20px -8px rgba(15,23,42,0.1);
+  --shadow-lg:0 12px 24px -8px rgba(15,23,42,0.12), 0 24px 40px -16px rgba(15,23,42,0.14);
 }
+html,body{background:var(--bg);color:var(--ink-1);font-family:'Inter',-apple-system,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;font-feature-settings:'cv02','cv03','cv04','cv11'}
+.mono{font-family:'JetBrains Mono',monospace}
 
-/* ── Hero header ── */
-.hero{
-  background:linear-gradient(135deg,#0d3d15 0%,#1a5c25 50%,#15803d 100%);
-  color:#fff;padding:48px 32px 64px;position:relative;overflow:hidden;
+/* ── Document container ── */
+.doc{max-width:1400px;margin:0 auto;background:var(--surface);box-shadow:var(--shadow-lg);min-height:100vh}
+
+/* ── Cover / Header ── */
+.cover{
+  position:relative;padding:64px 72px 56px;color:#fff;overflow:hidden;
+  background:linear-gradient(135deg,#0a1628 0%,#0d4d2c 50%,#15803d 100%);
 }
-.hero::before{
-  content:'';position:absolute;inset:0;
+.cover::before{
+  content:'';position:absolute;inset:0;opacity:0.6;
   background:
-    radial-gradient(circle at 20% 30%,rgba(212,175,55,0.15),transparent 50%),
-    radial-gradient(circle at 80% 70%,rgba(74,222,128,0.15),transparent 50%);
+    radial-gradient(800px circle at 15% 20%,rgba(184,134,11,0.18),transparent 60%),
+    radial-gradient(600px circle at 85% 80%,rgba(22,163,74,0.2),transparent 60%);
 }
-.hero-inner{max-width:1400px;margin:0 auto;position:relative;display:flex;align-items:center;gap:28px;flex-wrap:wrap}
-.hero-logo{
-  width:80px;height:80px;border-radius:18px;
-  background:rgba(255,255,255,0.95);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 8px 30px rgba(0,0,0,0.3);flex-shrink:0;padding:8px;
+.cover::after{
+  content:'';position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.04) 1px,transparent 1px);
+  background-size:24px 24px;
+  mask-image:linear-gradient(to bottom right,#000 30%,transparent 80%);
 }
-.hero-logo img{max-width:100%;height:auto}
-.hero-text h1{
-  font-family:'Playfair Display',serif;
-  font-size:clamp(28px,3.5vw,42px);font-weight:900;line-height:1.1;
+.cover-inner{position:relative;z-index:2}
+.cover-meta{
+  display:flex;align-items:center;gap:14px;font-size:11px;
+  letter-spacing:2px;text-transform:uppercase;font-weight:700;
+  color:rgba(255,255,255,0.7);margin-bottom:24px;
+}
+.cover-meta-dot{width:6px;height:6px;border-radius:50%;background:var(--gold-light);box-shadow:0 0 10px var(--gold-light)}
+.cover-title{
+  font-family:'Playfair Display',serif;font-size:clamp(36px,4.5vw,56px);
+  font-weight:900;line-height:1.05;letter-spacing:-1.5px;margin-bottom:14px;
   background:linear-gradient(135deg,#fff 0%,#fff8dc 50%,#d4af37 100%);
   -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
-  letter-spacing:-0.5px;
 }
-.hero-text .subtitle{
-  font-size:14px;font-weight:600;letter-spacing:3px;text-transform:uppercase;
-  color:rgba(255,255,255,0.85);margin-top:6px;
-}
-.hero-meta{
-  margin-top:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:13px;
-  color:rgba(255,255,255,0.75);font-weight:500;
-}
-.hero-meta span{
-  display:inline-flex;align-items:center;gap:6px;
-  padding:4px 12px;border-radius:30px;
-  background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);
-}
+.cover-sub{font-size:18px;font-weight:500;color:rgba(255,255,255,0.85);max-width:680px;line-height:1.5}
 
-/* ── Print button ── */
-.print-btn{
-  position:fixed;top:20px;right:20px;z-index:100;
-  background:linear-gradient(135deg,#16a34a,#15803d);color:#fff;
-  border:none;border-radius:30px;padding:10px 20px;
-  font-size:13px;font-weight:700;cursor:pointer;
-  box-shadow:0 8px 25px rgba(22,163,74,0.4);
-  display:flex;align-items:center;gap:6px;
-  font-family:inherit;letter-spacing:0.3px;
+.cover-info{
+  margin-top:36px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:1px;background:rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;
+  border:1px solid rgba(255,255,255,0.15);max-width:780px;
 }
-.print-btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(22,163,74,0.5)}
+.cover-info-item{
+  background:rgba(10,22,40,0.5);padding:14px 18px;backdrop-filter:blur(10px);
+}
+.cover-info-label{font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,0.55);margin-bottom:4px}
+.cover-info-val{font-size:14px;font-weight:700;color:#fff;font-family:'JetBrains Mono',monospace}
 
-/* ── Navegacion entre vistas ── */
-.tabs{
-  max-width:1400px;margin:-40px auto 0;padding:0 32px;
-  display:flex;gap:8px;flex-wrap:wrap;position:relative;z-index:5;
+.cover-logo{
+  position:absolute;top:48px;right:64px;z-index:3;
+  width:88px;height:88px;border-radius:18px;
+  background:rgba(255,255,255,0.95);
+  display:flex;align-items:center;justify-content:center;padding:10px;
+  box-shadow:0 12px 30px rgba(0,0,0,0.4);
 }
-.tab{
-  flex:1;min-width:240px;padding:18px 24px;
-  background:#fff;border:none;border-radius:14px 14px 0 0;
-  font-family:inherit;font-size:14px;font-weight:700;
-  color:#64748b;cursor:pointer;text-align:left;
-  box-shadow:0 4px 12px rgba(0,0,0,0.06);
-  transition:all 0.3s ease;border-bottom:3px solid transparent;
-  display:flex;align-items:center;gap:14px;
-}
-.tab.active{color:#15803d;border-bottom-color:#16a34a;box-shadow:0 -4px 20px rgba(22,163,74,0.1)}
-.tab:hover:not(.active){color:#0f172a;background:#f1f5f9}
-.tab-icon{
-  width:40px;height:40px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:20px;flex-shrink:0;
-}
-.tab.as-is .tab-icon{background:rgba(245,158,11,0.15);color:#b45309}
-.tab.to-be .tab-icon{background:rgba(22,163,74,0.15);color:#15803d}
-.tab.compare .tab-icon{background:rgba(59,130,246,0.15);color:#1e40af}
-.tab-text small{display:block;font-size:11px;font-weight:600;color:#94a3b8;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+.cover-logo img{max-width:100%}
 
-/* ── Container principal ── */
-.container{max-width:1400px;margin:0 auto;padding:32px;background:#fff;box-shadow:0 -4px 30px rgba(0,0,0,0.05);border-radius:0 0 14px 14px}
+/* ── Print/PDF button ── */
+.actions{
+  position:fixed;top:24px;right:24px;z-index:100;
+  display:flex;gap:8px;
+}
+.action-btn{
+  padding:10px 18px;border-radius:10px;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:12px;font-weight:700;
+  letter-spacing:0.3px;display:inline-flex;align-items:center;gap:6px;
+  transition:all 0.2s ease;box-shadow:var(--shadow-md);
+}
+.action-btn.primary{background:var(--brand-2);color:#fff}
+.action-btn.primary:hover{background:var(--brand);transform:translateY(-1px);box-shadow:var(--shadow-lg)}
+.action-btn.ghost{background:#fff;color:var(--ink-2);border:1px solid var(--line)}
+.action-btn.ghost:hover{background:var(--line-soft)}
+
+/* ── TOC Bar ── */
+.toc{
+  background:var(--surface);position:sticky;top:0;z-index:50;
+  border-bottom:1px solid var(--line);
+  display:flex;padding:0 72px;backdrop-filter:blur(20px);
+  box-shadow:0 1px 0 var(--line);
+}
+.toc-item{
+  flex:1;padding:14px 0;font-size:11px;font-weight:700;letter-spacing:1px;
+  text-transform:uppercase;color:var(--ink-3);cursor:pointer;
+  border-bottom:2px solid transparent;text-align:center;
+  transition:all 0.2s ease;background:transparent;border-left:none;border-right:none;border-top:none;
+  font-family:'Inter',sans-serif;
+}
+.toc-item.active{color:var(--brand-2);border-bottom-color:var(--brand-3)}
+.toc-item:hover{color:var(--ink-1)}
+.toc-item-num{
+  font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:500;
+  color:var(--ink-4);margin-right:8px;
+}
+.toc-item.active .toc-item-num{color:var(--brand-3)}
+
+/* ── Content ── */
+.content{padding:48px 72px}
 .view{display:none}
 .view.active{display:block}
 
-/* ── Section title ── */
-.section{margin-bottom:48px}
-.section-head{margin-bottom:24px;border-left:4px solid #16a34a;padding-left:16px}
-.section-head h2{
-  font-family:'Playfair Display',serif;
-  font-size:28px;font-weight:900;color:#0f172a;letter-spacing:-0.5px;
-}
-.section-head .desc{font-size:14px;color:#64748b;margin-top:6px;font-weight:500}
-
-/* ── Cards ── */
-.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:20px 0}
-.card{
-  background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:20px;
-  position:relative;transition:all 0.3s ease;
-}
-.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.08);border-color:#16a34a}
-.card-icon{
-  width:48px;height:48px;border-radius:12px;
+/* ── Section ── */
+.sec{margin-bottom:56px;page-break-inside:avoid}
+.sec-head{display:flex;align-items:flex-start;gap:18px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.sec-num{
+  flex-shrink:0;width:48px;height:48px;border-radius:10px;
+  background:linear-gradient(135deg,var(--brand-2),var(--brand));color:#fff;
   display:flex;align-items:center;justify-content:center;
-  font-size:22px;margin-bottom:12px;
+  font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;
+  box-shadow:var(--shadow-md);
 }
-.card-title{font-size:15px;font-weight:800;color:#0f172a;margin-bottom:4px}
-.card-desc{font-size:12px;color:#64748b;line-height:1.5}
-.card-status{
-  position:absolute;top:14px;right:14px;
-  font-size:9px;font-weight:800;padding:3px 9px;
-  border-radius:20px;letter-spacing:0.6px;text-transform:uppercase;
-}
-.s-ok{background:#dcfce7;color:#15803d}
-.s-partial{background:#fef3c7;color:#b45309}
-.s-pending{background:#fee2e2;color:#991b1b}
-.s-future{background:#dbeafe;color:#1e40af}
-
-/* Iconos colores */
-.ic-orange{background:rgba(249,115,22,0.12);color:#c2410c}
-.ic-green{background:rgba(22,163,74,0.12);color:#15803d}
-.ic-blue{background:rgba(59,130,246,0.12);color:#1e40af}
-.ic-purple{background:rgba(168,85,247,0.12);color:#7e22ce}
-.ic-amber{background:rgba(245,158,11,0.12);color:#b45309}
-.ic-rose{background:rgba(244,63,94,0.12);color:#be123c}
-.ic-cyan{background:rgba(6,182,212,0.12);color:#0e7490}
-
-/* ── Mermaid wrapper ── */
-.diagram-box{
-  background:#fff;border:1px solid #e2e8f0;border-radius:16px;
-  padding:32px;margin:24px 0;overflow:auto;
-  box-shadow:inset 0 0 0 1px rgba(0,0,0,0.02);
-}
-.diagram-box .mermaid{
-  display:flex;justify-content:center;min-height:200px;
+.sec-head-text{flex:1}
+.sec-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:800;letter-spacing:-0.5px;color:var(--ink-1);line-height:1.2}
+.sec-desc{margin-top:6px;font-size:14px;color:var(--ink-3);line-height:1.6;max-width:780px}
+.sec-tag{
+  margin-left:auto;font-size:10px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;
+  background:var(--line-soft);color:var(--ink-3);padding:4px 12px;border-radius:30px;
+  border:1px solid var(--line);align-self:center;
 }
 
-/* ── Tabla comparativa ── */
-.compare-table{
-  width:100%;border-collapse:collapse;background:#fff;
-  border-radius:14px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.04);
-  margin:20px 0;font-size:13px;
+/* ── Diagram box ── */
+.diagram{
+  background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:48px;position:relative;overflow:auto;
+  background-image:
+    radial-gradient(circle at 1px 1px,rgba(15,23,42,0.05) 1px,transparent 0);
+  background-size:20px 20px;
 }
-.compare-table th{
-  background:#0f172a;color:#fff;text-align:left;
-  padding:14px 18px;font-size:12px;font-weight:700;
-  text-transform:uppercase;letter-spacing:0.6px;
+.diagram-label{
+  position:absolute;top:16px;left:20px;font-size:10px;font-weight:700;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-4);
+  font-family:'JetBrains Mono',monospace;
 }
-.compare-table th:first-child{background:#1e293b}
-.compare-table td{padding:14px 18px;border-bottom:1px solid #e2e8f0;vertical-align:top}
-.compare-table tr:last-child td{border-bottom:none}
-.compare-table tr:hover{background:#f8fafc}
-.compare-table .yes{color:#15803d;font-weight:700}
-.compare-table .no{color:#dc2626;font-weight:700}
-.compare-table .partial{color:#b45309;font-weight:700}
+.diagram .mermaid{display:flex;justify-content:center;min-height:280px;font-family:'Inter',sans-serif !important}
+.diagram .mermaid svg{max-width:100%;height:auto}
 
-/* ── Roadmap timeline ── */
-.timeline{position:relative;padding:20px 0}
-.timeline::before{
-  content:'';position:absolute;left:30px;top:30px;bottom:30px;width:3px;
-  background:linear-gradient(to bottom,#16a34a,#3b82f6,#7e22ce);border-radius:3px;
+/* ── KPI grid ── */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px}
+.kpi{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:20px;position:relative;overflow:hidden;
 }
-.timeline-item{
-  position:relative;padding-left:80px;margin-bottom:32px;
+.kpi::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--brand-2),var(--brand-3));
 }
-.timeline-dot{
-  position:absolute;left:14px;top:6px;
-  width:36px;height:36px;border-radius:50%;
-  background:#fff;border:3px solid #16a34a;
-  display:flex;align-items:center;justify-content:center;
-  font-size:14px;font-weight:900;color:#15803d;
-  box-shadow:0 4px 12px rgba(0,0,0,0.1);
-}
-.timeline-item.fase-2 .timeline-dot{border-color:#3b82f6;color:#1e40af}
-.timeline-item.fase-3 .timeline-dot{border-color:#7e22ce;color:#7e22ce}
-.timeline-item.fase-4 .timeline-dot{border-color:#dc2626;color:#991b1b}
-.timeline-content{
-  background:#fff;border:1px solid #e2e8f0;border-radius:14px;
-  padding:18px 22px;box-shadow:0 2px 12px rgba(0,0,0,0.04);
-}
-.timeline-phase{
-  font-size:11px;font-weight:800;color:#94a3b8;
-  letter-spacing:1px;text-transform:uppercase;margin-bottom:4px;
-}
-.timeline-title{font-size:17px;font-weight:800;color:#0f172a;margin-bottom:6px}
-.timeline-desc{font-size:13px;color:#64748b;line-height:1.6;margin-bottom:10px}
-.timeline-tags{display:flex;flex-wrap:wrap;gap:6px}
-.timeline-tag{
-  display:inline-block;padding:3px 10px;border-radius:30px;
-  background:#f1f5f9;color:#475569;font-size:11px;font-weight:700;
-}
+.kpi.alt::before{background:linear-gradient(90deg,var(--tech-blue),var(--tech-cyan))}
+.kpi.gold::before{background:linear-gradient(90deg,var(--gold),var(--gold-light))}
+.kpi-num{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:var(--ink-1);line-height:1;letter-spacing:-1px}
+.kpi-label{font-size:11px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:0.8px;margin-top:6px}
+.kpi-sub{font-size:11px;color:var(--ink-4);margin-top:3px}
 
-/* ── KPIs Hero ── */
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-top:20px}
-.metric{
-  background:#fff;border-radius:12px;padding:16px;
-  border:1px solid #e2e8f0;text-align:center;
+/* ── Module cards ── */
+.modules{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.mod{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:20px;position:relative;transition:all 0.2s ease;
 }
-.metric-value{font-size:28px;font-weight:900;color:#15803d;line-height:1}
-.metric-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-top:4px}
+.mod:hover{border-color:var(--brand-3);box-shadow:var(--shadow-md);transform:translateY(-1px)}
+.mod-head{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px}
+.mod-icon{
+  width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.mod-icon.prod{background:rgba(180,83,9,0.1);color:#b45309}
+.mod-icon.qual{background:rgba(30,58,138,0.1);color:#1e3a8a}
+.mod-icon.tech{background:rgba(14,116,144,0.1);color:#0e7490}
+.mod-icon.data{background:rgba(21,128,61,0.1);color:#15803d}
+.mod-title{font-size:14px;font-weight:700;color:var(--ink-1)}
+.mod-sub{font-size:11px;color:var(--ink-4);font-family:'JetBrains Mono',monospace;font-weight:500}
+.mod-body{font-size:12.5px;color:var(--ink-3);line-height:1.55}
+.mod-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.mod-tag{font-size:10px;font-weight:700;color:var(--ink-3);background:var(--line-soft);padding:3px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace}
+.mod-status{
+  position:absolute;top:14px;right:14px;width:8px;height:8px;border-radius:50%;
+  background:var(--brand-3);box-shadow:0 0 0 3px rgba(22,163,74,0.15);
+}
+.mod-status.partial{background:var(--warn);box-shadow:0 0 0 3px rgba(180,83,9,0.15)}
+.mod-status.future{background:var(--tech-blue);box-shadow:0 0 0 3px rgba(30,58,138,0.15)}
+
+/* ── Comparison Table ── */
+.tbl{
+  width:100%;border-collapse:separate;border-spacing:0;font-size:13px;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  box-shadow:var(--shadow-sm);
+}
+.tbl thead{background:var(--ink-1)}
+.tbl th{
+  color:#fff;text-align:left;padding:14px 18px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:0.8px;font-family:'Inter',sans-serif;
+}
+.tbl td{padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--line-soft)}
+.tbl .cell-mod{font-weight:700;color:var(--ink-1)}
+.cell-status{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px}
+.s-yes{color:var(--brand-2)}
+.s-no{color:var(--danger)}
+.s-mid{color:var(--warn)}
+.s-tag{
+  display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;
+  font-family:'Inter',sans-serif;
+}
+.s-tag.ok{background:rgba(22,163,74,0.1);color:var(--brand-2)}
+.s-tag.partial{background:rgba(180,83,9,0.1);color:var(--warn)}
+.s-tag.gap{background:rgba(153,27,27,0.08);color:var(--danger)}
+
+/* ── Roadmap ── */
+.roadmap{display:grid;gap:14px}
+.phase{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:22px 26px;display:grid;grid-template-columns:80px 1fr;gap:24px;
+  position:relative;
+}
+.phase::before{
+  content:'';position:absolute;left:80px;top:22px;bottom:22px;width:2px;background:var(--line);
+}
+.phase-num{
+  width:64px;height:64px;border-radius:14px;
+  background:linear-gradient(135deg,var(--brand-2),var(--brand));
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;
+  box-shadow:var(--shadow-md);
+}
+.phase.p2 .phase-num{background:linear-gradient(135deg,var(--tech-cyan),var(--tech-blue))}
+.phase.p3 .phase-num{background:linear-gradient(135deg,#7c3aed,#6d28d9)}
+.phase.p4 .phase-num{background:linear-gradient(135deg,var(--gold),#92400e)}
+.phase-content{padding-left:8px}
+.phase-meta{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--ink-4);font-weight:700;text-transform:uppercase}
+.phase-title{font-size:18px;font-weight:800;color:var(--ink-1);margin-top:4px}
+.phase-desc{margin-top:6px;font-size:13px;color:var(--ink-3);line-height:1.6;max-width:780px}
+.phase-deliverables{margin-top:12px;display:flex;flex-wrap:wrap;gap:6px}
+.phase-pill{font-size:11px;font-weight:600;padding:4px 11px;border-radius:30px;background:var(--line-soft);color:var(--ink-2)}
+
+/* ── Callout ── */
+.callout{
+  background:linear-gradient(135deg,#0a1628,#0d4d2c);color:#fff;
+  border-radius:14px;padding:32px;margin:32px 0;
+  position:relative;overflow:hidden;
+}
+.callout::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(600px circle at 80% 50%,rgba(212,175,55,0.15),transparent 60%);
+}
+.callout-inner{position:relative;display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center}
+.callout-num{
+  font-family:'JetBrains Mono',monospace;font-size:48px;font-weight:700;
+  color:var(--gold-light);line-height:1;letter-spacing:-2px;
+}
+.callout-text h4{font-size:16px;font-weight:800;margin-bottom:6px;letter-spacing:-0.3px}
+.callout-text p{font-size:13px;color:rgba(255,255,255,0.85);line-height:1.6;max-width:680px}
 
 /* ── Footer ── */
 .footer{
-  max-width:1400px;margin:32px auto;padding:24px 32px;
-  text-align:center;color:#64748b;font-size:12px;
-  border-top:1px solid #e2e8f0;
+  margin-top:48px;padding:28px 72px;background:var(--ink-1);color:rgba(255,255,255,0.7);
+  font-size:11px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:20px;align-items:center;
 }
-.footer-sig{font-weight:800;color:#15803d}
+.footer-brand{font-family:'Playfair Display',serif;font-weight:700;color:#fff;font-size:14px}
+.footer-meta{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.5px}
+.footer-meta b{color:var(--gold-light)}
 
-/* ── Print ── */
+/* ── Print rules ── */
 @media print{
-  body{background:#fff}
-  .print-btn,.tabs{display:none}
-  .view{display:block !important}
-  .container{box-shadow:none;border-radius:0;max-width:none;padding:20px}
-  .hero{padding:24px;background:#16a34a !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .section{page-break-inside:avoid}
-  .diagram-box{page-break-inside:avoid;border:1px solid #ccc}
+  html,body{background:#fff}
+  .doc{max-width:none;box-shadow:none}
+  .actions,.toc{display:none !important}
+  .view{display:block !important;page-break-before:always}
+  .view:first-of-type{page-break-before:avoid}
+  .cover{padding:48px 56px}
+  .content{padding:36px 56px}
+  .sec{page-break-inside:avoid}
+  .diagram{page-break-inside:avoid;border:1px solid #d0d4dc}
   @page{size:A4 landscape;margin:1cm}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
 }
 
-/* ── Responsive ── */
-@media(max-width:768px){
-  .hero{padding:32px 20px 48px}
-  .container{padding:20px;border-radius:0}
-  .tabs{padding:0 20px;margin-top:-30px}
-  .tab{min-width:auto;padding:14px}
-  .section-head h2{font-size:22px}
+@media(max-width:900px){
+  .cover{padding:36px 28px}
+  .content{padding:32px 24px}
+  .toc{padding:0 24px;flex-wrap:wrap}
+  .footer{padding:24px}
 }
 </style>
 </head>
 <body>
 
-<button class="print-btn" onclick="window.print()">🖨️ Imprimir / PDF</button>
+<div class="actions">
+  <button class="action-btn ghost" onclick="window.print()">⬇ Imprimir / PDF</button>
+</div>
 
-<!-- ═══════════════ HERO ═══════════════ -->
-<div class="hero">
-  <div class="hero-inner">
-    <div class="hero-logo"><img src="../assets/images/logo.png" alt="FTP" onerror="this.style.display='none'"></div>
-    <div class="hero-text">
-      <h1>Diagrama de Procesos del Sistema</h1>
-      <div class="subtitle">Frutos Tropicales Peru Export S.A.C. · Gerencia General</div>
-      <div class="hero-meta">
-        <span>📅 Abril 2026</span>
-        <span>🏢 Planta de Congelado</span>
-        <span>📊 v1.0 — Estado Actual + Vision Integral</span>
+<div class="doc">
+
+  <!-- ═══════════════ COVER ═══════════════ -->
+  <header class="cover">
+    <div class="cover-logo"><img src="../assets/images/logo.png" alt="FTP" onerror="this.style.display='none'"></div>
+    <div class="cover-inner">
+      <div class="cover-meta">
+        <span class="cover-meta-dot"></span>
+        <span>Documento Estratégico — Confidencial Gerencia</span>
+      </div>
+      <h1 class="cover-title">Sistema Operativo<br/>Producción y Calidad</h1>
+      <p class="cover-sub">Diagrama de procesos del sistema digital de planta. Estado actual del modelo operativo y visión de evolución hacia un ERP integral agroindustrial.</p>
+
+      <div class="cover-info">
+        <div class="cover-info-item">
+          <div class="cover-info-label">Empresa</div>
+          <div class="cover-info-val">FTP S.A.C.</div>
+        </div>
+        <div class="cover-info-item">
+          <div class="cover-info-label">Revisión</div>
+          <div class="cover-info-val">v1.1 — 04/2026</div>
+        </div>
+        <div class="cover-info-item">
+          <div class="cover-info-label">Alcance</div>
+          <div class="cover-info-val">Producción · Calidad</div>
+        </div>
+        <div class="cover-info-item">
+          <div class="cover-info-label">Audiencia</div>
+          <div class="cover-info-val">Gerencia General</div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+  </header>
 
-<!-- ═══════════════ TABS ═══════════════ -->
-<div class="tabs">
-  <button class="tab as-is active" onclick="showView('asis')">
-    <span class="tab-icon">🏗️</span>
-    <span class="tab-text">Estado Actual<small>Lo que ya esta funcionando</small></span>
-  </button>
-  <button class="tab to-be" onclick="showView('tobe')">
-    <span class="tab-icon">🚀</span>
-    <span class="tab-text">Vision ERP Integral<small>Donde queremos llegar</small></span>
-  </button>
-  <button class="tab compare" onclick="showView('compare')">
-    <span class="tab-icon">📊</span>
-    <span class="tab-text">Comparacion + Roadmap<small>Brecha y plan de evolucion</small></span>
-  </button>
-</div>
+  <!-- ═══════════════ TOC ═══════════════ -->
+  <nav class="toc">
+    <button class="toc-item active" onclick="showView('asis')"><span class="toc-item-num">01</span>Estado Actual</button>
+    <button class="toc-item" onclick="showView('tobe')"><span class="toc-item-num">02</span>Visión ERP Integral</button>
+    <button class="toc-item" onclick="showView('roadmap')"><span class="toc-item-num">03</span>Brecha & Roadmap</button>
+  </nav>
 
-<!-- ═══════════════ CONTAINER ═══════════════ -->
-<div class="container">
+  <main class="content">
 
-<!-- ────────────── VISTA 1: AS-IS ────────────── -->
-<div class="view active" id="view-asis">
-  <div class="section">
-    <div class="section-head">
-      <h2>Estado Actual del Sistema</h2>
-      <div class="desc">Resumen ejecutivo de los modulos digitalizados y operando hoy en planta y oficina central.</div>
+  <!-- ─────────── 01 — AS IS ─────────── -->
+  <div class="view active" id="view-asis">
+
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">01</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Indicadores del Sistema</div>
+          <p class="sec-desc">Cobertura digital actual del proceso productivo y sistema de calidad. Cifras consolidadas a abril 2026.</p>
+        </div>
+        <span class="sec-tag">Producción · Calidad</span>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi"><div class="kpi-num">14</div><div class="kpi-label">Paneles Producción</div><div class="kpi-sub">indicadores · rendimientos · costos</div></div>
+        <div class="kpi alt"><div class="kpi-num">07</div><div class="kpi-label">Paneles Calidad</div><div class="kpi-sub">temperaturas · inspecciones · lab</div></div>
+        <div class="kpi"><div class="kpi-num">05</div><div class="kpi-label">Apps Planta (PWA)</div><div class="kpi-sub">tablets offline-first</div></div>
+        <div class="kpi gold"><div class="kpi-num">10</div><div class="kpi-label">Certificaciones</div><div class="kpi-sub">vigentes en sistema</div></div>
+        <div class="kpi alt"><div class="kpi-num">08</div><div class="kpi-label">Tablas Operacionales</div><div class="kpi-sub">PostgreSQL gestionado</div></div>
+        <div class="kpi"><div class="kpi-num">100%</div><div class="kpi-label">Cobertura Digital</div><div class="kpi-sub">flujo recepción → empaque</div></div>
+      </div>
     </div>
 
-    <div class="metrics">
-      <div class="metric"><div class="metric-value">5</div><div class="metric-label">Apps Planta</div></div>
-      <div class="metric"><div class="metric-value">12</div><div class="metric-label">Modulos Mantto</div></div>
-      <div class="metric"><div class="metric-value">10</div><div class="metric-label">Certificaciones</div></div>
-      <div class="metric"><div class="metric-value">8</div><div class="metric-label">Tablas BD</div></div>
-      <div class="metric"><div class="metric-value">4</div><div class="metric-label">Roles RBAC</div></div>
-      <div class="metric"><div class="metric-value">100%</div><div class="metric-label">PWA Offline</div></div>
-    </div>
-  </div>
-
-  <!-- Diagrama AS-IS -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Flujo de Proceso Productivo</h2>
-      <div class="desc">Como fluye la materia prima desde la recepcion hasta el cliente final, con los registros digitales que ya existen en cada area.</div>
-    </div>
-    <div class="diagram-box">
-      <div class="mermaid">
+    <!-- Diagrama flujo productivo -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">02</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Flujo Productivo Digitalizado</div>
+          <p class="sec-desc">Cadena operacional desde la recepción de materia prima hasta el empaque del producto terminado, con la aplicación que registra cada etapa y la tabla de la base de datos donde se almacena el dato.</p>
+        </div>
+      </div>
+      <div class="diagram">
+        <div class="diagram-label">Fig. 01 · Pipeline operacional</div>
+        <div class="mermaid">
 flowchart LR
-    classDef proceso fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#0f172a
-    classDef registro fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#0f172a
-    classDef calidad fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#0f172a
-    classDef gerencia fill:#fce7f3,stroke:#be185d,stroke-width:2px,color:#0f172a
-    classDef bd fill:#1e293b,stroke:#16a34a,stroke-width:3px,color:#fff
+    classDef stage fill:#fff,stroke:#15803d,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef stageQ fill:#fff,stroke:#1e3a8a,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef app fill:#0a1628,stroke:#15803d,stroke-width:2px,color:#fff
+    classDef db fill:#0d4d2c,stroke:#15803d,stroke-width:3px,color:#fff
+    classDef note fill:#fafbfc,stroke:#94a3b8,stroke-width:1px,color:#475569,font-size:11px
 
-    A[fa:fa-truck Recepcion MP] --> B[fa:fa-cogs Acondicionado]
-    B --> C[fa:fa-snowflake Tuneles IQF]
-    C --> D[fa:fa-box Empaque Congelado]
-    D --> E[fa:fa-warehouse Almacen]
-    E --> F[fa:fa-ship Despacho Cliente]
+    A["RECEPCION MP"]:::stage --> B["ACONDICIONADO"]:::stage
+    B --> C["TUNELES IQF"]:::stage
+    C --> D["EMPAQUE"]:::stage
+    D --> E["ALMACEN PT"]:::stage
 
-    A -.->|"registro_produccion"| DB[(Supabase<br/>PostgreSQL)]
-    B -.->|"registro_produccion"| DB
-    C -.->|"registro_tuneles"| DB
-    D -.->|"registro_empaque_congelado"| DB
-    A -.->|"registros_temperatura"| DB
-    B -.->|"registro_personal"| DB
+    Q1["CONTROL DE TEMPERATURAS"]:::stageQ
+    Q2["INSPECCION DE CALIDAD"]:::stageQ
+    Q3["ANALISIS DE LABORATORIO"]:::stageQ
 
-    DB --> G[Dashboard<br/>Gerencia]
-    DB --> H[Indicadores<br/>Produccion]
-    DB --> I[Costos<br/>Diarios]
-    DB --> J[Audit Log<br/>BRCGS/FDA]
+    Q1 -.- A
+    Q1 -.- C
+    Q2 -.- B
+    Q2 -.- D
+    Q3 -.- D
 
-    class A,B,C,D,E,F proceso
-    class DB bd
-    class G,H,I,J gerencia
+    A --> AppP1["app·registro-produccion"]:::app
+    B --> AppP1
+    B --> AppP2["app·registro-personal"]:::app
+    C --> AppT["app·registro-tuneles"]:::app
+    D --> AppE["app·empaque-congelado"]:::app
+    Q1 --> AppQ["app·temperaturas"]:::app
+
+    AppP1 --> DB[("PostgreSQL")]:::db
+    AppP2 --> DB
+    AppT --> DB
+    AppE --> DB
+    AppQ --> DB
+
+    DB --> Dash["Dashboards Gerencia<br/>Producción · Calidad"]:::stage
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Modulos actuales -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Modulos Digitalizados</h2>
-      <div class="desc">Cada area cuenta con paneles dedicados, registros en tiempo real y dashboards ejecutivos.</div>
-    </div>
-    <div class="cards">
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-orange">🏭</div>
-        <div class="card-title">Produccion</div>
-        <div class="card-desc">14 paneles: indicadores, produccion del dia, rendimientos, costos, productividad, comparativo turnos, programa, proyecciones, almuerzos, contenedores, recepcion, acondicionado, tuneles IQF, empaque.</div>
+    <!-- Producción modules -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">03</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Módulos del Sistema de Producción</div>
+          <p class="sec-desc">Paneles operativos disponibles en el portal y aplicaciones de captura desplegadas en planta.</p>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-blue">🔬</div>
-        <div class="card-title">Calidad</div>
-        <div class="card-desc">Temperaturas, inspecciones, certificaciones (10 vigentes BRCGS/FDA/HACCP/etc.), consumo de calidad, laboratorio, costos analisis, reclamos.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-cyan">🔧</div>
-        <div class="card-title">Mantenimiento Industrial</div>
-        <div class="card-desc">12 paneles + dashboard TV wall: 37 equipos, ordenes de trabajo, preventivo, correctivo, predictivo, repuestos, tecnicos, calendario, lubricacion, KPIs (MTTR/MTBF/OEE), costos.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-amber">📦</div>
-        <div class="card-title">Almacen</div>
-        <div class="card-desc">Stock general (4 KPIs, charts donut+bar, tabla en vivo), materiales con filtros y alertas de stock critico/bajo.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-rose">👥</div>
-        <div class="card-title">Recursos Humanos</div>
-        <div class="card-desc">11 modulos: empleados, asistencia, planilla, beneficios, prestamos, liquidaciones, reportes, dashboard, configuracion.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-purple">📊</div>
-        <div class="card-title">Gerencia / BI</div>
-        <div class="card-desc">Resumen ejecutivo con KPIs financieros y operacionales, certificaciones del sistema de gestion con countdown de vigencia.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-green">📱</div>
-        <div class="card-title">Apps Planta (PWA)</div>
-        <div class="card-desc">5 apps en tablets de planta: registro produccion, registro personal, registro tuneles, empaque congelado, registro costos. Offline-first con sync manual.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-ok">Operativo</div>
-        <div class="card-icon ic-blue">🌡️</div>
-        <div class="card-title">Temperaturas</div>
-        <div class="card-desc">App standalone para registro de temperaturas de camaras. 9 areas monitoreadas en tiempo real, alertas fuera de rango.</div>
-      </div>
-    </div>
-  </div>
 
-  <!-- Arquitectura tecnica AS-IS -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Arquitectura Tecnica Actual</h2>
-      <div class="desc">Stack moderno, sin servidores propios, mantenimiento minimo.</div>
+      <div class="modules">
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">⚙</div>
+            <div><div class="mod-title">Indicadores de Producción</div><div class="mod-sub">portal · gerencia/produccion</div></div>
+          </div>
+          <div class="mod-body">KPI ejecutivos: consumo MP, PT generado, rendimiento, productividad, eficiencia por línea y turno.</div>
+          <div class="mod-tags"><span class="mod-tag">tiempo real</span><span class="mod-tag">charts</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">📊</div>
+            <div><div class="mod-title">Producción del Día</div><div class="mod-sub">portal · panel hora a hora</div></div>
+          </div>
+          <div class="mod-body">Vista granular: 24 ranuras horarias, consumo y PT por hora, supervisor responsable, observaciones.</div>
+          <div class="mod-tags"><span class="mod-tag">por turno</span><span class="mod-tag">edit inline</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">🎯</div>
+            <div><div class="mod-title">Rendimientos</div><div class="mod-sub">portal · cálculo PT/MP</div></div>
+          </div>
+          <div class="mod-body">% de aprovechamiento por fruta, comparativo turno DIA vs NOCHE, evolución semanal.</div>
+          <div class="mod-tags"><span class="mod-tag">% rendimiento</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">💰</div>
+            <div><div class="mod-title">Costos de Producción</div><div class="mod-sub">portal + app planta</div></div>
+          </div>
+          <div class="mod-body">Tarifa hora hombre, costo almuerzo, costo por kilogramo congelado, tipo de cambio del día.</div>
+          <div class="mod-tags"><span class="mod-tag">soles · USD</span><span class="mod-tag">simulación</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">⚡</div>
+            <div><div class="mod-title">Productividad</div><div class="mod-sub">portal · kg/persona</div></div>
+          </div>
+          <div class="mod-body">Producción por trabajador, comparativos entre líneas, tendencia mensual.</div>
+          <div class="mod-tags"><span class="mod-tag">benchmark</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">🔁</div>
+            <div><div class="mod-title">Comparativo Turnos</div><div class="mod-sub">portal · día vs noche</div></div>
+          </div>
+          <div class="mod-body">Análisis lado a lado de los dos turnos: volumen, eficiencia, personal, observaciones.</div>
+          <div class="mod-tags"><span class="mod-tag">side-by-side</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">📅</div>
+            <div><div class="mod-title">Programa de Producción</div><div class="mod-sub">portal · planeación</div></div>
+          </div>
+          <div class="mod-body">Calendario semanal con frutas asignadas, capacidad por línea, asignación de turnos.</div>
+          <div class="mod-tags"><span class="mod-tag">calendar</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">📈</div>
+            <div><div class="mod-title">Proyecciones</div><div class="mod-sub">portal · forecast simple</div></div>
+          </div>
+          <div class="mod-body">Estimación de producción a futuro basada en programa + rendimiento histórico.</div>
+          <div class="mod-tags"><span class="mod-tag">forecast</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status partial"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">🍱</div>
+            <div><div class="mod-title">Almuerzos</div><div class="mod-sub">portal · control comedor</div></div>
+          </div>
+          <div class="mod-body">Conteo diario de almuerzos por línea para conciliación de costos.</div>
+          <div class="mod-tags"><span class="mod-tag">en mejora</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">📦</div>
+            <div><div class="mod-title">Contenedores</div><div class="mod-sub">portal · gestión despacho</div></div>
+          </div>
+          <div class="mod-body">Seguimiento de contenedores armados, productos asignados, fecha de despacho.</div>
+          <div class="mod-tags"><span class="mod-tag">pre-logística</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">🚚</div>
+            <div><div class="mod-title">Áreas de Planta</div><div class="mod-sub">recepción · acondicionado · IQF · empaque</div></div>
+          </div>
+          <div class="mod-body">Cuatro paneles operativos por área con KPIs específicos y registros del personal asignado.</div>
+          <div class="mod-tags"><span class="mod-tag">por área</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon prod">📱</div>
+            <div><div class="mod-title">Apps de Captura (PWA)</div><div class="mod-sub">tablets de planta · offline-first</div></div>
+          </div>
+          <div class="mod-body">Cinco aplicaciones instalables: registro-producción, registro-personal, registro-túneles, empaque-congelado, registro-costos.</div>
+          <div class="mod-tags"><span class="mod-tag">offline</span><span class="mod-tag">sync manual</span></div>
+        </div>
+      </div>
     </div>
-    <div class="diagram-box">
-      <div class="mermaid">
+
+    <!-- Calidad modules -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">04</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Módulos del Sistema de Calidad</div>
+          <p class="sec-desc">Cobertura del aseguramiento de calidad alineado con las certificaciones vigentes de la empresa.</p>
+        </div>
+      </div>
+
+      <div class="modules">
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon qual">🌡</div>
+            <div><div class="mod-title">Control de Temperaturas</div><div class="mod-sub">portal + app standalone</div></div>
+          </div>
+          <div class="mod-body">Monitoreo en tiempo real de 9 áreas críticas (cámaras, túneles, antesalas). Alertas cuando hay valores fuera de rango.</div>
+          <div class="mod-tags"><span class="mod-tag">9 áreas</span><span class="mod-tag">tiempo real</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon qual">🔍</div>
+            <div><div class="mod-title">Inspecciones</div><div class="mod-sub">portal · QA en línea</div></div>
+          </div>
+          <div class="mod-body">Registro de inspecciones por inspector, KPIs de aprobación, identificación de hallazgos por etapa.</div>
+          <div class="mod-tags"><span class="mod-tag">por inspector</span><span class="mod-tag">export CSV</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon qual">🧪</div>
+            <div><div class="mod-title">Laboratorio</div><div class="mod-sub">portal · análisis</div></div>
+          </div>
+          <div class="mod-body">Resultados de análisis fisicoquímico y microbiológico. Histórico por lote, alertas en parámetros fuera de spec.</div>
+          <div class="mod-tags"><span class="mod-tag">parámetros</span><span class="mod-tag">por lote</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon qual">💧</div>
+            <div><div class="mod-title">Consumo Calidad</div><div class="mod-sub">portal · insumos QA</div></div>
+          </div>
+          <div class="mod-body">Tracking de consumo de insumos del laboratorio (reactivos, materiales, equipos calibrados).</div>
+          <div class="mod-tags"><span class="mod-tag">insumos</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon qual">📋</div>
+            <div><div class="mod-title">Costos de Análisis</div><div class="mod-sub">portal · tercerizados</div></div>
+          </div>
+          <div class="mod-body">Control de costos de análisis externos (microbiología contratada), proveedores y vencimientos.</div>
+          <div class="mod-tags"><span class="mod-tag">cost control</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon qual">🚨</div>
+            <div><div class="mod-title">Reclamos</div><div class="mod-sub">portal · gestión NC</div></div>
+          </div>
+          <div class="mod-body">Registro y seguimiento de reclamos de cliente, análisis causa raíz, acciones correctivas, evidencia.</div>
+          <div class="mod-tags"><span class="mod-tag">8D · CAPA</span></div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status"></span>
+          <div class="mod-head">
+            <div class="mod-icon qual">🏅</div>
+            <div><div class="mod-title">Certificaciones</div><div class="mod-sub">portal · gerencia</div></div>
+          </div>
+          <div class="mod-body">10 certificaciones del sistema de gestión con countdown de vigencia y alertas de vencimiento.</div>
+          <div class="mod-tags"><span class="mod-tag">10 vigentes</span><span class="mod-tag">countdown</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Arquitectura tecnológica -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">05</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Arquitectura Tecnológica</div>
+          <p class="sec-desc">Stack moderno serverless con base de datos gestionada y aplicaciones distribuidas que operan offline-first.</p>
+        </div>
+      </div>
+      <div class="diagram">
+        <div class="diagram-label">Fig. 02 · Arquitectura del sistema</div>
+        <div class="mermaid">
 flowchart TB
-    classDef cliente fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#0f172a
-    classDef host fill:#fce7f3,stroke:#be185d,stroke-width:2px,color:#0f172a
-    classDef back fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#0f172a
-    classDef sec fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#0f172a
+    classDef layer fill:#fafbfc,stroke:#94a3b8,stroke-width:1px,color:#475569,font-size:11px,font-weight:600
+    classDef ui fill:#fff,stroke:#1e3a8a,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef edge fill:#fff,stroke:#0e7490,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef api fill:#0a1628,stroke:#15803d,stroke-width:2px,color:#fff,font-weight:600
+    classDef db fill:#0d4d2c,stroke:#16a34a,stroke-width:3px,color:#fff,font-weight:700
 
-    subgraph CLIENTES[" "]
+    subgraph CAPA1["CAPA DE PRESENTACION"]
       direction LR
-      C1[Tablet Planta<br/>Apps PWA]
-      C2[PC Oficina<br/>Portal Gerencia]
-      C3[Telefono<br/>Inspectores]
-      C4[Pantalla TV<br/>Dashboard]
+      U1["Portal Web<br/>Gerencia"]:::ui
+      U2["Apps Planta<br/>PWA · Tablets"]:::ui
+      U3["Dashboards<br/>TV Wall"]:::ui
     end
 
-    subgraph HOSTING["Hosting Publico"]
+    subgraph CAPA2["CAPA DE DISTRIBUCION"]
       direction LR
-      H1[GitHub Pages<br/>Portal Web]
-      H2[GitHub Pages<br/>Apps Planta]
-      H3[GitHub Pages<br/>Dashboards]
+      E1["GitHub Pages<br/>CDN Global"]:::edge
+      E2["Service Worker<br/>Offline Cache"]:::edge
     end
 
-    subgraph BACKEND["Backend Supabase"]
+    subgraph CAPA3["CAPA DE APLICACION"]
       direction LR
-      B1[(PostgreSQL<br/>17 tablas)]
-      B2[Supabase Auth<br/>JWT + 2FA]
-      B3[Audit Log<br/>BRCGS/FDA]
-      B4[Storage<br/>Imagenes]
+      A1["Supabase Auth<br/>JWT · MFA"]:::api
+      A2["RLS Policies<br/>Por Rol"]:::api
+      A3["Realtime API<br/>Subscriptions"]:::api
     end
 
-    subgraph SEGURIDAD["Capas Seguridad"]
+    subgraph CAPA4["CAPA DE DATOS"]
       direction LR
-      S1[RLS por rol]
-      S2[Rate Limit]
-      S3[Password Policy]
-      S4[Append-only Logs]
+      D1[("PostgreSQL<br/>Operacional")]:::db
+      D2[("Storage<br/>Imágenes · PDFs")]:::db
     end
 
-    CLIENTES --> HOSTING
-    HOSTING --> BACKEND
-    BACKEND --> SEGURIDAD
+    CAPA1 --> CAPA2
+    CAPA2 --> CAPA3
+    CAPA3 --> CAPA4
 
-    class C1,C2,C3,C4 cliente
-    class H1,H2,H3 host
-    class B1,B2,B3,B4 back
-    class S1,S2,S3,S4 sec
+    class CAPA1,CAPA2,CAPA3,CAPA4 layer
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-inner">
+          <div class="callout-num">99.9%</div>
+          <div class="callout-text">
+            <h4>Disponibilidad de servicio</h4>
+            <p>Infraestructura sin servidores propios: GitHub Pages para hosting estático, Supabase como backend gestionado, sin mantenimiento de hardware ni gastos operativos de infraestructura.</p>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- ────────────── VISTA 2: TO-BE (ERP) ────────────── -->
-<div class="view" id="view-tobe">
-  <div class="section">
-    <div class="section-head">
-      <h2>Vision: Sistema ERP Integral FTP</h2>
-      <div class="desc">A donde apuntamos: un ecosistema unificado que cubra todo el ciclo de negocio, desde la compra de materia prima hasta la facturacion electronica al cliente final, con trazabilidad total y cumplimiento normativo.</div>
+  </div><!-- /view-asis -->
+
+  <!-- ─────────── 02 — TO BE ─────────── -->
+  <div class="view" id="view-tobe">
+
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">01</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Visión: ERP Integral Agroindustrial</div>
+          <p class="sec-desc">Hacia un sistema operativo unificado que conecta el sistema productivo y de calidad existente con módulos comerciales, financieros y de inteligencia artificial. Cobertura end-to-end del negocio exportador.</p>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi alt"><div class="kpi-num">12</div><div class="kpi-label">Módulos ERP</div><div class="kpi-sub">cubrimiento integral</div></div>
+        <div class="kpi alt"><div class="kpi-num">100%</div><div class="kpi-label">Trazabilidad</div><div class="kpi-sub">campo → cliente</div></div>
+        <div class="kpi alt"><div class="kpi-num">SUNAT</div><div class="kpi-label">Facturación E.</div><div class="kpi-sub">integración nativa</div></div>
+        <div class="kpi alt"><div class="kpi-num">CRM</div><div class="kpi-label">Comercial</div><div class="kpi-sub">pipeline · contratos</div></div>
+        <div class="kpi alt"><div class="kpi-num">IA</div><div class="kpi-label">Predictivo</div><div class="kpi-sub">forecasting · anomalías</div></div>
+        <div class="kpi alt"><div class="kpi-num">B2B</div><div class="kpi-label">Portal Cliente</div><div class="kpi-sub">self-service</div></div>
+      </div>
     </div>
 
-    <div class="metrics">
-      <div class="metric"><div class="metric-value" style="color:#1e40af">12</div><div class="metric-label">Modulos ERP</div></div>
-      <div class="metric"><div class="metric-value" style="color:#1e40af">100%</div><div class="metric-label">Trazabilidad</div></div>
-      <div class="metric"><div class="metric-value" style="color:#1e40af">SUNAT</div><div class="metric-label">FE Integrada</div></div>
-      <div class="metric"><div class="metric-value" style="color:#1e40af">CRM</div><div class="metric-label">Comercial</div></div>
-      <div class="metric"><div class="metric-value" style="color:#1e40af">IA</div><div class="metric-label">Predictivo</div></div>
-      <div class="metric"><div class="metric-value" style="color:#1e40af">24/7</div><div class="metric-label">Disponibilidad</div></div>
-    </div>
-  </div>
-
-  <!-- Diagrama TO-BE -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Cadena de Valor Integrada</h2>
-      <div class="desc">Flujo end-to-end con cada eslabon digitalizado y conectado al core del ERP.</div>
-    </div>
-    <div class="diagram-box">
-      <div class="mermaid">
+    <!-- Diagrama cadena valor -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">02</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Cadena de Valor Integrada</div>
+          <p class="sec-desc">Vinculación de la operación de producción y calidad con el ciclo comercial completo: pronóstico → compras → producción → ventas → cobranza, todo orquestado por un núcleo ERP único.</p>
+        </div>
+      </div>
+      <div class="diagram">
+        <div class="diagram-label">Fig. 03 · Cadena de valor objetivo</div>
+        <div class="mermaid">
 flowchart LR
-    classDef pre fill:#fce7f3,stroke:#be185d,stroke-width:2px,color:#0f172a
-    classDef ops fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#0f172a
-    classDef post fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#0f172a
-    classDef core fill:#1e293b,stroke:#3b82f6,stroke-width:4px,color:#fff
-    classDef new fill:#dbeafe,stroke:#1e40af,stroke-width:3px,color:#0f172a
+    classDef pre fill:#fff,stroke:#7c3aed,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef ops fill:#fff,stroke:#15803d,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef post fill:#fff,stroke:#1e3a8a,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef new fill:#fef3c7,stroke:#b8860b,stroke-width:2px,color:#0a1628,font-weight:600
+    classDef core fill:#0a1628,stroke:#d4af37,stroke-width:3px,color:#fff,font-weight:700
 
-    subgraph PRE[" PRE-PRODUCCION "]
-      direction LR
-      P1[CRM<br/>Clientes]:::new
-      P2[Pronostico<br/>Demanda]:::new
-      P3[Compras MP<br/>Proveedores]:::new
-      P4[Programa<br/>Produccion]:::ops
+    subgraph PRE["PRE — PRODUCCION"]
+      direction TB
+      P1["CRM<br/>Comercial"]:::new
+      P2["Pronostico<br/>Demanda"]:::new
+      P3["Compras MP<br/>Proveedores"]:::new
+      P4["Programa<br/>Produccion"]:::ops
     end
 
-    subgraph OPS[" OPERACIONES PLANTA "]
-      direction LR
-      O1[Recepcion MP]:::ops
-      O2[Acondicionado]:::ops
-      O3[Tuneles IQF]:::ops
-      O4[Empaque]:::ops
-      O5[Calidad QA/QC]:::ops
-      O6[Mantenimiento]:::ops
+    subgraph OPS["OPERACION — CORE ACTUAL"]
+      direction TB
+      O1["Recepcion MP<br/>Acondicionado"]:::ops
+      O2["Tuneles IQF<br/>Empaque"]:::ops
+      O3["Sistema<br/>Calidad QA"]:::ops
     end
 
-    subgraph POST[" POST-PRODUCCION "]
-      direction LR
-      PS1[Almacen PT]:::post
-      PS2[Trazabilidad<br/>Lotes]:::new
-      PS3[Despacho]:::post
-      PS4[Facturacion<br/>SUNAT]:::new
-      PS5[Cobranza]:::new
+    subgraph POST["POST — PRODUCCION"]
+      direction TB
+      PS1["Almacen PT<br/>Trazabilidad QR"]:::new
+      PS2["Logistica<br/>Exportacion"]:::new
+      PS3["Facturacion<br/>SUNAT"]:::new
+      PS4["Tesoreria<br/>Cobranza"]:::new
     end
 
-    ERP[(SISTEMA ERP<br/>FTP Core)]:::core
+    ERP[["NUCLEO ERP<br/>FTP"]]:::core
 
     PRE --> OPS --> POST
-    PRE -.-> ERP
-    OPS -.-> ERP
-    POST -.-> ERP
-    ERP -.-> CONT[Contabilidad<br/>Tesoreria]:::new
-    ERP -.-> RRHH[RRHH<br/>Planilla]:::post
-    ERP -.-> BI[Inteligencia<br/>de Negocio]:::new
-      </div>
-    </div>
-  </div>
+    PRE -.- ERP
+    OPS -.- ERP
+    POST -.- ERP
 
-  <!-- Modulos a implementar -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Modulos Nuevos a Implementar</h2>
-      <div class="desc">Cobertura faltante para cerrar el ciclo de un ERP completo de empresa exportadora.</div>
-    </div>
-    <div class="cards">
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-blue">🤝</div>
-        <div class="card-title">CRM Comercial</div>
-        <div class="card-desc">Pipeline de clientes, oportunidades, cotizaciones, contratos, historial de pedidos. Integracion con email/WhatsApp.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-purple">📦</div>
-        <div class="card-title">Compras / Proveedores</div>
-        <div class="card-desc">Cotizaciones de proveedores, ordenes de compra, recepcion vs OC, pago a proveedores, evaluacion proveedores.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-green">📈</div>
-        <div class="card-title">Pronostico / S&OP</div>
-        <div class="card-desc">Forecasting de demanda con ML, planeacion ventas-operaciones, simulaciones de capacidad y break-even.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-amber">🧾</div>
-        <div class="card-title">Facturacion Electronica SUNAT</div>
-        <div class="card-desc">Emision automatica de boletas, facturas, notas de credito/debito firmadas y enviadas a SUNAT en tiempo real.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-rose">💰</div>
-        <div class="card-title">Tesoreria / Cobranza</div>
-        <div class="card-desc">Cuentas por cobrar y por pagar, conciliacion bancaria automatica, flujo de caja proyectado.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-cyan">📑</div>
-        <div class="card-title">Contabilidad General</div>
-        <div class="card-desc">Plan contable peruano (PCGE), asientos automaticos desde operaciones, balances, EE.FF., declaraciones tributarias.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-blue">🔍</div>
-        <div class="card-title">Trazabilidad Total</div>
-        <div class="card-desc">QR/lote desde fundo de origen hasta caja en cliente. Cumplimiento FSMA, BRCGS Issue 9 clausula 3.9, recall en minutos.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-orange">🚢</div>
-        <div class="card-title">Logistica Exportacion</div>
-        <div class="card-desc">Booking navieras, gestion contenedores, documentacion (BL, certificados de origen, fitosanitario), tracking embarques.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-purple">🤖</div>
-        <div class="card-title">IA / Predictivo</div>
-        <div class="card-desc">Prediccion de rendimiento por lote MP, deteccion anomalias temperatura, optimizacion programa con OR-Tools.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-green">📱</div>
-        <div class="card-title">App Movil Nativa</div>
-        <div class="card-desc">App en Play Store / App Store via TWA o Capacitor. Push notifications, biometria, modo offline robusto.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-amber">🌐</div>
-        <div class="card-title">Portal Cliente B2B</div>
-        <div class="card-desc">Clientes consultan estado de pedidos, certificados de calidad por lote, descargan facturas, hacen pedidos online.</div>
-      </div>
-      <div class="card">
-        <div class="card-status s-future">Por construir</div>
-        <div class="card-icon ic-rose">🔐</div>
-        <div class="card-title">Compliance Hub</div>
-        <div class="card-desc">Centralizacion de auditorias BRCGS/FDA/HACCP, gestion no conformidades, capacitacion al personal, evidencias.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Arquitectura ERP -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Arquitectura ERP Objetivo</h2>
-      <div class="desc">Sistema modular con APIs internas, eventos en tiempo real y separacion de responsabilidades.</div>
-    </div>
-    <div class="diagram-box">
-      <div class="mermaid">
-flowchart TB
-    classDef ui fill:#fce7f3,stroke:#be185d,stroke-width:2px,color:#0f172a
-    classDef api fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#0f172a
-    classDef core fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#0f172a
-    classDef data fill:#1e293b,stroke:#16a34a,stroke-width:3px,color:#fff
-    classDef ext fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#0f172a
-
-    subgraph UX[" CAPA PRESENTACION "]
-      U1[Portal Web<br/>Gerencia]:::ui
-      U2[App Movil<br/>Operadores]:::ui
-      U3[Portal Cliente<br/>B2B]:::ui
-      U4[Dashboards<br/>TV Wall]:::ui
-    end
-
-    subgraph API[" CAPA APLICACION "]
-      A1[Edge Functions<br/>Logica Negocio]:::api
-      A2[Realtime<br/>Subscriptions]:::api
-      A3[REST/GraphQL<br/>API]:::api
-      A4[Workflows<br/>Automatizacion]:::api
-    end
-
-    subgraph CORE[" MODULOS NEGOCIO "]
-      M1[Produccion]:::core
-      M2[Calidad]:::core
-      M3[Mantenimiento]:::core
-      M4[Almacen]:::core
-      M5[RRHH]:::core
-      M6[CRM]:::core
-      M7[Compras]:::core
-      M8[Ventas]:::core
-      M9[Contabilidad]:::core
-      M10[Tesoreria]:::core
-      M11[Logistica]:::core
-      M12[Compliance]:::core
-    end
-
-    subgraph DATA[" CAPA DATOS "]
-      D1[(PostgreSQL<br/>Operacional)]:::data
-      D2[(Data Warehouse<br/>Analitica)]:::data
-      D3[Storage<br/>S3-compatible]:::data
-      D4[Audit Log<br/>Append-only]:::data
-    end
-
-    subgraph EXT[" INTEGRACIONES "]
-      E1[SUNAT<br/>Facturacion]:::ext
-      E2[Bancos<br/>API]:::ext
-      E3[Navieras<br/>Tracking]:::ext
-      E4[Email/SMS/<br/>WhatsApp]:::ext
-      E5[Sensores IoT<br/>Camaras]:::ext
-    end
-
-    UX --> API
-    API --> CORE
-    CORE --> DATA
-    CORE --> EXT
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ────────────── VISTA 3: COMPARACION + ROADMAP ────────────── -->
-<div class="view" id="view-compare">
-  <div class="section">
-    <div class="section-head">
-      <h2>Brecha entre Estado Actual y Vision ERP</h2>
-      <div class="desc">Cuantificacion del avance: cuanto ya tenemos vs cuanto falta para alcanzar el ERP integral.</div>
-    </div>
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th>Modulo / Capacidad</th>
-          <th>Estado Actual</th>
-          <th>Estado Objetivo</th>
-          <th>Gap</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td><b>Produccion</b></td><td class="yes">✓ Completo</td><td class="yes">✓ Mantener</td><td>—</td></tr>
-        <tr><td><b>Calidad</b></td><td class="yes">✓ Completo</td><td class="yes">✓ Integrar Compliance Hub</td><td>20%</td></tr>
-        <tr><td><b>Mantenimiento</b></td><td class="yes">✓ Completo (mock)</td><td class="yes">✓ Cablear Supabase real</td><td>30%</td></tr>
-        <tr><td><b>Almacen / Inventario</b></td><td class="partial">~ Stock basico</td><td class="yes">✓ WMS completo + lotes</td><td>50%</td></tr>
-        <tr><td><b>RRHH / Planilla</b></td><td class="yes">✓ Modulos UI listos</td><td class="yes">✓ Cablear Supabase + planilla</td><td>40%</td></tr>
-        <tr><td><b>CRM / Comercial</b></td><td class="no">✗ No existe</td><td class="yes">✓ Pipeline + cotizaciones</td><td>100%</td></tr>
-        <tr><td><b>Compras / Proveedores</b></td><td class="no">✗ No existe</td><td class="yes">✓ OC + recepcion + pago</td><td>100%</td></tr>
-        <tr><td><b>Pronostico / S&OP</b></td><td class="no">✗ No existe</td><td class="yes">✓ Forecasting con ML</td><td>100%</td></tr>
-        <tr><td><b>Facturacion SUNAT</b></td><td class="no">✗ No existe</td><td class="yes">✓ FE integrada</td><td>100%</td></tr>
-        <tr><td><b>Tesoreria / Cobranza</b></td><td class="no">✗ No existe</td><td class="yes">✓ AR/AP + cash flow</td><td>100%</td></tr>
-        <tr><td><b>Contabilidad General</b></td><td class="no">✗ No existe</td><td class="yes">✓ PCGE + EE.FF.</td><td>100%</td></tr>
-        <tr><td><b>Trazabilidad Lotes</b></td><td class="partial">~ Parcial (registros)</td><td class="yes">✓ End-to-end con QR</td><td>60%</td></tr>
-        <tr><td><b>Logistica Exportacion</b></td><td class="no">✗ No existe</td><td class="yes">✓ Booking + docs + tracking</td><td>100%</td></tr>
-        <tr><td><b>App Movil (Play Store)</b></td><td class="partial">~ PWA instalable</td><td class="yes">✓ TWA en stores</td><td>40%</td></tr>
-        <tr><td><b>Portal Cliente B2B</b></td><td class="no">✗ No existe</td><td class="yes">✓ Self-service</td><td>100%</td></tr>
-        <tr><td><b>Compliance Hub</b></td><td class="partial">~ Cert. en panel</td><td class="yes">✓ Auditorias + NC + evidencias</td><td>70%</td></tr>
-        <tr><td><b>IA / Predictivo</b></td><td class="no">✗ No existe</td><td class="yes">✓ ML rendimiento + anomalias</td><td>100%</td></tr>
-        <tr><td><b>Seguridad / RBAC / Audit</b></td><td class="yes">✓ Implementado</td><td class="yes">✓ Mantener + ISO 27001</td><td>15%</td></tr>
-        <tr><td><b>Disponibilidad / DR</b></td><td class="partial">~ Backup auto</td><td class="yes">✓ DRP + SLA + monitoring</td><td>60%</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Roadmap -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Roadmap de Evolucion</h2>
-      <div class="desc">Plan de fases para alcanzar el ERP integral, priorizado por valor de negocio y dependencias tecnicas.</div>
-    </div>
-    <div class="timeline">
-      <div class="timeline-item">
-        <div class="timeline-dot">1</div>
-        <div class="timeline-content">
-          <div class="timeline-phase">Fase 1 · 0 a 3 meses</div>
-          <div class="timeline-title">Consolidacion Operacional</div>
-          <div class="timeline-desc">Cablear todos los modulos UI ya construidos a Supabase real (mantenimiento, RRHH, almacen). Migrar las apps de FTP-PRODUCCION al sistema de auth real. Publicar PWA en Play Store via TWA. Cerrar gaps de seguridad criticos restantes.</div>
-          <div class="timeline-tags">
-            <span class="timeline-tag">Mantenimiento real</span>
-            <span class="timeline-tag">RRHH cableado</span>
-            <span class="timeline-tag">App Play Store</span>
-            <span class="timeline-tag">Auth migration</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="timeline-item fase-2">
-        <div class="timeline-dot">2</div>
-        <div class="timeline-content">
-          <div class="timeline-phase">Fase 2 · 3 a 6 meses</div>
-          <div class="timeline-title">Modulo Comercial + Trazabilidad</div>
-          <div class="timeline-desc">Construir CRM basico (clientes, pedidos, cotizaciones). Implementar trazabilidad end-to-end con QR de lote desde recepcion MP hasta caja PT. Conectar facturacion electronica SUNAT. Portal Cliente B2B v1.</div>
-          <div class="timeline-tags">
-            <span class="timeline-tag">CRM v1</span>
-            <span class="timeline-tag">Trazabilidad QR</span>
-            <span class="timeline-tag">SUNAT FE</span>
-            <span class="timeline-tag">Portal Cliente</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="timeline-item fase-3">
-        <div class="timeline-dot">3</div>
-        <div class="timeline-content">
-          <div class="timeline-phase">Fase 3 · 6 a 12 meses</div>
-          <div class="timeline-title">Back-office Financiero</div>
-          <div class="timeline-desc">Compras y proveedores con flujo OC completo. Tesoreria (cuentas por cobrar/pagar, conciliacion bancaria). Contabilidad general con asientos automaticos desde operaciones (PCGE Peru). Cierre mensual automatico.</div>
-          <div class="timeline-tags">
-            <span class="timeline-tag">Compras OC</span>
-            <span class="timeline-tag">Tesoreria</span>
-            <span class="timeline-tag">Contabilidad</span>
-            <span class="timeline-tag">Cierre auto</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="timeline-item fase-4">
-        <div class="timeline-dot">4</div>
-        <div class="timeline-content">
-          <div class="timeline-phase">Fase 4 · 12 a 18 meses</div>
-          <div class="timeline-title">Inteligencia + Logistica + Compliance</div>
-          <div class="timeline-desc">Modulos avanzados: pronostico de demanda con ML, optimizacion de programa de produccion, deteccion anomalias en sensores IoT. Logistica de exportacion completa (booking, BL, tracking). Compliance Hub centralizado para todas las certificaciones y auditorias.</div>
-          <div class="timeline-tags">
-            <span class="timeline-tag">IA Forecasting</span>
-            <span class="timeline-tag">IoT Sensores</span>
-            <span class="timeline-tag">Logistica EXPO</span>
-            <span class="timeline-tag">Compliance Hub</span>
-          </div>
+    ERP --> CONT["Contabilidad<br/>PCGE"]:::new
+    ERP --> BI["Business<br/>Intelligence"]:::new
+    ERP --> IA["IA Predictivo<br/>ML Forecasting"]:::new
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Beneficios esperados -->
-  <div class="section">
-    <div class="section-head">
-      <h2>Beneficios Esperados al Completar la Vision ERP</h2>
-      <div class="desc">Retorno de inversion proyectado y valor estrategico para FTP.</div>
+    <!-- Módulos a construir -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">03</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Módulos a Construir</div>
+          <p class="sec-desc">Componentes del ERP integral que cierran la brecha entre el sistema operacional actual y la cobertura completa del negocio.</p>
+        </div>
+      </div>
+
+      <div class="modules">
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">🤝</div>
+            <div><div class="mod-title">CRM Comercial</div><div class="mod-sub">pipeline · cotizaciones · contratos</div></div>
+          </div>
+          <div class="mod-body">Gestión de oportunidades, cuentas, contactos. Cotizaciones con aprobación de gerencia. Histórico de pedidos por cliente.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">📦</div>
+            <div><div class="mod-title">Compras / Proveedores</div><div class="mod-sub">OC · recepción · pago</div></div>
+          </div>
+          <div class="mod-body">Cotizaciones, órdenes de compra, recepción contra OC, evaluación de proveedores, gestión de pagos.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">📈</div>
+            <div><div class="mod-title">Pronóstico de Demanda</div><div class="mod-sub">ML · S&OP</div></div>
+          </div>
+          <div class="mod-body">Forecasting con machine learning sobre histórico de ventas, planeación ventas-operaciones, simulación de capacidad.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">🧾</div>
+            <div><div class="mod-title">Facturación SUNAT</div><div class="mod-sub">FE integrada</div></div>
+          </div>
+          <div class="mod-body">Emisión automática de boletas, facturas, notas firmadas y enviadas a SUNAT en tiempo real.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">💰</div>
+            <div><div class="mod-title">Tesorería / Cobranza</div><div class="mod-sub">AR/AP · cash flow</div></div>
+          </div>
+          <div class="mod-body">Cuentas por cobrar/pagar, conciliación bancaria automática, flujo de caja proyectado.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">📑</div>
+            <div><div class="mod-title">Contabilidad General</div><div class="mod-sub">PCGE · EE.FF.</div></div>
+          </div>
+          <div class="mod-body">Plan contable peruano, asientos automáticos desde operación, balances, declaraciones tributarias.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">🔍</div>
+            <div><div class="mod-title">Trazabilidad Total</div><div class="mod-sub">QR · campo → cliente</div></div>
+          </div>
+          <div class="mod-body">Identificador único de lote desde fundo de origen hasta caja en cliente. Recall en minutos. Cumplimiento normativo.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">🚢</div>
+            <div><div class="mod-title">Logística Exportación</div><div class="mod-sub">booking · BL · tracking</div></div>
+          </div>
+          <div class="mod-body">Reserva con navieras, gestión de contenedores, documentación (BL, certificados, fitosanitario), tracking de embarques.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">🤖</div>
+            <div><div class="mod-title">Inteligencia Artificial</div><div class="mod-sub">forecasting · anomalías</div></div>
+          </div>
+          <div class="mod-body">Predicción de rendimiento por lote, detección de anomalías en sensores, optimización del programa de producción.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">📲</div>
+            <div><div class="mod-title">App Móvil Nativa</div><div class="mod-sub">Play Store · App Store</div></div>
+          </div>
+          <div class="mod-body">Aplicación nativa con notificaciones push, biometría, modo offline robusto, distribución en stores oficiales.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">🌐</div>
+            <div><div class="mod-title">Portal Cliente B2B</div><div class="mod-sub">self-service</div></div>
+          </div>
+          <div class="mod-body">Clientes consultan estado de pedidos, descargan certificados de calidad por lote, visualizan facturas, hacen pedidos.</div>
+        </div>
+
+        <div class="mod">
+          <span class="mod-status future"></span>
+          <div class="mod-head">
+            <div class="mod-icon tech">🔐</div>
+            <div><div class="mod-title">Compliance Hub</div><div class="mod-sub">auditorías · NC · evidencias</div></div>
+          </div>
+          <div class="mod-body">Centralización de auditorías de certificación, gestión de no conformidades, capacitaciones, evidencias documentales.</div>
+        </div>
+      </div>
     </div>
-    <div class="cards">
-      <div class="card">
-        <div class="card-icon ic-green">⚡</div>
-        <div class="card-title">Eficiencia Operacional</div>
-        <div class="card-desc">Reduccion de 40% en tiempo administrativo, 60% menos errores de captura, decisiones en tiempo real basadas en datos en vez de planillas.</div>
+
+  </div><!-- /view-tobe -->
+
+  <!-- ─────────── 03 — ROADMAP ─────────── -->
+  <div class="view" id="view-roadmap">
+
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">01</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Análisis de Brecha</div>
+          <p class="sec-desc">Comparativo módulo a módulo entre el estado actual del sistema y la visión objetivo. Foco en producción y calidad.</p>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-icon ic-blue">📊</div>
-        <div class="card-title">Visibilidad Total</div>
-        <div class="card-desc">Tablero unico ejecutivo con KPIs financieros y operacionales, reportes automaticos para gerencia, certificadores y reguladores.</div>
+
+      <table class="tbl">
+        <thead>
+          <tr>
+            <th style="width:32%">Módulo / Capacidad</th>
+            <th>Estado Actual</th>
+            <th>Estado Objetivo</th>
+            <th style="width:12%">Brecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="cell-mod">Producción · Operación</td>
+            <td><span class="s-tag ok">Completo</span></td>
+            <td><span class="s-tag ok">Mantener</span></td>
+            <td class="cell-status s-yes">0%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Calidad · QA / Inspecciones</td>
+            <td><span class="s-tag ok">Completo</span></td>
+            <td><span class="s-tag ok">Compliance Hub</span></td>
+            <td class="cell-status s-mid">20%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Apps de Captura Planta</td>
+            <td><span class="s-tag ok">5 apps PWA</span></td>
+            <td><span class="s-tag ok">App nativa stores</span></td>
+            <td class="cell-status s-mid">30%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Trazabilidad de Lotes</td>
+            <td><span class="s-tag partial">Parcial · registros</span></td>
+            <td><span class="s-tag ok">QR end-to-end</span></td>
+            <td class="cell-status s-mid">60%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Almacén · Inventarios</td>
+            <td><span class="s-tag partial">Stock básico</span></td>
+            <td><span class="s-tag ok">WMS completo</span></td>
+            <td class="cell-status s-mid">50%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">CRM · Comercial</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">Pipeline + cotiz.</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Compras / Proveedores</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">OC · recepción · pago</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Pronóstico / S&OP</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">ML Forecasting</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Facturación SUNAT</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">FE integrada</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Tesorería / Cobranza</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">AR/AP · cash flow</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Contabilidad General</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">PCGE Perú</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Logística Exportación</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">Booking + docs</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">Portal Cliente B2B</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">Self-service</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+          <tr>
+            <td class="cell-mod">IA / Predictivo</td>
+            <td><span class="s-tag gap">No existe</span></td>
+            <td><span class="s-tag ok">ML rendimiento</span></td>
+            <td class="cell-status s-no">100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Roadmap -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">02</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Roadmap de Evolución</div>
+          <p class="sec-desc">Plan por fases priorizado por valor de negocio y dependencias técnicas. Horizonte total 18 meses.</p>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-icon ic-purple">🛡️</div>
-        <div class="card-title">Cumplimiento Asegurado</div>
-        <div class="card-desc">Trazabilidad total para BRCGS/FDA, audit log inviolable, recall en minutos, cumplimiento Ley 29733 datos personales y SUNAT.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon ic-amber">💰</div>
-        <div class="card-title">Reduccion de Costos</div>
-        <div class="card-desc">Optimizacion de inventarios, reduccion mermas, mejor planeacion de compras MP, alertas tempranas en KPIs criticos.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon ic-rose">🚀</div>
-        <div class="card-title">Escalabilidad</div>
-        <div class="card-desc">Capacidad de manejar 5x el volumen actual sin contratar personal administrativo. Apertura de nuevas plantas/lineas en dias.</div>
-      </div>
-      <div class="card">
-        <div class="card-icon ic-cyan">🌐</div>
-        <div class="card-title">Ventaja Competitiva</div>
-        <div class="card-desc">Diferenciacion en mercado internacional con trazabilidad superior, certificados digitales por lote para clientes premium.</div>
+
+      <div class="roadmap">
+        <div class="phase">
+          <div class="phase-num">F1</div>
+          <div class="phase-content">
+            <div class="phase-meta">Trimestre 1 · 0–3 Meses</div>
+            <div class="phase-title">Consolidación Operacional</div>
+            <p class="phase-desc">Cablear los módulos de mantenimiento, RRHH y almacén con datos reales en Supabase. Migrar las apps de planta al sistema de autenticación robusto. Publicar la PWA en Play Store mediante TWA.</p>
+            <div class="phase-deliverables">
+              <span class="phase-pill">Mantenimiento real</span>
+              <span class="phase-pill">RRHH cableado</span>
+              <span class="phase-pill">App Play Store</span>
+              <span class="phase-pill">Auth migration</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase p2">
+          <div class="phase-num">F2</div>
+          <div class="phase-content">
+            <div class="phase-meta">Trimestre 2 · 3–6 Meses</div>
+            <div class="phase-title">Capa Comercial + Trazabilidad</div>
+            <p class="phase-desc">Construir CRM básico (clientes, pedidos, cotizaciones). Implementar trazabilidad end-to-end con QR de lote desde recepción de materia prima hasta caja de producto terminado. Conectar facturación electrónica SUNAT. Portal Cliente B2B versión 1.</p>
+            <div class="phase-deliverables">
+              <span class="phase-pill">CRM v1</span>
+              <span class="phase-pill">Trazabilidad QR</span>
+              <span class="phase-pill">SUNAT FE</span>
+              <span class="phase-pill">Portal Cliente</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase p3">
+          <div class="phase-num">F3</div>
+          <div class="phase-content">
+            <div class="phase-meta">Trimestres 3-4 · 6–12 Meses</div>
+            <div class="phase-title">Back-office Financiero</div>
+            <p class="phase-desc">Compras y proveedores con flujo de orden de compra completo. Tesorería con cuentas por cobrar/pagar y conciliación bancaria. Contabilidad general con asientos automáticos desde operación según PCGE Perú. Cierre mensual automatizado.</p>
+            <div class="phase-deliverables">
+              <span class="phase-pill">Compras OC</span>
+              <span class="phase-pill">Tesorería</span>
+              <span class="phase-pill">Contabilidad</span>
+              <span class="phase-pill">Cierre auto</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="phase p4">
+          <div class="phase-num">F4</div>
+          <div class="phase-content">
+            <div class="phase-meta">Trimestres 5-6 · 12–18 Meses</div>
+            <div class="phase-title">Inteligencia + Logística + Compliance</div>
+            <p class="phase-desc">Pronóstico de demanda con machine learning, optimización del programa de producción, detección de anomalías en sensores IoT. Logística de exportación completa (booking, BL, tracking). Compliance Hub centralizado para todas las certificaciones y auditorías.</p>
+            <div class="phase-deliverables">
+              <span class="phase-pill">IA Forecasting</span>
+              <span class="phase-pill">IoT Sensores</span>
+              <span class="phase-pill">Logística EXPO</span>
+              <span class="phase-pill">Compliance Hub</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-</div><!-- /container -->
+    <!-- Beneficios -->
+    <div class="sec">
+      <div class="sec-head">
+        <div class="sec-num">03</div>
+        <div class="sec-head-text">
+          <div class="sec-title">Beneficios Esperados</div>
+          <p class="sec-desc">Retorno proyectado al completar la visión integral. Valor estratégico cuantitativo y cualitativo.</p>
+        </div>
+      </div>
 
-<!-- ═══════════════ FOOTER ═══════════════ -->
-<div class="footer">
-  <div>Documento generado para revision de gerencia · Frutos Tropicales Peru Export S.A.C.</div>
-  <div style="margin-top:6px"><span class="footer-sig">Rodrigo Garcia</span> · Systems Analyst & Developer-QA · Abril 2026</div>
-</div>
+      <div class="modules">
+        <div class="mod">
+          <div class="mod-head">
+            <div class="mod-icon data">⚡</div>
+            <div><div class="mod-title">Eficiencia Operacional</div><div class="mod-sub">automatización procesos</div></div>
+          </div>
+          <div class="mod-body">Reducción del 40% en tiempo administrativo. 60% menos errores de captura. Decisiones en tiempo real basadas en datos consolidados, no en planillas.</div>
+        </div>
+
+        <div class="mod">
+          <div class="mod-head">
+            <div class="mod-icon data">📊</div>
+            <div><div class="mod-title">Visibilidad Total</div><div class="mod-sub">tablero único</div></div>
+          </div>
+          <div class="mod-body">Dashboard ejecutivo con KPIs financieros y operacionales. Reportes automáticos para gerencia, certificadores y reguladores.</div>
+        </div>
+
+        <div class="mod">
+          <div class="mod-head">
+            <div class="mod-icon data">💰</div>
+            <div><div class="mod-title">Reducción de Costos</div><div class="mod-sub">optimización inventarios</div></div>
+          </div>
+          <div class="mod-body">Optimización de inventarios. Reducción de mermas. Mejor planeación de compras de materia prima. Alertas tempranas en KPIs críticos.</div>
+        </div>
+
+        <div class="mod">
+          <div class="mod-head">
+            <div class="mod-icon data">🚀</div>
+            <div><div class="mod-title">Escalabilidad</div><div class="mod-sub">crecimiento sin fricción</div></div>
+          </div>
+          <div class="mod-body">Capacidad de manejar 5× el volumen actual sin contratar personal administrativo adicional. Apertura de nuevas plantas o líneas en días.</div>
+        </div>
+
+        <div class="mod">
+          <div class="mod-head">
+            <div class="mod-icon data">🌐</div>
+            <div><div class="mod-title">Ventaja Competitiva</div><div class="mod-sub">diferenciación</div></div>
+          </div>
+          <div class="mod-body">Diferenciación en el mercado internacional con trazabilidad superior. Certificados digitales por lote para clientes premium.</div>
+        </div>
+
+        <div class="mod">
+          <div class="mod-head">
+            <div class="mod-icon data">🛡</div>
+            <div><div class="mod-title">Cumplimiento Asegurado</div><div class="mod-sub">trazabilidad documentada</div></div>
+          </div>
+          <div class="mod-body">Trazabilidad documentada para auditorías. Audit log inviolable. Recall en minutos. Cumplimiento de la Ley 29733 de protección de datos personales.</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /view-roadmap -->
+
+  </main>
+
+  <footer class="footer">
+    <div>
+      <div class="footer-brand">Frutos Tropicales Peru Export S.A.C.</div>
+      <div style="margin-top:4px">Documento estratégico — Sistema Operativo Producción y Calidad</div>
+    </div>
+    <div class="footer-meta">
+      <b>v1.1</b> · ABRIL 2026 · DESARROLLADO POR <b>RODRIGO GARCÍA</b> · SYSTEMS ANALYST &amp; DEVELOPER-QA
+    </div>
+  </footer>
+
+</div><!-- /doc -->
 
 <script>
-// Mermaid init
 mermaid.initialize({
   startOnLoad: true,
   theme: 'base',
   themeVariables: {
-    primaryColor: '#fef3c7',
-    primaryTextColor: '#0f172a',
-    primaryBorderColor: '#b45309',
-    lineColor: '#64748b',
-    secondaryColor: '#dcfce7',
-    tertiaryColor: '#dbeafe',
+    primaryColor: '#fff',
+    primaryTextColor: '#0a1628',
+    primaryBorderColor: '#15803d',
+    lineColor: '#475569',
+    secondaryColor: '#fafbfc',
+    tertiaryColor: '#fff',
     background: '#fff',
-    mainBkg: '#fef3c7',
-    fontFamily: '"Plus Jakarta Sans", sans-serif',
-    fontSize: '14px'
+    fontFamily: 'Inter, sans-serif',
+    fontSize: '13px',
+    nodeBorder: '1.5px',
+    clusterBkg: '#fafbfc',
+    clusterBorder: '#94a3b8'
   },
-  flowchart: { curve: 'basis', padding: 20, nodeSpacing: 50, rankSpacing: 60 }
+  flowchart: { curve: 'basis', padding: 24, nodeSpacing: 60, rankSpacing: 70, useMaxWidth: true }
 });
 
-// Tabs
 function showView(id) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.toc-item').forEach(t => t.classList.remove('active'));
   document.getElementById('view-' + id).classList.add('active');
-  const tab = document.querySelector(`.tab.${id === 'asis' ? 'as-is' : id === 'tobe' ? 'to-be' : 'compare'}`);
-  if (tab) tab.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-
-  // Re-render mermaid en la vista que se acaba de mostrar (por si no se renderizo)
+  event && event.currentTarget && event.currentTarget.classList.add('active');
+  window.scrollTo({ top: document.querySelector('.toc').offsetTop - 10, behavior: 'smooth' });
   setTimeout(() => {
-    document.querySelectorAll(`#view-${id} .mermaid`).forEach(el => {
-      if (!el.querySelector('svg')) {
-        try { mermaid.run({ nodes: [el] }); } catch(e) {}
-      }
+    document.querySelectorAll(`#view-${id} .mermaid:not([data-processed])`).forEach(el => {
+      try { mermaid.run({ nodes: [el] }); } catch(e) {}
     });
   }, 100);
 }
+
+// Render ALL views' diagrams on initial load (so PDF print captures all)
+const isPrintMode = new URLSearchParams(window.location.search).has('print');
+
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.querySelectorAll('.view').forEach(v => {
+      v.style.display = 'block';
+    });
+    document.querySelectorAll('.mermaid').forEach(el => {
+      try { if (!el.querySelector('svg')) mermaid.run({ nodes: [el] }); } catch(e) {}
+    });
+    if (isPrintMode) {
+      // En print mode dejamos todas las views visibles y disparamos print
+      // Esperamos que TODOS los SVGs de Mermaid esten renderizados antes de print
+      document.body.dataset.printMode = '1';
+      const waitMermaid = () => {
+        const totalDiagrams = document.querySelectorAll('.mermaid').length;
+        const renderedDiagrams = document.querySelectorAll('.mermaid svg').length;
+        if (renderedDiagrams >= totalDiagrams && totalDiagrams > 0) {
+          setTimeout(() => { window.print(); }, 800);
+        } else {
+          setTimeout(waitMermaid, 300);
+        }
+      };
+      waitMermaid();
+    } else {
+      setTimeout(() => {
+        document.querySelectorAll('.view').forEach(v => v.style.display = '');
+      }, 500);
+    }
+  }, 1500);
+});
 </script>
 </body>
 </html>

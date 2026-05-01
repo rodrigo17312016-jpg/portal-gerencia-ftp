@@ -73,8 +73,6 @@
 
   async function generateReceipt() {
     const cfg = window.SBClient.getConfig() || {};
-    const anio = new Date().getFullYear();
-
     const data = {
       fotoBlob: state.fotoBlob,
       inspector: cfg.operario || 'Inspector',
@@ -84,8 +82,7 @@
       limite: state.area.limite_max,
       critico: state.area.critico_max,
       hora: state.hora.slice(0,5),
-      observaciones: state.accionTomada || state.observaciones || '',
-      anio
+      observaciones: state.accionTomada || state.observaciones || ''
     };
 
     try {
@@ -122,7 +119,6 @@
 
   async function handleShare() {
     const cfg = window.SBClient.getConfig() || {};
-    const anio = new Date().getFullYear();
     const data = {
       inspector: cfg.operario || 'Inspector',
       areaNombre: state.area.nombre,
@@ -131,8 +127,7 @@
       limite: state.area.limite_max,
       critico: state.area.critico_max,
       hora: state.hora.slice(0,5),
-      observaciones: state.accionTomada || state.observaciones || '',
-      anio
+      observaciones: state.accionTomada || state.observaciones || ''
     };
     const text = window.ShareCard.composeText(data);
     const title = `Temperatura ${data.areaNombre}`;

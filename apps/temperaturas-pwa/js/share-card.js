@@ -13,8 +13,9 @@
 (function () {
   'use strict';
 
-  const CARD_W = 1080;   // ratio similar a story de instagram para WhatsApp
+  const CARD_W = 1080;   // ancho fijo
   const CARD_PAD = 48;
+  const ROLE = 'Inspector de Calidad';
 
   /** Carga blob como ImageBitmap. */
   async function blobToBitmap(blob) {
@@ -56,17 +57,19 @@
 
   /**
    * Genera el comprobante.
+   * Diseño compacto y casi cuadrado para que el preview en WhatsApp/Telegram
+   * se vea limpio (estos apps hacen center-crop ~1:1 del preview).
    * Espera: { fotoBlob, inspector, areaNombre, temperatura, estado,
-   *           limite, critico, hora, observaciones, anio }
+   *           limite, critico, hora, observaciones }
    */
   async function generateCard(data) {
     const fotoBitmap = await blobToBitmap(data.fotoBlob);
 
-    // Calcular alto dinámico según contenido
-    const headerH = 100;
-    const photoH = fotoBitmap ? Math.round(CARD_W * 1.2) : 0;
-    const baseTextH = 380;  // espacio para los datos textuales
-    const obsH = data.observaciones ? 80 : 0;
+    // Diseño compacto: ratio aproximado 1:1.15 (casi cuadrado)
+    const headerH = 130;
+    const photoH = fotoBitmap ? Math.round(CARD_W * 0.78) : 0;  // más bajo
+    const baseTextH = 360;
+    const obsH = data.observaciones ? 70 : 0;
 
     const totalH = headerH + photoH + baseTextH + obsH + CARD_PAD * 2;
 
@@ -88,11 +91,15 @@
     ctx.fillRect(0, 0, CARD_W, headerH);
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 42px Inter, system-ui, sans-serif';
     ctx.textAlign = 'left';
-    ctx.textBaseline = 'middle';
-    const inspectorTitle = `${data.inspector} · Calidad ${data.anio}`;
-    ctx.fillText(inspectorTitle, CARD_PAD, headerH / 2, CARD_W - CARD_PAD * 2);
+    // Línea 1: nombre grande
+    ctx.font = 'bold 46px Inter, system-ui, sans-serif';
+    ctx.textBaseline = 'top';
+    ctx.fillText(data.inspector, CARD_PAD, 30, CARD_W - CARD_PAD * 2);
+    // Línea 2: rol (más pequeño, semi-transparente)
+    ctx.font = '600 30px Inter, system-ui, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.85)';
+    ctx.fillText(ROLE, CARD_PAD, 80, CARD_W - CARD_PAD * 2);
 
     // ========== FOTO ==========
     let cursorY = headerH + CARD_PAD;
@@ -217,7 +224,7 @@
     });
   }
 
-  /** Texto plano para compartir (igual al mensaje de WhatsApp) */
+  /** Texto plano para compartir (formato del mensaje de WhatsApp) */
   function composeText(data) {
     const estadoTexto = ({
       OK:      '✅ Dentro de rango',
@@ -226,7 +233,7 @@
     })[(data.estado || 'OK').toUpperCase()] || 'Dentro de rango';
 
     const lines = [
-      `*${data.inspector}* · Calidad ${data.anio}`,
+      `*${data.inspector} - ${ROLE}*`,
       ``,
       `🌡️ Temperatura ${data.areaNombre}: *${Number(data.temperatura).toFixed(1)} °C*`,
       estadoTexto,

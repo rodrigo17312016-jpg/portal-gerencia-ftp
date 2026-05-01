@@ -40,17 +40,20 @@
   }
 
   /**
-   * Intenta detección con Gemini Vision API (Edge Function 'detect-temperatura').
-   * Llamada cuando OCR local falla o tiene baja confianza.
-   * Actualiza state.ocrResult si AI da mejor resultado.
+   * Detección con Gemini Vision API (Edge Function 'detect-temperatura').
+   * Es el método PRIMARIO de detección (cuando hay red).
+   * Actualiza state.ocrResult si AI da resultado válido.
+   * fromInit=true: la llamada viene del flow inicial (mostrar UI de processing).
    */
-  async function tryAIDetection() {
+  async function tryAIDetection(fromInit = false) {
     if (!state.photoBlob) return;
     // Mostrar estado en pantalla de processing
     const titleEl = document.querySelector('.ocr-processing__title');
     const hintEl = document.querySelector('.ocr-processing__hint');
-    if (titleEl) titleEl.innerHTML = '✨ Consultando IA Vision…';
-    if (hintEl) hintEl.textContent = 'Modelo Gemini analizando la imagen';
+    if (titleEl) titleEl.innerHTML = '✨ Detectando con IA…';
+    if (hintEl) hintEl.textContent = fromInit
+      ? 'Modelo Gemini analizando la foto del display'
+      : 'Reintentando con IA Vision';
 
     try {
       const ai = await window.SBClient.detectTemperaturaAI(state.photoBlob);
@@ -157,16 +160,7 @@
 
           <div id="status-banner-slot">${statusBannerHtml(state.tempInput)}</div>
 
-          <div id="accion-slot">${
-            calcEstado(state.tempInput) === 'CRITICO' ? `
-              <div class="fields-stack">
-                <div>
-                  <label class="label" for="accion-tomada">Acción tomada (obligatoria por estado crítico)</label>
-                  <textarea class="textarea" id="accion-tomada"
-                    placeholder="Ej: Reportado a supervisor, equipo en revisión...">${escapeHtml(state.accionTomada)}</textarea>
-                </div>
-              </div>
-            ` : ''
+          <div id="accion-slot">${''
           }</div>
 
           <div>
@@ -197,29 +191,40 @@
 
     if (withOCR && photoBlob) {
       app.innerHTML = renderProcessingScreen();
-      try {
-        const result = await window.OCRService.detectFromBlob(photoBlob, (pct) => {
-          const bar = document.querySelector('#ocr-progress .progress__bar');
-          if (bar) {
-            bar.style.width = pct + '%';
-            document.querySelector('#ocr-progress')?.classList.remove('progress--indeterminate');
-          }
-        });
-        state.ocrResult = result;
-        state.tempInput = (result && result.value !== null) ? String(result.value) : '';
 
-        // FALLBACK AUTOMÁTICO con Gemini AI:
-        // Si OCR local no detectó nada O detectó con baja confianza (<55%) → AI Vision
-        const localFailed = !result || result.value === null;
-        const localLowConf = result && result.confidence < 55;
-        if ((localFailed || localLowConf) && navigator.onLine) {
-          await tryAIDetection();
+      // ESTRATEGIA NUEVA: IA Vision PRIMERO (mucho más precisa).
+      // Tesseract local solo como respaldo si NO HAY RED.
+      if (navigator.onLine) {
+        // Online → IA primero
+        await tryAIDetection(/*fromInit*/ true);
+        // Si IA falló por algún motivo, intentar Tesseract como backup
+        if (!state.ocrResult || state.ocrResult.value === null) {
+          try {
+            const result = await window.OCRService.detectFromBlob(photoBlob);
+            if (result && result.value !== null) {
+              state.ocrResult = result;
+              state.tempInput = String(result.value);
+            }
+          } catch (e) {
+            console.warn('[confirm] Tesseract backup falló', e);
+          }
         }
-      } catch (e) {
-        console.warn('[confirm] OCR falló', e);
-        state.ocrResult = { value: null, raw: '', confidence: 0, error: e.message };
-        // Intentar AI Vision como respaldo si hay red
-        if (navigator.onLine) await tryAIDetection();
+      } else {
+        // Offline → solo Tesseract
+        try {
+          const result = await window.OCRService.detectFromBlob(photoBlob, (pct) => {
+            const bar = document.querySelector('#ocr-progress .progress__bar');
+            if (bar) {
+              bar.style.width = pct + '%';
+              document.querySelector('#ocr-progress')?.classList.remove('progress--indeterminate');
+            }
+          });
+          state.ocrResult = result;
+          state.tempInput = (result && result.value !== null) ? String(result.value) : '';
+        } catch (e) {
+          console.warn('[confirm] OCR offline falló', e);
+          state.ocrResult = { value: null, raw: '', confidence: 0, error: e.message };
+        }
       }
     }
 
@@ -457,31 +462,9 @@
   }
 
   function rerenderStatus() {
-    // Solo actualiza el banner de status y la sección de acción.
-    // NO re-renderiza toda la pantalla (preservamos foco del input).
+    // Solo actualiza el banner de status, sin re-render completo (preserva foco del input).
     const bannerSlot = document.getElementById('status-banner-slot');
     if (bannerSlot) bannerSlot.innerHTML = statusBannerHtml(state.tempInput);
-
-    const accionSlot = document.getElementById('accion-slot');
-    if (accionSlot) {
-      const isCrit = calcEstado(state.tempInput) === 'CRITICO';
-      const hasAccionField = !!document.getElementById('accion-tomada');
-      if (isCrit && !hasAccionField) {
-        accionSlot.innerHTML = `
-          <div class="fields-stack">
-            <div>
-              <label class="label" for="accion-tomada">Acción tomada (obligatoria por estado crítico)</label>
-              <textarea class="textarea" id="accion-tomada"
-                placeholder="Ej: Reportado a supervisor, equipo en revisión...">${escapeHtml(state.accionTomada)}</textarea>
-            </div>
-          </div>`;
-        const acc = document.getElementById('accion-tomada');
-        if (acc) acc.addEventListener('input', e => state.accionTomada = e.target.value);
-      } else if (!isCrit && hasAccionField) {
-        accionSlot.innerHTML = '';
-        state.accionTomada = '';
-      }
-    }
   }
 
   async function save() {
@@ -492,10 +475,8 @@
       return;
     }
     const estado = calcEstado(tempNum);
-    if (estado === 'CRITICO' && !state.accionTomada.trim()) {
-      window.App.toast('Por estado CRÍTICO es obligatorio describir la acción tomada', 'warning');
-      return;
-    }
+    // Nota: ya NO requerimos "acción tomada" obligatoria para CRÍTICO.
+    // El operario puede guardar el registro fuera de rango sin describir acciones.
 
     const cfg = window.SBClient.getConfig();
     const now = new Date();

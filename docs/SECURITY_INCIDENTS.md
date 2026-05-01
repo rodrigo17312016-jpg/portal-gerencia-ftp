@@ -37,7 +37,7 @@ El commit incluía un SQL "audit" de la operación manual de crear usuarios + as
    - Viejos passwords: `Invalid login credentials`
    - Nuevos passwords: login OK, role correcto preservado
 2. **Sanitización del SQL**: archivo `010_*.sql` reescrito con placeholders `:PRODUCCION_PASSWORD`, `:PRODUCCIONPRC_PASSWORD`. Documentado patrón de uso para rotaciones futuras.
-3. **Reescritura de historia git** con `git filter-repo --replace-text` para purgar `prod2026` y `prc2026` de TODOS los commits del repo. Reemplazo `***REDACTED-2026-05-01***`.
+3. **Reescritura de historia git** con `git filter-repo --replace-text` para purgar las strings `prod2···` y `prc2···` de TODOS los commits del repo. Reemplazo `***REDACTED-2026-05-01***`.
 4. **Force-push** a `origin/main` con `--force-with-lease` (commit hashes nuevos).
 5. **Privacidad informada al usuario**: aunque la historia esté limpia, hay que asumir que los secretos viejos quedaron en cachés de scrapers / Wayback Machine / GitGuardian DB. Por eso la rotación es lo que cierra el incidente, no el filter-repo.
 

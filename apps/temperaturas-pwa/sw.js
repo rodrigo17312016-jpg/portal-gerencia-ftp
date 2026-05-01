@@ -7,7 +7,7 @@
    - Imágenes locales: stale-while-revalidate
    ============================================================ */
 
-const SW_VERSION = 'v3';
+const SW_VERSION = 'v4';
 const APP_SHELL_CACHE = `temperaturas-shell-${SW_VERSION}`;
 const RUNTIME_CACHE   = `temperaturas-runtime-${SW_VERSION}`;
 const TESSERACT_CACHE = `temperaturas-tesseract-${SW_VERSION}`;

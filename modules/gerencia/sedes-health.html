@@ -1,0 +1,73 @@
+<!-- Panel: Health Check Multi-Sede -->
+
+<div class="exec-hero">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:24px;font-weight:900;color:var(--texto)">
+        Health Check <span style="color:var(--verde)">Multi-Sede</span>
+      </h2>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px">
+        Estado en tiempo real de cada planta - últimos registros, actividad del día, alertas tempranas.
+      </p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="badge badge-azul" id="health-last-refresh">Actualizando...</div>
+      <button class="btn btn-sm" id="health-refresh-btn" style="padding:6px 14px;background:var(--surface3);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-weight:700;font-size:12px;color:var(--texto)">
+        ↻ Refrescar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Resumen general arriba -->
+<div class="kpi-grid" style="margin-top:20px;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr))">
+  <div class="kpi-card">
+    <div class="kpi-label">Sedes activas hoy</div>
+    <div class="kpi-value" id="health-kpi-activas" style="color:var(--verde)">—</div>
+    <div class="kpi-change">Con registros del día</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Sedes lentas</div>
+    <div class="kpi-value" id="health-kpi-lentas" style="color:var(--amber)">—</div>
+    <div class="kpi-change">Sin registrar &gt;12h</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Sedes inactivas</div>
+    <div class="kpi-value" id="health-kpi-inactivas" style="color:var(--danger)">—</div>
+    <div class="kpi-change">Sin registrar &gt;48h</div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-label">Total registros hoy</div>
+    <div class="kpi-value" id="health-kpi-total-hoy">—</div>
+    <div class="kpi-change">Producción + empaque</div>
+  </div>
+</div>
+
+<!-- Cards por sede -->
+<div id="health-cards" style="margin-top:24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:18px"></div>
+
+<!-- Auditoria reciente de cambios de sede -->
+<div class="card" style="margin-top:24px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Auditoría: cambios de sede recientes</div>
+      <div class="card-subtitle">Últimos 20 cambios de planta activa por usuarios (audit_log)</div>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="health-audit-tbl">
+      <thead>
+        <tr>
+          <th>Hora</th>
+          <th>Usuario</th>
+          <th>Rol</th>
+          <th>De</th>
+          <th>A</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -8,7 +8,7 @@ import { getSedeActiva, isConsolidado } from './sede-context.js';
 
 // Version estatica del build - bump manualmente cuando se despliega
 // cambio a modulos. Esto permite al SW cachear correctamente.
-const BUILD_VERSION = '31';
+const BUILD_VERSION = '34';
 
 // Detectar base path (funciona en localhost Y GitHub Pages)
 function getBasePath() {
@@ -185,7 +185,9 @@ function updateBreadcrumb(panelId) {
     'lubricacion': 'Mantenimiento / Lubricacion',
     'indicadores-mant': 'Mantenimiento / Indicadores KPI',
     'costos-mant': 'Mantenimiento / Costos',
-    'comparativo-plantas': 'General / Comparativo Plantas'
+    'comparativo-plantas': 'General / Comparativo Plantas',
+    'sedes-health': 'General / Health Multi-Sede',
+    'admin-sedes': 'General / Admin Sedes'
   };
 
   const baseText = labels[panelId] || panelId;

@@ -11,6 +11,7 @@ import { checkConnection } from './config/supabase.js';
 import { updateChartsTheme } from './utils/chart-helpers.js';
 import { initSedeContext, onSedeChange } from './core/sede-context.js';
 import { mountSelectorSede } from './core/selector-sede.js';
+import { startSedesWatcher } from './core/sedes-watcher.js';
 
 // ── Inicializacion ──
 async function initPortal() {
@@ -40,12 +41,14 @@ async function initPortal() {
   // 4. Actualizar UI con datos del usuario
   updateUserUI(user);
 
-  // 4.5. Init sede context + montar selector multi-planta
+  // 4.5. Init sede context + montar selector multi-planta + watcher
   try {
     await initSedeContext();
     const topbarRight = document.querySelector('.topbar-right');
     if (topbarRight) await mountSelectorSede(topbarRight);
     onSedeChange(() => refreshBreadcrumb());
+    // Bonus 3: vigilante de sedes inactivas (toast notifications)
+    startSedesWatcher();
   } catch (err) {
     console.error('[app] Error inicializando multi-sede:', err);
   }

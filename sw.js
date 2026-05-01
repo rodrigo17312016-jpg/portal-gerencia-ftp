@@ -3,7 +3,7 @@
    Frutos Tropicales Peru Export S.A.C.
    ════════════════════════════════════════════════════════ */
 
-const CACHE_NAME = 'ftp-portal-v33';
+const CACHE_NAME = 'ftp-portal-v34';
 const STATIC_ASSETS = [
   '/',
   '/portal.html',
@@ -30,6 +30,7 @@ const STATIC_ASSETS = [
   '/assets/js/core/clock.js',
   '/assets/js/core/sede-context.js',
   '/assets/js/core/selector-sede.js',
+  '/assets/js/core/sedes-watcher.js',
   '/assets/js/utils/chart-helpers.js',
   '/assets/js/utils/formatters.js',
   '/assets/js/utils/dom-helpers.js',

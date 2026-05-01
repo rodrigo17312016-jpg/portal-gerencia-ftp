@@ -1,0 +1,79 @@
+<!-- Panel: Admin Sedes (CRUD + permisos) -->
+
+<div class="exec-hero">
+  <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+    <div>
+      <h2 style="font-size:24px;font-weight:900;color:var(--texto)">
+        Admin <span style="color:var(--verde)">Sedes</span>
+      </h2>
+      <p style="font-size:13px;color:var(--muted);margin-top:4px">
+        Gestión de plantas y permisos de usuarios. Solo accesible para rol admin.
+      </p>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <button id="btn-sync-calidad" class="btn" style="padding:8px 14px;background:var(--verde);color:white;border:0;border-radius:8px;cursor:pointer;font-weight:700;font-size:12px">
+        ⟲ Sync metadata → Calidad
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Sedes (editar metadata) -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Sedes registradas</div>
+      <div class="card-subtitle">Click en cualquier campo para editarlo</div>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="admin-sedes-tbl">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Tipo</th>
+          <th>Color</th>
+          <th>Ícono</th>
+          <th>Ubicación</th>
+          <th>Factor</th>
+          <th>Activa</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Usuarios y permisos -->
+<div class="card" style="margin-top:20px">
+  <div class="card-header">
+    <div>
+      <div class="card-title">Permisos por usuario</div>
+      <div class="card-subtitle">Click en una sede para asignar/revocar acceso al usuario</div>
+    </div>
+  </div>
+  <div style="overflow-x:auto">
+    <table class="data-table" id="admin-users-tbl">
+      <thead>
+        <tr>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Último login</th>
+          <th>Sedes asignadas</th>
+          <th>Acceso</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Cargando...</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:12px;padding:10px 14px;background:var(--surface3);border-left:3px solid var(--azul);border-radius:6px;font-size:12px;color:var(--muted);line-height:1.5">
+    <strong style="color:var(--texto)">💡 Tip:</strong>
+    Usuario sin asignaciones explícitas hereda acceso a TODAS las sedes (compatibilidad pre-F7). Click en un chip de sede para alternar acceso. <strong>Admin siempre ve todo</strong> sin importar las asignaciones.
+  </div>
+</div>

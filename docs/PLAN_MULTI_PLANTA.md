@@ -1,7 +1,7 @@
 # PLAN MULTI-PLANTA / MULTI-SEDE
 
-**Estado:** ✅ Fases 1-6 COMPLETADAS con datos REALES de Supabase. Fase 7 (RLS por sede) pendiente.
-**Fecha:** 2026-04-30
+**Estado:** ✅ TODAS LAS FASES (1-7) + 4 BONUS COMPLETADAS - sistema enterprise listo para multi-tenant real.
+**Fecha:** 2026-05-01
 **Autor:** Rodrigo García
 
 ---
@@ -133,13 +133,51 @@ SQL files: `proyecto/sql/multi-sede/{001..004}_*.sql`
 - [x] DEFAULT en columna `plantId` cubre el caso actual: INSERTs sin plantId van automáticamente a FTP-HUA
 - [x] Helper `sede-mock-helper.js` ELIMINADO (ya no se necesita)
 
-### Fase 7 — Roles por sede (PENDIENTE)
-- [ ] Tabla `usuarios_sedes(user_id, plant_id)`
-- [ ] Modificar RLS de las 5 tablas operativas: `WHERE plantId IN (sedes del usuario) OR role='admin'`
-- [ ] Roles nuevos en `app_metadata`: `jefe_planta_huaura`, `jefe_planta_piura`, `supervisor_maquila`
-- [ ] UI: el selector solo muestra sedes permitidas para el rol actual
+### Fase 7 — Roles por sede (✅ COMPLETADA 2026-05-01)
+- [x] Tabla `usuarios_sedes(user_id, plant_id)` en proyecto Producción + espejo en Calidad (`sede_codigo`)
+- [x] Helper `user_has_plant_access(plant_id)` y `user_has_sede_access(sede_codigo)` — admin pasa siempre, usuario sin grants tiene acceso a todo (compat), con grants solo ve sus plantas
+- [x] RLS actualizado en 5 tablas Prod (`auth_select_filtered_*`) + 2 tablas Calidad
+- [x] RPC `mis_sedes()` — el frontend obtiene solo las sedes permitidas
+- [x] Selector UI filtra por permisos del usuario (oculta CONSOLIDADO si solo 1 sede)
+- [x] **HARDENING**: todos los `admin_*` RPCs usan `IS DISTINCT FROM 'admin'` para que NULL bloquee anon (el `<>` no protegía)
 
-**Nota Fase 7:** Antes de aplicar, decidir si el cliente necesita aislamiento estricto (jefe Huaura no debe ver datos de Piura) o solo segmentación visual (todos ven todo, pero usan el selector para filtrar). Si es solo visual, Fase 7 no es necesaria.
+**Decisión:** se eligió aislamiento estricto + compatibilidad. Mientras un usuario no tenga filas en `usuarios_sedes`, ve todo (cero impacto retroactivo). Cuando admin asigna sus primeras sedes, automáticamente queda restringido a esas.
+
+### BONUS implementados (no estaban en el plan original)
+
+#### BONUS 1 — Auditoría de cambios de sede
+- RPC `log_sede_change(prev, new, user_agent)` graba en `audit_log` cada vez que un usuario cambia de planta en el selector del topbar
+- `setSedeActiva()` lo llama automáticamente en background
+- Queda en el mismo `audit_log` BRCGS/FDA tamper-evident usando `table_name='_session_sede'`
+- SQL: `sql/multi-sede/007_audit_log_sede_change.sql`
+
+#### BONUS 2 — Health Check Multi-Sede dashboard
+- Nuevo panel `modules/gerencia/sedes-health.{html,js}` con auto-refresh 60s
+- 4 KPIs: sedes activas hoy / lentas (>12h) / inactivas (>48h) / total registros hoy
+- Cards por sede con últimos timestamps de producción/empaque/personal + horas desde
+- Tabla con últimos 20 cambios de sede (audit_log)
+- RPC `sedes_health_status()` con SECURITY INVOKER (respeta RLS por usuario)
+- SQL: `sql/multi-sede/008_sedes_health_status_rpc.sql`
+
+#### BONUS 3 — Alertas cross-sede toast
+- `assets/js/core/sedes-watcher.js` — daemon background, polling cada 5min
+- Toast notifications animados cuando una sede está lenta (>12h) o inactiva (>48h)
+- Cooldown 4h por sede para no hacer spam
+- Click en el toast abre el dashboard sedes-health
+
+#### BONUS 4 — Admin Sedes (CRUD + permisos)
+- Nuevo panel `modules/gerencia/admin-sedes.{html,js}` solo para admin
+- Tabla editable inline de sedes (nombre, color, ícono, ubicación, scale_factor, activa)
+- Tabla de usuarios con chips clickeables para grant/revoke sedes
+- Botón "Sync metadata → Calidad" que dispara la Edge Function
+- 4 RPCs admin con hardening NULL-safe: `admin_list_usuarios_sedes`, `admin_grant_sede`, `admin_revoke_sede`, `admin_update_sede`
+- Cada acción graba en `audit_log` (operation: GRANT, REVOKE, UPDATE_META)
+- SQL: `sql/multi-sede/009_admin_sedes_management_rpcs.sql`
+
+#### BONUS Extra — Edge Function sync-plant-to-sedes
+- Función Deno desplegada en Supabase (verify_jwt=true, admin only)
+- Mantiene sincronizada la tabla `Plant` (Prod) con la tabla `sedes` (Calidad) cuando admin edita metadata
+- Doc: `sql/multi-sede/edge-function-sync-plant-to-sedes.md`
 - [ ] UI muestra solo sedes permitidas en el selector
 
 ---

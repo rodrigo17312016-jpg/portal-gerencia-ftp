@@ -49,18 +49,16 @@ function shortName(name) {
 }
 
 async function loadFromSupabase() {
-  const { data, error } = await supabase
-    .from('Plant')
-    .select('id, code, name, address, tipo, color, icono, activa, principal, scale_factor, ubicacion, empresa')
-    .eq('activa', true)
-    .order('principal', { ascending: false })
-    .order('code', { ascending: true });
+  // F7: usa RPC mis_sedes() que aplica filtro por permisos (admin ve todas,
+  // usuario restringido solo ve las suyas, anon ve todas). Lookup por code.
+  const { data, error } = await supabase.rpc('mis_sedes');
 
   if (error) throw error;
-  if (!Array.isArray(data) || !data.length) throw new Error('Plant table vacia');
+  if (!Array.isArray(data) || !data.length) throw new Error('mis_sedes() retorna vacio');
 
-  const sedes = data.map(plantToSede);
-  // Reset y rellena maps
+  // Adaptar el shape del RPC al de plantToSede (RPC ya devuelve campos
+  // correctos: id, code, name, tipo, color, icono, principal, scale_factor)
+  const sedes = data.map(p => plantToSede({ ...p, activa: true, address: p.ubicacion }));
   _codigoToId = new Map(sedes.map(s => [s.codigo, s.id]));
   _idToCodigo = new Map(sedes.map(s => [s.id, s.codigo]));
   return sedes;
@@ -151,7 +149,10 @@ export async function getSedes() {
 
 export async function getAllSedesIncludingConsolidado() {
   const data = await loadSedes();
-  return [...data.sedes.filter(s => s.activa), data.consolidado];
+  const activas = data.sedes.filter(s => s.activa);
+  // F7.6: si el usuario solo tiene 1 sede, no tiene sentido mostrar Consolidado
+  if (activas.length <= 1) return activas;
+  return [...activas, data.consolidado];
 }
 
 export async function getSedeByCodigo(codigo) {

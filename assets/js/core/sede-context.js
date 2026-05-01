@@ -9,6 +9,7 @@
    ════════════════════════════════════════════════════════ */
 
 import { getDefaultSede, getSedeByCodigo, getSedes, getPlantIdByCodigo } from '../config/sedes.js';
+import { supabase } from '../config/supabase.js';
 
 const STORAGE_KEY = 'ftp_sede_activa';
 const EVENT_NAME = 'sede-changed';
@@ -79,6 +80,16 @@ export async function setSedeActiva(codigo) {
   try {
     localStorage.setItem(STORAGE_KEY, codigo);
   } catch (_) { /* noop */ }
+
+  // BONUS 1: auditar el cambio de sede en background (no bloquea la UI).
+  // Si el usuario es anon o no hay sesion, la funcion devuelve null sin error.
+  supabase.rpc('log_sede_change', {
+    p_codigo_anterior: previo,
+    p_codigo_nuevo: codigo,
+    p_user_agent: (typeof navigator !== 'undefined' ? navigator.userAgent : null)
+  }).then(({ error }) => {
+    if (error) console.warn('[sede-context] log_sede_change fallo (no critico):', error.message);
+  });
 
   // Emitir evento
   _bus.dispatchEvent(new CustomEvent(EVENT_NAME, {

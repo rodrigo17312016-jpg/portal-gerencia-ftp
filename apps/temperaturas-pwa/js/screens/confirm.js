@@ -86,11 +86,12 @@
         <div class="confirm-screen">
           ${state.photoURL || ocr ? `
             <div class="confirm-photo-row">
-              ${state.photoURL ? `<img class="confirm-photo-row__thumb" src="${state.photoURL}" alt="Captura" />`
+              ${state.photoURL ? `<img class="confirm-photo-row__thumb" src="${state.photoURL}" alt="Captura" data-action="open-crop" style="cursor:pointer;" />`
                 : `<div class="confirm-photo-row__thumb" style="display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--color-text-soft);">📷</div>`}
               <div class="confirm-photo-row__info">
                 <div class="confirm-photo-row__label">Detectado por OCR${escapeHtml(ocrConfidence)}</div>
                 <div class="confirm-photo-row__value">${escapeHtml(ocrLabel)}</div>
+                ${state.photoURL ? `<button class="btn btn--ghost" style="padding: 6px 12px; min-height: 32px; font-size: 12px; margin-top: 6px;" data-action="open-crop">🎯 Ajustar área del display</button>` : ''}
               </div>
             </div>
           ` : ''}
@@ -200,6 +201,168 @@
 
     const saveBtn = document.getElementById('btn-save');
     if (saveBtn) saveBtn.addEventListener('click', save);
+
+    document.querySelectorAll('[data-action="open-crop"]').forEach(b =>
+      b.addEventListener('click', openCropModal));
+  }
+
+  // ============== CROP MANUAL ==============
+
+  function openCropModal() {
+    if (!state.photoBlob || !state.photoURL) {
+      window.App.toast('No hay foto para ajustar', 'warning');
+      return;
+    }
+    const overlay = document.createElement('div');
+    overlay.id = 'crop-overlay';
+    overlay.className = 'crop-overlay';
+    overlay.innerHTML = `
+      <div class="crop-overlay__header">
+        <button class="capture-header__back" data-action="crop-cancel" aria-label="Cancelar">←</button>
+        <h2 class="crop-overlay__title">Marca el número del display</h2>
+      </div>
+      <div class="crop-stage" id="crop-stage">
+        <img id="crop-img" class="crop-img" src="${state.photoURL}" alt="Foto" draggable="false" />
+        <div class="crop-rect" id="crop-rect"></div>
+        <div class="crop-hint" id="crop-hint">👆 Toca y arrastra para marcar el número</div>
+      </div>
+      <div class="crop-actions">
+        <button class="btn btn--secondary" data-action="crop-cancel">Cancelar</button>
+        <button class="btn btn--primary" data-action="crop-apply" id="btn-crop-apply" disabled>🔍 Leer este área</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    bindCropEvents(overlay);
+  }
+
+  function bindCropEvents(overlay) {
+    const stage = overlay.querySelector('#crop-stage');
+    const img = overlay.querySelector('#crop-img');
+    const rectEl = overlay.querySelector('#crop-rect');
+    const hint = overlay.querySelector('#crop-hint');
+    const applyBtn = overlay.querySelector('#btn-crop-apply');
+
+    let dragging = false;
+    let startX = 0, startY = 0, curX = 0, curY = 0;
+    let rect = null;
+
+    function getPos(ev) {
+      const t = ev.touches ? ev.touches[0] : ev;
+      const r = stage.getBoundingClientRect();
+      return { x: t.clientX - r.left, y: t.clientY - r.top };
+    }
+
+    function down(ev) {
+      ev.preventDefault();
+      dragging = true;
+      const p = getPos(ev);
+      startX = p.x; startY = p.y; curX = p.x; curY = p.y;
+      hint.style.display = 'none';
+      updateRect();
+    }
+    function move(ev) {
+      if (!dragging) return;
+      ev.preventDefault();
+      const p = getPos(ev);
+      curX = p.x; curY = p.y;
+      updateRect();
+    }
+    function up(ev) {
+      if (!dragging) return;
+      dragging = false;
+      // Si el usuario solo tocó (rect mínimo), descartar
+      const w = Math.abs(curX - startX);
+      const h = Math.abs(curY - startY);
+      if (w < 30 || h < 30) {
+        rectEl.style.display = 'none';
+        applyBtn.disabled = true;
+        rect = null;
+      } else {
+        applyBtn.disabled = false;
+        rect = { left: Math.min(startX, curX), top: Math.min(startY, curY), w, h };
+      }
+    }
+    function updateRect() {
+      const left = Math.min(startX, curX);
+      const top = Math.min(startY, curY);
+      const w = Math.abs(curX - startX);
+      const h = Math.abs(curY - startY);
+      rectEl.style.display = 'block';
+      rectEl.style.left = left + 'px';
+      rectEl.style.top = top + 'px';
+      rectEl.style.width = w + 'px';
+      rectEl.style.height = h + 'px';
+    }
+
+    // Touch events
+    stage.addEventListener('touchstart', down, { passive: false });
+    stage.addEventListener('touchmove', move, { passive: false });
+    stage.addEventListener('touchend', up);
+    // Mouse events para desktop
+    stage.addEventListener('mousedown', down);
+    stage.addEventListener('mousemove', move);
+    stage.addEventListener('mouseup', up);
+    stage.addEventListener('mouseleave', up);
+
+    // Cancel
+    overlay.querySelectorAll('[data-action="crop-cancel"]').forEach(b =>
+      b.addEventListener('click', () => closeCropModal(overlay)));
+
+    // Apply
+    applyBtn.addEventListener('click', async () => {
+      if (!rect) return;
+      // Calcular el rect en coords de la imagen ORIGINAL
+      const imgRect = img.getBoundingClientRect();
+      const stageRect = stage.getBoundingClientRect();
+      // El img se renderiza con object-fit: contain dentro del stage.
+      // Calcular posición real de la imagen renderizada:
+      const imgLeft = imgRect.left - stageRect.left;
+      const imgTop = imgRect.top - stageRect.top;
+      const imgW = imgRect.width;
+      const imgH = imgRect.height;
+
+      // El crop está en coords del stage; necesitamos restar offset de la imagen
+      const cropDispX = rect.left - imgLeft;
+      const cropDispY = rect.top - imgTop;
+      const cropDispW = rect.w;
+      const cropDispH = rect.h;
+
+      // Escalar a la imagen real
+      const scaleX = img.naturalWidth / imgW;
+      const scaleY = img.naturalHeight / imgH;
+      const cropRect = {
+        x: Math.max(0, Math.round(cropDispX * scaleX)),
+        y: Math.max(0, Math.round(cropDispY * scaleY)),
+        w: Math.min(img.naturalWidth, Math.round(cropDispW * scaleX)),
+        h: Math.min(img.naturalHeight, Math.round(cropDispH * scaleY))
+      };
+
+      applyBtn.disabled = true;
+      applyBtn.textContent = '⏳ Procesando…';
+      try {
+        const result = await window.OCRService.detectFromCrop(state.photoBlob, cropRect);
+        if (result.value !== null) {
+          state.ocrResult = result;
+          state.tempInput = String(result.value);
+          window.App.toast(`✓ Detectado: ${result.value}°C`, 'success');
+        } else {
+          window.App.toast('No se pudo leer en esta zona, intenta otra área o digita manualmente', 'warning');
+        }
+        closeCropModal(overlay);
+        // Re-render del confirm con el nuevo valor
+        document.getElementById('app').innerHTML = renderConfirmScreen();
+        bindEvents();
+      } catch (e) {
+        console.error('[crop] OCR falló', e);
+        window.App.toast('Error: ' + (e.message || 'OCR falló'), 'error');
+        applyBtn.disabled = false;
+        applyBtn.textContent = '🔍 Leer este área';
+      }
+    });
+  }
+
+  function closeCropModal(overlay) {
+    if (overlay && overlay.parentElement) overlay.remove();
   }
 
   function stepTemp(delta) {

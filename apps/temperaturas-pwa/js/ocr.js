@@ -12,7 +12,24 @@
   'use strict';
 
   const TESSERACT_CDN = 'https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js';
-  let workerPromise = null;
+
+  // Modelos OCR: 'letsgodigital' está entrenado en displays LCD/7-segmentos
+  // (mucho más preciso que eng para termómetros Hanna, Fluke, etc.)
+  // 'eng' es el fallback general.
+  const LANG_CONFIG = {
+    letsgodigital: {
+      oem: 0,                  // legacy (el modelo es Tesseract 3)
+      langPath: './lib',       // sirve nuestro .traineddata local
+      gzip: false              // no está comprimido
+    },
+    eng: {
+      oem: 1,                  // LSTM
+      langPath: undefined,     // CDN default de Tesseract.js
+      gzip: undefined
+    }
+  };
+
+  const workers = {};   // workers por idioma cacheados
   let libLoaded = false;
 
   function loadLib() {
@@ -27,19 +44,26 @@
     });
   }
 
-  async function getWorker() {
-    if (workerPromise) return workerPromise;
-    workerPromise = (async () => {
+  async function getWorker(lang = 'letsgodigital') {
+    if (workers[lang]) return workers[lang];
+    const cfg = LANG_CONFIG[lang] || LANG_CONFIG.eng;
+    workers[lang] = (async () => {
       await loadLib();
-      const worker = await window.Tesseract.createWorker('eng', 1, { logger: () => {} });
-      // Charset: dígitos + signo - + decimal + espacios + grado y C
-      // (no incluyo letras a propósito para que el OCR no se confunda con HANNA, Checktemp+, etc.)
+      const opts = { logger: () => {} };
+      if (cfg.langPath) opts.langPath = cfg.langPath;
+      if (cfg.gzip !== undefined) opts.gzip = cfg.gzip;
+      const worker = await window.Tesseract.createWorker(lang, cfg.oem, opts);
+      // Charset restringido a dígitos + signos
       await worker.setParameters({
         tessedit_char_whitelist: '0123456789-.,°C ',
       });
       return worker;
-    })();
-    return workerPromise;
+    })().catch(err => {
+      console.error('[ocr] no se pudo crear worker para', lang, err);
+      delete workers[lang];
+      throw err;
+    });
+    return workers[lang];
   }
 
   // ============== PREPROCESAMIENTO ==============
@@ -160,17 +184,20 @@
   // ============== OCR MULTI-PASS ==============
 
   /**
-   * Corre el OCR con un PSM dado.
+   * Corre el OCR con un PSM y lang dados.
    * PSM 7  = single text line
    * PSM 11 = sparse text (encuentra texto disperso)
    * PSM 6  = single uniform block of text
    * PSM 8  = single word
+   * lang:
+   * - 'letsgodigital' (default): modelo entrenado en displays LCD/7-seg
+   * - 'eng': modelo general
    */
-  async function recognizeWithPSM(canvas, psm) {
-    const worker = await getWorker();
+  async function recognizeWithPSM(canvas, psm, lang = 'letsgodigital') {
+    const worker = await getWorker(lang);
     await worker.setParameters({ tessedit_pageseg_mode: String(psm) });
     const { data } = await worker.recognize(canvas);
-    return { text: data.text || '', confidence: data.confidence || 0, psm };
+    return { text: data.text || '', confidence: data.confidence || 0, psm, lang };
   }
 
   // ============== PARSER ==============
@@ -287,14 +314,12 @@
   async function detectFromBlob(blob, onProgress) {
     if (typeof onProgress === 'function') onProgress(5);
 
-    // 1) Preprocesar imagen con varios crop factors + variantes con/sin binarización
-    //    Si el display está en el centro pequeño, gana cropFactor 0.70;
-    //    si ocupa toda la foto, gana 0.95.
-    //    Si la imagen es de bajo contraste, "no-binarize" puede ganar.
+    // 1) Preprocesar imagen con 2 variantes (binarized + grayscale).
+    //    El joinLooseDigits del parser cubre los casos donde el display
+    //    es pequeño en la foto, así que no necesitamos crop más agresivo.
     const preprocessed = [];
     const variants = [
       { cropFactor: 0.95, binarize: true,  label: 'prep-95-bin' },
-      { cropFactor: 0.70, binarize: true,  label: 'prep-70-bin' },
       { cropFactor: 0.95, binarize: false, label: 'prep-95-gray' },
     ];
     for (const v of variants) {
@@ -312,29 +337,37 @@
 
     // PSM 11 (sparse) primero: es el mejor para fotos con mucho contexto
     // PSM 7 (single line) después: si el display ya está bien encuadrado
-    // PSM 6 (block) tercero: backup
-    const psms = [11, 7, 6];
+    const psms = [11, 7];
+
+    // Modelos: letsgodigital es el principal (entrenado en LCDs).
+    // eng como fallback para casos donde el LCD no es perfecto 7-segmentos.
+    const langs = ['letsgodigital', 'eng'];
+
     const results = [];
-    const totalSteps = targets.length * psms.length;
+    const totalSteps = targets.length * psms.length * langs.length;
     let stepDone = 0;
 
-    outer: for (const target of targets) {
-      for (const psm of psms) {
-        try {
-          const r = await recognizeWithPSM(target.src, psm);
-          stepDone++;
-          if (typeof onProgress === 'function') {
-            onProgress(15 + Math.floor((stepDone / totalSteps) * 70));
+    outer: for (const lang of langs) {
+      for (const target of targets) {
+        for (const psm of psms) {
+          try {
+            const r = await recognizeWithPSM(target.src, psm, lang);
+            stepDone++;
+            if (typeof onProgress === 'function') {
+              onProgress(15 + Math.floor((stepDone / totalSteps) * 70));
+            }
+            const parsed = parseTemperatura(r.text, r.confidence);
+            if (parsed.value !== null) {
+              results.push({ ...parsed, psm, lang, source: target.label });
+              // Early exit: si tenemos confianza decente, paramos.
+              // Threshold más bajo para letsgodigital (modelo especializado, confiable)
+              const earlyThreshold = lang === 'letsgodigital' ? 50 : 65;
+              if (parsed.confidence > earlyThreshold) break outer;
+            }
+          } catch (e) {
+            stepDone++;
+            console.warn('[ocr] pass falló', target.label, psm, lang, e?.message || e);
           }
-          const parsed = parseTemperatura(r.text, r.confidence);
-          if (parsed.value !== null) {
-            results.push({ ...parsed, psm, source: target.label });
-            // Early exit: si encontramos uno con confianza alta, paramos
-            if (parsed.confidence > 70) break outer;
-          }
-        } catch (e) {
-          stepDone++;
-          console.warn('[ocr] pass falló', target.label, psm, e);
         }
       }
     }
@@ -343,11 +376,15 @@
     if (results.length === 0) {
       try {
         const canvasInverted = await preprocessImageInverted(blob);
-        for (const psm of [7, 11]) {
-          const r = await recognizeWithPSM(canvasInverted, psm);
-          const parsed = parseTemperatura(r.text, r.confidence);
-          if (parsed.value !== null) {
-            results.push({ ...parsed, psm, source: 'inverted' });
+        for (const lang of langs) {
+          for (const psm of [7, 11]) {
+            try {
+              const r = await recognizeWithPSM(canvasInverted, psm, lang);
+              const parsed = parseTemperatura(r.text, r.confidence);
+              if (parsed.value !== null) {
+                results.push({ ...parsed, psm, lang, source: 'inverted' });
+              }
+            } catch (e) {}
           }
         }
       } catch (e) {
@@ -361,10 +398,13 @@
       return { value: null, raw: '', confidence: 0 };
     }
 
-    // Tomar el de mayor confianza
-    results.sort((a, b) => b.confidence - a.confidence);
+    // Tomar el de mayor confianza, con bonus para letsgodigital (modelo especializado)
+    results.forEach(r => {
+      r.score = r.confidence + (r.lang === 'letsgodigital' ? 5 : 0);
+    });
+    results.sort((a, b) => b.score - a.score);
     const best = results[0];
-    console.log('[ocr] mejor:', best.value, '°C (conf:', Math.round(best.confidence), ', psm:', best.psm, ', source:', best.source, ')');
+    console.log('[ocr] mejor:', best.value, '°C (conf:', Math.round(best.confidence), ', lang:', best.lang, ', psm:', best.psm, ', source:', best.source, ')');
     return best;
   }
 
@@ -375,11 +415,111 @@
     return { text: r.text, confidence: r.confidence };
   }
 
-  function destroyWorker() {
-    if (workerPromise) {
-      workerPromise.then(w => w.terminate().catch(() => {})).catch(() => {});
-      workerPromise = null;
+  /**
+   * Procesa solo un rectángulo específico de la imagen (crop manual).
+   * cropRect: { x, y, w, h } en coords de la imagen original
+   */
+  async function detectFromCrop(blob, cropRect, onProgress) {
+    const bitmap = await createImageBitmap(blob);
+    const { x, y, w, h } = cropRect;
+    // Upscale a 1024 px ancho
+    const targetWidth = 1024;
+    const scale = Math.max(1, targetWidth / w);
+    const outW = Math.round(w * scale);
+    const outH = Math.round(h * scale);
+
+    // Generar imagen cropped + binarizada
+    const canvasBin = document.createElement('canvas');
+    canvasBin.width = outW;
+    canvasBin.height = outH;
+    const ctxBin = canvasBin.getContext('2d', { willReadFrequently: true });
+    ctxBin.imageSmoothingEnabled = true;
+    ctxBin.imageSmoothingQuality = 'high';
+    ctxBin.drawImage(bitmap, x, y, w, h, 0, 0, outW, outH);
+
+    // Aplicar grayscale + Otsu
+    const imgData = ctxBin.getImageData(0, 0, outW, outH);
+    const data = imgData.data;
+    const histogram = new Array(256).fill(0);
+    const grayBuf = new Uint8ClampedArray(outW * outH);
+    for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+      const g = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114) | 0;
+      grayBuf[j] = g;
+      histogram[g]++;
     }
+    const threshold = otsuThreshold(histogram, outW * outH);
+    for (let i = 0, j = 0; i < data.length; i += 4, j++) {
+      const v = grayBuf[j] > threshold ? 255 : 0;
+      data[i] = v; data[i + 1] = v; data[i + 2] = v; data[i + 3] = 255;
+    }
+    ctxBin.putImageData(imgData, 0, 0);
+
+    // Variante grayscale (sin binarización) para casos difíciles
+    const canvasGray = document.createElement('canvas');
+    canvasGray.width = outW; canvasGray.height = outH;
+    const ctxGray = canvasGray.getContext('2d', { willReadFrequently: true });
+    ctxGray.imageSmoothingEnabled = true;
+    ctxGray.imageSmoothingQuality = 'high';
+    ctxGray.drawImage(bitmap, x, y, w, h, 0, 0, outW, outH);
+    const grayImgData = ctxGray.getImageData(0, 0, outW, outH);
+    const gd = grayImgData.data;
+    let min = 255, max = 0;
+    for (let i = 0; i < gd.length; i += 4) {
+      const g = (gd[i] * 0.299 + gd[i + 1] * 0.587 + gd[i + 2] * 0.114) | 0;
+      if (g < min) min = g; if (g > max) max = g;
+    }
+    const range = Math.max(1, max - min);
+    for (let i = 0; i < gd.length; i += 4) {
+      const g = (gd[i] * 0.299 + gd[i + 1] * 0.587 + gd[i + 2] * 0.114) | 0;
+      const v = Math.max(0, Math.min(255, ((g - min) * 255 / range) | 0));
+      gd[i] = v; gd[i + 1] = v; gd[i + 2] = v; gd[i + 3] = 255;
+    }
+    ctxGray.putImageData(grayImgData, 0, 0);
+
+    if (bitmap.close) bitmap.close();
+    if (typeof onProgress === 'function') onProgress(20);
+
+    const targets = [
+      { src: canvasBin,  label: 'crop-bin' },
+      { src: canvasGray, label: 'crop-gray' }
+    ];
+    const psms = [7, 8, 11];  // single-line + single-word + sparse
+    const langs = ['letsgodigital', 'eng'];
+    const results = [];
+    let done = 0;
+    const total = targets.length * psms.length * langs.length;
+
+    outer: for (const lang of langs) {
+      for (const target of targets) {
+        for (const psm of psms) {
+          try {
+            const r = await recognizeWithPSM(target.src, psm, lang);
+            done++;
+            if (typeof onProgress === 'function') onProgress(20 + Math.floor((done/total)*70));
+            const parsed = parseTemperatura(r.text, r.confidence);
+            if (parsed.value !== null) {
+              results.push({ ...parsed, psm, lang, source: target.label });
+              if (parsed.confidence > 50) break outer;
+            }
+          } catch (e) {
+            done++;
+          }
+        }
+      }
+    }
+    if (typeof onProgress === 'function') onProgress(100);
+    if (!results.length) return { value: null, raw: '', confidence: 0 };
+    results.forEach(r => { r.score = r.confidence + (r.lang === 'letsgodigital' ? 5 : 0); });
+    results.sort((a, b) => b.score - a.score);
+    return results[0];
+  }
+
+  function destroyWorker() {
+    Object.keys(workers).forEach(lang => {
+      const wp = workers[lang];
+      if (wp) wp.then(w => w.terminate().catch(() => {})).catch(() => {});
+      delete workers[lang];
+    });
   }
 
   window.OCRService = {
@@ -388,6 +528,7 @@
     recognize,
     parseTemperatura,
     detectFromBlob,
+    detectFromCrop,          // crop manual del usuario
     preprocessImage,         // expuesto para debug
     preprocessImageInverted, // expuesto para debug
     destroyWorker

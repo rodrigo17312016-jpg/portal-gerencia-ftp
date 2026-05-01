@@ -7,7 +7,7 @@
    - Imágenes locales: stale-while-revalidate
    ============================================================ */
 
-const SW_VERSION = 'v5';
+const SW_VERSION = 'v6';
 const APP_SHELL_CACHE = `temperaturas-shell-${SW_VERSION}`;
 const RUNTIME_CACHE   = `temperaturas-runtime-${SW_VERSION}`;
 const TESSERACT_CACHE = `temperaturas-tesseract-${SW_VERSION}`;
@@ -34,7 +34,9 @@ const APP_SHELL = [
   './js/screens/setup.js',
   './js/screens/select-inspector.js',
   './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-512.png',
+  // Modelo OCR especializado en displays LCD (147 KB)
+  './lib/letsgodigital.traineddata'
 ];
 
 // =========== INSTALL: precache app shell ===========

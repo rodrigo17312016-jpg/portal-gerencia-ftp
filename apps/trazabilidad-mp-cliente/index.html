@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es-PE">
+<script>
+  // Anti-flash tema antes de pintar
+  try {
+    if (localStorage.getItem('trz_theme') === 'dark') {
+      document.documentElement.setAttribute('data-theme', 'dark');
+    }
+  } catch (_) {}
+</script>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- AUTH GUARD primero (redirige al login si no hay sesion) -->
+  <script src="../_shared/auth-guard.js"></script>
+
+  <!-- Security headers (OWASP A05) -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://unpkg.com;
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com;
+    font-src 'self' https://fonts.gstatic.com data:;
+    img-src 'self' data: blob: https://*.tile.openstreetmap.org https://unpkg.com;
+    connect-src 'self' https://*.supabase.co wss://*.supabase.co https://*.tile.openstreetmap.org https://cdn.jsdelivr.net https://unpkg.com;
+    frame-ancestors 'none';
+    base-uri 'self';
+    form-action 'self';
+    object-src 'none';
+    upgrade-insecure-requests;
+  ">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <title>Trazabilidad MP &rarr; Cliente | FTP Huaura</title>
+  <meta name="description" content="Trazabilidad integral de fruta congelada · OCR de guías SUNAT, paletickets QR, túneles IQF, cámara PT y dashboard ejecutivo · Frutos Tropicales Perú Export S.A.C." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Charts (igual que las otras apps) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- Leaflet (mapa Tránsito Live) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+
+  <!-- QRCode.js (paletickets + etiquetas cliente) -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+  <!-- PDF.js (OCR de guías SUNAT) -->
+  <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+  <script>
+    if (typeof pdfjsLib !== 'undefined') {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+    }
+  </script>
+
+  <!-- Supabase (para cuando cableamos a base real) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- Arquitectura compartida FTP -->
+  <link rel="stylesheet" href="../_shared/app-base.css">
+  <script src="../_shared/app-utils.js"></script>
+  <script src="../_shared/supabase-config.js"></script>
+
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ════════════ TOPBAR ════════════ -->
+  <header class="trz-topbar" role="banner">
+    <div class="trz-topbar-left">
+      <img src="../../assets/images/logo.png" alt="FTP" class="trz-logo">
+      <div class="trz-titles">
+        <div class="trz-title">TRAZABILIDAD MP &rarr; CLIENTE</div>
+        <div class="trz-subtitle">Frutos Tropicales Perú Export S.A.C. · Planta Vegueta · Tier 5</div>
+      </div>
+    </div>
+
+    <div class="trz-topbar-right">
+      <a href="../../portal.html" class="trz-back" title="Volver al Portal">&larr; Portal</a>
+      <span class="ftp-conn-pill">
+        <span class="ftp-conn-dot" id="trzConnDot"></span>
+        <span id="trzConnLabel">Verificando…</span>
+      </span>
+      <span class="trz-clock" id="trzClock">--:--:--</span>
+      <button class="trz-theme-toggle" onclick="trzToggleTheme()" title="Cambiar tema" aria-label="Cambiar tema">
+        <span class="trz-theme-icon">🌙</span>
+      </button>
+      <div class="ftp-dev-signature">
+        <div class="ftp-dev-signature-label">DESARROLLADO POR</div>
+        <div class="ftp-dev-signature-name">Rodrigo García</div>
+        <div class="ftp-dev-signature-role">Systems Analyst &amp; Developer-QA</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ════════════ HUB NAV (8 vistas) ════════════ -->
+  <nav class="trz-hub-nav" id="trzHubNav" role="tablist" aria-label="Vistas de trazabilidad">
+    <!-- Renderizado dinámicamente por app.js -->
+  </nav>
+
+  <!-- ════════════ MAIN CONTENT ════════════ -->
+  <main class="trz-main" id="trzView" role="tabpanel" aria-live="polite">
+    <div class="trz-loader">
+      <div class="ftp-loader"></div>
+      <p>Cargando módulo de trazabilidad…</p>
+    </div>
+  </main>
+
+  <!-- ════════════ MODAL ════════════ -->
+  <div class="trz-modal-overlay" id="trzModalOverlay" onclick="trzCloseModalIfOverlay(event)">
+    <div class="trz-modal" id="trzModal" role="dialog" aria-modal="true">
+      <header class="trz-modal-header">
+        <h3 id="trzModalTitle"></h3>
+        <button class="trz-modal-close" onclick="trzCloseModal()" aria-label="Cerrar">×</button>
+      </header>
+      <div class="trz-modal-body" id="trzModalBody"></div>
+      <footer class="trz-modal-footer" id="trzModalFooter"></footer>
+    </div>
+  </div>
+
+  <!-- ════════════ SCRIPTS DE LA APP ════════════ -->
+  <script src="data-mock.js"></script>
+  <script src="app.js"></script>
+
+  <!-- Service Worker (registro perezoso, no bloqueante) -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('../../sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>

@@ -36,6 +36,7 @@
       "icon": "layers",
       "roles": ["admin", "produccion"],
       "items": [
+        { "id": "trazabilidad-mp-cliente", "label": "Trazabilidad MP\u2192Cliente", "icon": "\uD83D\uDEE3\uFE0F", "module": "produccion/trazabilidad-mp-cliente", "badge": "TOP" },
         { "id": "recepcion", "label": "Recepcion", "icon": "\uD83D\uDCE6", "module": "produccion/areas/recepcion" },
         { "id": "acondicionado", "label": "Acondicionado", "icon": "\u2702\uFE0F", "module": "produccion/areas/acondicionado" },
         { "id": "tuneles", "label": "Tuneles IQF", "icon": "\u2744\uFE0F", "module": "produccion/areas/tuneles" },

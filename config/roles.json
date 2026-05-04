@@ -12,12 +12,14 @@
       "indicadores", "produccion-dia", "rendimientos", "costos", "productividad",
       "contenedores", "stock", "proceso", "comparativo", "programa",
       "proyecciones", "almuerzos", "materiales-prod",
+      "trazabilidad-mp-cliente",
       "recepcion", "acondicionado", "tuneles", "empaque",
       "materiales", "stock-general"
     ],
     "apps": [
       "registro-produccion", "registro-personal", "registro-costos",
-      "registro-tuneles", "empaque-congelado", "temperaturas-pwa"
+      "registro-tuneles", "empaque-congelado", "temperaturas-pwa",
+      "trazabilidad-mp-cliente"
     ],
     "dashboards": [
       "consumos", "consumo-diario", "analisis"

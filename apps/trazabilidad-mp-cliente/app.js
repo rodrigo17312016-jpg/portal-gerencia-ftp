@@ -12,8 +12,10 @@
   // ─── Estado global del módulo ───
   const STATE = {
     currentView: 'torre',
+    switchToken: 0, // monotonic counter para invalidar callbacks de vistas obsoletas
     truck: { progress: 0, animationId: null, marker: null, map: null, route: null, totalKm: 0 },
-    tunnelTickerId: null
+    tunnelTickerId: null,
+    clockId: null
   };
 
   // ─── Constantes ───
@@ -33,6 +35,16 @@
   const $$ = (sel, ctx) => Array.from((ctx || document).querySelectorAll(sel));
 
   function fmtN(n, d) { return (typeof formatNum === 'function') ? formatNum(n, d) : (n == null ? '0' : Number(n).toLocaleString('es-PE')); }
+  // Escapa contenido para usarse dentro de atributo HTML (p.ej. onclick="fn('${id}')")
+  // Previene XSS si los datos vienen de una fuente no confiable (Supabase/usuario).
+  function escAttr(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;')
+      .replace(/'/g, '&#39;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  }
   function fmtDate(date) {
     if (!date) return '—';
     const d = (typeof date === 'string') ? new Date(date) : date;
@@ -71,13 +83,14 @@
   }
 
   function startClock() {
+    if (STATE.clockId) clearInterval(STATE.clockId);
     const tick = () => {
       const now = new Date();
       const el = document.getElementById('trzClock');
       if (el) el.textContent = now.toLocaleTimeString('es-PE', { hour12: false });
     };
     tick();
-    setInterval(tick, 1000);
+    STATE.clockId = setInterval(tick, 1000);
   }
 
   function initSupabasePing() {
@@ -125,6 +138,14 @@
   function switchView(view) {
     stopTruckAnimation();
     stopTunnelTicker();
+    // Cleanup Leaflet map al salir (evita leak + handles huérfanos)
+    if (STATE.truck.map && typeof STATE.truck.map.remove === 'function') {
+      try { STATE.truck.map.remove(); } catch (e) { /* noop */ }
+      STATE.truck.map = null;
+      STATE.truck.marker = null;
+      STATE.truck.route = null;
+    }
+    const token = ++STATE.switchToken;
     STATE.currentView = view;
     $$('.trz-hub-btn').forEach(b => {
       const isActive = b.dataset.view === view;
@@ -135,7 +156,11 @@
     const r = renderers[view];
     target.innerHTML = r ? r() : '<p class="trz-empty">Vista no disponible</p>';
     const after = afterRenders[view];
-    if (after) setTimeout(after, 50);
+    if (after) setTimeout(() => {
+      // Si el usuario cambió de vista en estos 50ms, abortar
+      if (token !== STATE.switchToken) return;
+      after();
+    }, 50);
   }
 
   /* ════════════════════════════════════════════════════════
@@ -311,8 +336,8 @@
                     <td><span class="${statusBadgeClass(g.estado)}">${g.estado}</span></td>
                     <td><code class="trz-hash">${g.hashBlockchain.substring(0, 14)}</code></td>
                     <td>
-                      <button class="trz-icon-btn" title="Ver detalle" onclick="trzVerGuia('${g.id}')">👁️</button>
-                      <button class="trz-icon-btn" title="Trazabilidad" onclick="trzVerTrazabilidad('${g.id}')">🔗</button>
+                      <button class="trz-icon-btn" title="Ver detalle" onclick="trzVerGuia('${escAttr(g.id)}')">👁️</button>
+                      <button class="trz-icon-btn" title="Trazabilidad" onclick="trzVerTrazabilidad('${escAttr(g.id)}')">🔗</button>
                     </td>
                   </tr>
                 `).join('')}
@@ -345,11 +370,12 @@
 
   async function processPdf(file) {
     const status = document.getElementById('trzDropStatus');
-    status.innerHTML = `<span class="trz-spinner-inline"></span> Procesando <b>${file.name}</b> (${(file.size/1024).toFixed(0)} KB)…`;
+    if (!status) return; // usuario cambió de vista mientras se disparaba el handler
+    status.innerHTML = `<span class="trz-spinner-inline"></span> Procesando <b>${escAttr(file.name)}</b> (${(file.size/1024).toFixed(0)} KB)…`;
     try {
       if (typeof pdfjsLib === 'undefined') {
-        status.innerHTML = `⚠️ PDF.js no disponible · usando datos demo`;
-        setTimeout(() => trzLoadDemoOcr(), 600);
+        if (document.body.contains(status)) status.innerHTML = `⚠️ PDF.js no disponible · usando datos demo`;
+        setTimeout(() => { if (document.getElementById('trzOcrFields')) trzLoadDemoOcr(); }, 600);
         return;
       }
       const ab = await file.arrayBuffer();
@@ -360,18 +386,20 @@
         const c = await page.getTextContent();
         text += c.items.map(it => it.str).join(' ') + '\n';
       }
+      // Verificar si la vista sigue activa antes de pintar
+      if (!document.body.contains(status) || !document.getElementById('trzOcrFields')) return;
       const parsed = parseSunatText(text);
       if (parsed && parsed.numero) {
-        status.innerHTML = `✅ Guía <b>${parsed.serie}-${parsed.numero}</b> extraída exitosamente.`;
+        status.innerHTML = `✅ Guía <b>${escAttr(parsed.serie + '-' + parsed.numero)}</b> extraída exitosamente.`;
         paintOcrFields(parsed);
       } else {
         status.innerHTML = `⚠️ Texto extraído pero patrón no reconocido · cargando demo.`;
-        setTimeout(() => trzLoadDemoOcr(), 600);
+        setTimeout(() => { if (document.getElementById('trzOcrFields')) trzLoadDemoOcr(); }, 600);
       }
     } catch (err) {
       console.error('[TRZ] OCR error', err);
-      status.innerHTML = `❌ Error: ${err.message} · cargando demo.`;
-      setTimeout(() => trzLoadDemoOcr(), 600);
+      if (document.body.contains(status)) status.innerHTML = `❌ Error: ${escAttr(err.message)} · cargando demo.`;
+      setTimeout(() => { if (document.getElementById('trzOcrFields')) trzLoadDemoOcr(); }, 600);
     }
   }
 
@@ -461,8 +489,8 @@
         ${ocrField('Conductor', `${d.conductorNombre || '—'} <small class="trz-muted">DNI ${d.conductorDni || '—'}</small>`, true)}
       </div>
       <div class="trz-ocr-actions">
-        <button class="trz-btn trz-btn-primary" onclick="trzConfirmGuia('${d.guia}')">✓ Confirmar y registrar</button>
-        <button class="trz-btn trz-btn-outline" onclick="trzGenerarPaletickets('${d.guia}', ${d.cantidad || 0})">🏷️ Generar Paletickets</button>
+        <button class="trz-btn trz-btn-primary" onclick="trzConfirmGuia('${escAttr(d.guia)}')">✓ Confirmar y registrar</button>
+        <button class="trz-btn trz-btn-outline" onclick="trzGenerarPaletickets('${escAttr(d.guia)}', ${Number(d.cantidad) || 0})">🏷️ Generar Paletickets</button>
       </div>
     `;
   }
@@ -479,15 +507,16 @@
   window.trzVerGuia = (id) => {
     const g = window.TRZ.guiasSunat.find(x => x.id === id);
     if (!g) return;
+    const desc = g.producto?.descripcion || `${g.producto?.fruta || ''} ${g.producto?.variedad || ''} ${g.producto?.tipo ? '(' + g.producto.tipo + ')' : ''}`.trim() || '—';
     openModal(`📄 Guía ${g.id}`, `
-      <p><b>Remitente:</b> ${g.remitente.razonSocial} · RUC ${g.remitente.ruc}</p>
-      <p><b>Destinatario:</b> ${g.destinatario.razonSocial} · RUC ${g.destinatario.ruc}</p>
-      <p><b>Ruta:</b> ${g.puntoPartida} → ${g.puntoLlegada}</p>
-      <p><b>Producto:</b> ${g.producto.descripcion}</p>
-      <p><b>Lote:</b> ${g.producto.lote} · <b>Peso neto:</b> ${fmtN(g.pesoNeto)} kg · <b>Peso bruto:</b> ${fmtN(g.pesoBruto)} kg · <b>Mallas:</b> ${g.mallas}</p>
-      <p><b>Vehículo:</b> ${g.vehiculoPlaca} · <b>ETA:</b> ${g.eta}</p>
+      <p><b>Remitente:</b> ${g.remitente?.razonSocial || '—'} · RUC ${g.remitente?.ruc || '—'}</p>
+      <p><b>Destinatario:</b> ${g.destinatario?.razonSocial || '—'} · RUC ${g.destinatario?.ruc || '—'}</p>
+      <p><b>Ruta:</b> ${g.puntoPartida || '—'} → ${g.puntoLlegada || '—'}</p>
+      <p><b>Producto:</b> ${desc}</p>
+      <p><b>Lote:</b> ${g.producto?.lote || '—'} · <b>Peso neto:</b> ${fmtN(g.pesoNeto)} kg · <b>Peso bruto:</b> ${fmtN(g.pesoBruto)} kg · <b>Mallas:</b> ${g.mallas || '—'}</p>
+      <p><b>Vehículo:</b> ${g.vehiculoPlaca || '—'} · <b>ETA:</b> ${g.eta || '—'}</p>
       <p><b>Estado:</b> <span class="${statusBadgeClass(g.estado)}">${g.estado}</span></p>
-      <p><b>Hash blockchain:</b> <code>${g.hashBlockchain}</code></p>
+      <p><b>Hash blockchain:</b> <code>${g.hashBlockchain || '—'}</code></p>
     `);
   };
   window.trzVerTrazabilidad = (id) => {
@@ -787,8 +816,8 @@
           <span>v01</span>
         </div>
         <div class="trz-pt-actions">
-          <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzPrintPalet('${p.id}')">🖨️ Imprimir</button>
-          <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzScanPalet('${p.id}')">📷 Escanear</button>
+          <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzPrintPalet('${escAttr(p.id)}')">🖨️ Imprimir</button>
+          <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzScanPalet('${escAttr(p.id)}')">📷 Escanear</button>
         </div>
       </div>
     `;
@@ -824,7 +853,7 @@
       <p><b>Madurez:</b> ${p.madurez} → <b>Destino:</b> ${p.destino}</p>
       <p><b>Estado actual:</b> <span class="${statusBadgeClass(p.estado)}">${p.estado}</span></p>
     `, [
-      { label: '→ Avanzar etapa', cls: 'trz-btn-primary', onclick: `closeModal(); trzAdvance('${id}')` }
+      { label: '→ Avanzar etapa', cls: 'trz-btn-primary', onclick: `closeModal(); trzAdvance('${escAttr(id)}')` }
     ]);
   };
   window.trzAdvance = (id) => toast(`Palet ${id.split('-').pop()} avanzó a la siguiente etapa`, 'success');
@@ -926,8 +955,17 @@
         <p class="trz-muted">Simulación: usa el botón abajo para procesar palet aleatorio</p>
       </div>
     `, [
-      { label: '⚡ Procesar', cls: 'trz-btn-primary', onclick: `closeModal(); trzScanPalet(window.TRZ.paletickets[Math.floor(Math.random()*window.TRZ.paletickets.length)].id)` }
+      { label: '⚡ Procesar', cls: 'trz-btn-primary', onclick: `trzScanRandomPalet()` }
     ]);
+  };
+  // Helper extraído para evitar inyección compleja en string onclick
+  // y para guard si no hay paletickets cargados.
+  window.trzScanRandomPalet = function () {
+    closeModal();
+    const ps = window.TRZ?.paletickets;
+    if (!ps || !ps.length) { toast('Sin paletickets para escanear', 'warn'); return; }
+    const p = ps[Math.floor(Math.random() * ps.length)];
+    trzScanPalet(p.id);
   };
   window.trzAcondNew = () => toast('Formulario de acondicionado abierto · datos auto desde QR', 'info');
 
@@ -1084,8 +1122,8 @@
                   <div class="trz-progress"><div class="trz-progress-fill" style="width:${(o.kilosEmpacados/o.kilosObjetivo*100).toFixed(1)}%"></div></div>
                 </div>
                 <div class="trz-actions-inline">
-                  <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzPreviewEtiqueta('${o.id}')">🏷️ Etiqueta cliente</button>
-                  <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzEmpDetail('${o.id}')">📋 Reporte h/h</button>
+                  <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzPreviewEtiqueta('${escAttr(o.id)}')">🏷️ Etiqueta cliente</button>
+                  <button class="trz-btn trz-btn-outline trz-btn-sm" onclick="trzEmpDetail('${escAttr(o.id)}')">📋 Reporte h/h</button>
                 </div>
               </div>
             `).join('')}
@@ -1212,7 +1250,7 @@
                       const slot = t.camaraSlots.find(x => x.rack === r && x.nivel === n && x.slot === s);
                       if (!slot) return '';
                       const cls = slot.ocupado ? (slot.cliente === 'McCormick' ? 'mc' : 'ca') : 'empty';
-                      return `<div class="trz-slot ${cls}" title="${slot.id} · ${slot.ocupado ? slot.cajas + ' cajas · ' + fmtN(slot.kilos) + ' kg' : 'vacío'}" onclick="trzSlotInfo('${slot.id}')"></div>`;
+                      return `<div class="trz-slot ${cls}" title="${escAttr(slot.id)} · ${slot.ocupado ? slot.cajas + ' cajas · ' + fmtN(slot.kilos) + ' kg' : 'vacío'}" onclick="trzSlotInfo('${escAttr(slot.id)}')"></div>`;
                     }).join('')}
                   </div>
                 `).join('')}
@@ -1249,11 +1287,12 @@
     const s = window.TRZ.camaraSlots.find(x => x.id === id);
     if (!s) return;
     if (!s.ocupado) { toast(`Slot ${id} disponible`, 'info'); return; }
-    openModal(`🟫 Slot ${id}`, `
-      <p><b>Cliente:</b> ${s.cliente}</p>
-      <p><b>Cajas:</b> ${s.cajas} · <b>Kg:</b> ${fmtN(s.kilos)}</p>
+    const temp = (s.tempActual != null && !isNaN(s.tempActual)) ? s.tempActual.toFixed(1) + '°C' : '—';
+    openModal(`🟫 Slot ${escAttr(s.id)}`, `
+      <p><b>Cliente:</b> ${s.cliente || '—'}</p>
+      <p><b>Cajas:</b> ${s.cajas || 0} · <b>Kg:</b> ${fmtN(s.kilos)}</p>
       <p><b>Fecha ingreso:</b> ${fmtDate(s.fechaIngreso)}</p>
-      <p><b>Temp. actual:</b> ${s.tempActual.toFixed(1)}°C</p>
+      <p><b>Temp. actual:</b> ${temp}</p>
     `);
   };
 

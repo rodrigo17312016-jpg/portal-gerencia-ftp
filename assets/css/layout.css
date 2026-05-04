@@ -139,6 +139,18 @@ body {
   text-decoration: none;
 }
 
+.nav-badge {
+  margin-left: auto;
+  background: linear-gradient(135deg, #fbbf24, #f97316);
+  color: #1a1a1a;
+  font-size: 10px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 1px 4px rgba(249, 115, 22, 0.35);
+}
+
 .nav-item:hover {
   background: var(--sidebar-hover-bg);
   color: var(--sidebar-hover-text);

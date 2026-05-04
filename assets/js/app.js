@@ -126,6 +126,7 @@ function buildSidebar(navigation, userRole) {
         <div class="nav-item" data-panel="${item.id}" data-module="${item.module}">
           <span class="nav-icon">${item.icon}</span>
           <span class="nav-label">${item.label}</span>
+          ${item.badge ? `<span class="nav-badge">${item.badge}</span>` : ''}
         </div>`;
     });
 
